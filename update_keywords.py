@@ -133,8 +133,8 @@ def update_keywords(file_path):
         r'% ccm_last_commit_author: .*? %': f'% ccm_last_commit_author: {last_commit_author} %',
         r'% ccm_last_commit_date: .*? %': f'% ccm_last_commit_date: {last_commit_date} %',
         r'% ccm_file_last_modified: .*? %': f'% ccm_file_last_modified: {file_last_modified} %',
-        r'% ccm_file_type: .*? %': f'% ccm_file_type: {file_type} %',
-        r'% ccm_file_eol: .*? %': f'% ccm_file_eol: {file_eol} %',
+        r'% ccm_file_type: .*? %': f'% ccm_file_type: {re.escape(file_type)} %',
+        r'% ccm_file_eol: .*? %': f'% ccm_file_eol: {re.escape(file_eol)} %',  # Escape the EOL marker
         r'% ccm_file_name: .*? %': f'% ccm_file_name: {file_name} %'
     }
 
@@ -151,4 +151,5 @@ def update_keywords(file_path):
 
 if __name__ == "__main__":
     for file_path in sys.argv[1:]:
-        update_keywords(file_path)
+        print(f"NOT Updating keywords in {file_path}")
+        #update_keywords(file_path)
