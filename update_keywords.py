@@ -155,23 +155,24 @@ def update_keywords(file_path):
 
     # Define the patterns and their replacements
     patterns_replacements = {
-        r'% ccm_modify_date: 2024-10-05 13:49:55 %': f'% ccm_modify_date: 2024-10-05 13:49:55 %',
-        r'% ccm_author: mpegg %': f'% ccm_author: mpegg %',
-        r'% ccm_version: 6 %': f'% ccm_version: 6 %',
-        r'% ccm_commit_id: dd435d8a528b7244d00e69ea0a7c4b91b3fe1b73 %': f'% ccm_commit_id: dd435d8a528b7244d00e69ea0a7c4b91b3fe1b73 %',
-        r'% ccm_branch: main %': f'% ccm_branch: main %',
-        r'% ccm_repo: https://github.com/mpegg007/TermiteTowers.git %': f'% ccm_repo: https://github.com/mpegg007/TermiteTowers.git %',
-        r'% ccm_object_id: update_keywords.py:6 %': f'% ccm_object_id: update_keywords.py:6 %',
-        r'% ccm_commit_count: 6 %': f'% ccm_commit_count: 6 %',
-        r'% ccm_last_commit_message: adding comment block %': f'% ccm_last_commit_message: adding comment block %',
-        r'% ccm_last_commit_author: Matthew Pegg %': f'% ccm_last_commit_author: Matthew Pegg %',
-        r'% ccm_last_commit_date: 2024-10-05 13:40:58 -0400 %': f'% ccm_last_commit_date: 2024-10-05 13:40:58 -0400 %',
-        r'% ccm_file_last_modified: 2024-10-05 13:49:50 %': f'% ccm_file_last_modified: 2024-10-05 13:49:50 %',
-        r'% ccm_file_type: text/x-python %': f'% ccm_file_type: text/x-python %',
-        r'% ccm_file_encoding: unknown %': f'% ccm_file_encoding: unknown %',
-        r'% ccm_file_eol: CRLF %': f'% ccm_file_eol: CRLF %',
-        r'% ccm_file_name: update_keywords.py %': f'% ccm_file_name: update_keywords.py %'
+        r'% ccm_modify_date: .*? %': f'% ccm_modify_date: {current_datetime} %',
+        r'% ccm_author: .*? %': f'% ccm_author: {current_username} %',
+        r'% ccm_version: .*? %': f'% ccm_version: {current_commit_count} %',
+        r'% ccm_commit_id: .*? %': f'% ccm_commit_id: {current_commit_hash} %',
+        r'% ccm_branch: .*? %': f'% ccm_branch: {current_branch_name} %',
+        r'% ccm_repo: .*? %': f'% ccm_repo: {current_repo_url} %',
+        r'% ccm_object_id: .*? %': f'% ccm_object_id: {relative_file_path}:{current_commit_count} %',
+        r'% ccm_commit_count: .*? %': f'% ccm_commit_count: {current_commit_count} %',
+        r'% ccm_last_commit_message: .*? %': f'% ccm_last_commit_message: {last_commit_message} %',
+        r'% ccm_last_commit_author: .*? %': f'% ccm_last_commit_author: {last_commit_author} %',
+        r'% ccm_last_commit_date: .*? %': f'% ccm_last_commit_date: {last_commit_date} %',
+        r'% ccm_file_last_modified: .*? %': f'% ccm_file_last_modified: {file_last_modified} %',
+        r'% ccm_file_type: .*? %': f'% ccm_file_type: {file_type} %',
+        r'% ccm_file_encoding: .*? %': f'% ccm_file_encoding: {file_encoding} %',
+        r'% ccm_file_eol: .*? %': f'% ccm_file_eol: {file_eol} %',
+        r'% ccm_file_name: .*? %': f'% ccm_file_name: {file_name} %'
     }
+
 
     # Replace the patterns in the content
     for pattern, replacement in patterns_replacements.items():
@@ -182,4 +183,7 @@ def update_keywords(file_path):
 
 if __name__ == "__main__":
     for file_path in sys.argv[1:]:
+        if os.path.basename(file_path) == "update_keywords.py":
+            print(f"Skipping {file_path}")
+            continue
         update_keywords(file_path)
