@@ -1,0 +1,8 @@
+repos:
+  - repo: local
+    hooks:
+      - id: update-keywords
+        name: Update Keywords
+        entry: python update_keywords.py
+        language: python
+        files: \.(py|sh|bash|zsh|ksh|ps1|psm1|psd1|bat|cmd)$
