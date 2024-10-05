@@ -1,23 +1,23 @@
 """
-% ccm_modify_date: 2024-10-05 13:49:54 %
+% ccm_modify_date: 2024-10-05 14:17:39 %
 % ccm_author: mpegg %
-% ccm_version: 6 %
+% ccm_version: 8 %
 % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
 % ccm_branch: main %
-% ccm_object_id: create_excel_control_file.py:6 %
-% ccm_commit_id: dd435d8a528b7244d00e69ea0a7c4b91b3fe1b73 %
-% ccm_commit_count: 6 %
-% ccm_last_commit_message: adding comment block %
+% ccm_object_id: create_excel_control_file.py:8 %
+% ccm_commit_id: dbaa495ea5fbbb2a2f55cea4e3491bace9eec020 %
+% ccm_commit_count: 8 %
+% ccm_last_commit_message: exclude update_keywords.py from hook %
 % ccm_last_commit_author: Matthew Pegg %
-% ccm_last_commit_date: 2024-10-05 13:40:58 -0400 %
-% ccm_file_last_modified: 2024-10-05 13:46:53 %
+% ccm_last_commit_date: 2024-10-05 13:55:44 -0400 %
+% ccm_file_last_modified: 2024-10-05 14:14:09 %
 % ccm_file_name: create_excel_control_file.py %
 % ccm_file_type: text/x-python %
-% ccm_file_encoding: unknown %
+% ccm_file_encoding: CRLF %
 % ccm_file_eol: CRLF %
 """
 
-#
+# run once code for creating an Excel template for folder backup.
 
 import pandas as pd
 import os
