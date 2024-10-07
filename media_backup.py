@@ -24,7 +24,7 @@ import subprocess
 from datetime import datetime
 import pandas as pd
 
-def backup_folder(volume_group, tv_show):
+def backup_folder(src_vol_grp, src_folder, bkup_vol_grp):
     script_path = os.path.join(os.path.dirname(__file__), 'media', 'OneShow.robocopy.cmd')
     
     if not os.path.exists(script_path):
@@ -33,7 +33,7 @@ def backup_folder(volume_group, tv_show):
 
     try:
         result = subprocess.run(
-            ['cmd.exe', '/c', script_path, volume_group, tv_show],
+            ['cmd.exe', '/c', script_path, src_vol_grp, src_folder, bkup_vol_grp],
             check=True,
             capture_output=True,
             text=True
@@ -47,21 +47,18 @@ def backup_folder(volume_group, tv_show):
 
 def read_folders_from_excel(file_path):
     # Read the Excel file
-    df_drive_map = pd.read_excel(file_path, sheet_name='DriveMap')
-    df_folders = pd.read_excel(file_path, sheet_name='Folders')
+    df_folders = pd.read_excel(file_path, sheet_name='Media-Folders')
 
-    # Create a dictionary to map drive IDs to actual locations
-    drive_map = dict(zip(df_drive_map['DriveID'], df_drive_map['Location']))
-
-    # Create a list of tuples (volume_group, tv_show)
-    folders_to_backup = [(row['Folder'], drive_map[row['DriveID']]) for index, row in df_folders.iterrows()]
+    # Create a list of tuples (src_vol_grp, src_folder, bkup_vol_grp)
+    folders_to_backup = [(row['srcVolGrp'], row['srcFolder'], row['BkupVolGrp']) for index, row in df_folders.iterrows()]
 
     return folders_to_backup
 
 # Example usage
-excel_file = 'C:\\path\\to\\folders_list.xlsx'
+excel_file = 'C:\\media.tt.omp\\metadata\\backup_control.xlsx'
 
 folders_to_backup = read_folders_from_excel(excel_file)
 
-for volume_group, tv_show in folders_to_backup:
-    backup_folder(volume_group, tv_show)
+for src_vol_grp, src_folder, bkup_vol_grp in folders_to_backup:
+    print(f"Working on file: {src_folder}")
+    backup_folder(src_vol_grp, src_folder, bkup_vol_grp)

@@ -16,5 +16,17 @@
 % ccm_file_encoding: CRLF %
 % ccm_file_eol: CRLF %
 """
-# test2
+# test3
 
+"""
+% date_created: 2024-10-05 14:17:39 %
+% created_by: mpegg %
+% created_by_email: mpegg %
+% version: 8 %
+% git_head: https://github.com/mpegg007/TermiteTowers.git %
+% git_branch: main %
+% full_filespec: sample.py:8 %
+% git_cid: dbaa495ea5fbbb2a2f55cea4e3491bace9eec020 %
+% git_msg: exclude update_keywords.py from hook %
+% filename: sample.py %
+"""
