@@ -121,21 +121,21 @@ def update_keywords(file_path):
 
     # Define the patterns and their replacements
     patterns_replacements = {
-        r'% ccm_modify_date: .*? %': f'% ccm_modify_date: {current_datetime} %',
+        r'% ccm_modify_date: 2024-10-07 20:32:09 %',
         r'% ccm_author: .*? %': f'% ccm_author: {current_username} %',
-        r'% ccm_version: .*? %': f'% ccm_version: {current_commit_count} %',
-        r'% ccm_commit_id: .*? %': f'% ccm_commit_id: {current_commit_hash} %',
-        r'% ccm_branch: .*? %': f'% ccm_branch: {current_branch_name} %',
-        r'% ccm_repo: .*? %': f'% ccm_repo: {current_repo_url} %',
-        r'% ccm_object_id: .*? %': f'% ccm_object_id: {relative_file_path}:{current_commit_count} %',
+        r'% version: 21 %',
+        r'% ccm_commit_id: c469486a9ea01c8bafd81ca2abb9c7324c9e0a18 %',
+        r'% ccm_branch: main %',
+        r'% ccm_repo: https://github.com/mpegg007/TermiteTowers.git %',
+        r'% ccm_object_id: git-automation/update_keywords.py:21 %',
         r'% ccm_commit_count: .*? %': f'% ccm_commit_count: {current_commit_count} %',
-        r'% ccm_last_commit_message: .*? %': f'% ccm_last_commit_message: {last_commit_message} %',
-        r'% ccm_last_commit_author: .*? %': f'% ccm_last_commit_author: {last_commit_author} %',
-        r'% ccm_last_commit_date: .*? %': f'% ccm_last_commit_date: {last_commit_date} %',
-        r'% ccm_file_last_modified: .*? %': f'% ccm_file_last_modified: {file_last_modified} %',
-        r'% ccm_file_type: .*? %': f'% ccm_file_type: {re.escape(file_type)} %',
-        r'% ccm_file_eol: .*? %': f'% ccm_file_eol: {re.escape(file_eol)} %',  # Escape the EOL marker
-        r'% ccm_file_name: .*? %': f'% ccm_file_name: {file_name} %'
+        r'% ccm_last_commit_message: test pre-commit %',
+        r'% ccm_last_commit_author: Matthew Pegg %',
+        r'% ccm_last_commit_date: 2024-10-07 20:10:56 -0400 %',
+        r'% ccm_file_last_modified: 2024-10-05 16:37:40 %',
+        r'% ccm_file_type: text/x-script.python %',
+        r'% ccm_file_eol: CRLF %',  # Escape the EOL marker
+        r'% ccm_file_name: update_keywords.py %'
     }
 
     # Replace the patterns in the content
