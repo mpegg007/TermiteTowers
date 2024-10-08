@@ -21,6 +21,6 @@ repos:
         name: Update Keywords
         entry: git-automation/update-keywords.sh
         language: script
-        files: \.(py|sh|bash|zsh|ksh|ps1|psm1|psd1|bat|cmd)$
+        files: \.(py|sh|bash|zsh|ksh|ps1|psm1|psd1|bat|cmd|yaml)$
         stages: [pre-commit]
         

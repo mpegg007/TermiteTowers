@@ -33,7 +33,7 @@ detect_eol() {
 echo "Pre-commit hook started at $(date)" >> $LOG_FILE
 
 # Get the list of staged files with specified extensions
-STAGED_FILES=$(git diff --cached --name-only | grep -E '\.(cmd|bat|ps1|sql|ctl|py)$')
+STAGED_FILES=$(git diff --cached --name-only | grep -E '\.(cmd|bat|sql|ctl|py|sh|bash|zsh|ksh|ps1|psm1|psd1|yaml)$')
 
 # Update the placeholders in each staged file
 for FILE in $STAGED_FILES; do
