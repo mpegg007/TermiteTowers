@@ -1,23 +1,23 @@
 """
-% ccm_modify_date: 2024-10-05 14:19:16 %
+% ccm_modify_date: 2024-10-08 19:34:17 %
 % ccm_author: mpegg %
-% ccm_version: 9 %
+% ccm_version: 24 %
 % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
 % ccm_branch: main %
-% ccm_object_id: folder_backup.py:9 %
-% ccm_commit_id: adc1e90f440bab4e15ce41cd62379d696b7757f0 %
-% ccm_commit_count: 9 %
-% ccm_last_commit_message: comment test %
+% ccm_object_id: media_backup.py:24 %
+% ccm_commit_id: 16c7536b7f720b4fa8a6ef398ce2f9af9d9087a0 %
+% ccm_commit_count: 24 %
+% ccm_last_commit_message: test %
 % ccm_last_commit_author: Matthew Pegg %
-% ccm_last_commit_date: 2024-10-05 14:17:38 -0400 %
-% ccm_file_last_modified: 2024-10-05 14:19:07 %
-% ccm_file_name: folder_backup.py %
-% ccm_file_type: text/x-python %
-% ccm_file_encoding: CRLF %
+% ccm_last_commit_date: 2024-10-07 20:42:24 -0400 %
+% ccm_file_last_modified: 2024-10-08 19:33:42 %
+% ccm_file_name: media_backup.py %
+% ccm_file_type: text/plain %
+% ccm_file_encoding: us-ascii %
 % ccm_file_eol: CRLF %
 """
 
-# test comment
+# primary script
 
 import os
 import subprocess
