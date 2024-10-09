@@ -1,17 +1,17 @@
 @echo off
 :goto :skipComments
-:: % ccm_modify_date: 2024-10-08 21:39:56 %
+:: % ccm_modify_date: 2024-10-08 21:53:15 %
 :: % ccm_author: mpegg %
-:: % ccm_version: 25 %
+:: % ccm_version: 26 %
 :: % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
 :: % ccm_branch: main %
-:: % ccm_object_id: media/OneShow.robocopy.cmd:25 %
-:: % ccm_commit_id: b2a54cc00d6c06b63485f49b3b311e28586789fa %
-:: % ccm_commit_count: 25 %
-:: % ccm_last_commit_message: confirm latest %
+:: % ccm_object_id: media/OneShow.robocopy.cmd:26 %
+:: % ccm_commit_id: 8dd0fdfc398700bc484ebf6dbf9bd27166cdf340 %
+:: % ccm_commit_count: 26 %
+:: % ccm_last_commit_message: updates, enhancements %
 :: % ccm_last_commit_author: Matthew Pegg %
-:: % ccm_last_commit_date: 2024-10-08 19:34:16 -0400 %
-:: % ccm_file_last_modified: 2024-10-08 21:36:45 %
+:: % ccm_last_commit_date: 2024-10-08 21:39:56 -0400 %
+:: % ccm_file_last_modified: 2024-10-08 21:52:55 %
 :: % ccm_file_name: OneShow.robocopy.cmd %
 :: % ccm_file_type: text/x-msdos-batch %
 :: % ccm_file_encoding: us-ascii %
@@ -60,6 +60,14 @@ if %ERRORLEVEL% EQU 0 (
     )
 )
 
+:rem Set the mediaPath based on mediaVol and mediaShow
+set "mediaRoot=C:\media.tt.omp\VG"
+if "%mediaShow%"=="_ALL_" (
+    set "mediaPath=%mediaRoot%\%mediaVol%"
+) else (
+    set "mediaPath=%mediaRoot%\%mediaVol%\%mediaShow%"
+)
+
 :rem Check if destDir is provided, if not, set default value
 :rem future use - currently defaults
 if "%~7"=="" (
@@ -70,7 +78,7 @@ if "%~7"=="" (
     ) else if "%mediaVol:~0,5%"=="music" (
         set destDir=music.%destVol:~0,1%%destVol:~1%
     ) else (
-        echo FATAL!!! - unknown volume group prefix [%mediaVol%]
+        echo FATAL!!! - unknown volume group prefix [%mediaVol%] >> "%logDetail%"
         goto :ERROR1
     )
     set defaultDirUsed=1
@@ -85,15 +93,19 @@ if not exist "%destPath%" (
     if "%defaultDirUsed%"=="1" (
         mkdir "%destPath%"
         if %ERRORLEVEL% NEQ 0 (
-            echo "FATAL!!! - failed to create directory [%destPath%]"
+            echo "FATAL!!! - failed to create directory [%destPath%]" >> "%logDetail%"
             goto :ERROR1
+        ) else (
+            echo "INFO - Created directory [%destPath%]" >> "%logDetail%"
         )
     ) 
 )
     
 if not exist "%destPath%" (
-    echo "FATAL!!! - destPath [%destPath%] not found"
+    echo "FATAL!!! - destPath [%destPath%] not found" >> "%logDetail%"
     goto :ERROR1
+) else (
+    echo "INFO - destPath [%destPath%] exists" >> "%logDetail%"
 )
 
 set "logDir=C:\media.tt.omp\metadata\logs"
@@ -102,20 +114,24 @@ set "logDetail=%logDir%\OneShow.robocopy.%mediaVol%.%mediaShow%.log"
 
 :rem Initialize robocopy switches
 set "roboSwitches=/S /J /R:0 /FFT /NP /TEE /LOG:"%logDetail%""
+echo "INFO - Initialized robocopy switches: %roboSwitches%" >> "%logDetail%"
 
 :rem Add minSize switch if provided
 if not "%minSize%"=="" (
     set "roboSwitches=%roboSwitches% /MIN:%minSize%"
+    echo "INFO - Added minSize switch: /MIN:%minSize%" >> "%logDetail%"
 )
 
 :rem Add maxSize switch if provided
 if not "%maxSize%"=="" (
     set "roboSwitches=%roboSwitches% /MAX:%maxSize%"
+    echo "INFO - Added maxSize switch: /MAX:%maxSize%" >> "%logDetail%"
 )
 
 :rem Add PURGE switch if mediaShow is not _ALL_
 if not "%mediaShow%"=="_ALL_" (
     set "roboSwitches=%roboSwitches% /PURGE"
+    echo "INFO - Added PURGE switch" >> "%logDetail%"
 )
 
 :rem Add file extensions to include if provided
@@ -125,6 +141,7 @@ if not "%fileExtn%"=="" (
         set "includeFiles=!includeFiles! %%i"
     )
     set "roboSwitches=%roboSwitches% %includeFiles%"
+    echo "INFO - Added file extensions to include: %includeFiles%" >> "%logDetail%"
 )
 
 if "%mediaShow%"=="_ALL_" (
