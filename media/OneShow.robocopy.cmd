@@ -1,20 +1,20 @@
 @echo off
 :goto :skipComments
-:: % ccm_modify_date: 2024-10-05 14:17:39 %
+:: % ccm_modify_date: 2024-10-08 21:39:56 %
 :: % ccm_author: mpegg %
-:: % ccm_version: 8 %
+:: % ccm_version: 25 %
 :: % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
 :: % ccm_branch: main %
-:: % ccm_object_id: create_excel_control_file.py:8 %
-:: % ccm_commit_id: dbaa495ea5fbbb2a2f55cea4e3491bace9eec020 %
-:: % ccm_commit_count: 8 %
-:: % ccm_last_commit_message: exclude update_keywords.py from hook %
+:: % ccm_object_id: media/OneShow.robocopy.cmd:25 %
+:: % ccm_commit_id: b2a54cc00d6c06b63485f49b3b311e28586789fa %
+:: % ccm_commit_count: 25 %
+:: % ccm_last_commit_message: confirm latest %
 :: % ccm_last_commit_author: Matthew Pegg %
-:: % ccm_last_commit_date: 2024-10-05 13:55:44 -0400 %
-:: % ccm_file_last_modified: 2024-10-05 14:14:09 %
-:: % ccm_file_name: create_excel_control_file.py %
-:: % ccm_file_type: text/x-python %
-:: % ccm_file_encoding: CRLF %
+:: % ccm_last_commit_date: 2024-10-08 19:34:16 -0400 %
+:: % ccm_file_last_modified: 2024-10-08 21:36:45 %
+:: % ccm_file_name: OneShow.robocopy.cmd %
+:: % ccm_file_type: text/x-msdos-batch %
+:: % ccm_file_encoding: us-ascii %
 :: % ccm_file_eol: CRLF %
 
 :skipComments
@@ -24,23 +24,25 @@
 :rem source volumeGroup - eg: shows1950 
 :rem source tvshow      - eg: Batman (1966) 
 :rem destination VolumeGroup - eg: TTB-3T2401
+:rem minSize - minimum file size
+:rem maxSize - maximum file size
+:rem fileExtn - file extensions
+:rem destDir - destination directory (optional)
 
-:rem future enhancements
-:rem destination folder      - eg: shows.TTB-3T2401
-
-:rem enforcement rules
-
-set "mediaRoot=C:\media.tt.omp\VG"
-set "mediaVol=%1"
+set "mediaVol=%~1"
 set "mediaShow=%~2"
-set "mediaPath=%mediaRoot%\%mediaVol%\%mediaShow%"
-if not exist "%mediaPath%" (
-    echo "FATAL!!! - src:[%mediaPath%] not found"
-    goto :ERROR1
-)
-
-set "destRoot=C:\media.tt.omp\BackupDisks"
 set "destVol=%~3"
+set "minSize=%~4"
+set "maxSize=%~5"
+set "fileExtn=%~6"
+
+:rem Set the root directory for destination volumes
+set "destRoot=C:\media.tt.omp\BackupDisks"
+
+:rem Set each of the three args to blank if they are -
+if "%minSize%"=="-" set "minSize="
+if "%maxSize%"=="-" set "maxSize="
+if "%fileExtn%"=="-" set "fileExtn="
 
 :rem Abort if there is a problem with the destVol folder
 if not exist "%destRoot%\%destVol%" (
@@ -59,7 +61,8 @@ if %ERRORLEVEL% EQU 0 (
 )
 
 :rem Check if destDir is provided, if not, set default value
-if "%~4"=="" (
+:rem future use - currently defaults
+if "%~7"=="" (
     if "%mediaVol:~0,5%"=="shows" (
         set destDir=shows.%destVol:~0,1%%destVol:~1%
     ) else if "%mediaVol:~0,6%"=="movies" (
@@ -72,7 +75,7 @@ if "%~4"=="" (
     )
     set defaultDirUsed=1
 ) else (
-    set "destDir=%~4"
+    set "destDir=%~7"
     set defaultDirUsed=0
 )
 
@@ -95,11 +98,41 @@ if not exist "%destPath%" (
 
 set "logDir=C:\media.tt.omp\metadata\logs"
 set "logSummary=%logDir%\OneShow.robocopy.log"
-set "logDetail=%logDir%\OneShow.robocopy.%mediaShow%.log"
+set "logDetail=%logDir%\OneShow.robocopy.%mediaVol%.%mediaShow%.log"
 
-set roboSwitches=/S /J /R:0 /FFT /MIN:1000000 /PURGE /NP /TEE /LOG:"%logDetail%"
+:rem Initialize robocopy switches
+set "roboSwitches=/S /J /R:0 /FFT /NP /TEE /LOG:"%logDetail%""
 
-robocopy "%mediaPath%" "%destPath%\%mediaShow%" %roboSwitches%
+:rem Add minSize switch if provided
+if not "%minSize%"=="" (
+    set "roboSwitches=%roboSwitches% /MIN:%minSize%"
+)
+
+:rem Add maxSize switch if provided
+if not "%maxSize%"=="" (
+    set "roboSwitches=%roboSwitches% /MAX:%maxSize%"
+)
+
+:rem Add PURGE switch if mediaShow is not _ALL_
+if not "%mediaShow%"=="_ALL_" (
+    set "roboSwitches=%roboSwitches% /PURGE"
+)
+
+:rem Add file extensions to include if provided
+if not "%fileExtn%"=="" (
+    set "includeFiles="
+    for %%i in (%fileExtn%) do (
+        set "includeFiles=!includeFiles! %%i"
+    )
+    set "roboSwitches=%roboSwitches% %includeFiles%"
+)
+
+if "%mediaShow%"=="_ALL_" (
+    robocopy "%mediaPath%" "%destPath%" %roboSwitches%
+) else (
+    robocopy "%mediaPath%" "%destPath%\%mediaShow%" %roboSwitches%
+)
+
 set RC=%ERRORLEVEL%
 echo "%date% %time% rc:[%RC%] src:[%mediaPath%] dst:[%destPath%]" >> "%logDetail%"
 echo "%date% %time% rc:[%RC%] src:[%mediaPath%] dst:[%destPath%]" >> "%logSummary%"
