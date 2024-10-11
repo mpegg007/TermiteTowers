@@ -1,16 +1,16 @@
 """
-% ccm_modify_date: 2024-10-11 19:47:46 %
+% ccm_modify_date: 2024-10-11 19:48:31 %
 % ccm_author: mpegg %
-% ccm_version: 27 %
+% ccm_version: 28 %
 % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
 % ccm_branch: main %
-% ccm_object_id: media/export_shows_data.py:27 %
-% ccm_commit_id: 542f8ca3b50cda6e0d388ba5e53528f2e12e77f6 %
-% ccm_commit_count: 27 %
-% ccm_last_commit_message: x %
+% ccm_object_id: media/export_shows_data.py:28 %
+% ccm_commit_id: bd4b20ebf8fb6d4192f8e3b51dc77708ab8248cd %
+% ccm_commit_count: 28 %
+% ccm_last_commit_message: show sizes from sonarr %
 % ccm_last_commit_author: Matthew Pegg %
-% ccm_last_commit_date: 2024-10-08 21:53:15 -0400 %
-% ccm_file_last_modified: 2024-10-11 19:45:30 %
+% ccm_last_commit_date: 2024-10-11 19:47:46 -0400 %
+% ccm_file_last_modified: 2024-10-11 19:48:21 %
 % ccm_file_name: export_shows_data.py %
 % ccm_file_type: text/plain %
 % ccm_file_encoding: us-ascii %
@@ -43,8 +43,8 @@ SELECT
     Series.lastInfoSync, 
     ROUND(SUM(EpisodeFiles.Size) / (1024 * 1024 * 1024.0), 1) as TotalSizeGB,
     SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + 3, INSTR(SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + 3), '\\') - 1) as vgName,
-    SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + LENGTH(SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + 3, INSTR(SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + 3), '\\') - 1)) + 4) as showFolderName,
-    SUBSTR(SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + LENGTH(SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + 3, INSTR(SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + 3), '\\') - 1)) + 4), INSTR(SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + LENGTH(SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + 3, INSTR(SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + 3), '\\') - 1)) + 4), '(') + 1, INSTR(SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + LENGTH(SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + 3, INSTR(SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + 3), '\\') - 1)) + 4), ')') - INSTR(SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + LENGTH(SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + 3, INSTR(SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + 3), '\\') - 1)) + 4), '(') - 1) as showFolderYYYY
+    SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + LENGTH(SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + 3, INSTR(SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + 3), '\\') - 1)) + 4, LENGTH(Series.Path) - INSTR(Series.Path, 'VG\\') - LENGTH(SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + 3, INSTR(SUBSTR(Series.Path, INSTR(Series.Path, 'VG\\') + 3), '\\') - 1)) - 4) as showFolderName,
+    SUBSTR(Series.Path, INSTR(Series.Path, '(') + 1, INSTR(Series.Path, ')') - INSTR(Series.Path, '(') - 1) as showFolderYYYY
 FROM Series
 LEFT JOIN EpisodeFiles ON Series.Id = EpisodeFiles.SeriesId
 GROUP BY 
