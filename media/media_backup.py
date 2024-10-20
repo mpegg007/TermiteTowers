@@ -1,16 +1,16 @@
 """
-% ccm_modify_date: 2024-10-20 12:47:54 %
+% ccm_modify_date: 2024-10-20 13:15:40 %
 % ccm_author: mpegg %
-% ccm_version: 31 %
+% ccm_version: 32 %
 % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
 % ccm_branch: main %
-% ccm_object_id: media_backup.py:31 %
-% ccm_commit_id: c55d8e627d7fb98a30796524ce44ae51335ea596 %
-% ccm_commit_count: 31 %
-% ccm_last_commit_message: handle spaces in /log switch for robocopy %
+% ccm_object_id: media/media_backup.py:32 %
+% ccm_commit_id: 5ecdf8c40f41881f58a5bde36eba99b142db29fb %
+% ccm_commit_count: 32 %
+% ccm_last_commit_message: media backup fixes %
 % ccm_last_commit_author: Matthew Pegg %
-% ccm_last_commit_date: 2024-10-20 12:14:32 -0400 %
-% ccm_file_last_modified: 2024-10-20 12:46:05 %
+% ccm_last_commit_date: 2024-10-20 12:47:54 -0400 %
+% ccm_file_last_modified: 2024-10-20 13:13:20 %
 % ccm_file_name: media_backup.py %
 % ccm_file_type: text/plain %
 % ccm_file_encoding: us-ascii %
@@ -23,7 +23,7 @@ import pandas as pd
 import argparse
 
 def backup_folder(src_vol_grp, src_folder, bkup_vol_grp, min_size, max_size, file_extn):
-    script_path = os.path.join(os.path.dirname(__file__), 'media', 'OneShow.robocopy.cmd')
+    script_path = os.path.join(os.path.dirname(__file__), 'OneShow.robocopy.cmd')
     print(f"Running backup for {src_vol_grp}, {src_folder}, {bkup_vol_grp} with minSize={min_size}, maxSize={max_size}, fileExtn={file_extn}")
     
     if not os.path.exists(script_path):
