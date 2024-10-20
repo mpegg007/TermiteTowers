@@ -1,16 +1,16 @@
 """
-% ccm_modify_date: 2024-10-08 21:39:56 %
+% ccm_modify_date: 2024-10-20 12:47:54 %
 % ccm_author: mpegg %
-% ccm_version: 25 %
+% ccm_version: 31 %
 % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
 % ccm_branch: main %
-% ccm_object_id: media_backup.py:25 %
-% ccm_commit_id: b2a54cc00d6c06b63485f49b3b311e28586789fa %
-% ccm_commit_count: 25 %
-% ccm_last_commit_message: confirm latest %
+% ccm_object_id: media_backup.py:31 %
+% ccm_commit_id: c55d8e627d7fb98a30796524ce44ae51335ea596 %
+% ccm_commit_count: 31 %
+% ccm_last_commit_message: handle spaces in /log switch for robocopy %
 % ccm_last_commit_author: Matthew Pegg %
-% ccm_last_commit_date: 2024-10-08 19:34:16 -0400 %
-% ccm_file_last_modified: 2024-10-08 21:29:51 %
+% ccm_last_commit_date: 2024-10-20 12:14:32 -0400 %
+% ccm_file_last_modified: 2024-10-20 12:46:05 %
 % ccm_file_name: media_backup.py %
 % ccm_file_type: text/plain %
 % ccm_file_encoding: us-ascii %
@@ -49,12 +49,18 @@ def backup_folder(src_vol_grp, src_folder, bkup_vol_grp, min_size, max_size, fil
     try:
         result = subprocess.run(
             ['cmd.exe', '/c', script_path, src_vol_grp, src_folder, bkup_vol_grp, min_size, max_size, file_extn],
-            check=True,
+            check=False,  # Do not raise an exception on non-zero exit codes
             capture_output=True,
             text=True
         )
-        print(result.stdout)
-        print(result.stderr)
+        # Check the exit code
+        if result.returncode in [0, 1, 2, 3, 4]:
+            print("Backup completed successfully.")
+            print(result.stdout)
+        else:
+            print(f"An error occurred during backup: {result.returncode}")
+            print(result.stdout)
+            print(result.stderr)
     except subprocess.CalledProcessError as e:
         print(f"An error occurred during backup: {e}")
         print(e.stdout)

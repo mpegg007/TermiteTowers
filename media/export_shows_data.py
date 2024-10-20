@@ -1,3 +1,22 @@
+"""
+% ccm_modify_date: 2024-10-20 12:47:54 %
+% ccm_author: mpegg %
+% ccm_version: 31 %
+% ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
+% ccm_branch: main %
+% ccm_object_id: media/export_shows_data.py:31 %
+% ccm_commit_id: c55d8e627d7fb98a30796524ce44ae51335ea596 %
+% ccm_commit_count: 31 %
+% ccm_last_commit_message: handle spaces in /log switch for robocopy %
+% ccm_last_commit_author: Matthew Pegg %
+% ccm_last_commit_date: 2024-10-20 12:14:32 -0400 %
+% ccm_file_last_modified: 2024-10-20 12:04:16 %
+% ccm_file_name: export_shows_data.py %
+% ccm_file_type: text/plain %
+% ccm_file_encoding: us-ascii %
+% ccm_file_eol: CRLF %
+"""
+
 import os
 import logging
 from openpyxl import Workbook

@@ -1,17 +1,17 @@
 @echo off
 :goto :skipComments
-:: % ccm_modify_date: 2024-10-20 12:14:33 %
+:: % ccm_modify_date: 2024-10-20 12:47:54 %
 :: % ccm_author: mpegg %
-:: % ccm_version: 30 %
+:: % ccm_version: 31 %
 :: % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
 :: % ccm_branch: main %
-:: % ccm_object_id: media/OneShow.robocopy.cmd:30 %
-:: % ccm_commit_id: 93939a737b3094b274a16d7deee9d549ab6f9aae %
-:: % ccm_commit_count: 30 %
-:: % ccm_last_commit_message: added summary tab %
+:: % ccm_object_id: media/OneShow.robocopy.cmd:31 %
+:: % ccm_commit_id: c55d8e627d7fb98a30796524ce44ae51335ea596 %
+:: % ccm_commit_count: 31 %
+:: % ccm_last_commit_message: handle spaces in /log switch for robocopy %
 :: % ccm_last_commit_author: Matthew Pegg %
-:: % ccm_last_commit_date: 2024-10-20 11:36:40 -0400 %
-:: % ccm_file_last_modified: 2024-10-20 12:12:45 %
+:: % ccm_last_commit_date: 2024-10-20 12:14:32 -0400 %
+:: % ccm_file_last_modified: 2024-10-20 12:46:18 %
 :: % ccm_file_name: OneShow.robocopy.cmd %
 :: % ccm_file_type: text/x-msdos-batch %
 :: % ccm_file_encoding: us-ascii %
@@ -153,6 +153,23 @@ if "%mediaShow%"=="_ALL_" (
 set RC=%ERRORLEVEL%
 echo "%date% %time% rc:[%RC%] src:[%mediaPath%] dst:[%destPath%]" >> "%logDetail%"
 echo "%date% %time% rc:[%RC%] src:[%mediaPath%] dst:[%destPath%]" >> "%logSummary%"
+
+:rem Handle robocopy exit codes
+if %RC% EQU 0 (
+    echo "INFO - No errors occurred, and no files were copied." >> "%logDetail%"
+) else if %RC% EQU 1 (
+    echo "INFO - One or more files were copied successfully (some files may have been skipped)." >> "%logDetail%"
+) else if %RC% EQU 2 (
+    echo "INFO - Extra files or directories were detected and deleted." >> "%logDetail%"
+) else if %RC% EQU 3 (
+    echo "INFO - One or more files were copied successfully, and additional files were deleted." >> "%logDetail%"
+) else if %RC% GEQ 8 (
+    echo "ERROR - Some files or directories could not be copied (copy errors occurred, and the retry limit was exceeded)." >> "%logDetail%"
+    goto :ERROR1
+) else (
+    echo "ERROR - An unexpected error occurred with exit code %RC%." >> "%logDetail%"
+    goto :ERROR1
+)
 
 exit /b %RC%
 
