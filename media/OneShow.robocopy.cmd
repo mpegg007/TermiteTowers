@@ -1,17 +1,17 @@
 @echo off
 :goto :skipComments
-:: % ccm_modify_date: 2024-10-08 21:53:15 %
+:: % ccm_modify_date: 2024-10-20 12:14:33 %
 :: % ccm_author: mpegg %
-:: % ccm_version: 26 %
+:: % ccm_version: 30 %
 :: % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
 :: % ccm_branch: main %
-:: % ccm_object_id: media/OneShow.robocopy.cmd:26 %
-:: % ccm_commit_id: 8dd0fdfc398700bc484ebf6dbf9bd27166cdf340 %
-:: % ccm_commit_count: 26 %
-:: % ccm_last_commit_message: updates, enhancements %
+:: % ccm_object_id: media/OneShow.robocopy.cmd:30 %
+:: % ccm_commit_id: 93939a737b3094b274a16d7deee9d549ab6f9aae %
+:: % ccm_commit_count: 30 %
+:: % ccm_last_commit_message: added summary tab %
 :: % ccm_last_commit_author: Matthew Pegg %
-:: % ccm_last_commit_date: 2024-10-08 21:39:56 -0400 %
-:: % ccm_file_last_modified: 2024-10-08 21:52:55 %
+:: % ccm_last_commit_date: 2024-10-20 11:36:40 -0400 %
+:: % ccm_file_last_modified: 2024-10-20 12:12:45 %
 :: % ccm_file_name: OneShow.robocopy.cmd %
 :: % ccm_file_type: text/x-msdos-batch %
 :: % ccm_file_encoding: us-ascii %
@@ -113,7 +113,7 @@ set "logSummary=%logDir%\OneShow.robocopy.log"
 set "logDetail=%logDir%\OneShow.robocopy.%mediaVol%.%mediaShow%.log"
 
 :rem Initialize robocopy switches
-set "roboSwitches=/S /J /R:0 /FFT /NP /TEE /LOG:"%logDetail%""
+set "roboSwitches=/S /J /R:0 /FFT /NP /TEE"
 echo "INFO - Initialized robocopy switches: %roboSwitches%" >> "%logDetail%"
 
 :rem Add minSize switch if provided
@@ -145,9 +145,9 @@ if not "%fileExtn%"=="" (
 )
 
 if "%mediaShow%"=="_ALL_" (
-    robocopy "%mediaPath%" "%destPath%" %roboSwitches%
+    robocopy "%mediaPath%" "%destPath%" %roboSwitches%  /LOG:"%logDetail%"
 ) else (
-    robocopy "%mediaPath%" "%destPath%\%mediaShow%" %roboSwitches%
+    robocopy "%mediaPath%" "%destPath%\%mediaShow%" %roboSwitches%  /LOG:"%logDetail%"
 )
 
 set RC=%ERRORLEVEL%
