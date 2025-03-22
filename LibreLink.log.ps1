@@ -9,12 +9,20 @@ if (-not (Test-Path $outputTxt)) {
 # Infinite loop to fetch data every minute
 while ($true) {
     try {
+        # Load credentials from an external configuration file
+        $ConfigPath = "c:\Users\mpegg\Repos\TermiteTowers\config.json"
+        if (-Not (Test-Path $ConfigPath)) {
+            Write-Error "Configuration file not found at $ConfigPath"
+            exit 1
+        }
+        $Config = Get-Content $ConfigPath | ConvertFrom-Json
+        $Region = $Config.Region
+        $Username = $Config.Username
+        $Password = $Config.Password
+
         # Fetch the measurement data (integrated from LibreLink.get.ps1)
         # Example logic from LibreLink.get.ps1:
         #Libre Link Region and Credentials
-        $Region = "ca"
-        $Username = "mpegg@hotmail.com"
-        $Password = "rLncT6VtGn@4"
 
         # Get Auth Token
         $AuthToken = $null
