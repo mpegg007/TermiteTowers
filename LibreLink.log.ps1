@@ -6,16 +6,17 @@ if (-not (Test-Path $outputTxt)) {
     "Timestamp,Measurement" | Out-File -FilePath $outputTxt -Encoding UTF8
 }
 
-# Infinite loop to fetch data every minute
+# Load credentials from an external configuration file
+$ConfigPath = "c:\Users\mpegg\Repos\TermiteTowers\config.json"
+if (-Not (Test-Path $ConfigPath)) {
+    Write-Error "Configuration file not found at $ConfigPath"
+    exit 1
+}
+$Config = Get-Content $ConfigPath | ConvertFrom-Json
+
+        # Infinite loop to fetch data every minute
 while ($true) {
     try {
-        # Load credentials from an external configuration file
-        $ConfigPath = "c:\Users\mpegg\Repos\TermiteTowers\config.json"
-        if (-Not (Test-Path $ConfigPath)) {
-            Write-Error "Configuration file not found at $ConfigPath"
-            exit 1
-        }
-        $Config = Get-Content $ConfigPath | ConvertFrom-Json
         $Region = $Config.Region
         $Username = $Config.Username
         $Password = $Config.Password
