@@ -1,3 +1,20 @@
+# % ccm_modify_date: 2025-05-18 16:57:22 %
+# % ccm_author: mpegg %
+# % version: 20 %
+# % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
+# % ccm_branch: main %
+# % ccm_object_id: MonitorLibreLink.ps1:43 %
+# % ccm_commit_id: 85077287515bd36c372cecb566bd8b590687d30d %
+# % ccm_commit_count: 43 %
+# % ccm_last_commit_message: move config read %
+# % ccm_last_commit_author: Matthew Pegg %
+# % ccm_last_commit_date: 2025-03-22 17:57:56 -0400 %
+# % ccm_file_last_modified: 2025-05-18 16:54:21 %
+# % ccm_file_name: MonitorLibreLink.ps1 %
+# % ccm_file_type: text/plain %
+# % ccm_file_encoding: us-ascii %
+# % ccm_file_eol: CRLF %
+
 # Define the path to the target script
 $scriptPath = "c:\Users\mpegg\Repos\TermiteTowers\LibreLink.log.ps1"
 

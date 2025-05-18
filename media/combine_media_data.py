@@ -1,3 +1,22 @@
+"""
+% ccm_modify_date: 2025-05-18 16:57:22 %
+% ccm_author: mpegg %
+% ccm_version: 43 %
+% ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
+% ccm_branch: main %
+% ccm_object_id: media/combine_media_data.py:43 %
+% ccm_commit_id: 85077287515bd36c372cecb566bd8b590687d30d %
+% ccm_commit_count: 43 %
+% ccm_last_commit_message: move config read %
+% ccm_last_commit_author: Matthew Pegg %
+% ccm_last_commit_date: 2025-03-22 17:57:56 -0400 %
+% ccm_file_last_modified: 2025-05-18 16:52:46 %
+% ccm_file_name: combine_media_data.py %
+% ccm_file_type: text/plain %
+% ccm_file_encoding: us-ascii %
+% ccm_file_eol: CRLF %
+"""
+
 import os
 import logging
 from openpyxl import Workbook
@@ -91,7 +110,7 @@ for i, row in enumerate(combined_data, start=2):  # start=2 to account for heade
     path, vgName, folderName, id, title, year, firstAired, lastAired, lastInfoSync, totalSizeGB, folderYYYY = row
     reordered_row = [path, folderName, id, title, year, firstAired, lastAired, lastInfoSync, totalSizeGB, vgName, folderYYYY]
     ws.append(reordered_row)
-    formula = f'=IFERROR(VLOOKUP(A{i},\'[backup_control.xlsx]Media-Folders\'!$A:$E,5,FALSE),"-")'
+    formula = f"=IFERROR(VLOOKUP(A{i},'[backup_control.xlsx]Media-Folders'!$A:$E,5,FALSE),\"-\")"
     ws[f'L{i}'] = formula  # Assuming 'L' is the last column
 
 # Create a summary dataset grouped by vgName
@@ -152,6 +171,9 @@ for vg_name, data in summary_data.items():
 # Save the workbook to a file
 excel_file = r'C:\media.tt.omp\metadata\media_dumpARR.xlsx'
 logging.info(f'Saving Excel file: {excel_file}')
-wb.save(excel_file)
-logging.info('Workbook saved successfully.')
+try:
+    wb.save(excel_file)
+    logging.info('Workbook saved successfully.')
+except PermissionError:
+    logging.error(f"\033[91mPermission denied: Unable to save the file '{excel_file}'. Please close the file if it's open and try again.\033[0m")
 logging.info('Script completed successfully.')

@@ -1,16 +1,16 @@
 """
-% ccm_modify_date: 2024-10-20 13:15:40 %
+% ccm_modify_date: 2025-05-18 16:57:22 %
 % ccm_author: mpegg %
-% ccm_version: 32 %
+% ccm_version: 43 %
 % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
 % ccm_branch: main %
-% ccm_object_id: media/create_excel_control_file.py:32 %
-% ccm_commit_id: 5ecdf8c40f41881f58a5bde36eba99b142db29fb %
-% ccm_commit_count: 32 %
-% ccm_last_commit_message: media backup fixes %
+% ccm_object_id: media/create_excel_control_file.py:43 %
+% ccm_commit_id: 85077287515bd36c372cecb566bd8b590687d30d %
+% ccm_commit_count: 43 %
+% ccm_last_commit_message: move config read %
 % ccm_last_commit_author: Matthew Pegg %
-% ccm_last_commit_date: 2024-10-20 12:47:54 -0400 %
-% ccm_file_last_modified: 2024-10-08 21:39:56 %
+% ccm_last_commit_date: 2025-03-22 17:57:56 -0400 %
+% ccm_file_last_modified: 2025-04-24 18:38:03 %
 % ccm_file_name: create_excel_control_file.py %
 % ccm_file_type: text/plain %
 % ccm_file_encoding: us-ascii %
@@ -39,6 +39,6 @@ def create_excel_control_file(file_path):
     print(f"Excel control file created at {file_path}")
 
 if __name__ == "__main__":
-    excel_file_path = 'C:\\media.tt.omp\\metadata\\backup_control.xlsx'
+    excel_file_path = 'C:\\Users\\mpegg\\OneDrive\\media.tt.omp\\backup_control-sample.xlsx'
     create_excel_control_file(excel_file_path)
     

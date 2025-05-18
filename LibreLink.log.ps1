@@ -1,5 +1,61 @@
+# % ccm_modify_date: 2025-05-18 16:57:22 %
+# % ccm_author: mpegg %
+# % version: 20 %
+# % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
+# % ccm_branch: main %
+# % ccm_object_id: LibreLink.log.ps1:43 %
+# % ccm_commit_id: 85077287515bd36c372cecb566bd8b590687d30d %
+# % ccm_commit_count: 43 %
+# % ccm_last_commit_message: move config read %
+# % ccm_last_commit_author: Matthew Pegg %
+# % ccm_last_commit_date: 2025-03-22 17:57:56 -0400 %
+# % ccm_file_last_modified: 2025-05-18 16:47:58 %
+# % ccm_file_name: LibreLink.log.ps1 %
+# % ccm_file_type: text/plain %
+# % ccm_file_encoding: us-ascii %
+# % ccm_file_eol: CRLF %
+
+# Relaunch the script in a new PowerShell window with specific size and position
+if (-not $Host.UI.RawUI.WindowTitle -like "*LibreLink Script*") {
+    $scriptPath = $MyInvocation.MyCommand.Path
+    Start-Process powershell.exe -ArgumentList "-NoExit", "-Command `"$scriptPath`"" -WindowStyle Normal -WorkingDirectory (Split-Path $scriptPath) -PassThru | ForEach-Object {
+        $_.WaitForInputIdle()
+        # Set window size and position (e.g., width: 800, height: 600, x: 100, y: 100)
+        Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+public class Window {
+    [DllImport("user32.dll", SetLastError = true)]
+    public static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
+}
+"@
+        [Window]::MoveWindow($_.MainWindowHandle, 1000, 100, 1000, 200, $true)
+    }
+    exit
+}
+
+# Set the window title to identify the script
+$Host.UI.RawUI.WindowTitle = "LibreLink Script"
+
 # Define the output TXT file in OneDrive Health folder
 $outputTxt = "$env:USERPROFILE\OneDrive\Health\LibreLinkData.txt"
+
+# Check if the output file has been modified within the last 3 minutes
+if (Test-Path $outputTxt) {
+    $lastWriteTime = (Get-Item $outputTxt).LastWriteTime
+    $timeDifference = (Get-Date) - $lastWriteTime
+    if ($timeDifference.TotalMinutes -lt 3) {
+        Write-Output "The output file was modified within the last 3 minutes. Exiting script."
+        Start-Sleep -Seconds 10
+        exit 0
+    }
+}
+
+# Ensure the OneDrive Health folder exists
+$healthFolder = "$env:USERPROFILE\OneDrive\Health"
+if (-not (Test-Path $healthFolder)) {
+    New-Item -ItemType Directory -Path $healthFolder -Force
+}
 
 # Ensure the TXT file has a header if it doesn't exist
 if (-not (Test-Path $outputTxt)) {

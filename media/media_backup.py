@@ -1,16 +1,16 @@
 """
-% ccm_modify_date: 2024-10-20 13:15:40 %
+% ccm_modify_date: 2025-05-18 16:57:22 %
 % ccm_author: mpegg %
-% ccm_version: 32 %
+% ccm_version: 43 %
 % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
 % ccm_branch: main %
-% ccm_object_id: media/media_backup.py:32 %
-% ccm_commit_id: 5ecdf8c40f41881f58a5bde36eba99b142db29fb %
-% ccm_commit_count: 32 %
-% ccm_last_commit_message: media backup fixes %
+% ccm_object_id: media/media_backup.py:43 %
+% ccm_commit_id: 85077287515bd36c372cecb566bd8b590687d30d %
+% ccm_commit_count: 43 %
+% ccm_last_commit_message: move config read %
 % ccm_last_commit_author: Matthew Pegg %
-% ccm_last_commit_date: 2024-10-20 12:47:54 -0400 %
-% ccm_file_last_modified: 2024-10-20 13:13:20 %
+% ccm_last_commit_date: 2025-03-22 17:57:56 -0400 %
+% ccm_file_last_modified: 2025-04-24 18:37:46 %
 % ccm_file_name: media_backup.py %
 % ccm_file_type: text/plain %
 % ccm_file_encoding: us-ascii %
@@ -102,7 +102,7 @@ def main():
     parser.add_argument('--bkupVolGrp', type=str, help='Backup Volume Group to filter')
     args = parser.parse_args()
 
-    excel_file = 'C:\\media.tt.omp\\metadata\\backup_control.xlsx'
+    excel_file = 'C:\\Users\\mpegg\\OneDrive\\media.tt.omp\\backup_control.xlsx'
     folders_to_backup = read_folders_from_excel(excel_file, args.srcVolGrp, args.bkupVolGrp)
 
     for src_vol_grp, src_folder, bkup_vol_grp, min_size, max_size, file_extn in folders_to_backup:

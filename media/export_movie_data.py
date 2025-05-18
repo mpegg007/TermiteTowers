@@ -1,3 +1,22 @@
+"""
+% ccm_modify_date: 2025-05-18 16:57:22 %
+% ccm_author: mpegg %
+% ccm_version: 43 %
+% ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
+% ccm_branch: main %
+% ccm_object_id: media/export_movie_data.py:43 %
+% ccm_commit_id: 85077287515bd36c372cecb566bd8b590687d30d %
+% ccm_commit_count: 43 %
+% ccm_last_commit_message: move config read %
+% ccm_last_commit_author: Matthew Pegg %
+% ccm_last_commit_date: 2025-03-22 17:57:56 -0400 %
+% ccm_file_last_modified: 2025-05-18 16:52:46 %
+% ccm_file_name: export_movie_data.py %
+% ccm_file_type: text/plain %
+% ccm_file_encoding: us-ascii %
+% ccm_file_eol: CRLF %
+"""
+
 import os
 import logging
 from openpyxl import Workbook
@@ -61,14 +80,20 @@ ws.append(headers)
 
 # Add movie data to the worksheet
 logging.info('Adding movie data to the worksheet...')
-for movie in movies:
+for i, movie in enumerate(movies, start=2):  # Start from row 2 since row 1 is headers
     path, vgName, movieFolderName, id, title, year, FirstAired, LastAired, lastInfoSync, totalSizeGB, movieFolderYYYY = movie
     ws.append([path, movieFolderName, id, title, year, FirstAired, LastAired, lastInfoSync, totalSizeGB, vgName, movieFolderYYYY])
+    formula = f"=IFERROR(VLOOKUP(A{i},'[backup_control.xlsx]Media-Folders'!$A:$E,5,FALSE),\"-\")"
+    ws[f'L{i}'] = formula  # Assuming 'L' is the last column
 
 # Save the workbook to a file
 output_file = r'C:\media.tt.omp\metadata\exported_movies_data.xlsx'
 logging.info(f'Saving the workbook to {output_file}...')
-wb.save(output_file)
+try:
+    wb.save(output_file)
+    logging.info('Workbook saved successfully.')
+except PermissionError:
+    logging.error(f"\033[91mPermission denied: Unable to save the file '{output_file}'. Please close the file if it's open and try again.\033[0m")
 
 # Close the database connection
 conn.close()

@@ -1,16 +1,16 @@
 """
-% ccm_modify_date: 2024-10-20 12:47:54 %
+% ccm_modify_date: 2025-05-18 16:57:22 %
 % ccm_author: mpegg %
-% ccm_version: 31 %
+% ccm_version: 43 %
 % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
 % ccm_branch: main %
-% ccm_object_id: media/export_shows_data.py:31 %
-% ccm_commit_id: c55d8e627d7fb98a30796524ce44ae51335ea596 %
-% ccm_commit_count: 31 %
-% ccm_last_commit_message: handle spaces in /log switch for robocopy %
+% ccm_object_id: media/export_shows_data.py:43 %
+% ccm_commit_id: 85077287515bd36c372cecb566bd8b590687d30d %
+% ccm_commit_count: 43 %
+% ccm_last_commit_message: move config read %
 % ccm_last_commit_author: Matthew Pegg %
-% ccm_last_commit_date: 2024-10-20 12:14:32 -0400 %
-% ccm_file_last_modified: 2024-10-20 12:04:16 %
+% ccm_last_commit_date: 2025-03-22 17:57:56 -0400 %
+% ccm_file_last_modified: 2025-04-24 19:12:06 %
 % ccm_file_name: export_shows_data.py %
 % ccm_file_type: text/plain %
 % ccm_file_encoding: us-ascii %
@@ -120,7 +120,7 @@ for i, row in enumerate(rows, start=2):  # start=2 to account for header row
         row[10], # showFolderYYYY
     ]
     sheet.append(reordered_row)
-    formula = f'=IFERROR(VLOOKUP(A{i},\'[backup_control.xlsx]Media-Folders\'!$A:$E,5,FALSE),"-")'
+    formula = f"=IFERROR(VLOOKUP(A{i},'[backup_control.xlsx]Media-Folders'!$A:$E,5,FALSE),\"-\")"
     sheet[f'L{i}'] = formula  # Assuming 'L' is the last column
 
 # Create a summary dataset grouped by vgName
@@ -180,7 +180,11 @@ for vg_name, data in summary_data.items():
 
 # Save the workbook
 logging.info(f'Saving Excel file: {excel_file}')
-workbook.save(excel_file)
+try:
+    workbook.save(excel_file)
+    logging.info('Workbook saved successfully.')
+except PermissionError:
+    logging.error(f"\033[91mPermission denied: Unable to save the file '{excel_file}'. Please close the file if it's open and try again.\033[0m")
 
 # Close the connection
 logging.info('Closing the database connection...')
