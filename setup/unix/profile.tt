@@ -1,0 +1,73 @@
+#!/bin/bash
+# % ccm_modify_date: 2025-05-18 16:57:22 %
+# % ccm_author: mpegg %
+# % version: 20 %
+# % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
+# % ccm_branch: main %
+# % ccm_object_id: MonitorLibreLink.ps1:43 %
+# % ccm_commit_id: 85077287515bd36c372cecb566bd8b590687d30d %
+# % ccm_commit_count: 43 %
+# % ccm_last_commit_message: move config read %
+# % ccm_last_commit_author: Matthew Pegg %
+# % ccm_last_commit_date: 2025-03-22 17:57:56 -0400 %
+# % ccm_file_last_modified: 2025-05-18 16:54:21 %
+# % ccm_file_name: MonitorLibreLink.ps1 %
+# % ccm_file_type: text/plain %
+# % ccm_file_encoding: us-ascii %
+# % ccm_file_eol: CRLF %
+
+LOGNAME=${LOGNAME:=`whoami`}
+export LOGNAME
+
+if [ -x $HOME/.$LOGNAME ]; then 
+  . $HOME/.$LOGNAME
+fi
+
+if [ "$0" == "-bash" ]; then  
+  # When sourced, use BASH_SOURCE to get the script path
+  if [ -n "${BASH_SOURCE[0]}" ]; then
+    tt_profiledir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+  else
+    # Fallback to current directory if BASH_SOURCE not available
+    tt_profiledir=$(pwd)
+  fi
+else
+  # Get the absolute path to the directory containing this script
+  tt_profiledir=$(cd $(dirname "$0") && pwd)
+fi
+export tt_profiledir
+
+tt_tracelogDir=${tt_tracelogDir:=$HOME/tmp}
+if [ ! -z ${tt_debug} ]; then
+  tt_tracelog=${tt_tracelogDir}/profile-trace.log,$$
+  set>${tt_tracelogDir}/profile-start.setInfo,$$
+else
+  tt_tracelog=nul
+fi
+
+l_appID=util
+l_scmID=dev1
+tt_appID=${tt_appID:=$l_appID}
+tt_scmID=${tt_scmID:=$l_scmID}
+tt_regionID=${tt_regionID:=${tt_scmID:0:3}}
+
+tt_appUserType=${tt_appUserType:=$tt_regionID}
+tt_appUser=${tt_appUser:=`groups|cut -f 1-2 -d ' '|sed 's/ /|/g'`}
+
+if [ -z ${tt_myps1} ]; then PS1=$LOGNAME@`hostname`' $tt_appID:$tt_appUser $PWD> ';fi
+
+export PS1
+export PATH
+
+if [ -d /srv/tt.omp/scripts ]; then
+  tt_appUser_dflt=${tt_appUser_dflt:=`ls /srv/tt.omp|head -1`}
+  tt_scriptDir=${tt_scriptDir:=/srv/tt.omp/$tt_appUser_dflt/scripts}
+  if [ -x $tt_scriptDir/util/initENV.sh ]; then
+    . $tt_scriptDir/util/initENV.sh
+  fi
+fi
+
+if [ ! -z ${tt_debug} ]; then set>${tt_tracelogDir}/profile-end.setInfo,$$; fi
+
+unset l_appID
+unset l_scmID
