@@ -54,16 +54,17 @@ tt_regionID=${tt_regionID:=${tt_scmID:0:3}}
 tt_appUserType=${tt_appUserType:=$tt_regionID}
 tt_appUser=${tt_appUser:=`groups|cut -f 1-2 -d ' '|sed 's/ /|/g'`}
 
-if [ -z ${tt_myps1} ]; then PS1=$LOGNAME@`hostname`' $tt_appID:$tt_appUser $PWD> ';fi
-
-export PS1
-export PATH
-
-if [ -d /srv/tt.omp/scripts ]; then
+if [ -d /srv/tt.omp ]; then
   tt_appUser_dflt=${tt_appUser_dflt:=`ls /srv/tt.omp|head -1`}
   tt_scriptDir=${tt_scriptDir:=/srv/tt.omp/$tt_appUser_dflt/scripts}
   if [ -x $tt_scriptDir/util/initENV.sh ]; then
     . $tt_scriptDir/util/initENV.sh
+  fi
+  if [ -x $tt_scriptDir/util/initAliases.sh ]; then
+    . $tt_scriptDir/util/initAliases.sh
+  fi
+  if [ -x $tt_scriptDir/util/initPrompt.sh ]; then
+    . $tt_scriptDir/util/initPrompt.sh
   fi
 fi
 

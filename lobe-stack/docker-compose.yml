@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    ports:
+      - "0.0.0.0:3000:8080"
+    environment:
+      - OLLAMA_API_BASE_URL=http://host.docker.internal:11434
+      - MODEL_PROVIDER=ollama
+      - DEFAULT_MODEL=llama3
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+  lobechat:
+    image: lobehub/lobe-chat
+    container_name: lobechat
+    ports:
+      - "0.0.0.0:3100:3210"
+    environment:
+      - OPENAI_API_BASE_URL=http://host.docker.internal:11434/v1
+      - OPENAI_API_KEY=ollama
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+  tortoise:
+    build: ./docker/tortoise
+    container_name: tortoise
+    volumes:
+      - ./models/tortoise:/models
+    ports:
+      - "0.0.0.0:3400:5000"
+    restart: unless-stopped
+    
