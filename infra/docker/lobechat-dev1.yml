@@ -1,0 +1,43 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE
+# % ccm_modify_date: 2025-08-29 15:31:33 %
+# % ccm_author: mpegg %
+# % ccm_author_email: mpegg@hotmail.com %
+# % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
+# % ccm_branch: dev1 %
+# % ccm_object_id: infra/docker/lobechat-dev1.yml:0 %
+# % ccm_commit_id: unknown %
+# % ccm_commit_count: 0 %
+# % ccm_commit_message: unknown %
+# % ccm_commit_author: unknown %
+# % ccm_commit_email: unknown %
+# % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
+# % ccm_file_last_modified: 2025-08-29 15:31:33 %
+# % ccm_file_name: lobechat-dev1.yml %
+# % ccm_file_type: text/plain %
+# % ccm_file_encoding: us-ascii %
+# % ccm_file_eol: CRLF %
+# % ccm_path: infra/docker/lobechat-dev1.yml %
+# % ccm_blob_sha: 59bb8907f2a87cf29b31783032f2854318ebf913 %
+# % ccm_exec: no %
+# % ccm_size: 1345 %
+# % ccm_tag:  %
+# tt-ccm.header.end
+
+services:
+  lobechat:
+    image: lobehub/lobe-chat
+    container_name: lobechat-dev1
+    user: "${UID_SVC:-2001}:${GID_TT_AI:-1006}"
+    ports:
+      - "0.0.0.0:3100:3210"
+    environment:
+      - OPENAI_API_BASE_URL=http://host.docker.internal:11434/v1
+      - OPENAI_API_KEY=ollama
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"

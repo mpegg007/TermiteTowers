@@ -52,7 +52,7 @@ comment_style_for_file() {
     COMM_MODE=""; COMM_PREFIX=""; COMM_OPEN=""; COMM_CLOSE=""
     case "$f" in
         # Line comment: hash-based
-        *.sh|*.bash|*.zsh|*.ksh|*.py|*.yaml|*.yml|*.toml|*.rb|*.pl|*.conf|*.cfg|*.ini|*.env|*.dockerfile|Dockerfile|*.properties|*.r|*.jl)
+    *.sh|*.bash|*.zsh|*.ksh|*.py|*.yaml|*.yml|*.toml|*.rb|*.pl|*.conf|*.cfg|*.ini|*.env|*.dockerfile|Dockerfile|Makefile|makefile|CMakeLists.txt|*.properties|*.r|*.jl)
             COMM_MODE="line"; COMM_PREFIX="#"; return 0 ;;
         # Line comment: double-dash
         *.sql|*.ctl|*.lua|*.hcl|*.tf|*.graphql|*.gql)

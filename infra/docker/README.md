@@ -1,28 +1,31 @@
-/*
+<!--
 TermiteTowers Continuous Code Management Header TEMPLATE
-% ccm_modify_date: 2025-08-29 13:36:35 %
+% ccm_modify_date: 2025-08-29 15:31:33 %
 % ccm_author: mpegg %
 % ccm_author_email: mpegg@hotmail.com %
 % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
-% ccm_branch: main %
-% ccm_object_id: css-test.css:0 %
+% ccm_branch: dev1 %
+% ccm_object_id: infra/docker/README.md:0 %
 % ccm_commit_id: unknown %
 % ccm_commit_count: 0 %
 % ccm_commit_message: unknown %
 % ccm_commit_author: unknown %
 % ccm_commit_email: unknown %
 % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
-% ccm_file_last_modified: 2025-08-29 13:36:35 %
-% ccm_file_name: css-test.css %
+% ccm_file_last_modified: 2025-08-29 15:31:33 %
+% ccm_file_name: README.md %
 % ccm_file_type: text/plain %
 % ccm_file_encoding: us-ascii %
 % ccm_file_eol: CRLF %
-% ccm_path: css-test.css %
-% ccm_blob_sha: 991912d894b345372b278ec2b8c67eeaa237cf65 %
+% ccm_path: infra/docker/README.md %
+% ccm_blob_sha: 28d01cf34e5fdde6de89538dd92937d14a4d63df %
 % ccm_exec: no %
-% ccm_size: 812 %
+% ccm_size: 981 %
 % ccm_tag:  %
 tt-ccm.header.end
-*/
+-->
 
-body { color: red; }
+# docker (migrate to infra)
+
+These compose files are candidates to move into `../infra/docker`.
+For now, they remain here; tools and scripts should tolerate either path.

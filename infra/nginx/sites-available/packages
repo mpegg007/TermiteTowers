@@ -1,35 +1,32 @@
-# % ccm_modify_date: 2025-05-18 16:57:22 %
+# % ccm_modify_date: 2025-08-29 15:31:33 %
 # % ccm_author: mpegg %
-# % version: 20 %
 # % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
-# % ccm_branch: main %
+# % ccm_branch: dev1 %
 # % ccm_object_id: MonitorLibreLink.ps1:43 %
 # % ccm_commit_id: 85077287515bd36c372cecb566bd8b590687d30d %
 # % ccm_commit_count: 43 %
-# % ccm_last_commit_message: move config read %
-# % ccm_last_commit_author: Matthew Pegg %
-# % ccm_last_commit_date: 2025-03-22 17:57:56 -0400 %
-# % ccm_file_last_modified: 2025-05-18 16:54:21 %
-# % ccm_file_name: MonitorLibreLink.ps1 %
+# % ccm_file_last_modified: 2025-08-26 20:37:45 %
+# % ccm_file_name: packages %
 # % ccm_file_type: text/plain %
 # % ccm_file_encoding: us-ascii %
 # % ccm_file_eol: CRLF %
 
 server {
     listen 80;
-    server_name lobe.termitetowers.ca;
+    server_name packages.termitetowers.ca;
+
     return 301 https://$host$request_uri;
 }
 
 server {
     listen 443 ssl http2;
-    server_name lobe.termitetowers.ca;
+    server_name packages.termitetowers.ca;
 
     ssl_certificate     /etc/letsencrypt/live/termitetowers.ca/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/termitetowers.ca/privkey.pem;
 
     location / {
-        proxy_pass http://localhost:3100/;
+        proxy_pass http://localhost:3141/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

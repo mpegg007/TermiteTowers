@@ -1,15 +1,21 @@
-:: % ccm_modify_date: 2025-08-27 17:13:11 %
+REM % ccm_tag:  %
+REM % ccm_size: 931 %
+REM % ccm_exec: no %
+REM % ccm_blob_sha: bd29f816da1779987c5923cb36a0686d33b21c07 %
+REM % ccm_path: flaresolverr_starter.cmd %
+REM % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
+REM % ccm_commit_email: unknown %
+REM % ccm_commit_author: unknown %
+REM % ccm_commit_message: unknown %
+REM % ccm_author_email: mpegg@hotmail.com %
+:: % ccm_modify_date: 2025-08-29 15:31:33 %
 :: % ccm_author: mpegg %
-:: % version: 20 %
 :: % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
-:: % ccm_branch: main %
+:: % ccm_branch: dev1 %
 :: % ccm_object_id: flaresolverr_starter.cmd:45 %
 :: % ccm_commit_id: a08a96751aca77f78f07c1360de62956f882c5a3 %
 :: % ccm_commit_count: 45 %
-:: % ccm_last_commit_message: adding chat %
-:: % ccm_last_commit_author: mpegg %
-:: % ccm_last_commit_date: 2025-08-26 21:08:00 -0400 %
-:: % ccm_file_last_modified: 2025-07-24 13:41:27 %
+:: % ccm_file_last_modified: 2025-08-29 13:51:08 %
 :: % ccm_file_name: flaresolverr_starter.cmd %
 :: % ccm_file_type: text/plain %
 :: % ccm_file_encoding: us-ascii %
@@ -17,23 +23,13 @@
 :: filepath: c:\Users\mpegg\Repos\TermiteTowers\start_vm.bat
 
 @echo off
-:: Enable logging to a file
-set LOGFILE=c:\jobLogs\flaresolverr_starter.log
-if not exist c:\jobLogs mkdir c:\jobLogs
-echo Script started at %date% %time% >> "%LOGFILE%"
-
-echo Listing existing flaresolverr.exe processes... >> "%LOGFILE%"
-tasklist /FI "IMAGENAME eq flaresolverr.exe" >> "%LOGFILE%"
-
-REM Kill any existing flaresolverr.exe processes
-echo Checking for existing flaresolverr.exe processes... >> "%LOGFILE%"
-taskkill /IM flaresolverr.exe /F >nul 2>&1
-
-REM Start a new flaresolverr.exe process in a resized, minimized window
-start /MIN "Flaresolverr" cmd.exe /c "mode con: cols=120 lines=40 & C:\ProgramData\flaresolverr\flaresolverr.exe"
-
-echo Started new flaresolverr.exe process. >> "%LOGFILE%"
-
-echo Script finished at %date% %time% >> "%LOGFILE%"
-exit /b
-:: End of script
+REM Wrapper: forward to moved script
+setlocal
+set TARGET=%~dp0scripts\windows\flaresolverr_starter.cmd
+if exist "%TARGET%" (
+	call "%TARGET%" %*
+) else (
+	echo Moved script not found: %TARGET%
+	exit /b 1
+)
+endlocal

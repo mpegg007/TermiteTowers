@@ -1,3 +1,4 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE
 # % ccm_modify_date: 2025-08-29 07:37:53 %
 # % ccm_author: CCM Maintainer %
 # % ccm_author_email: ccm@test %
@@ -20,3 +21,4 @@
 # % ccm_exec: no %
 # % ccm_size: 659 %
 # % ccm_tag:  %
+# tt-ccm.header.end

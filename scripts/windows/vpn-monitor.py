@@ -1,24 +1,13 @@
 # % ccm_tag:  %
-# % ccm_size: 5285 %
+# % ccm_size: 4888 %
 # % ccm_exec: no %
-# % ccm_blob_sha: 13725c891b9f7e4744826c387b07f7000414c181 %
-# % ccm_path: vpn-monitor.py %
+# % ccm_blob_sha: 88bf5cf64b5c7b03eaf1935995bc0b0fadf8b692 %
+# % ccm_path: scripts/windows/vpn-monitor.py %
 # % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
 # % ccm_commit_email: unknown %
 # % ccm_commit_author: unknown %
 # % ccm_commit_message: unknown %
 # % ccm_author_email: mpegg@hotmail.com %
-#!/usr/bin/env python3
-"""Wrapper: forward to moved script under scripts/windows."""
-import os, sys
-
-here = os.path.dirname(os.path.abspath(__file__))
-target = os.path.join(here, 'scripts', 'windows', 'vpn-monitor.py')
-if os.path.exists(target):
-    os.execv(sys.executable, [sys.executable, target] + sys.argv[1:])
-else:
-    sys.stderr.write(f"Moved script not found: {target}\n")
-    sys.exit(1)
 """
 % ccm_modify_date: 2025-08-29 15:31:33 %
 % ccm_author: mpegg %
@@ -29,7 +18,7 @@ else:
 % ccm_commit_count: 43 %
 % ccm_file_last_modified: 2025-08-29 13:51:08 %
 % ccm_file_name: vpn-monitor.py %
-% ccm_file_type: text/x-script.python %
+% ccm_file_type: text/plain %
 % ccm_file_encoding: us-ascii %
 % ccm_file_eol: CRLF %
 """
