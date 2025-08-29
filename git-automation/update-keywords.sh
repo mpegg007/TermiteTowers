@@ -48,12 +48,6 @@ echo "Pre-commit hook started at $(date)" >> $LOG_FILE
 
 # Update the placeholders in each staged file (NUL-safe handling for spaces)
 while IFS= read -r -d '' FILE; do
-    # Process only allowed extensions
-    case "$FILE" in
-        *.cmd|*.bat|*.sql|*.ctl|*.py|*.sh|*.bash|*.zsh|*.ksh|*.ps1|*.psm1|*.psd1|*.yaml) ;;
-        *) continue ;;
-    esac
-
     # Skip files in the git-automation directory
     case "$FILE" in
         git-automation/*)
@@ -61,6 +55,12 @@ while IFS= read -r -d '' FILE; do
             continue
             ;;
     esac
+
+    # Process only files that already contain a CCM header to avoid surprising insertions; migration script handles inserts.
+    if ! grep -qE '^[[:space:]]*# % ccm_' -- "$FILE"; then
+        continue
+    fi
+
     echo "Processing file: $FILE" >> $LOG_FILE
 
         FILE_LAST_MODIFIED=$(date -r "$FILE" +"%Y-%m-%d %H:%M:%S")
