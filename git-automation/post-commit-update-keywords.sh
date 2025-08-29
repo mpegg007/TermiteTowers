@@ -15,6 +15,13 @@ LAST_COMMIT_DATE=$(git log -1 --pretty=format:'%ci')
 DATE=$(date +"%Y-%m-%d %H:%M:%S")
 
 LOG_FILE="${TMPDIR:-/tmp}/post-commit.log"
+LOCK_FILE=$(git rev-parse --git-path ccm-post-commit.lock)
+
+# Prevent recursion: if lock exists, skip
+if [ -f "$LOCK_FILE" ]; then
+  echo "Post-commit: lock present, skipping to avoid recursion" >> "$LOG_FILE"
+  exit 0
+fi
 echo "Post-commit updater started at $(date) for $ID" >> "$LOG_FILE"
 
 # Gather changed paths for the last commit (name-only) and filter known types
@@ -55,7 +62,11 @@ done
 # If there are changes, amend the commit (no edit to message). Avoid recursion.
 if ! git diff --quiet; then
   git add -A
-  GIT_PARAMS="--no-verify" git commit --amend --no-edit || git commit --amend --no-edit
+  # Create lock and ensure cleanup
+  echo $$ > "$LOCK_FILE"
+  trap 'rm -f "$LOCK_FILE"' EXIT
+  # Amend without running hooks again
+  git -c core.hooksPath=/dev/null commit --amend --no-edit
   echo "Amended commit $ID with finalized CCM fields" >> "$LOG_FILE"
 else
   echo "No final CCM updates needed" >> "$LOG_FILE"
