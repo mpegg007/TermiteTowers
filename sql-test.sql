@@ -1,0 +1,26 @@
+-- TermiteTowers Continuous Code Management Header TEMPLATE
+-- % ccm_modify_date: 2025-08-29 13:36:35 %
+-- % ccm_author: mpegg %
+-- % ccm_author_email: mpegg@hotmail.com %
+-- % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
+-- % ccm_branch: main %
+-- % ccm_object_id: sql-test.sql:0 %
+-- % ccm_commit_id: unknown %
+-- % ccm_commit_count: 0 %
+-- % ccm_commit_message: unknown %
+-- % ccm_commit_author: unknown %
+-- % ccm_commit_email: unknown %
+-- % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
+-- % ccm_file_last_modified: 2025-08-29 13:36:36 %
+-- % ccm_file_name: sql-test.sql %
+-- % ccm_file_type: text/plain %
+-- % ccm_file_encoding: us-ascii %
+-- % ccm_file_eol: CRLF %
+-- % ccm_path: sql-test.sql %
+-- % ccm_blob_sha: ab290eb4c1f6e10ef89c4d95c1ede4471c4cad69 %
+-- % ccm_exec: no %
+-- % ccm_size: 867 %
+-- % ccm_tag:  %
+-- tt-ccm.header.end
+
+select 1;

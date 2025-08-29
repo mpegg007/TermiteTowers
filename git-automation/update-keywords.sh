@@ -24,6 +24,8 @@ BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
 AUTHOR=${GIT_AUTHOR_NAME:-$(git config --get user.name)}
 AUTHOR_EMAIL=${GIT_AUTHOR_EMAIL:-$(git config --get user.email)}
 DATE=$(date +"%Y-%m-%d %H:%M:%S")
+REPO_ROOT=$(git rev-parse --show-toplevel)
+TEMPLATE_FILE="$REPO_ROOT/CCM_HEADER_TEMPLATE.txt"
 
 # Define the log file (use TMPDIR if set, else /tmp)
 #LOG_FILE=".git/hooks/pre-commit.log"
@@ -43,19 +45,39 @@ detect_eol() {
     fi
 }
 
-# Determine comment prefix for a file based on extension
-# Sets COMM_PREFIX to one of: "#", "//", "--", "REM"
-comment_prefix_for_file() {
+# Determine comment style for a file based on extension
+# Exposes: COMM_MODE (line|block), COMM_PREFIX, COMM_OPEN, COMM_CLOSE
+comment_style_for_file() {
     local f="$1"
+    COMM_MODE=""; COMM_PREFIX=""; COMM_OPEN=""; COMM_CLOSE=""
     case "$f" in
-        *.sh|*.bash|*.zsh|*.ksh|*.py|*.yaml|*.yml|*.ps1|*.psm1|*.psd1|*.rb|*.pl|*.conf|*.cfg)
-            COMM_PREFIX="#"; return 0 ;;
-        *.sql|*.ctl)
-            COMM_PREFIX="--"; return 0 ;;
-        *.js|*.ts|*.java|*.c|*.cpp|*.cs|*.go|*.swift|*.kt)
-            COMM_PREFIX="//"; return 0 ;;
+        # Line comment: hash-based
+        *.sh|*.bash|*.zsh|*.ksh|*.py|*.yaml|*.yml|*.toml|*.rb|*.pl|*.conf|*.cfg|*.ini|*.env|*.dockerfile|Dockerfile|*.properties|*.r|*.jl)
+            COMM_MODE="line"; COMM_PREFIX="#"; return 0 ;;
+        # Line comment: double-dash
+        *.sql|*.ctl|*.lua|*.hcl|*.tf|*.graphql|*.gql)
+            COMM_MODE="line"; COMM_PREFIX="--"; return 0 ;;
+        # Line comment: slashes
+        *.js|*.cjs|*.mjs|*.ts|*.tsx|*.jsx|*.java|*.c|*.h|*.hpp|*.hh|*.cpp|*.cc|*.cxx|*.cs|*.go|*.swift|*.kt|*.kts|*.rs|*.scala|*.groovy)
+            COMM_MODE="line"; COMM_PREFIX="//"; return 0 ;;
+        # Line comment: batch
         *.bat|*.cmd)
-            COMM_PREFIX="REM"; return 0 ;;
+            COMM_MODE="line"; COMM_PREFIX="REM"; return 0 ;;
+        # Line comment: VB/VBS
+        *.vb|*.vbs|*.bas|*.cls|*.frm)
+            COMM_MODE="line"; COMM_PREFIX="'"; return 0 ;;
+        # Line comment: PowerShell
+        *.ps1|*.psm1|*.psd1)
+            COMM_MODE="line"; COMM_PREFIX="#"; return 0 ;;
+        # Block comment: CSS family and many C-like (when preferred)
+        *.css|*.scss|*.less)
+            COMM_MODE="block"; COMM_OPEN="/*"; COMM_CLOSE="*/"; return 0 ;;
+        # Block comment: HTML/XML/Markdown (HTML comments)
+        *.html|*.htm|*.xhtml|*.xml|*.svg|*.md)
+            COMM_MODE="block"; COMM_OPEN="<!--"; COMM_CLOSE="-->"; return 0 ;;
+        # Block comment: PHP (will place before <?php if present)
+        *.php)
+            COMM_MODE="block"; COMM_OPEN="/*"; COMM_CLOSE="*/"; return 0 ;;
         *)
             return 1 ;;
     esac
@@ -83,6 +105,10 @@ while IFS= read -r -d '' FILE; do
             echo "Skipping excluded path: $REL_PATH" >> "$LOG_FILE"
             continue
             ;;
+        CCM_HEADER_TEMPLATE.txt)
+            echo "Skipping header template itself: $REL_PATH" >> "$LOG_FILE"
+            continue
+            ;;
     esac
 
     # Treat only text files; skip binary
@@ -96,40 +122,114 @@ while IFS= read -r -d '' FILE; do
         continue
     fi
 
-    # Auto-insert a minimal header at top if missing (any comment style)
+        # Auto-insert a header at top if missing, using CCM_HEADER_TEMPLATE.txt when present
     if ! grep -qE '% ccm_modify_date:' -- "$FILE"; then
         case "$REL_PATH" in
             *)
-                if comment_prefix_for_file "$REL_PATH"; then
-                    FILE_EOL=$(detect_eol "$FILE")
-                    TMP=$(mktemp)
-                    {
-                      echo "$COMM_PREFIX % ccm_modify_date: 1970-01-01 00:00:00 %"
-                      echo "$COMM_PREFIX % ccm_author: unknown %"
-                      echo "$COMM_PREFIX % ccm_author_email: unknown %"
-                      echo "$COMM_PREFIX % ccm_repo: $URL %"
-                      echo "$COMM_PREFIX % ccm_branch: $BRANCH_NAME %"
-                      echo "$COMM_PREFIX % ccm_object_id: $REL_PATH:0 %"
-                      echo "$COMM_PREFIX % ccm_commit_id: unknown %"
-                      echo "$COMM_PREFIX % ccm_commit_count: 0 %"
-                      echo "$COMM_PREFIX % ccm_commit_message: unknown %"
-                      echo "$COMM_PREFIX % ccm_commit_author: unknown %"
-                      echo "$COMM_PREFIX % ccm_commit_email: unknown %"
-                      echo "$COMM_PREFIX % ccm_commit_date: 1970-01-01 00:00:00 +0000 %"
-                      echo "$COMM_PREFIX % ccm_file_last_modified: 1970-01-01 00:00:00 %"
-                      echo "$COMM_PREFIX % ccm_file_name: $(basename "$FILE") %"
-                      echo "$COMM_PREFIX % ccm_file_type: text/plain %"
-                      echo "$COMM_PREFIX % ccm_file_encoding: us-ascii %"
-                      echo "$COMM_PREFIX % ccm_file_eol: $FILE_EOL %"
-                      echo "$COMM_PREFIX % ccm_path: $REL_PATH %"
-                      echo "$COMM_PREFIX % ccm_blob_sha: unknown %"
-                      echo "$COMM_PREFIX % ccm_exec: no %"
-                      echo "$COMM_PREFIX % ccm_size: 0 %"
-                      echo "$COMM_PREFIX % ccm_tag:  %"
-                      echo
-                      cat "$FILE"
-                    } > "$TMP"
-                    mv "$TMP" "$FILE"
+                    if comment_style_for_file "$REL_PATH"; then
+                        FILE_EOL=$(detect_eol "$FILE")
+                        TMP=$(mktemp)
+                        # Shebang handling for line-commented scripts (insert after shebang)
+                        HAS_SHEBANG=0
+                        SHEBANG_LINE=""
+                        if head -n 1 "$FILE" | grep -q '^#!'; then
+                            HAS_SHEBANG=1
+                            SHEBANG_LINE=$(head -n 1 "$FILE")
+                        fi
+                        if [ -f "$TEMPLATE_FILE" ]; then
+                            TMP_HEADER=$(mktemp)
+                            if [ "$COMM_MODE" = "line" ]; then
+                                awk -v pref="$COMM_PREFIX" '{ if ($0 ~ /^# /) { sub(/^# /, pref" "); print; } else { print; } }' "$TEMPLATE_FILE" \
+                                  | sed -e "s|<PATH>|$REL_PATH|g" \
+                                        -e "s|% ccm_file_name: .* %|% ccm_file_name: $(basename "$FILE") %|g" \
+                                        -e "s|% ccm_path: .* %|% ccm_path: $REL_PATH %|g" \
+                                        -e "s|% ccm_file_eol: .* %|% ccm_file_eol: $FILE_EOL %|g" > "$TMP_HEADER"
+                            else
+                                # Block mode: strip leading '# ' and wrap with block delimiters
+                                {
+                                  echo "$COMM_OPEN"
+                                  sed 's/^# \(.*\)$/\1/' "$TEMPLATE_FILE" \
+                                    | sed -e "s|<PATH>|$REL_PATH|g" \
+                                          -e "s|% ccm_file_name: .* %|% ccm_file_name: $(basename "$FILE") %|g" \
+                                          -e "s|% ccm_path: .* %|% ccm_path: $REL_PATH %|g" \
+                                          -e "s|% ccm_file_eol: .* %|% ccm_file_eol: $FILE_EOL %|g"
+                                  echo "$COMM_CLOSE"
+                                } > "$TMP_HEADER"
+                            fi
+                            if [ $HAS_SHEBANG -eq 1 ] && [ "$COMM_MODE" = "line" ]; then
+                                { echo "$SHEBANG_LINE"; echo; cat "$TMP_HEADER"; echo; tail -n +2 "$FILE"; } > "$TMP"
+                            else
+                                { cat "$TMP_HEADER"; echo; cat "$FILE"; } > "$TMP"
+                            fi
+                            mv "$TMP" "$FILE"; rm -f "$TMP_HEADER"
+                        else
+                            if [ "$COMM_MODE" = "line" ]; then
+                                {
+                                  if [ $HAS_SHEBANG -eq 1 ]; then echo "$SHEBANG_LINE"; echo; fi
+                                  echo "$COMM_PREFIX % ccm_modify_date: 1970-01-01 00:00:00 %"
+                                  echo "$COMM_PREFIX % ccm_author: unknown %"
+                                  echo "$COMM_PREFIX % ccm_author_email: unknown %"
+                                  echo "$COMM_PREFIX % ccm_repo: $URL %"
+                                  echo "$COMM_PREFIX % ccm_branch: $BRANCH_NAME %"
+                                  echo "$COMM_PREFIX % ccm_object_id: $REL_PATH:0 %"
+                                  echo "$COMM_PREFIX % ccm_commit_id: unknown %"
+                                  echo "$COMM_PREFIX % ccm_commit_count: 0 %"
+                                  echo "$COMM_PREFIX % ccm_commit_message: unknown %"
+                                  echo "$COMM_PREFIX % ccm_commit_author: unknown %"
+                                  echo "$COMM_PREFIX % ccm_commit_email: unknown %"
+                                  echo "$COMM_PREFIX % ccm_commit_date: 1970-01-01 00:00:00 +0000 %"
+                                  echo "$COMM_PREFIX % ccm_file_last_modified: 1970-01-01 00:00:00 %"
+                                  echo "$COMM_PREFIX % ccm_file_name: $(basename "$FILE") %"
+                                  echo "$COMM_PREFIX % ccm_file_type: text/plain %"
+                                  echo "$COMM_PREFIX % ccm_file_encoding: us-ascii %"
+                                  echo "$COMM_PREFIX % ccm_file_eol: $FILE_EOL %"
+                                  echo "$COMM_PREFIX % ccm_path: $REL_PATH %"
+                                  echo "$COMM_PREFIX % ccm_blob_sha: unknown %"
+                                  echo "$COMM_PREFIX % ccm_exec: no %"
+                                  echo "$COMM_PREFIX % ccm_size: 0 %"
+                                  echo "$COMM_PREFIX % ccm_tag:  %"
+                                  echo
+                                  if [ $HAS_SHEBANG -eq 1 ]; then tail -n +2 "$FILE"; else cat "$FILE"; fi
+                                } > "$TMP"
+                                mv "$TMP" "$FILE"
+                                                        else
+                                                                # Block fallback: create a minimal header without line comment prefixes
+                                                                TMP_HEADER2=$(mktemp)
+                                                                cat > "$TMP_HEADER2" <<EOF
+% ccm_modify_date: 1970-01-01 00:00:00 %
+% ccm_author: unknown %
+% ccm_author_email: unknown %
+% ccm_repo: $URL %
+% ccm_branch: $BRANCH_NAME %
+% ccm_object_id: $REL_PATH:0 %
+% ccm_commit_id: unknown %
+% ccm_commit_count: 0 %
+% ccm_commit_message: unknown %
+% ccm_commit_author: unknown %
+% ccm_commit_email: unknown %
+% ccm_commit_date: 1970-01-01 00:00:00 +0000 %
+% ccm_file_last_modified: 1970-01-01 00:00:00 %
+% ccm_file_name: $(basename "$FILE") %
+% ccm_file_type: text/plain %
+% ccm_file_encoding: us-ascii %
+% ccm_file_eol: $FILE_EOL %
+% ccm_path: $REL_PATH %
+% ccm_blob_sha: unknown %
+% ccm_exec: no %
+% ccm_size: 0 %
+% ccm_tag:  %
+EOF
+                                                                {
+                                                                    echo "$COMM_OPEN"
+                                                                    cat "$TMP_HEADER2"
+                                                                    echo "$COMM_CLOSE"
+                                                                    echo
+                                                                    cat "$FILE"
+                                                                } > "$TMP"
+                                                                mv "$TMP" "$FILE"
+                                                                rm -f "$TMP_HEADER2"
+                                                        fi
+                        fi
                 else
                     echo "No supported comment style for: $REL_PATH; skipping insert" >> "$LOG_FILE"
                     continue
@@ -162,12 +262,16 @@ while IFS= read -r -d '' FILE; do
     sed -i "/% ccm_last_commit_date: .* %/d" "$FILE"
     
     # Ensure required fields exist. We insert with safe defaults if missing.
-    if comment_prefix_for_file "$REL_PATH"; then
+    if comment_style_for_file "$REL_PATH"; then
         ensure_field() {
             local key="$1"; shift
             local val="$1"; shift || true
             if ! grep -q "% ${key}:" -- "$FILE"; then
-                sed -i "1i ${COMM_PREFIX} % ${key}: ${val} %" "$FILE"
+                if [ "$COMM_MODE" = "line" ]; then
+                    sed -i "1i ${COMM_PREFIX} % ${key}: ${val} %" "$FILE"
+                else
+                    echo "Skipping ensure_field for block-comment file: $REL_PATH ($key)" >> "$LOG_FILE"
+                fi
             fi
         }
         ensure_field "ccm_modify_date" "$DATE"

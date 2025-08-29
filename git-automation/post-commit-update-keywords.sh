@@ -55,7 +55,21 @@ git --no-pager diff-tree --no-commit-id --name-only -r -z HEAD | while IFS= read
     if grep -q "% ccm_tag:" "$FILE"; then
       sed -i "s|% ccm_tag: .* %|% ccm_tag: $COMMIT_TAG %|g" "$FILE"
     else
-      sed -i "1i # % ccm_tag: $COMMIT_TAG %" "$FILE"
+      # Only insert if a CCM header exists
+      if grep -q "% ccm_modify_date:" "$FILE"; then
+        # Choose a reasonable comment prefix based on existing header line
+        if grep -q "^# % ccm_modify_date:" "$FILE"; then
+          sed -i "1i # % ccm_tag: $COMMIT_TAG %" "$FILE"
+        elif grep -q "^// % ccm_modify_date:" "$FILE"; then
+          sed -i "1i // % ccm_tag: $COMMIT_TAG %" "$FILE"
+        elif grep -q "^-- % ccm_modify_date:" "$FILE"; then
+          sed -i "1i -- % ccm_tag: $COMMIT_TAG %" "$FILE"
+        elif grep -q "^REM % ccm_modify_date:" "$FILE"; then
+          sed -i "1i REM % ccm_tag: $COMMIT_TAG %" "$FILE"
+        else
+          echo "Skipping ccm_tag insert for block or unknown style: $FILE" >> "$LOG_FILE"
+        fi
+      fi
     fi
   fi
   sed -i "s|% ccm_repo: .* %|% ccm_repo: $URL %|g" "$FILE"
