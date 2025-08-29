@@ -43,6 +43,24 @@ detect_eol() {
     fi
 }
 
+# Determine comment prefix for a file based on extension
+# Sets COMM_PREFIX to one of: "#", "//", "--", "REM"
+comment_prefix_for_file() {
+    local f="$1"
+    case "$f" in
+        *.sh|*.bash|*.zsh|*.ksh|*.py|*.yaml|*.yml|*.ps1|*.psm1|*.psd1|*.rb|*.pl|*.conf|*.cfg)
+            COMM_PREFIX="#"; return 0 ;;
+        *.sql|*.ctl)
+            COMM_PREFIX="--"; return 0 ;;
+        *.js|*.ts|*.java|*.c|*.cpp|*.cs|*.go|*.swift|*.kt)
+            COMM_PREFIX="//"; return 0 ;;
+        *.bat|*.cmd)
+            COMM_PREFIX="REM"; return 0 ;;
+        *)
+            return 1 ;;
+    esac
+}
+
 # Start logging
 echo "Pre-commit hook started at $(date)" >> $LOG_FILE
 
@@ -78,43 +96,44 @@ while IFS= read -r -d '' FILE; do
         continue
     fi
 
-    # Auto-insert a minimal header at top if missing (hash-style comments)
-    if ! grep -qE '^[[:space:]]*# % ccm_' -- "$FILE"; then
+    # Auto-insert a minimal header at top if missing (any comment style)
+    if ! grep -qE '% ccm_modify_date:' -- "$FILE"; then
         case "$REL_PATH" in
-            *.sh|*.bash|*.zsh|*.ksh|*.py|*.yaml|*.yml|*.ps1|*.psm1|*.psd1)
-                FILE_EOL=$(detect_eol "$FILE")
-                TMP=$(mktemp)
-                {
-                  echo "# % ccm_modify_date: 1970-01-01 00:00:00 %"
-                  echo "# % ccm_author: unknown %"
-                  echo "# % ccm_author_email: unknown %"
-                  echo "# % ccm_repo: $URL %"
-                  echo "# % ccm_branch: $BRANCH_NAME %"
-                  echo "# % ccm_object_id: $REL_PATH:0 %"
-                  echo "# % ccm_commit_id: unknown %"
-                  echo "# % ccm_commit_count: 0 %"
-                  echo "# % ccm_commit_message: unknown %"
-                  echo "# % ccm_commit_author: unknown %"
-                  echo "# % ccm_commit_email: unknown %"
-                  echo "# % ccm_commit_date: 1970-01-01 00:00:00 +0000 %"
-                  echo "# % ccm_file_last_modified: 1970-01-01 00:00:00 %"
-                  echo "# % ccm_file_name: $(basename "$FILE") %"
-                  echo "# % ccm_file_type: text/plain %"
-                  echo "# % ccm_file_encoding: us-ascii %"
-                  echo "# % ccm_file_eol: $FILE_EOL %"
-                  echo "# % ccm_path: $REL_PATH %"
-                  echo "# % ccm_blob_sha: unknown %"
-                  echo "# % ccm_exec: no %"
-                  echo "# % ccm_size: 0 %"
-                  echo "# % ccm_tag:  %"
-                  echo
-                  cat "$FILE"
-                } > "$TMP"
-                mv "$TMP" "$FILE"
-                ;;
             *)
-                echo "No header and unsupported comment style for: $REL_PATH; skipping insert" >> "$LOG_FILE"
-                continue
+                if comment_prefix_for_file "$REL_PATH"; then
+                    FILE_EOL=$(detect_eol "$FILE")
+                    TMP=$(mktemp)
+                    {
+                      echo "$COMM_PREFIX % ccm_modify_date: 1970-01-01 00:00:00 %"
+                      echo "$COMM_PREFIX % ccm_author: unknown %"
+                      echo "$COMM_PREFIX % ccm_author_email: unknown %"
+                      echo "$COMM_PREFIX % ccm_repo: $URL %"
+                      echo "$COMM_PREFIX % ccm_branch: $BRANCH_NAME %"
+                      echo "$COMM_PREFIX % ccm_object_id: $REL_PATH:0 %"
+                      echo "$COMM_PREFIX % ccm_commit_id: unknown %"
+                      echo "$COMM_PREFIX % ccm_commit_count: 0 %"
+                      echo "$COMM_PREFIX % ccm_commit_message: unknown %"
+                      echo "$COMM_PREFIX % ccm_commit_author: unknown %"
+                      echo "$COMM_PREFIX % ccm_commit_email: unknown %"
+                      echo "$COMM_PREFIX % ccm_commit_date: 1970-01-01 00:00:00 +0000 %"
+                      echo "$COMM_PREFIX % ccm_file_last_modified: 1970-01-01 00:00:00 %"
+                      echo "$COMM_PREFIX % ccm_file_name: $(basename "$FILE") %"
+                      echo "$COMM_PREFIX % ccm_file_type: text/plain %"
+                      echo "$COMM_PREFIX % ccm_file_encoding: us-ascii %"
+                      echo "$COMM_PREFIX % ccm_file_eol: $FILE_EOL %"
+                      echo "$COMM_PREFIX % ccm_path: $REL_PATH %"
+                      echo "$COMM_PREFIX % ccm_blob_sha: unknown %"
+                      echo "$COMM_PREFIX % ccm_exec: no %"
+                      echo "$COMM_PREFIX % ccm_size: 0 %"
+                      echo "$COMM_PREFIX % ccm_tag:  %"
+                      echo
+                      cat "$FILE"
+                    } > "$TMP"
+                    mv "$TMP" "$FILE"
+                else
+                    echo "No supported comment style for: $REL_PATH; skipping insert" >> "$LOG_FILE"
+                    continue
+                fi
                 ;;
         esac
     fi
