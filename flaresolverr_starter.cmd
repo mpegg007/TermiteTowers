@@ -1,21 +1,21 @@
 REM % ccm_tag:  %
-REM % ccm_size: 931 %
+REM % ccm_size: 1267 %
 REM % ccm_exec: no %
-REM % ccm_blob_sha: bd29f816da1779987c5923cb36a0686d33b21c07 %
+REM % ccm_blob_sha: 295ea395950ab82e9dd893d47490f3307159d830 %
 REM % ccm_path: flaresolverr_starter.cmd %
-REM % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
-REM % ccm_commit_email: unknown %
-REM % ccm_commit_author: unknown %
-REM % ccm_commit_message: unknown %
+REM % ccm_commit_date: 2025-08-29 15:33:16 -0400 %
+REM % ccm_commit_email: mpegg@hotmail.com %
+REM % ccm_commit_author: mpegg %
+REM % ccm_commit_message: chore(repo): finalize infra flattening and wrapper shims %
 REM % ccm_author_email: mpegg@hotmail.com %
-:: % ccm_modify_date: 2025-08-29 15:31:33 %
+:: % ccm_modify_date: 2025-08-29 15:33:16 %
 :: % ccm_author: mpegg %
 :: % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
 :: % ccm_branch: dev1 %
-:: % ccm_object_id: flaresolverr_starter.cmd:45 %
-:: % ccm_commit_id: a08a96751aca77f78f07c1360de62956f882c5a3 %
-:: % ccm_commit_count: 45 %
-:: % ccm_file_last_modified: 2025-08-29 13:51:08 %
+:: % ccm_object_id: flaresolverr_starter.cmd:62 %
+:: % ccm_commit_id: d450999f33707bf562bcbdbb00f28d20c1dd488f %
+:: % ccm_commit_count: 62 %
+:: % ccm_file_last_modified: 2025-08-29 15:33:16 %
 :: % ccm_file_name: flaresolverr_starter.cmd %
 :: % ccm_file_type: text/plain %
 :: % ccm_file_encoding: us-ascii %
