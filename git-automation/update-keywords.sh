@@ -56,42 +56,67 @@ while IFS= read -r -d '' FILE; do
             ;;
     esac
 
-    # Process only files with an existing header unless CCM_AUTO_INSERT=1
-    if ! grep -qE '^[[:space:]]*# % ccm_' -- "$FILE"; then
-        if [[ "${CCM_AUTO_INSERT:-0}" == "1" ]]; then
-            # Insert a minimal header at top
-            FILE_EOL=$([ -n "$(grep -U $'\r\n' -m1 -- "$FILE" || true)" ] && echo CRLF || echo LF)
-            TMP=$(mktemp)
-            {
-              echo "# % ccm_modify_date: 1970-01-01 00:00:00 %"
-              echo "# % ccm_author: unknown %"
-              echo "# % ccm_author_email: unknown %"
-              echo "# % ccm_repo: $URL %"
-              echo "# % ccm_branch: $BRANCH_NAME %"
-              echo "# % ccm_object_id: $FILE:0 %"
-              echo "# % ccm_commit_id: unknown %"
-              echo "# % ccm_commit_count: 0 %"
-              echo "# % ccm_commit_message: unknown %"
-              echo "# % ccm_commit_author: unknown %"
-              echo "# % ccm_commit_email: unknown %"
-              echo "# % ccm_commit_date: 1970-01-01 00:00:00 +0000 %"
-              echo "# % ccm_file_last_modified: 1970-01-01 00:00:00 %"
-              echo "# % ccm_file_name: $(basename "$FILE") %"
-              echo "# % ccm_file_type: text/plain %"
-              echo "# % ccm_file_encoding: us-ascii %"
-              echo "# % ccm_file_eol: $FILE_EOL %"
-              echo "# % ccm_path: $REL_PATH %"
-              echo "# % ccm_blob_sha: unknown %"
-              echo "# % ccm_exec: no %"
-              echo "# % ccm_size: 0 %"
-              echo "# % ccm_tag:  %"
-              echo
-              cat "$FILE"
-            } > "$TMP"
-            mv "$TMP" "$FILE"
-        else
+    # Repo-relative path for filters and insertion
+    REL_PATH=$(git ls-files --full-name -- "$FILE" 2>/dev/null || echo "$FILE")
+
+    # Deny-list common generated/vendor paths
+    case "$REL_PATH" in
+        vendor/*|build/*|dist/*|node_modules/*|.venv/*|venv/*|.tox/*|.cache/*)
+            echo "Skipping excluded path: $REL_PATH" >> "$LOG_FILE"
             continue
-        fi
+            ;;
+    esac
+
+    # Treat only text files; skip binary
+    MIME_INFO=$(file --mime -b "$FILE" 2>/dev/null || echo '')
+    if echo "$MIME_INFO" | grep -qi 'charset=binary'; then
+        echo "Skipping binary file: $REL_PATH ($MIME_INFO)" >> "$LOG_FILE"
+        continue
+    fi
+    if ! echo "$MIME_INFO" | grep -qiE '^text/|charset='; then
+        echo "Skipping non-text mime: $REL_PATH ($MIME_INFO)" >> "$LOG_FILE"
+        continue
+    fi
+
+    # Auto-insert a minimal header at top if missing (hash-style comments)
+    if ! grep -qE '^[[:space:]]*# % ccm_' -- "$FILE"; then
+        case "$REL_PATH" in
+            *.sh|*.bash|*.zsh|*.ksh|*.py|*.yaml|*.yml|*.ps1|*.psm1|*.psd1)
+                FILE_EOL=$(detect_eol "$FILE")
+                TMP=$(mktemp)
+                {
+                  echo "# % ccm_modify_date: 1970-01-01 00:00:00 %"
+                  echo "# % ccm_author: unknown %"
+                  echo "# % ccm_author_email: unknown %"
+                  echo "# % ccm_repo: $URL %"
+                  echo "# % ccm_branch: $BRANCH_NAME %"
+                  echo "# % ccm_object_id: $REL_PATH:0 %"
+                  echo "# % ccm_commit_id: unknown %"
+                  echo "# % ccm_commit_count: 0 %"
+                  echo "# % ccm_commit_message: unknown %"
+                  echo "# % ccm_commit_author: unknown %"
+                  echo "# % ccm_commit_email: unknown %"
+                  echo "# % ccm_commit_date: 1970-01-01 00:00:00 +0000 %"
+                  echo "# % ccm_file_last_modified: 1970-01-01 00:00:00 %"
+                  echo "# % ccm_file_name: $(basename "$FILE") %"
+                  echo "# % ccm_file_type: text/plain %"
+                  echo "# % ccm_file_encoding: us-ascii %"
+                  echo "# % ccm_file_eol: $FILE_EOL %"
+                  echo "# % ccm_path: $REL_PATH %"
+                  echo "# % ccm_blob_sha: unknown %"
+                  echo "# % ccm_exec: no %"
+                  echo "# % ccm_size: 0 %"
+                  echo "# % ccm_tag:  %"
+                  echo
+                  cat "$FILE"
+                } > "$TMP"
+                mv "$TMP" "$FILE"
+                ;;
+            *)
+                echo "No header and unsupported comment style for: $REL_PATH; skipping insert" >> "$LOG_FILE"
+                continue
+                ;;
+        esac
     fi
 
     echo "Processing file: $FILE" >> $LOG_FILE
@@ -101,8 +126,7 @@ while IFS= read -r -d '' FILE; do
     FILE_ENCODING=$(file -b --mime-encoding "$FILE")
     FILE_EOL=$(detect_eol "$FILE")
 
-        # Repo-relative path
-        REL_PATH=$(git ls-files --full-name -- "$FILE" 2>/dev/null || echo "$FILE")
+    # Repo-relative path already computed as REL_PATH
         # Staged blob SHA for this path (index state)
         BLOB_SHA=$(git rev-parse ":$REL_PATH" 2>/dev/null || echo unknown)
         # Executable bit from index (100755 vs 100644)
