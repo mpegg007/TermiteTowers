@@ -1,0 +1,20 @@
+# Default: let Git detect text automatically
+* text=auto
+
+# Shell / Python / YAML use LF
+*.sh text eol=lf
+*.bash text eol=lf
+*.zsh text eol=lf
+*.ksh text eol=lf
+*.py text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.sql text eol=lf
+*.ctl text eol=lf
+
+# Windows-oriented scripts use CRLF
+*.ps1 text eol=crlf
+*.psm1 text eol=crlf
+*.psd1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf

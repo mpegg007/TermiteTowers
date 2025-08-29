@@ -65,6 +65,10 @@ git --no-pager diff-tree --no-commit-id --name-only -r -z HEAD | while IFS= read
   sed -i "s|% ccm_file_type: .* %|% ccm_file_type: $FILE_TYPE %|g" "$FILE"
   sed -i "s|% ccm_file_encoding: .* %|% ccm_file_encoding: $FILE_ENCODING %|g" "$FILE"
   sed -i "s|% ccm_modify_date: .* %|% ccm_modify_date: $DATE %|g" "$FILE"
+  # Ensure ccm_tag line exists (blank if not tagged yet)
+  if ! grep -q "% ccm_tag:" "$FILE"; then
+    sed -i "1i # % ccm_tag:  %" "$FILE"
+  fi
 done
 
 # If there are changes, amend the commit (no edit to message). Avoid recursion.
