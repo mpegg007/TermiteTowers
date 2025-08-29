@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.tox/
+
+# Node
+node_modules/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.history/
+
+# Logs & tmp
+*.log
+tmp/
+.cache/
+
+# Build/dist
+dist/
+build/
+
+# Local envs
+.env
+.env.*.local
+secrets/*.json

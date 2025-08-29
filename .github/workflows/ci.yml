@@ -1,0 +1,77 @@
+# % ccm_modify_date: 2025-08-29 13:07:54 %
+# % ccm_author: CI Scaffolder %
+# % ccm_author_email: ci@test %
+# % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
+# % ccm_branch: main %
+# % ccm_object_id: .github/workflows/ci.yml:0 %
+# % ccm_commit_id: unknown %
+# % ccm_commit_count: 0 %
+# % ccm_commit_message: unknown %
+# % ccm_commit_author: unknown %
+# % ccm_commit_email: unknown %
+# % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
+# % ccm_file_last_modified: 2025-08-29 13:07:54 %
+# % ccm_file_name: ci.yml %
+# % ccm_file_type: text/plain %
+# % ccm_file_encoding: us-ascii %
+# % ccm_file_eol: CRLF %
+# % ccm_path: .github/workflows/ci.yml %
+# % ccm_blob_sha: 0a6d6bc63df71bfdb989bbefcb67e0c3713eb584 %
+# % ccm_exec: no %
+# % ccm_size: 2229 %
+# % ccm_tag:  %
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  lint-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+          python -m pip install --upgrade pip
+          pip install yamllint
+
+      - name: Lint shell scripts
+        run: |
+          find . -type f \( -name "*.sh" -o -name "*.bash" -o -name "*.ksh" \) -print0 | xargs -0 -r shellcheck -S warning
+
+      - name: Lint YAML
+        run: |
+          yamllint -c .yamllint.yml .
+
+      - name: Docker Compose validate
+        run: |
+          if command -v docker >/dev/null; then
+            shopt -s nullglob
+            for f in docker/*.yml docker/*.yaml; do
+              echo "Validating $f"
+              docker compose -f "$f" config >/dev/null
+            done
+          else
+            echo "Docker not available; skipping compose validation"
+          fi
+
+      - name: CCM header consistency
+        run: |
+          if [ -x git-automation/ccm_migrate_repo.sh ]; then
+            ./git-automation/ccm_migrate_repo.sh || true
+            git diff --cached --quiet || (echo "CCM headers not normalized. Run the migration locally." && exit 1)
+          else
+            echo "No CCM migration script found; skipping"
+          fi

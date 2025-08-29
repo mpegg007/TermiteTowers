@@ -1,0 +1,42 @@
+# % ccm_modify_date: 2025-08-29 13:07:54 %
+# % ccm_author: CI Scaffolder %
+# % ccm_author_email: ci@test %
+# % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
+# % ccm_branch: main %
+# % ccm_object_id: .yamllint.yml:0 %
+# % ccm_commit_id: unknown %
+# % ccm_commit_count: 0 %
+# % ccm_commit_message: unknown %
+# % ccm_commit_author: unknown %
+# % ccm_commit_email: unknown %
+# % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
+# % ccm_file_last_modified: 2025-08-29 13:07:54 %
+# % ccm_file_name: .yamllint.yml %
+# % ccm_file_type: text/plain %
+# % ccm_file_encoding: us-ascii %
+# % ccm_file_eol: CRLF %
+# % ccm_path: .yamllint.yml %
+# % ccm_blob_sha: 17efbda02cee7f30b12a27e3c477aa1ed09a84cc %
+# % ccm_exec: no %
+# % ccm_size: 967 %
+# % ccm_tag:  %
+
+extends: default
+
+rules:
+  line-length:
+    max: 140
+    level: warning
+  truthy:
+    level: warning
+  indentation:
+    indent-sequences: consistent
+  comments:
+    min-spaces-from-content: 1
+
+ignore: |
+  .git/
+  node_modules/
+  vendor/
+  dist/
+  build/
