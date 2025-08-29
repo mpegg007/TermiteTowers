@@ -154,14 +154,54 @@ while IFS= read -r -d '' FILE; do
         # File size (working tree, good proxy for staged for text files)
         FILE_SIZE=$(stat -c%s "$FILE" 2>/dev/null || echo 0)
 
+    # Remove deprecated/legacy fields
+    sed -i "/% version: .* %/d" "$FILE"
+    sed -i "/% ccm_version: .* %/d" "$FILE"
+    sed -i "/% ccm_last_commit_message: .* %/d" "$FILE"
+    sed -i "/% ccm_last_commit_author: .* %/d" "$FILE"
+    sed -i "/% ccm_last_commit_date: .* %/d" "$FILE"
+    
+    # Ensure required fields exist. We insert with safe defaults if missing.
+    if comment_prefix_for_file "$REL_PATH"; then
+        ensure_field() {
+            local key="$1"; shift
+            local val="$1"; shift || true
+            if ! grep -q "% ${key}:" -- "$FILE"; then
+                sed -i "1i ${COMM_PREFIX} % ${key}: ${val} %" "$FILE"
+            fi
+        }
+        ensure_field "ccm_modify_date" "$DATE"
+        ensure_field "ccm_author" "$AUTHOR"
+        ensure_field "ccm_author_email" "$AUTHOR_EMAIL"
+        ensure_field "ccm_repo" "$URL"
+        ensure_field "ccm_branch" "$BRANCH_NAME"
+        ensure_field "ccm_object_id" "$REL_PATH:0"
+        ensure_field "ccm_commit_id" "unknown"
+        ensure_field "ccm_commit_count" "0"
+        ensure_field "ccm_commit_message" "unknown"
+        ensure_field "ccm_commit_author" "unknown"
+        ensure_field "ccm_commit_email" "unknown"
+        ensure_field "ccm_commit_date" "1970-01-01 00:00:00 +0000"
+        ensure_field "ccm_file_last_modified" "$FILE_LAST_MODIFIED"
+        ensure_field "ccm_file_name" "$(basename "$FILE")"
+        ensure_field "ccm_file_type" "$FILE_TYPE"
+        ensure_field "ccm_file_encoding" "$FILE_ENCODING"
+        ensure_field "ccm_file_eol" "$FILE_EOL"
+        ensure_field "ccm_path" "$REL_PATH"
+        ensure_field "ccm_blob_sha" "$BLOB_SHA"
+        ensure_field "ccm_exec" "$EXEC_FLAG"
+        ensure_field "ccm_size" "$FILE_SIZE"
+        ensure_field "ccm_tag" ""
+    else
+        echo "No supported comment style for ensure_field on: $REL_PATH" >> "$LOG_FILE"
+    fi
+
+    # Now update all fields to current values where applicable
     sed -i "s|% ccm_repo: .* %|% ccm_repo: $URL %|g" "$FILE"
     sed -i "s|% ccm_branch: .* %|% ccm_branch: $BRANCH_NAME %|g" "$FILE"
     sed -i "s|% ccm_author: .* %|% ccm_author: $AUTHOR %|g" "$FILE"
     sed -i "s|% ccm_author_email: .* %|% ccm_author_email: $AUTHOR_EMAIL %|g" "$FILE"
     sed -i "s|% ccm_file_name: .* %|% ccm_file_name: $(basename "$FILE") %|g" "$FILE"
-    # Remove deprecated redundant fields if present
-    sed -i "/% version: .* %/d" "$FILE"
-    sed -i "/% ccm_version: .* %/d" "$FILE"
     sed -i "s|% ccm_file_last_modified: .* %|% ccm_file_last_modified: $FILE_LAST_MODIFIED %|g" "$FILE"
     sed -i "s|% ccm_file_type: .* %|% ccm_file_type: $FILE_TYPE %|g" "$FILE"
     sed -i "s|% ccm_file_encoding: .* %|% ccm_file_encoding: $FILE_ENCODING %|g" "$FILE"

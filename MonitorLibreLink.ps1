@@ -1,75 +1,32 @@
-# % ccm_modify_date: 2025-05-18 16:57:22 %
-# % ccm_author: mpegg %
-# % version: 20 %
+# % ccm_modify_date: 2025-08-29 13:23:17 %
+# % ccm_author: Repo Hygiene %
+# % ccm_author_email: hygiene@test %
 # % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
 # % ccm_branch: main %
-# % ccm_object_id: MonitorLibreLink.ps1:43 %
-# % ccm_commit_id: 85077287515bd36c372cecb566bd8b590687d30d %
-# % ccm_commit_count: 43 %
-# % ccm_last_commit_message: move config read %
-# % ccm_last_commit_author: Matthew Pegg %
-# % ccm_last_commit_date: 2025-03-22 17:57:56 -0400 %
-# % ccm_file_last_modified: 2025-05-18 16:54:21 %
+# % ccm_object_id: MonitorLibreLink.ps1:59 %
+# % ccm_commit_id: 9b54dd5331936bfca0a1bc265ddb7adeeed8c26f %
+# % ccm_commit_count: 59 %
+# % ccm_commit_message: hooks: normalize CCM headers in pre-commit; move Libre scripts to health/libre with wrappers; remove legacy ccm_last_commit_* fields %
+# % ccm_commit_author: Repo Hygiene %
+# % ccm_commit_email: hygiene@test %
+# % ccm_commit_date: 2025-08-29 13:23:17 -0400 %
+# % ccm_file_last_modified: 2025-08-29 13:23:17 %
 # % ccm_file_name: MonitorLibreLink.ps1 %
 # % ccm_file_type: text/plain %
 # % ccm_file_encoding: us-ascii %
 # % ccm_file_eol: CRLF %
+# % ccm_path: MonitorLibreLink.ps1 %
+# % ccm_blob_sha: b3dba450e7a6edaf5fc0db6cb57cc08ca15e0ab1 %
+# % ccm_exec: no %
+# % ccm_size: 1086 %
+# % ccm_tag:  %
 
-# Define the path to the target script
-$scriptPath = "c:\Users\mpegg\Repos\TermiteTowers\LibreLink.log.ps1"
-
-# Ensure the script is running with administrative rights
-if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Write-Host "Script is not running as administrator. Relaunching with elevated privileges..."
-    Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
-    exit
+Param()
+# Wrapper shim: forwards to moved script under health/libre
+$target = Join-Path $PSScriptRoot 'health/libre/MonitorLibreLink.ps1'
+if (Test-Path $target) {
+    & powershell -NoProfile -ExecutionPolicy Bypass -File $target @args
+} else {
+    Write-Error "Moved script not found: $target"
+    exit 1
 }
-
-# Function to log messages (now outputs to screen as well)
-function Write-Log {
-    param (
-        [string]$message
-    )
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    $logMessage = "$timestamp - $message"
-    Write-Host $logMessage
-}
-
-# Start logging
-Write-Log "Monitor Script started with administrative privileges."
-
-# Check if the script is already running
-Write-Log "Checking if the script is already running..."
-try {
-    Write-Log "Listing all processes with 'powershell' in their name, including executable paths and command lines:"
-    $powershellProcesses = Get-Process -Name "powershell" -ErrorAction SilentlyContinue
-    foreach ($process in $powershellProcesses) {
-        try {
-            $executablePath = (Get-Process -Id $process.Id | Select-Object -ExpandProperty Path)
-            $commandLine = (Get-WmiObject Win32_Process -Filter "ProcessId=$($process.Id)" | Select-Object -ExpandProperty CommandLine)
-            if ($commandLine -match [regex]::Escape($scriptPath)) {
-                Write-Log "Process ID: $($process.Id), Matched, Command Line: $executablePath"
-            } else {
-                Write-Log "Process ID: $($process.Id), Not Matched, Command Line: $executablePath"
-            }
-        } catch {
-            Write-Log "Failed to retrieve details for Process ID: $($process.Id). Error: $_"
-        }
-    }
-
-    $processRunning = $powershellProcesses | Where-Object {
-        $commandLine -match [regex]::Escape($scriptPath)
-    }
-
-    if ($processRunning) {
-        Write-Log "The script is already running."
-    } else {
-        Write-Log "The script is not running. Attempting to start it..."
-        ##Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`"" 
-        Write-Log "Script started successfully."
-    }
-} catch {
-    Write-Log "An error occurred: $_"
-}
-
-Write-Log "Script finished."

@@ -1,76 +1,32 @@
-# % ccm_modify_date: 2025-05-18 16:57:22 %
-# % ccm_author: mpegg %
-# % version: 20 %
+# % ccm_modify_date: 2025-08-29 13:23:17 %
+# % ccm_author: Repo Hygiene %
+# % ccm_author_email: hygiene@test %
 # % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
 # % ccm_branch: main %
-# % ccm_object_id: LibreLink.get.ps1:43 %
-# % ccm_commit_id: 85077287515bd36c372cecb566bd8b590687d30d %
-# % ccm_commit_count: 43 %
-# % ccm_last_commit_message: move config read %
-# % ccm_last_commit_author: Matthew Pegg %
-# % ccm_last_commit_date: 2025-03-22 17:57:56 -0400 %
-# % ccm_file_last_modified: 2025-05-18 16:54:21 %
+# % ccm_object_id: LibreLink.get.ps1:59 %
+# % ccm_commit_id: 9b54dd5331936bfca0a1bc265ddb7adeeed8c26f %
+# % ccm_commit_count: 59 %
+# % ccm_commit_message: hooks: normalize CCM headers in pre-commit; move Libre scripts to health/libre with wrappers; remove legacy ccm_last_commit_* fields %
+# % ccm_commit_author: Repo Hygiene %
+# % ccm_commit_email: hygiene@test %
+# % ccm_commit_date: 2025-08-29 13:23:17 -0400 %
+# % ccm_file_last_modified: 2025-08-29 13:23:17 %
 # % ccm_file_name: LibreLink.get.ps1 %
 # % ccm_file_type: text/plain %
 # % ccm_file_encoding: us-ascii %
 # % ccm_file_eol: CRLF %
+# % ccm_path: LibreLink.get.ps1 %
+# % ccm_blob_sha: 988822c9f4e86634c2729d977745ad9b076d345d %
+# % ccm_exec: no %
+# % ccm_size: 1074 %
+# % ccm_tag:  %
 
-
-# Load credentials from an external configuration file
-$ConfigPath = "c:\Users\mpegg\Repos\TermiteTowers\config.json"
-if (-Not (Test-Path $ConfigPath)) {
-    Write-Error "Configuration file not found at $ConfigPath"
+Param()
+# Wrapper shim: forwards to moved script under health/libre
+$target = Join-Path $PSScriptRoot 'health/libre/LibreLink.get.ps1'
+if (Test-Path $target) {
+    & powershell -NoProfile -ExecutionPolicy Bypass -File $target @args
+} else {
+    Write-Error "Moved script not found: $target"
     exit 1
 }
-$Config = Get-Content $ConfigPath | ConvertFrom-Json
-$Region = $Config.Region
-$Username = $Config.Username
-$Password = $Config.Password
-
-# Get Auth Token
-$AuthToken = $null
-$Authheaders = $null
-$Authheaders = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
-$Authheaders.Add("Pragma", "no-cache")
-$Authheaders.Add("Version", "4.7.0")
-$Authheaders.Add("product", "llu.ios")
-$Authheaders.Add("Cache-Control", "no-cache")
-$Authheaders.Add("Accept-Language", "en-CA,en;q=0.9")
-$Authheaders.Add("Content-Type", "application/json")
-$AuthBody = @"
-{
-    `"email`": `"$Username`",
-    `"password`": `"$Password`"
-}
-"@
-$AuthURI = "https://api-$Region.libreview.io/llu/auth/login"
-$tresponse = Invoke-RestMethod $AuthURI -Method 'POST' -Headers $Authheaders -Body $AuthBody
-$AuthToken = $tresponse.data.authTicket.token
-#$AuthToken
-
-# Get Libre Link Data
-$headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
-$headers.Add("Pragma", "no-cache")
-$headers.Add("Version", "4.7.0")
-$headers.Add("product", "llu.ios")
-$headers.Add("Cache-Control", "no-cache")
-$headers.Add("Accept-Language", "en-CA,en;q=0.9")
-$headers.Add("Content-Type", "application/json")
-$headers.Add("Authorization", "Bearer $AuthToken")
-$response = $null
-$response = Invoke-RestMethod 'https://api-ca.libreview.io/llu/connections' -Method 'GET' -Headers $headers
-$headers = $null
-#$response | ConvertTo-Json
-$timestamp = $response.data.glucoseMeasurement.Timestamp
-$level = $response.data.glucoseMeasurement.Value
-$TrendArrow = $response.data.glucoseMeasurement.TrendArrow
-$MeasurementColor = $response.data.glucoseMeasurement.MeasurementColor
-$SensorSerialNumber = $response.data.sensor.sn
-$SensorStartUnixTimeStamp = $response.data.sensor.a
-
-# Convert the Unix timestamp to a DateTime object
-$SensorStartDateTime = [System.DateTimeOffset]::FromUnixTimeSeconds($SensorStartUnixTimeStamp).DateTime
-$SensorStartDateTimeFormatted = $SensorStartDateTime.ToString("yyyyMMdd.HHmmss")
-$TimestampFormatted = (Get-Date $timestamp).ToString("yyyyMMdd.HHmmss")
-
-Write-Output "$TimestampFormatted | Glucose Level: $level mmol/L | Trend Arrow: $TrendArrow | Measurement Colour: $MeasurementColor | Sensor Serial Number: $SensorSerialNumber $SensorStartDateTimeFormatted"
