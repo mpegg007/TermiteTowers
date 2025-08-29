@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: wiki_postgres-dev1
+    restart: unless-stopped
+    user: "${UID_SVC:-2001}:${GID_TT_AI:-1006}"
+    environment:
+      POSTGRES_DB: wiki
+      POSTGRES_USER: wikijs
+      POSTGRES_PASSWORD: wikijsrocks
+    volumes:
+      - /mnt/ai_storage/wiki/postgres-data:/var/lib/postgresql/data
+    command: ["bash","-lc","umask 002 && docker-entrypoint.sh postgres"]
+    networks:
+      - wikinet
+
+  wikijs:
+    image: ghcr.io/requarks/wiki:2
+    container_name: wiki_app-dev1
+    restart: unless-stopped
+    user: "${UID_SVC:-2001}:${GID_TT_AI:-1006}"
+    ports:
+      - "3200:3000"
+    environment:
+      DB_TYPE: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: wikijs
+      DB_PASS: wikijsrocks
+      DB_NAME: wiki
+    volumes:
+      - /mnt/ai_storage/wiki/wikijs-data:/wiki/data
+    depends_on:
+      - postgres
+    networks:
+      - wikinet
+
+networks:
+  wikinet:
+    driver: bridge

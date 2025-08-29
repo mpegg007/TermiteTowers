@@ -1,0 +1,42 @@
+services:
+  tortoise-tts-dev1:
+    image: pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
+    container_name: tortoise-tts-dev1
+    working_dir: /app
+    user: "${UID_SVC:-2001}:${GID_TT_AI:-1006}"
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    volumes:
+      - ../source:/app
+      - ../models:/app/models
+      - ../config:/app/config
+      - ../logs:/app/logs
+      - /mnt/ai_storage/models/huggingface:/cache/huggingface
+      - /mnt/ai_storage/models/pip:/cache/pip
+      - /mnt/ai_storage/models/torch:/cache/torch
+      - /mnt/ai_storage/tortoise/voices:/app/voices
+      - /mnt/ai_storage/tortoise/outputs:/app/outputs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - HF_HOME=/cache/huggingface
+      - HF_HUB_ENABLE_PROGRESS_BARS=1
+      - PIP_INDEX_URL=https://packages.termitetowers.ca/tt-devpi/cuda-stack/+simple
+      - PIP_EXTRA_INDEX_URL=https://download.pytorch.org/whl/cu118
+    command: >
+      bash -lc "
+        umask 002 &&
+        export DEBIAN_FRONTEND=noninteractive &&
+        chmod 1777 /tmp &&
+        apt-get update &&
+        apt-get install -y ffmpeg libsndfile1 git &&
+        python3 -m pip install --upgrade pip &&
+        python3 -m pip install --prefer-binary --verbose torch==2.1.0+cu118 torchvision==0.16.0+cu118 torchaudio==2.1.0 &&
+        python3 -m pip install --prefer-binary --verbose -r requirements.txt &&
+        python3 /app/tortoise-tts/do_tts.py --text \"${TEXT:-Hello world}\" --voice \"${VOICE:-hal}\"
+      "

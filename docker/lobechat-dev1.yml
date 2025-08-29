@@ -1,0 +1,18 @@
+services:
+  lobechat:
+    image: lobehub/lobe-chat
+    container_name: lobechat-dev1
+    user: "${UID_SVC:-2001}:${GID_TT_AI:-1006}"
+    ports:
+      - "0.0.0.0:3100:3210"
+    environment:
+      - OPENAI_API_BASE_URL=http://host.docker.internal:11434/v1
+      - OPENAI_API_KEY=ollama
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"

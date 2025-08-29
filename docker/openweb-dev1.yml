@@ -1,0 +1,30 @@
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: openwebui-dev1
+    user: "${UID_SVC:-2001}:${GID_TT_AI:-1006}"
+    ports:
+      - "0.0.0.0:3000:8080"
+    environment:
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - MODEL_PROVIDER=ollama
+      - DEFAULT_MODEL=llama3
+      - PYTHONUNBUFFERED=1
+      - HF_HOME=/cache/huggingface
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - /mnt/ai_storage/openwebui/data:/app/backend/data
+      - /mnt/ai_storage/models/huggingface:/cache/huggingface
+      - /mnt/ai_storage/models/pip:/cache/pip
+      - /mnt/ai_storage/models/torch:/cache/torch
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+  # Note: If the container cannot reach Ollama via host.docker.internal on Linux,
+  # you can switch to host networking as a fallback:
+  # network_mode: host
+  # and remove the ports/extra_hosts section. Then access at http://localhost:8080

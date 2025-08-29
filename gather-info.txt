@@ -1,0 +1,43 @@
+Linux monolith 6.14.0-28-generic #28~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Fri Jul 25 10:47:01 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+No LSB modules are available.
+Distributor ID:	Ubuntu
+Description:	Ubuntu 24.04.3 LTS
+Release:	24.04
+Codename:	noble
+sw_vers: command not found
+
+/bin/bash
+bash
+GNU bash, version 5.2.21(1)-release (x86_64-pc-linux-gnu)
+Copyright (C) 2022 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+
+This is free software; you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+/opt/pyenv/shims/python
+pyenv: python: command not found
+
+The `python' command exists in these Python versions:
+  3.10.13
+  3.11.13
+  3.12.11
+  3.13.3
+
+Note: See 'pyenv help global' for tips on allowing both
+      python2 and python3 to be found.
+
+python3 --version
+/opt/pyenv/shims/python3
+Python 3.12.3
+
+/opt/devpi/venv
+/opt/devpi/venv/bin/python
+
+opt/devpi/venv/lib/python3.12/site-packages/pyramid/path.py:3: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+6.16.0
+devpi-client 7.2.0
+
+current devpi server: https://packages.termitetowers.ca/
+    devpi-server 6.16.0

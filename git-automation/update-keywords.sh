@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # % ccm_modify_date: 2024-10-07 20:10:56 %
 # % ccm_author: mpegg %
@@ -20,17 +20,18 @@
 # Define variables
 URL=$(git config --get remote.origin.url)
 BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-AUTHOR=$(git log -1 --pretty=format:'%an')
-AUTHOR_EMAIL=$(git log -1 --pretty=format:'%ae')
+# Prefer the author of the commit being created (env or config), not last commit
+AUTHOR=${GIT_AUTHOR_NAME:-$(git config --get user.name)}
+AUTHOR_EMAIL=${GIT_AUTHOR_EMAIL:-$(git config --get user.email)}
 ID=$(git rev-parse HEAD)
 COMMIT_MESSAGE=$(git log -1 --pretty=format:'%s')
 DATE=$(date +"%Y-%m-%d %H:%M:%S")
 REVISION=$(git rev-list --count HEAD)
 LAST_COMMIT_DATE=$(git log -1 --pretty=format:'%ci')
 
-# Define the log file using the %TMP% environment variable
+# Define the log file (use TMPDIR if set, else /tmp)
 #LOG_FILE=".git/hooks/pre-commit.log"
-LOG_FILE="$TMP/pre-commit.log"
+LOG_FILE="${TMPDIR:-/tmp}/pre-commit.log"
 
 # Function to detect EOL marker
 detect_eol() {
@@ -49,22 +50,37 @@ detect_eol() {
 # Start logging
 echo "Pre-commit hook started at $(date)" >> $LOG_FILE
 
-# Get the list of staged files with specified extensions
-STAGED_FILES=$(git diff --cached --name-only | grep -E '\.(cmd|bat|sql|ctl|py|sh|bash|zsh|ksh|ps1|psm1|psd1|yaml)$')
+# Update the placeholders in each staged file (NUL-safe handling for spaces)
+while IFS= read -r -d '' FILE; do
+    # Process only allowed extensions
+    case "$FILE" in
+        *.cmd|*.bat|*.sql|*.ctl|*.py|*.sh|*.bash|*.zsh|*.ksh|*.ps1|*.psm1|*.psd1|*.yaml) ;;
+        *) continue ;;
+    esac
 
-# Update the placeholders in each staged file
-for FILE in $STAGED_FILES; do
     # Skip files in the git-automation directory
-    if [[ "$FILE" == git-automation/* ]]; then
-        echo "Skipping file in git-automation directory: $FILE" >> $LOG_FILE
-        continue
-    fi
+    case "$FILE" in
+        git-automation/*)
+            echo "Skipping file in git-automation directory: $FILE" >> "$LOG_FILE"
+            continue
+            ;;
+    esac
     echo "Processing file: $FILE" >> $LOG_FILE
 
-    FILE_LAST_MODIFIED=$(date -r "$FILE" +"%Y-%m-%d %H:%M:%S")
+        FILE_LAST_MODIFIED=$(date -r "$FILE" +"%Y-%m-%d %H:%M:%S")
     FILE_TYPE=$(file --mime-type -b "$FILE")
     FILE_ENCODING=$(file -b --mime-encoding "$FILE")
     FILE_EOL=$(detect_eol "$FILE")
+
+        # Repo-relative path
+        REL_PATH=$(git ls-files --full-name -- "$FILE" 2>/dev/null || echo "$FILE")
+        # Staged blob SHA for this path (index state)
+        BLOB_SHA=$(git rev-parse ":$REL_PATH" 2>/dev/null || echo unknown)
+        # Executable bit from index (100755 vs 100644)
+        FILE_MODE=$(git ls-files --stage -- "$REL_PATH" 2>/dev/null | awk '{print $1}')
+        if [[ "$FILE_MODE" == 100755 ]]; then EXEC_FLAG=yes; else EXEC_FLAG=no; fi
+        # File size (working tree, good proxy for staged for text files)
+        FILE_SIZE=$(stat -c%s "$FILE" 2>/dev/null || echo 0)
 
     sed -i "s|% ccm_repo: .* %|% ccm_repo: $URL %|g" "$FILE"
     sed -i "s|% ccm_branch: .* %|% ccm_branch: $BRANCH_NAME %|g" "$FILE"
@@ -73,15 +89,24 @@ for FILE in $STAGED_FILES; do
     sed -i "s|% ccm_object_id: .* %|% ccm_object_id: $FILE:$REVISION %|g" "$FILE" 
     sed -i "s|% ccm_last_commit_author: .* %|% ccm_last_commit_author: $AUTHOR %|g" "$FILE"
     sed -i "s|% ccm_last_commit_email: .* %|% ccm_last_commit_email: $AUTHOR_EMAIL %|g" "$FILE"
+    sed -i "s|% ccm_author: .* %|% ccm_author: $AUTHOR %|g" "$FILE"
     sed -i "s|% ccm_last_commit_message: .* %|% ccm_last_commit_message: $COMMIT_MESSAGE %|g" "$FILE"
     sed -i "s|% ccm_last_commit_date: .* %|% ccm_last_commit_date: $LAST_COMMIT_DATE %|g" "$FILE"
     sed -i "s|% ccm_file_name: .* %|% ccm_file_name: $(basename "$FILE") %|g" "$FILE"
+    # Support both legacy 'version' and 'ccm_version' keys
+    sed -i "s|% version: .* %|% version: $REVISION %|g" "$FILE"
     sed -i "s|% ccm_version: .* %|% ccm_version: $REVISION %|g" "$FILE"
     sed -i "s|% ccm_file_last_modified: .* %|% ccm_file_last_modified: $FILE_LAST_MODIFIED %|g" "$FILE"
     sed -i "s|% ccm_file_type: .* %|% ccm_file_type: $FILE_TYPE %|g" "$FILE"
     sed -i "s|% ccm_file_encoding: .* %|% ccm_file_encoding: $FILE_ENCODING %|g" "$FILE"
     sed -i "s|% ccm_file_eol: .* %|% ccm_file_eol: $FILE_EOL %|g" "$FILE"
     sed -i "s|% ccm_modify_date: .* %|% ccm_modify_date: $DATE %|g" "$FILE"
+
+        # Extra reliable fields
+        sed -i "s|% ccm_path: .* %|% ccm_path: $REL_PATH %|g" "$FILE"
+        sed -i "s|% ccm_blob_sha: .* %|% ccm_blob_sha: $BLOB_SHA %|g" "$FILE"
+        sed -i "s|% ccm_exec: .* %|% ccm_exec: $EXEC_FLAG %|g" "$FILE"
+        sed -i "s|% ccm_size: .* %|% ccm_size: $FILE_SIZE %|g" "$FILE"
 
     # Check if the file was modified
     if git diff --name-only --exit-code "$FILE"; then
@@ -91,7 +116,7 @@ for FILE in $STAGED_FILES; do
         # Add the updated file to the staging area
         git add "$FILE"
     fi
-done
+done < <(git diff --cached --name-only -z)
 
 # End logging
 echo "Pre-commit hook finished at $(date)" >> $LOG_FILE

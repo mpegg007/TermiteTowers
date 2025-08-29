@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Example appEnv.sh for an app at /srv/<region>/<app>
+# Place this file at: /srv/<region>/<app>/scripts/appEnv.sh and customize
+
+# 1) If using Python virtualenv
+if [ -f "venv/bin/activate" ]; then
+  . "venv/bin/activate"
+fi
+
+# 2) If using Docker, set app-specific variables consumed by aliases
+# export COMPOSE_FILE=docker-compose.yml
+# export DOCKER_DEFAULT_PLATFORM=linux/amd64
+
+# Optional: define a variable used by lobeup/lobedown wrappers
+# export LOBE_COMPOSE="docker compose"
+
+# 3) Any other exports
+# export APP_ENV=dev
+# export APP_DEBUG=1
+
+# 4) Optional: project banner
+# echo "Environment for $(basename "$PWD") loaded"
