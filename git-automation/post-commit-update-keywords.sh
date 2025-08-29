@@ -11,7 +11,8 @@ AUTHOR_EMAIL=${GIT_AUTHOR_EMAIL:-$(git log -1 --pretty=format:'%ae')}
 ID=$(git rev-parse HEAD)
 COMMIT_MESSAGE=$(git log -1 --pretty=format:'%s')
 REVISION=$(git rev-list --count HEAD)
-LAST_COMMIT_DATE=$(git log -1 --pretty=format:'%ci')
+COMMIT_DATE=$(git log -1 --pretty=format:'%ci')
+COMMIT_TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
 DATE=$(date +"%Y-%m-%d %H:%M:%S")
 
 LOG_FILE="${TMPDIR:-/tmp}/post-commit.log"
@@ -46,10 +47,17 @@ git --no-pager diff-tree --no-commit-id --name-only -r -z HEAD | while IFS= read
   sed -i "s|% ccm_commit_id: .* %|% ccm_commit_id: $ID %|g" "$FILE"
   sed -i "s|% ccm_commit_count: .* %|% ccm_commit_count: $REVISION %|g" "$FILE"
   sed -i "s|% ccm_object_id: .* %|% ccm_object_id: $FILE:$REVISION %|g" "$FILE"
-  sed -i "s|% ccm_last_commit_author: .* %|% ccm_last_commit_author: $AUTHOR %|g" "$FILE"
-  sed -i "s|% ccm_last_commit_email: .* %|% ccm_last_commit_email: $AUTHOR_EMAIL %|g" "$FILE"
-  sed -i "s|% ccm_last_commit_message: .* %|% ccm_last_commit_message: $COMMIT_MESSAGE %|g" "$FILE"
-  sed -i "s|% ccm_last_commit_date: .* %|% ccm_last_commit_date: $LAST_COMMIT_DATE %|g" "$FILE"
+  sed -i "s|% ccm_commit_author: .* %|% ccm_commit_author: $AUTHOR %|g" "$FILE"
+  sed -i "s|% ccm_commit_email: .* %|% ccm_commit_email: $AUTHOR_EMAIL %|g" "$FILE"
+  sed -i "s|% ccm_commit_message: .* %|% ccm_commit_message: $COMMIT_MESSAGE %|g" "$FILE"
+  sed -i "s|% ccm_commit_date: .* %|% ccm_commit_date: $COMMIT_DATE %|g" "$FILE"
+  if [ -n "$COMMIT_TAG" ]; then
+    if grep -q "% ccm_tag:" "$FILE"; then
+      sed -i "s|% ccm_tag: .* %|% ccm_tag: $COMMIT_TAG %|g" "$FILE"
+    else
+      sed -i "1i # % ccm_tag: $COMMIT_TAG %" "$FILE"
+    fi
+  fi
   sed -i "s|% ccm_repo: .* %|% ccm_repo: $URL %|g" "$FILE"
   sed -i "s|% ccm_branch: .* %|% ccm_branch: $BRANCH_NAME %|g" "$FILE"
   sed -i "s|% ccm_file_name: .* %|% ccm_file_name: $(basename "$FILE") %|g" "$FILE"
@@ -65,8 +73,20 @@ if ! git diff --quiet; then
   # Create lock and ensure cleanup
   echo $$ > "$LOCK_FILE"
   trap 'rm -f "$LOCK_FILE"' EXIT
-  # Amend without running hooks again
-  git -c core.hooksPath=/dev/null commit --amend --no-edit
+  # Safe amend: avoid if behind upstream (to not rewrite shared history)
+  AHEAD_BEHIND=$(git rev-list --left-right --count @{u}...HEAD 2>/dev/null || echo "")
+  if [ -n "$AHEAD_BEHIND" ]; then
+    AHEAD=$(echo "$AHEAD_BEHIND" | awk '{print $2}')
+    BEHIND=$(echo "$AHEAD_BEHIND" | awk '{print $1}')
+  else
+    AHEAD=0; BEHIND=0
+  fi
+  if [ "$BEHIND" = "0" ]; then
+    # Amend without running hooks again
+    git -c core.hooksPath=/dev/null commit --amend --no-edit
+  else
+    echo "Skipping amend: branch is behind upstream (would rewrite history)" >> "$LOG_FILE"
+  fi
   echo "Amended commit $ID with finalized CCM fields" >> "$LOG_FILE"
 else
   echo "No final CCM updates needed" >> "$LOG_FILE"

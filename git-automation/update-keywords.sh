@@ -20,14 +20,10 @@
 # Define variables
 URL=$(git config --get remote.origin.url)
 BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-# Prefer the author of the commit being created (env or config), not last commit
+# Prefer the committer performing this commit
 AUTHOR=${GIT_AUTHOR_NAME:-$(git config --get user.name)}
 AUTHOR_EMAIL=${GIT_AUTHOR_EMAIL:-$(git config --get user.email)}
-ID=$(git rev-parse HEAD)
-COMMIT_MESSAGE=$(git log -1 --pretty=format:'%s')
 DATE=$(date +"%Y-%m-%d %H:%M:%S")
-REVISION=$(git rev-list --count HEAD)
-LAST_COMMIT_DATE=$(git log -1 --pretty=format:'%ci')
 
 # Define the log file (use TMPDIR if set, else /tmp)
 #LOG_FILE=".git/hooks/pre-commit.log"
@@ -84,18 +80,12 @@ while IFS= read -r -d '' FILE; do
 
     sed -i "s|% ccm_repo: .* %|% ccm_repo: $URL %|g" "$FILE"
     sed -i "s|% ccm_branch: .* %|% ccm_branch: $BRANCH_NAME %|g" "$FILE"
-    sed -i "s|% ccm_commit_id: .* %|% ccm_commit_id: $ID %|g" "$FILE"
-    sed -i "s|% ccm_commit_count: .* %|% ccm_commit_count: $REVISION %|g" "$FILE"
-    sed -i "s|% ccm_object_id: .* %|% ccm_object_id: $FILE:$REVISION %|g" "$FILE" 
-    sed -i "s|% ccm_last_commit_author: .* %|% ccm_last_commit_author: $AUTHOR %|g" "$FILE"
-    sed -i "s|% ccm_last_commit_email: .* %|% ccm_last_commit_email: $AUTHOR_EMAIL %|g" "$FILE"
     sed -i "s|% ccm_author: .* %|% ccm_author: $AUTHOR %|g" "$FILE"
-    sed -i "s|% ccm_last_commit_message: .* %|% ccm_last_commit_message: $COMMIT_MESSAGE %|g" "$FILE"
-    sed -i "s|% ccm_last_commit_date: .* %|% ccm_last_commit_date: $LAST_COMMIT_DATE %|g" "$FILE"
+    sed -i "s|% ccm_author_email: .* %|% ccm_author_email: $AUTHOR_EMAIL %|g" "$FILE"
     sed -i "s|% ccm_file_name: .* %|% ccm_file_name: $(basename "$FILE") %|g" "$FILE"
-    # Support both legacy 'version' and 'ccm_version' keys
-    sed -i "s|% version: .* %|% version: $REVISION %|g" "$FILE"
-    sed -i "s|% ccm_version: .* %|% ccm_version: $REVISION %|g" "$FILE"
+    # Remove deprecated redundant fields if present
+    sed -i "/% version: .* %/d" "$FILE"
+    sed -i "/% ccm_version: .* %/d" "$FILE"
     sed -i "s|% ccm_file_last_modified: .* %|% ccm_file_last_modified: $FILE_LAST_MODIFIED %|g" "$FILE"
     sed -i "s|% ccm_file_type: .* %|% ccm_file_type: $FILE_TYPE %|g" "$FILE"
     sed -i "s|% ccm_file_encoding: .* %|% ccm_file_encoding: $FILE_ENCODING %|g" "$FILE"
