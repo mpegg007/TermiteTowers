@@ -122,7 +122,16 @@ while IFS= read -r -d '' FILE; do
         continue
     fi
 
-        # Auto-insert a header at top if missing, using CCM_HEADER_TEMPLATE.txt when present
+    # Determine ideal insertion line for header/fields
+    INSERT_AT_LINE=1
+    if [[ "$REL_PATH" =~ \\.(ya?ml)$ ]]; then
+        FIRST_LINE=$(head -n 1 "$FILE" 2>/dev/null || echo "")
+        if echo "$FIRST_LINE" | grep -q "yaml-language-server: \$schema="; then
+            INSERT_AT_LINE=2
+        fi
+    fi
+
+        # Auto-insert a header using CCM_HEADER_TEMPLATE.txt when present, but keep YAML modeline on line 1
     if ! grep -qE '% ccm_modify_date:' -- "$FILE"; then
         case "$REL_PATH" in
             *)
@@ -159,7 +168,11 @@ while IFS= read -r -d '' FILE; do
                             if [ $HAS_SHEBANG -eq 1 ] && [ "$COMM_MODE" = "line" ]; then
                                 { echo "$SHEBANG_LINE"; echo; cat "$TMP_HEADER"; echo; tail -n +2 "$FILE"; } > "$TMP"
                             else
-                                { cat "$TMP_HEADER"; echo; cat "$FILE"; } > "$TMP"
+                                if [[ "$REL_PATH" =~ \\.(ya?ml)$ ]] && head -n 1 "$FILE" | grep -q "yaml-language-server: \$schema="; then
+                                    { head -n 1 "$FILE"; echo; cat "$TMP_HEADER"; echo; tail -n +2 "$FILE"; } > "$TMP"
+                                else
+                                    { cat "$TMP_HEADER"; echo; cat "$FILE"; } > "$TMP"
+                                fi
                             fi
                             mv "$TMP" "$FILE"; rm -f "$TMP_HEADER"
                         else
@@ -189,8 +202,22 @@ while IFS= read -r -d '' FILE; do
                                   echo "$COMM_PREFIX % ccm_size: 0 %"
                                   echo "$COMM_PREFIX % ccm_tag:  %"
                                   echo
-                                  if [ $HAS_SHEBANG -eq 1 ]; then tail -n +2 "$FILE"; else cat "$FILE"; fi
+                                  if [ $HAS_SHEBANG -eq 1 ]; then
+                                      tail -n +2 "$FILE"
+                                  else
+                                      if [[ "$REL_PATH" =~ \\.(ya?ml)$ ]] && head -n 1 "$FILE" | grep -q "yaml-language-server: \$schema="; then
+                                          { :; } # handled below
+                                      else
+                                          cat "$FILE"
+                                      fi
+                                  fi
                                 } > "$TMP"
+                                # If YAML modeline present, reconstruct with modeline, header, rest
+                                if [[ "$REL_PATH" =~ \\.(ya?ml)$ ]] && head -n 1 "$FILE" | grep -q "yaml-language-server: \$schema="; then
+                                    TMP2=$(mktemp)
+                                    { head -n 1 "$FILE"; echo; cat "$TMP"; tail -n +2 "$FILE"; } > "$TMP2"
+                                    mv "$TMP2" "$TMP"
+                                fi
                                 mv "$TMP" "$FILE"
                                                         else
                                                                 # Block fallback: create a minimal header without line comment prefixes
@@ -220,11 +247,18 @@ while IFS= read -r -d '' FILE; do
 % ccm_tag:  %
 EOF
                                                                 {
+                                                                    if [[ "$REL_PATH" =~ \\.(ya?ml)$ ]] && head -n 1 "$FILE" | grep -q "yaml-language-server: \$schema="; then
+                                                                        head -n 1 "$FILE"; echo
+                                                                    fi
                                                                     echo "$COMM_OPEN"
                                                                     cat "$TMP_HEADER2"
                                                                     echo "$COMM_CLOSE"
                                                                     echo
-                                                                    cat "$FILE"
+                                                                    if [[ "$REL_PATH" =~ \\.(ya?ml)$ ]] && head -n 1 "$FILE" | grep -q "yaml-language-server: \$schema="; then
+                                                                        tail -n +2 "$FILE"
+                                                                    else
+                                                                        cat "$FILE"
+                                                                    fi
                                                                 } > "$TMP"
                                                                 mv "$TMP" "$FILE"
                                                                 rm -f "$TMP_HEADER2"
@@ -268,7 +302,7 @@ EOF
             local val="$1"; shift || true
             if ! grep -q "% ${key}:" -- "$FILE"; then
                 if [ "$COMM_MODE" = "line" ]; then
-                    sed -i "1i ${COMM_PREFIX} % ${key}: ${val} %" "$FILE"
+                    sed -i "${INSERT_AT_LINE}i ${COMM_PREFIX} % ${key}: ${val} %" "$FILE"
                 else
                     echo "Skipping ensure_field for block-comment file: $REL_PATH ($key)" >> "$LOG_FILE"
                 fi

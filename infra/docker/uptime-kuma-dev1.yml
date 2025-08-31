@@ -1,5 +1,6 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 # TermiteTowers Continuous Code Management Header TEMPLATE
-# % ccm_modify_date: 2025-08-31 11:51:01 %
+# % ccm_modify_date: 2025-08-31 14:31:46 %
 # % ccm_author: mpegg %
 # % ccm_author_email: mpegg@hotmail.com %
 # % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
@@ -11,19 +12,17 @@
 # % ccm_commit_author: unknown %
 # % ccm_commit_email: unknown %
 # % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
-# % ccm_file_last_modified: 2025-08-31 11:51:01 %
+# % ccm_file_last_modified: 2025-08-31 14:30:32 %
 # % ccm_file_name: uptime-kuma-dev1.yml %
 # % ccm_file_type: text/plain %
 # % ccm_file_encoding: us-ascii %
 # % ccm_file_eol: CRLF %
 # % ccm_path: infra/docker/uptime-kuma-dev1.yml %
-# % ccm_blob_sha: dce4640efbf38c10461a2e27da39668ce2815f90 %
+# % ccm_blob_sha: 10b92831f63e09ec2a25e5d0888fa2fe78831a4a %
 # % ccm_exec: no %
 # % ccm_size: 1613 %
 # % ccm_tag:  %
 # tt-ccm.header.end
-
-# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 name: uptime-kuma-dev1
 
 services:

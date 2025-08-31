@@ -1,6 +1,6 @@
 <!--
 TermiteTowers Continuous Code Management Header TEMPLATE
-% ccm_modify_date: 2025-08-31 14:14:22 %
+% ccm_modify_date: 2025-08-31 14:31:46 %
 % ccm_author: mpegg %
 % ccm_author_email: mpegg@hotmail.com %
 % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
@@ -12,15 +12,15 @@ TermiteTowers Continuous Code Management Header TEMPLATE
 % ccm_commit_author: unknown %
 % ccm_commit_email: unknown %
 % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
-% ccm_file_last_modified: 2025-08-31 14:14:22 %
+% ccm_file_last_modified: 2025-08-31 14:30:32 %
 % ccm_file_name: how-to-add-docker-app.md %
 % ccm_file_type: text/plain %
 % ccm_file_encoding: us-ascii %
 % ccm_file_eol: CRLF %
 % ccm_path: wiki/how-to-add-docker-app.md %
-% ccm_blob_sha: 178e76e61f8acca6fe77d4abe5d3dd54f4e6b5e3 %
+% ccm_blob_sha: 1001ab7378865e12c1a44ea5f85456f5ed79ffce %
 % ccm_exec: no %
-% ccm_size: 5523 %
+% ccm_size: 5752 %
 % ccm_tag:  %
 tt-ccm.header.end
 -->
@@ -64,6 +64,10 @@ sudo chmod -R u+rwX,g+rwX /mnt/ai_storage/$SERVICE
   - volumes for data
   - logging: json-file with size/rotate
   - env_file for secrets when applicable
+
+Note on VS Code schema validation:
+- Keep the yaml-language-server schema hint as the very first line of the file.
+- Our CCM header hooks are modeline-aware and will insert/update header lines after the modeline automatically.
 
 Example skeleton:
 ```yaml

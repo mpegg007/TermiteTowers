@@ -43,6 +43,17 @@ git --no-pager diff-tree --no-commit-id --name-only -r -z HEAD | while IFS= read
   FILE_TYPE=$(file --mime-type -b "$FILE" 2>/dev/null || echo unknown)
   FILE_ENCODING=$(file -b --mime-encoding "$FILE" 2>/dev/null || echo unknown)
 
+  # Determine insertion point respecting YAML modeline if present
+  INSERT_AT_LINE=1
+  case "$FILE" in
+    *.yml|*.yaml)
+      FIRST_LINE=$(head -n 1 "$FILE" 2>/dev/null || echo "")
+      if echo "$FIRST_LINE" | grep -q "yaml-language-server: \$schema="; then
+        INSERT_AT_LINE=2
+      fi
+      ;;
+  esac
+
   # Update fields that depend on the new commit
   sed -i "s|% ccm_commit_id: .* %|% ccm_commit_id: $ID %|g" "$FILE"
   sed -i "s|% ccm_commit_count: .* %|% ccm_commit_count: $REVISION %|g" "$FILE"
@@ -59,13 +70,13 @@ git --no-pager diff-tree --no-commit-id --name-only -r -z HEAD | while IFS= read
       if grep -q "% ccm_modify_date:" "$FILE"; then
         # Choose a reasonable comment prefix based on existing header line
         if grep -q "^# % ccm_modify_date:" "$FILE"; then
-          sed -i "1i # % ccm_tag: $COMMIT_TAG %" "$FILE"
+          sed -i "${INSERT_AT_LINE}i # % ccm_tag: $COMMIT_TAG %" "$FILE"
         elif grep -q "^// % ccm_modify_date:" "$FILE"; then
-          sed -i "1i // % ccm_tag: $COMMIT_TAG %" "$FILE"
+          sed -i "${INSERT_AT_LINE}i // % ccm_tag: $COMMIT_TAG %" "$FILE"
         elif grep -q "^-- % ccm_modify_date:" "$FILE"; then
-          sed -i "1i -- % ccm_tag: $COMMIT_TAG %" "$FILE"
+          sed -i "${INSERT_AT_LINE}i -- % ccm_tag: $COMMIT_TAG %" "$FILE"
         elif grep -q "^REM % ccm_modify_date:" "$FILE"; then
-          sed -i "1i REM % ccm_tag: $COMMIT_TAG %" "$FILE"
+          sed -i "${INSERT_AT_LINE}i REM % ccm_tag: $COMMIT_TAG %" "$FILE"
         else
           echo "Skipping ccm_tag insert for block or unknown style: $FILE" >> "$LOG_FILE"
         fi
@@ -81,7 +92,15 @@ git --no-pager diff-tree --no-commit-id --name-only -r -z HEAD | while IFS= read
   sed -i "s|% ccm_modify_date: .* %|% ccm_modify_date: $DATE %|g" "$FILE"
   # Ensure ccm_tag line exists (blank if not tagged yet)
   if ! grep -q "% ccm_tag:" "$FILE"; then
-    sed -i "1i # % ccm_tag:  %" "$FILE"
+    if grep -q "^# % ccm_modify_date:" "$FILE"; then
+      sed -i "${INSERT_AT_LINE}i # % ccm_tag:  %" "$FILE"
+    elif grep -q "^// % ccm_modify_date:" "$FILE"; then
+      sed -i "${INSERT_AT_LINE}i // % ccm_tag:  %" "$FILE"
+    elif grep -q "^-- % ccm_modify_date:" "$FILE"; then
+      sed -i "${INSERT_AT_LINE}i -- % ccm_tag:  %" "$FILE"
+    elif grep -q "^REM % ccm_modify_date:" "$FILE"; then
+      sed -i "${INSERT_AT_LINE}i REM % ccm_tag:  %" "$FILE"
+    fi
   fi
 done
 

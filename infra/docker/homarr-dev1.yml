@@ -1,5 +1,6 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 # TermiteTowers Continuous Code Management Header TEMPLATE
-# % ccm_modify_date: 2025-08-31 14:14:22 %
+# % ccm_modify_date: 2025-08-31 14:31:46 %
 # % ccm_author: mpegg %
 # % ccm_author_email: mpegg@hotmail.com %
 # % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
@@ -11,19 +12,17 @@
 # % ccm_commit_author: unknown %
 # % ccm_commit_email: unknown %
 # % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
-# % ccm_file_last_modified: 2025-08-31 13:54:50 %
+# % ccm_file_last_modified: 2025-08-31 14:30:32 %
 # % ccm_file_name: homarr-dev1.yml %
 # % ccm_file_type: text/plain %
 # % ccm_file_encoding: us-ascii %
 # % ccm_file_eol: CRLF %
 # % ccm_path: infra/docker/homarr-dev1.yml %
-# % ccm_blob_sha: c87efb220f9a7610219cc3b28a83fa8057294827 %
+# % ccm_blob_sha: bd2c0e63f3ced97c66904818e2138d758d4e4ba9 %
 # % ccm_exec: no %
-# % ccm_size: 1724 %
+# % ccm_size: 1759 %
 # % ccm_tag:  %
 # tt-ccm.header.end
-
-# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 name: homarr-dev1
 
 services:
