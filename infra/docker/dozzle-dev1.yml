@@ -1,0 +1,48 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE
+# % ccm_modify_date: 2025-08-31 12:26:15 %
+# % ccm_author: mpegg %
+# % ccm_author_email: mpegg@hotmail.com %
+# % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
+# % ccm_branch: dev1 %
+# % ccm_object_id: infra/docker/dozzle-dev1.yml:0 %
+# % ccm_commit_id: unknown %
+# % ccm_commit_count: 0 %
+# % ccm_commit_message: unknown %
+# % ccm_commit_author: unknown %
+# % ccm_commit_email: unknown %
+# % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
+# % ccm_file_last_modified: 2025-08-31 12:15:47 %
+# % ccm_file_name: dozzle-dev1.yml %
+# % ccm_file_type: text/plain %
+# % ccm_file_encoding: us-ascii %
+# % ccm_file_eol: CRLF %
+# % ccm_path: infra/docker/dozzle-dev1.yml %
+# % ccm_blob_sha: 80efed800aa48d13f2ebedc882e4f850680e9a22 %
+# % ccm_exec: no %
+# % ccm_size: 1416 %
+# % ccm_tag:  %
+# tt-ccm.header.end
+
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+name: dozzle-dev1
+
+services:
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle-dev1
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:3302:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - DOZZLE_LEVEL=info
+      - TZ=UTC
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+# Usage:
+#   docker compose -f infra/docker/dozzle-dev1.yml up -d
