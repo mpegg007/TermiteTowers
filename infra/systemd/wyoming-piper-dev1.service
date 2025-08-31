@@ -1,0 +1,22 @@
+# Wyoming Piper (dev1)
+# Place into /etc/systemd/system/wyoming-piper-dev1.service
+# Then: systemctl daemon-reload && systemctl enable --now wyoming-piper-dev1
+[Unit]
+Description=Wyoming Piper TTS (dev1)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mpegg-adm
+Group=mpegg-adm
+WorkingDirectory=/srv/dev1/piper
+Environment=VIRTUAL_ENV=/srv/dev1/piper/.venv
+Environment=PATH=/srv/dev1/piper/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+Environment=WYOMING_PIPER_DATA=/mnt/ai_storage/piper
+ExecStart=/srv/dev1/piper/.venv/bin/python /srv/dev1/piper/script/run --piper /srv/dev1/piper/piper --voice en_US-lessac-medium --uri tcp://0.0.0.0:10200 --data-dir /srv/dev1/piper/data --download-dir /srv/dev1/piper/data
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

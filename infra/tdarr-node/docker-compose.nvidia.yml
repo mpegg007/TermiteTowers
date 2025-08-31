@@ -1,0 +1,4 @@
+services:
+  tdarr-node:
+    # NVIDIA GPU overlay. Use with: docker compose -f docker-compose.yml -f docker-compose.nvidia.yml up -d
+    gpus: all

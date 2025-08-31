@@ -1,0 +1,30 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE
+# % ccm_modify_date: 2025-08-31 11:51:01 %
+# % ccm_author: mpegg %
+# % ccm_author_email: mpegg@hotmail.com %
+# % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
+# % ccm_branch: dev1 %
+# % ccm_object_id: infra/tdarr-node/tdarr-node-dev1.nvidia.yml:0 %
+# % ccm_commit_id: unknown %
+# % ccm_commit_count: 0 %
+# % ccm_commit_message: unknown %
+# % ccm_commit_author: unknown %
+# % ccm_commit_email: unknown %
+# % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
+# % ccm_file_last_modified: 2025-08-31 11:51:02 %
+# % ccm_file_name: tdarr-node-dev1.nvidia.yml %
+# % ccm_file_type: text/plain %
+# % ccm_file_encoding: us-ascii %
+# % ccm_file_eol: CRLF %
+# % ccm_path: infra/tdarr-node/tdarr-node-dev1.nvidia.yml %
+# % ccm_blob_sha: 8abb7987c16415d79275f5de424613c83e5bb200 %
+# % ccm_exec: no %
+# % ccm_size: 1181 %
+# % ccm_tag:  %
+# tt-ccm.header.end
+
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+services:
+  tdarr-node:
+    # NVIDIA GPU overlay. Use with: docker compose -f tdarr-node-dev1.yml -f tdarr-node-dev1.nvidia.yml up -d
+    gpus: all

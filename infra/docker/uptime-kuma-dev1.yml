@@ -1,0 +1,48 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE
+# % ccm_modify_date: 2025-08-31 11:51:01 %
+# % ccm_author: mpegg %
+# % ccm_author_email: mpegg@hotmail.com %
+# % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
+# % ccm_branch: dev1 %
+# % ccm_object_id: infra/docker/uptime-kuma-dev1.yml:0 %
+# % ccm_commit_id: unknown %
+# % ccm_commit_count: 0 %
+# % ccm_commit_message: unknown %
+# % ccm_commit_author: unknown %
+# % ccm_commit_email: unknown %
+# % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
+# % ccm_file_last_modified: 2025-08-31 11:51:01 %
+# % ccm_file_name: uptime-kuma-dev1.yml %
+# % ccm_file_type: text/plain %
+# % ccm_file_encoding: us-ascii %
+# % ccm_file_eol: CRLF %
+# % ccm_path: infra/docker/uptime-kuma-dev1.yml %
+# % ccm_blob_sha: dce4640efbf38c10461a2e27da39668ce2815f90 %
+# % ccm_exec: no %
+# % ccm_size: 1613 %
+# % ccm_tag:  %
+# tt-ccm.header.end
+
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+name: uptime-kuma-dev1
+
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma-dev1
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:3301:3001"
+    volumes:
+      - /mnt/ai_storage/uptime-kuma/data:/app/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+# Usage:
+#   sudo mkdir -p /mnt/ai_storage/uptime-kuma/data && \
+#   sudo chown -R 2001:1006 /mnt/ai_storage/uptime-kuma && \
+#   sudo chmod -R u+rwX,g+rwX /mnt/ai_storage/uptime-kuma && \
+#   docker compose -f infra/docker/uptime-kuma-dev1.yml up -d

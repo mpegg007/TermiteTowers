@@ -1,0 +1,5 @@
+services:
+  tdarr-node:
+    # Intel Quick Sync / VAAPI overlay. Use with: docker compose -f docker-compose.yml -f docker-compose.intel.yml up -d
+    devices:
+      - /dev/dri:/dev/dri

@@ -1,0 +1,22 @@
+# Wyoming Faster Whisper (dev1)
+# Place into /etc/systemd/system/wyoming-faster-whisper-dev1.service
+# Then: systemctl daemon-reload && systemctl enable --now wyoming-faster-whisper-dev1
+[Unit]
+Description=Wyoming Faster Whisper (dev1)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mpegg-adm
+Group=mpegg-adm
+WorkingDirectory=/srv/dev1/whisper/script
+Environment=VIRTUAL_ENV=/srv/dev1/whisper/.venv
+Environment=PATH=/srv/dev1/whisper/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+Environment=HF_HOME=/mnt/ai_storage/models/huggingface
+ExecStart=/srv/dev1/whisper/script/run --model base --uri tcp://0.0.0.0:10300 --download-dir /srv/dev1/whisper/data
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

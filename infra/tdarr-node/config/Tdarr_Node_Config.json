@@ -1,0 +1,36 @@
+{
+  "nodeName": "monolith-node",
+  "serverURL": "http://192.168.4.63:8266",
+  "serverIP": "192.168.4.63",
+  "serverPort": "8266",
+  "handbrakePath": "",
+  "ffmpegPath": "",
+  "mkvpropeditPath": "",
+  "pathTranslators": [
+    {
+      "server": "C:\\media.tt.omp\\VG",
+      "node": "/mnt/media/VG"
+    },
+    {
+      "server": "C:/media.tt.omp/VG",
+      "node": "/mnt/media/VG"
+    },
+    {
+      "server": "C:\\media.tt.omp",
+      "node": "/mnt/media"
+    },
+    {
+      "server": "C:/media.tt.omp",
+      "node": "/mnt/media"
+    }
+  ],
+  "nodeType": "mapped",
+  "unmappedNodeCache": "/app/unmappedNodeCache",
+  "logLevel": "DEBUG",
+  "priority": -1,
+  "cronPluginUpdate": "",
+  "apiKey": "",
+  "maxLogSizeMB": 10,
+  "pollInterval": 2000,
+  "startPaused": false
+}

@@ -1,0 +1,19 @@
+# Ollama (dev1)
+# Place into /etc/systemd/system/ollama-dev1.service
+# Then: systemctl daemon-reload && systemctl enable --now ollama-dev1
+[Unit]
+Description=Ollama LLM Server (dev1)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/srv/dev1/ollama
+Environment=OLLAMA_HOST=0.0.0.0:11434
+Environment=OLLAMA_MODELS=/mnt/ai_storage/ollama/models
+ExecStart=/usr/bin/ollama serve
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
