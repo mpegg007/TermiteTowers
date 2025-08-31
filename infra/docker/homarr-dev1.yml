@@ -1,0 +1,54 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE
+# % ccm_modify_date: 2025-08-31 14:14:22 %
+# % ccm_author: mpegg %
+# % ccm_author_email: mpegg@hotmail.com %
+# % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
+# % ccm_branch: dev1 %
+# % ccm_object_id: infra/docker/homarr-dev1.yml:0 %
+# % ccm_commit_id: unknown %
+# % ccm_commit_count: 0 %
+# % ccm_commit_message: unknown %
+# % ccm_commit_author: unknown %
+# % ccm_commit_email: unknown %
+# % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
+# % ccm_file_last_modified: 2025-08-31 13:54:50 %
+# % ccm_file_name: homarr-dev1.yml %
+# % ccm_file_type: text/plain %
+# % ccm_file_encoding: us-ascii %
+# % ccm_file_eol: CRLF %
+# % ccm_path: infra/docker/homarr-dev1.yml %
+# % ccm_blob_sha: c87efb220f9a7610219cc3b28a83fa8057294827 %
+# % ccm_exec: no %
+# % ccm_size: 1724 %
+# % ccm_tag:  %
+# tt-ccm.header.end
+
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+name: homarr-dev1
+
+services:
+  homarr:
+    image: ghcr.io/homarr-labs/homarr:latest
+    container_name: homarr-dev1
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:3303:7575"
+    env_file:
+      - ./env/homarr.env
+    environment:
+      - TZ=UTC
+    volumes:
+      - /mnt/ai_storage/homarr/configs:/app/data/configs
+      - /mnt/ai_storage/homarr/icons:/app/public/icons
+      - /mnt/ai_storage/homarr/data:/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+# Usage:
+#   sudo mkdir -p /mnt/ai_storage/homarr/{configs,icons,data} && \
+#   sudo chown -R 2001:1006 /mnt/ai_storage/homarr && \
+#   sudo chmod -R u+rwX,g+rwX /mnt/ai_storage/homarr && \
+#   docker compose -f infra/docker/homarr-dev1.yml up -d

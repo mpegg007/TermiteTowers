@@ -1,6 +1,6 @@
 <!--
 TermiteTowers Continuous Code Management Header TEMPLATE
-% ccm_modify_date: 2025-08-31 12:26:15 %
+% ccm_modify_date: 2025-08-31 14:14:22 %
 % ccm_author: mpegg %
 % ccm_author_email: mpegg@hotmail.com %
 % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
@@ -12,15 +12,15 @@ TermiteTowers Continuous Code Management Header TEMPLATE
 % ccm_commit_author: unknown %
 % ccm_commit_email: unknown %
 % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
-% ccm_file_last_modified: 2025-08-31 12:26:15 %
+% ccm_file_last_modified: 2025-08-31 14:11:33 %
 % ccm_file_name: README.md %
 % ccm_file_type: text/plain %
 % ccm_file_encoding: us-ascii %
 % ccm_file_eol: CRLF %
 % ccm_path: wiki/README.md %
-% ccm_blob_sha: c3908269e34275c258ef17b3a20f9b920807ceb1 %
+% ccm_blob_sha: c7bb9ef08469e3c80ce6c289e994ef7301f164d0 %
 % ccm_exec: no %
-% ccm_size: 2090 %
+% ccm_size: 2140 %
 % ccm_tag:  %
 tt-ccm.header.end
 -->
@@ -31,8 +31,8 @@ These Markdown pages are ready to import into Wiki.js. They capture the storage/
 
 - Storage model: `storage-model.md`
 - Compose conventions: `compose-conventions.md`
-- Service runbooks: `runbook-openwebui.md`, `runbook-lobechat.md`, `runbook-tortoise.md`, `runbook-whisper.md`, `runbook-wikijs.md`, `runbook-kitchenowl.md`, `runbook-uptime-kuma.md`, `runbook-dozzle.md`
-- Quick refs: `env-variables.md`, `paths-and-symlinks.md`, `ports.md`
+- Service runbooks: `runbook-openwebui.md`, `runbook-lobechat.md`, `runbook-tortoise.md`, `runbook-whisper.md`, `runbook-wikijs.md`, `runbook-kitchenowl.md`, `runbook-uptime-kuma.md`, `runbook-dozzle.md`, `runbook-homarr.md`
+- Quick refs: `env-variables.md`, `paths-and-symlinks.md`, `ports.md`, `how-to-add-docker-app.md`
 
 ## System architecture (Mermaid)
 

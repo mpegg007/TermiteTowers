@@ -1,6 +1,6 @@
 <!--
 TermiteTowers Continuous Code Management Header TEMPLATE
-% ccm_modify_date: 2025-08-31 12:26:15 %
+% ccm_modify_date: 2025-08-31 14:14:22 %
 % ccm_author: mpegg %
 % ccm_author_email: mpegg@hotmail.com %
 % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
@@ -12,15 +12,15 @@ TermiteTowers Continuous Code Management Header TEMPLATE
 % ccm_commit_author: unknown %
 % ccm_commit_email: unknown %
 % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
-% ccm_file_last_modified: 2025-08-31 12:26:15 %
+% ccm_file_last_modified: 2025-08-31 13:40:09 %
 % ccm_file_name: ports.md %
 % ccm_file_type: text/plain %
 % ccm_file_encoding: us-ascii %
 % ccm_file_eol: CRLF %
 % ccm_path: wiki/ports.md %
-% ccm_blob_sha: 8d97276db6aa4612cac129b244467d4b2e27dcfc %
+% ccm_blob_sha: 28439857b1a557ceeed7f19c6277d06d6bef92cf %
 % ccm_exec: no %
-% ccm_size: 2433 %
+% ccm_size: 2556 %
 % ccm_tag:  %
 tt-ccm.header.end
 -->
@@ -38,6 +38,7 @@ This page tracks host and service ports used across TermiteTowers.
 | KitchenOwl     | kitchenowl.termitetowers.ca| 3300      | 8080           | Nginx -> localhost:3300; Docker 3300:8080  |
 | Uptime Kuma    | kuma.termitetowers.ca      | 3301      | 3001           | Nginx -> localhost:3301; Docker 3301:3001  |
 | Dozzle         | dozzle.termitetowers.ca    | 3302      | 8080           | Nginx -> localhost:3302; Docker 3302:8080  |
+| Homarr         | home.termitetowers.ca      | 3303      | 7575           | Nginx -> localhost:3303; Docker 3303:7575  |
 | Ollama API     | ollama.termitetowers.ca    | 11434     | 11434          | Nginx -> localhost:11434                   |
 | Private PyPI Proxy | pypi.termitetowers.ca  | 4080      | 4080           | Nginx -> localhost:4080                    |
 
