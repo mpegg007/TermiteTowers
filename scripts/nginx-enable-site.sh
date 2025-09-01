@@ -1,27 +1,27 @@
 #!/usr/bin/env bash
 
 # TermiteTowers Continuous Code Management Header TEMPLATE
-# % ccm_modify_date: 2025-08-31 12:10:53 %
+# % ccm_modify_date: 2025-09-01 15:47:13 %
 # % ccm_author: mpegg %
 # % ccm_author_email: mpegg@hotmail.com %
 # % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
 # % ccm_branch: dev1 %
-# % ccm_object_id: scripts/nginx-enable-site.sh:0 %
-# % ccm_commit_id: unknown %
-# % ccm_commit_count: 0 %
-# % ccm_commit_message: unknown %
-# % ccm_commit_author: unknown %
-# % ccm_commit_email: unknown %
-# % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
-# % ccm_file_last_modified: 2025-08-31 12:10:53 %
+# % ccm_object_id: scripts/nginx-enable-site.sh:68 %
+# % ccm_commit_id: fe785a319b8d06e69d2978b17dc9bb8512161977 %
+# % ccm_commit_count: 68 %
+# % ccm_commit_message: misc updated %
+# % ccm_commit_author: mpegg %
+# % ccm_commit_email: mpegg@hotmail.com %
+# % ccm_commit_date: 2025-09-01 15:47:12 -0400 %
+# % ccm_file_last_modified: 2025-09-01 15:47:12 %
 # % ccm_file_name: nginx-enable-site.sh %
 # % ccm_file_type: text/x-shellscript %
 # % ccm_file_encoding: us-ascii %
 # % ccm_file_eol: CRLF %
 # % ccm_path: scripts/nginx-enable-site.sh %
-# % ccm_blob_sha: 47b1da93bfb2a09da60431363e5f058c030f5681 %
+# % ccm_blob_sha: 0a56c39a3e5414fb294d0ea076715e886f2596a7 %
 # % ccm_exec: yes %
-# % ccm_size: 2146 %
+# % ccm_size: 2156 %
 # % ccm_tag:  %
 # tt-ccm.header.end
 

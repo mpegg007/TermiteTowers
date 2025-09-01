@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+name: vault-dev1
+services:
+  vault:
+    image: infisical/infisical:latest
+    container_name: vault-dev1
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:3304:3000"
+    env_file:
+      - ./env/vault.env
+    volumes:
+      - /mnt/ai_storage/vault/data:/app/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - vaultnet
+    depends_on:
+      postgres:
+        condition: service_healthy
+  postgres:
+    image: postgres:15
+    container_name: vault-postgres
+    restart: unless-stopped
+    env_file:
+      - ./env/vault.env
+    volumes:
+      - /mnt/ai_storage/vault/data:/var/lib/postgresql/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - vaultnet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB -h localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  vaultnet:
+    driver: bridge

@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+name: sops-dev1
+services:
+  sops:
+    image: mozilla/sops:latest
+    container_name: sops-dev1
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:3306:3000"
+    env_file:
+      - ./env/sops.env
+    volumes:
+      - /mnt/ai_storage/sops/data:/app/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"

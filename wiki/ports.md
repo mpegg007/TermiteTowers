@@ -1,6 +1,6 @@
 <!--
 TermiteTowers Continuous Code Management Header TEMPLATE
-% ccm_modify_date: 2025-08-31 14:14:22 %
+% ccm_modify_date: 2025-09-01 15:47:12 %
 % ccm_author: mpegg %
 % ccm_author_email: mpegg@hotmail.com %
 % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
@@ -12,15 +12,15 @@ TermiteTowers Continuous Code Management Header TEMPLATE
 % ccm_commit_author: unknown %
 % ccm_commit_email: unknown %
 % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
-% ccm_file_last_modified: 2025-08-31 13:40:09 %
+% ccm_file_last_modified: 2025-09-01 10:51:53 %
 % ccm_file_name: ports.md %
 % ccm_file_type: text/plain %
 % ccm_file_encoding: us-ascii %
 % ccm_file_eol: CRLF %
 % ccm_path: wiki/ports.md %
-% ccm_blob_sha: 28439857b1a557ceeed7f19c6277d06d6bef92cf %
+% ccm_blob_sha: 376f68556ce024928b54f7f65083cf70e0652de5 %
 % ccm_exec: no %
-% ccm_size: 2556 %
+% ccm_size: 2823 %
 % ccm_tag:  %
 tt-ccm.header.end
 -->
@@ -41,6 +41,18 @@ This page tracks host and service ports used across TermiteTowers.
 | Homarr         | home.termitetowers.ca      | 3303      | 7575           | Nginx -> localhost:3303; Docker 3303:7575  |
 | Ollama API     | ollama.termitetowers.ca    | 11434     | 11434          | Nginx -> localhost:11434                   |
 | Private PyPI Proxy | pypi.termitetowers.ca  | 4080      | 4080           | Nginx -> localhost:4080                    |
+
+## Allocated Ports
+
+| Service | Port  |
+|---------|-------|
+| Vault   | 3304  |
+| ESO     | 3305  |
+| SOPS    | 3306  |
+
+## Notes
+- Ensure no port conflicts before assigning new ports.
+- Update this document whenever a new service is added or ports are reallocated.
 
 Notes:
 - Host ports are typically bound on 0.0.0.0 in Compose where applicable.

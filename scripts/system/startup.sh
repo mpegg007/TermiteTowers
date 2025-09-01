@@ -1,27 +1,27 @@
 #!/bin/bash
 
 # TermiteTowers Continuous Code Management Header TEMPLATE
-# % ccm_modify_date: 2025-08-31 11:51:03 %
+# % ccm_modify_date: 2025-09-01 15:47:13 %
 # % ccm_author: mpegg %
 # % ccm_author_email: mpegg@hotmail.com %
 # % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
 # % ccm_branch: dev1 %
-# % ccm_object_id: scripts/system/startup.sh:63 %
-# % ccm_commit_id: c4e2a8f2e016fb9e651719db70eee32449231a16 %
-# % ccm_commit_count: 63 %
-# % ccm_commit_message: general cleanup, add kitchenowl % ccm_commit_message: unknown % uptimekuma %
+# % ccm_object_id: scripts/system/startup.sh:68 %
+# % ccm_commit_id: fe785a319b8d06e69d2978b17dc9bb8512161977 %
+# % ccm_commit_count: 68 %
+# % ccm_commit_message: misc updated %
 # % ccm_commit_author: mpegg %
 # % ccm_commit_email: mpegg@hotmail.com %
-# % ccm_commit_date: 2025-08-31 11:51:01 -0400 %
-# % ccm_file_last_modified: 2025-08-31 11:51:03 %
+# % ccm_commit_date: 2025-09-01 15:47:12 -0400 %
+# % ccm_file_last_modified: 2025-09-01 15:47:12 %
 # % ccm_file_name: startup.sh %
 # % ccm_file_type: text/x-shellscript %
 # % ccm_file_encoding: utf-8 %
 # % ccm_file_eol: CRLF %
 # % ccm_path: scripts/system/startup.sh %
-# % ccm_blob_sha: d218741f6bbbd28baedf6e246383a85abf3b7410 %
+# % ccm_blob_sha: 256daafbe745eebb8b3addb1269673659541aabb %
 # % ccm_exec: yes %
-# % ccm_size: 3910 %
+# % ccm_size: 4276 %
 # % ccm_tag:  %
 # tt-ccm.header.end
 
@@ -109,6 +109,13 @@ else
   echo "❌ Piper script not found at $PIPER_SCRIPT" | tee -a "$LOG_FILE"
 fi
 
+# Start Home Assistant integration
+if [ -f "$LLM_HANDLER" ]; then
+  echo "🟢 Starting Home Assistant integration..." | tee -a "$LOG_FILE"
+  /bin/python3 "$LLM_HANDLER" >> "$LOG_FILE" 2>&1 &
+else
+  echo "❌ Home Assistant handler not found at $LLM_HANDLER" | tee -a "$LOG_FILE"
+fi
 
 # Health Checks
 echo "🔍 Running health checks..." | tee -a "$LOG_FILE"
@@ -125,6 +132,5 @@ check_port() {
 
 check_port 10300  # Whisper
 check_port 10200  # Piper
-check_port 11434  # Ollama
 check_port 5000   # Flask (Home Assistant integration)
 

@@ -28,3 +28,4 @@ build/
 .env
 .env.*.local
 secrets/*.json
+docker/env/*.env

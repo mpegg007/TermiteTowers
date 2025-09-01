@@ -1,6 +1,6 @@
 <!--
 TermiteTowers Continuous Code Management Header TEMPLATE
-% ccm_modify_date: 2025-08-31 11:51:01 %
+% ccm_modify_date: 2025-09-01 15:47:12 %
 % ccm_author: mpegg %
 % ccm_author_email: mpegg@hotmail.com %
 % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
@@ -12,15 +12,15 @@ TermiteTowers Continuous Code Management Header TEMPLATE
 % ccm_commit_author: unknown %
 % ccm_commit_email: unknown %
 % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
-% ccm_file_last_modified: 2025-08-31 11:51:03 %
+% ccm_file_last_modified: 2025-09-01 15:40:43 %
 % ccm_file_name: runbook-ollama.md %
 % ccm_file_type: text/plain %
 % ccm_file_encoding: us-ascii %
 % ccm_file_eol: CRLF %
 % ccm_path: wiki/runbook-ollama.md %
-% ccm_blob_sha: f291e6f782d08d870509ed28bab75a0ade34e642 %
+% ccm_blob_sha: 1752f4633ff162b0e818e42cb6a748c1fcb74681 %
 % ccm_exec: no %
-% ccm_size: 1596 %
+% ccm_size: 1597 %
 % ccm_tag:  %
 tt-ccm.header.end
 -->
@@ -41,12 +41,12 @@ tt-ccm.header.end
 
 ## Paths
 - Program: /srv/dev1/ollama
-- Models: /mnt/ai_storage/ollama/models (OLLAMA_MODELS)
+- Models: /mnt/ai_storage/models/ollama (OLLAMA_MODELS)
 
 ## Notes
 - Open WebUI and Lobe Chat use host.docker.internal:11434
-- Ensure service user has rw access to /mnt/ai_storage/ollama/models
+- Ensure service user has rw access to /mnt/ai_storage/models/ollama
 
 ## Troubleshooting
-- Permission errors: `sudo chown -R <svc>:<grp> /mnt/ai_storage/ollama/models`
+- Permission errors: `sudo chown -R <svc>:<grp> /mnt/ai_storage/models/ollama`
 - Check connectivity: `curl http://localhost:11434/api/tags`
