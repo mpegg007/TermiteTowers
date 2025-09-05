@@ -1,5 +1,5 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE
-# % ccm_modify_date: 2025-08-29 15:31:33 %
+# % ccm_modify_date: 2025-09-05 18:15:05 %
 # % ccm_author: mpegg %
 # % ccm_author_email: mpegg@hotmail.com %
 # % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
@@ -11,16 +11,16 @@
 # % ccm_commit_author: unknown %
 # % ccm_commit_email: unknown %
 # % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
-# % ccm_file_last_modified: 2025-08-29 15:31:34 %
+# % ccm_file_last_modified: 2025-09-05 18:14:40 %
 # % ccm_file_name: shutdown.sh %
 # % ccm_file_type: text/plain %
 # % ccm_file_encoding: us-ascii %
 # % ccm_file_eol: CRLF %
 # % ccm_path: shutdown.sh %
-# % ccm_blob_sha: 153f02455492fe84931f25d1adb1357f194442e0 %
-# % ccm_exec: yes %
-# % ccm_size: 1333 %
-# % ccm_tag:  %
+# % ccm_blob_sha: 192db8bc083f9dc5214ced8a5e611800f2cf576a %
+# % ccm_exec: no %
+# % ccm_size: 1340 %
+# % ccm_tag:  % test
 # tt-ccm.header.end
 
 pkill -f "wyoming-faster-whisper/script/run"
