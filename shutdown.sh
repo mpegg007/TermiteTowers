@@ -1,4 +1,4 @@
-#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start: 
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_modify_date: 2025-08-29 07:37:53 %
 #  %ccm_git_author: CCM Maintainer %
 #  %ccm_git_author_email: ccm@test %
@@ -22,8 +22,8 @@
 #  %ccm_git_size: 659 %
 #  %ccm_git_tag:  %
 #  %ccm_git_language_mode:  %
-#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:
- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start: 
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 
+ TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
  %ccm_git_modify_date: 2025-08-29 07:37:53 %
  %ccm_git_author: CCM Maintainer %
  %ccm_git_author_email: ccm@test %
@@ -47,8 +47,7 @@
  %ccm_git_size: 659 %
  %ccm_git_tag:  %
  %ccm_git_language_mode:  %
- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:
-# %end of template --- %ccm_git_header_end:
+ TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 
 
 pkill -f "wyoming-faster-whisper/script/run"
 pkill -f "wyoming-piper/script/run"

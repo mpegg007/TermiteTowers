@@ -47,13 +47,13 @@ pseudo_shebang_for_batch() {
 remove_ccm_header() {
     local file="$1"
     # Rename commit message field before removing header lines
-    sed -i -E 's|%git_commit_history: (.*) %|%git_commit_history: \1 %|g' "$file"
+    sed -i -E 's|%ccm_git_commit_history: (.*) %|%git_commit_history: \1 %|g' "$file"
     sed -i -E \
-        -e '/ %ccm_git_[a-z_]+: .* %/d' \
-        -e '/^%ccm_git_[a-z_]+: .* %/d' \
+        -e '/ %ccm_git_.*: .* %/d' \
+        -e '/^%ccm_git_.*: .* %/d' \
         -e '/^# TermiteTowers Continuous Code Management Header TEMPLATE/d' \
         -e '/^# tt-ccm.header.end/d' \
-        -e '/^# % ccm_[a-z_]+: .* %/d' "$file"
+        -e '/^# % ccm_.*: .* %/d' "$file"
 }
 
 # Helper: Insert CCM header from template
