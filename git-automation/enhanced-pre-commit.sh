@@ -1,14 +1,63 @@
-#!/usr/bin/env bash
-# TermiteTowers Continuous Code Management Header TEMPLATE %ccm_git_header_start: 
+# # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start: 
+# # %ccm_git_modify_date: 2025-08-29 07:37:53 %
+# # %ccm_git_author: CCM Maintainer %
+# # %ccm_git_author_email: ccm@test %
+# # %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
+# # %ccm_git_branch: main %
+# # %ccm_git_object_id: <PATH>:0 %
+# # %ccm_git_commit_id: unknown %
+# # %ccm_git_commit_count: 0 %
+# # %git_commit_history: unknown %
+# # %ccm_git_commit_author: unknown %
+# # %ccm_git_commit_email: unknown %
+# # %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
+# # %ccm_git_file_last_modified: 2025-08-29 07:37:52 %
+# # %ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
+# # %ccm_git_file_type: text/plain %
+# # %ccm_git_file_encoding: us-ascii %
+# # %ccm_git_file_eol: CRLF %
+# # %ccm_git_path: CCM_HEADER_TEMPLATE.txt %
+# # %ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
+# # %ccm_git_exec: no %
+# # %ccm_git_size: 659 %
+# # %ccm_git_tag:  %
+# # %ccm_git_language_mode:  %
+# # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:
+# # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start: 
+# # %ccm_git_modify_date: 2025-08-29 07:37:53 %
+# # %ccm_git_author: CCM Maintainer %
+# # %ccm_git_author_email: ccm@test %
+# # %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
+# # %ccm_git_branch: main %
+# # %ccm_git_object_id: <PATH>:0 %
+# # %ccm_git_commit_id: unknown %
+# # %ccm_git_commit_count: 0 %
+# # %git_commit_history: unknown %
+# # %ccm_git_commit_author: unknown %
+# # %ccm_git_commit_email: unknown %
+# # %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
+# # %ccm_git_file_last_modified: 2025-08-29 07:37:52 %
+# # %ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
+# # %ccm_git_file_type: text/plain %
+# # %ccm_git_file_encoding: us-ascii %
+# # %ccm_git_file_eol: CRLF %
+# # %ccm_git_path: CCM_HEADER_TEMPLATE.txt %
+# # %ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
+# # %ccm_git_exec: no %
+# # %ccm_git_size: 659 %
+# # %ccm_git_tag:  %
+# # %ccm_git_language_mode:  %
+# # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start: 
 # %ccm_git_modify_date: 2025-08-29 07:37:53 %
 # %ccm_git_author: CCM Maintainer %
 # %ccm_git_author_email: ccm@test %
 # %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
 # %ccm_git_branch: main %
-# %ccm_git_object_id: git-automation/enhanced-pre-commit.sh:0 %
+# %ccm_git_object_id: <PATH>:0 %
 # %ccm_git_commit_id: unknown %
 # %ccm_git_commit_count: 0 %
-# %ccm_git_commit_message: unknown %
+# %git_commit_history: unknown %
 # %ccm_git_commit_author: unknown %
 # %ccm_git_commit_email: unknown %
 # %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
@@ -22,6 +71,163 @@
 # %ccm_git_exec: no %
 # %ccm_git_size: 659 %
 # %ccm_git_tag:  %
+# %ccm_git_language_mode:  %
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start: 
+# %ccm_git_modify_date: 2025-08-29 07:37:53 %
+# %ccm_git_author: CCM Maintainer %
+# %ccm_git_author_email: ccm@test %
+# %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
+# %ccm_git_branch: main %
+# %ccm_git_object_id: <PATH>:0 %
+# %ccm_git_commit_id: unknown %
+# %ccm_git_commit_count: 0 %
+# %git_commit_history: unknown %
+# %ccm_git_commit_author: unknown %
+# %ccm_git_commit_email: unknown %
+# %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
+# %ccm_git_file_last_modified: 2025-08-29 07:37:52 %
+# %ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
+# %ccm_git_file_type: text/plain %
+# %ccm_git_file_encoding: us-ascii %
+# %ccm_git_file_eol: CRLF %
+# %ccm_git_path: CCM_HEADER_TEMPLATE.txt %
+# %ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
+# %ccm_git_exec: no %
+# %ccm_git_size: 659 %
+# %ccm_git_tag:  %
+# %ccm_git_language_mode:  %
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start: 
+# %ccm_git_modify_date: 2025-08-29 07:37:53 %
+# %ccm_git_author: CCM Maintainer %
+# %ccm_git_author_email: ccm@test %
+# %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
+# %ccm_git_branch: main %
+# %ccm_git_object_id: <PATH>:0 %
+# %ccm_git_commit_id: unknown %
+# %ccm_git_commit_count: 0 %
+# %git_commit_history: unknown %
+# %ccm_git_commit_author: unknown %
+# %ccm_git_commit_email: unknown %
+# %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
+# %ccm_git_file_last_modified: 2025-08-29 07:37:52 %
+# %ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
+# %ccm_git_file_type: text/plain %
+# %ccm_git_file_encoding: us-ascii %
+# %ccm_git_file_eol: CRLF %
+# %ccm_git_path: CCM_HEADER_TEMPLATE.txt %
+# %ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
+# %ccm_git_exec: no %
+# %ccm_git_size: 659 %
+# %ccm_git_tag:  %
+# %ccm_git_language_mode:  %
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start: 
+# %ccm_git_modify_date: 2025-08-29 07:37:53 %
+# %ccm_git_author: CCM Maintainer %
+# %ccm_git_author_email: ccm@test %
+# %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
+# %ccm_git_branch: main %
+# %ccm_git_object_id: <PATH>:0 %
+# %ccm_git_commit_id: unknown %
+# %ccm_git_commit_count: 0 %
+# %git_commit_history: unknown %
+# %ccm_git_commit_author: unknown %
+# %ccm_git_commit_email: unknown %
+# %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
+# %ccm_git_file_last_modified: 2025-08-29 07:37:52 %
+# %ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
+# %ccm_git_file_type: text/plain %
+# %ccm_git_file_encoding: us-ascii %
+# %ccm_git_file_eol: CRLF %
+# %ccm_git_path: CCM_HEADER_TEMPLATE.txt %
+# %ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
+# %ccm_git_exec: no %
+# %ccm_git_size: 659 %
+# %ccm_git_tag:  %
+# %ccm_git_language_mode:  %
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:
+TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start: 
+%ccm_git_modify_date: 2025-08-29 07:37:53 %
+%ccm_git_author: CCM Maintainer %
+%ccm_git_author_email: ccm@test %
+%ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
+%ccm_git_branch: main %
+%ccm_git_object_id: <PATH>:0 %
+%ccm_git_commit_id: unknown %
+%ccm_git_commit_count: 0 %
+%git_commit_history: unknown %
+%ccm_git_commit_author: unknown %
+%ccm_git_commit_email: unknown %
+%ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
+%ccm_git_file_last_modified: 2025-08-29 07:37:52 %
+%ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
+%ccm_git_file_type: text/plain %
+%ccm_git_file_encoding: us-ascii %
+%ccm_git_file_eol: CRLF %
+%ccm_git_path: CCM_HEADER_TEMPLATE.txt %
+%ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
+%ccm_git_exec: no %
+%ccm_git_size: 659 %
+%ccm_git_tag:  %
+%ccm_git_language_mode:  %
+TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:
+TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start: 
+%ccm_git_modify_date: 2025-08-29 07:37:53 %
+%ccm_git_author: CCM Maintainer %
+%ccm_git_author_email: ccm@test %
+%ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
+%ccm_git_branch: main %
+%ccm_git_object_id: <PATH>:0 %
+%ccm_git_commit_id: unknown %
+%ccm_git_commit_count: 0 %
+%git_commit_history: unknown %
+%ccm_git_commit_author: unknown %
+%ccm_git_commit_email: unknown %
+%ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
+%ccm_git_file_last_modified: 2025-08-29 07:37:52 %
+%ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
+%ccm_git_file_type: text/plain %
+%ccm_git_file_encoding: us-ascii %
+%ccm_git_file_eol: CRLF %
+%ccm_git_path: CCM_HEADER_TEMPLATE.txt %
+%ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
+%ccm_git_exec: no %
+%ccm_git_size: 659 %
+%ccm_git_tag:  %
+%ccm_git_language_mode:  %
+TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:
+# Externalized language mode and comment style helper
+get_language_mode_and_comments() {
+    local file="$1"
+    local ext="${file##*.}"
+    local mode="" block_start="" block_end="" line_comment=""
+    if [ -n "$VSCODE_LANGUAGE_MODE" ]; then
+        mode="$VSCODE_LANGUAGE_MODE"
+    else
+        case "$ext" in
+            sh|bash) mode="shellscript"; line_comment="#" ;;
+            py) mode="python"; line_comment="#" ;;
+            js|ts|jsx|tsx) mode="javascript"; line_comment="//" ;;
+            bat|cmd) mode="bat"; line_comment="REM" ;;
+            ps1|psm1|psd1) mode="powershell"; line_comment="#" ;;
+            yaml|yml) mode="yaml"; line_comment="#" ;;
+            sql) mode="sql"; line_comment="--" ;;
+            html|xml|md) mode="html"; block_start="<!--"; block_end="-->"; line_comment="" ;;
+            css|scss|less) mode="css"; block_start="/*"; block_end="*/"; line_comment="" ;;
+            *) mode="$ext"; line_comment="#" ;;
+        esac
+    fi
+    # Default block comments for some types
+    if [ -z "$block_start" ] && [ "$mode" = "python" ]; then block_start=""; block_end=""; fi
+        local file="$1"
+        local ext="${file##*.}"
+        local mode=""
+    echo "$mode|$block_start|$block_end|$line_comment"
+}
+#!/usr/bin/env bash
+# %git_commit_history: unknown %
 # %end of template --- %ccm_git_header_end:
 # enhanced-pre-commit.sh: Enhanced pre-commit hook for TermiteTowers
 # Incorporates logic from update-keywords.sh, with improvements
@@ -64,12 +270,11 @@ pseudo_shebang_for_batch() {
     esac
 }
 
-# Helper: Remove CCM header (regex logic for all specified patterns)
+# Helper: Remove CCM header (only static header lines)
 remove_ccm_header() {
     local file="$1"
-    # Replace commit message line with git_commit_history
+    # Rename commit message field before removing header lines
     sed -i -E 's|%git_commit_history: (.*) %|%git_commit_history: \1 %|g' "$file"
-    # Remove header lines
     sed -i -E \
         -e '/ %ccm_git_[a-z_]+: .* %/d' \
         -e '/^# TermiteTowers Continuous Code Management Header TEMPLATE/d' \
@@ -84,12 +289,7 @@ insert_ccm_header() {
     local eol="$3"
     local tmp_header
     tmp_header=$(mktemp)
-    awk -v path="$rel_path" -v eol="$eol" '{
-        gsub(/<PATH>/, path)
-        if ($0 ~ /% ccm_file_name:/) gsub(/% ccm_file_name: .*/, "% ccm_file_name: " path " %")
-        if ($0 ~ /% ccm_file_eol:/) gsub(/% ccm_file_eol: .*/, "% ccm_file_eol: " eol " %")
-        print
-    }' "$TEMPLATE_FILE" > "$tmp_header"
+    cp "$TEMPLATE_FILE" "$tmp_header"
     # Insert header after shebang or pseudo-shebang
     if head -n 1 "$file" | grep -q '^#!'; then
         { head -n 1 "$file"; cat "$tmp_header"; tail -n +2 "$file"; } > "$file.new"
@@ -100,44 +300,100 @@ insert_ccm_header() {
     fi
     mv "$file.new" "$file"
     rm -f "$tmp_header"
-}
-
-
-
-# Helper: Get language mode for a file
-get_language_mode() {
-    local file="$1"
-    local ext="${file##*.}"
-    local mode=""
-    if [ -n "$VSCODE_LANGUAGE_MODE" ]; then
-        mode="$VSCODE_LANGUAGE_MODE"
+    # Now update all static and commit-bound fields using a single sed block
+    author=$(git config --get user.name)
+    author_email=$(git config --get user.email)
+    branch=$(git rev-parse --abbrev-ref HEAD)
+    repo=$(git config --get remote.origin.url)
+    file_name=$(basename "$file")
+    file_type=$(file --mime-type -b "$file" 2>/dev/null || echo unknown)
+    file_encoding=$(file -b --mime-encoding "$file" 2>/dev/null || echo unknown)
+    file_eol="$eol"
+    file_path="$rel_path"
+    file_last_modified=$(date -r "$file" +"%Y-%m-%d %H:%M:%S" 2>/dev/null || date +"%Y-%m-%d %H:%M:%S")
+    blob_sha=$(git hash-object "$file" 2>/dev/null || echo unknown)
+    exec_flag=$(test -x "$file" && echo yes || echo no)
+    file_size=$(stat -c%s "$file" 2>/dev/null || echo 0)
+    modify_date=$(date +"%Y-%m-%d %H:%M:%S")
+    # Accept lang_mode, block_start, block_end, line_comment as arguments
+    local lang_mode="$4"
+    local block_start="$5"
+    local block_end="$6"
+    local line_comment="$7"
+    # Format header with comment style
+    tmp_header=$(mktemp)
+    cp "$TEMPLATE_FILE" "$tmp_header"
+    formatted_header=$(mktemp)
+    header_lines=( )
+    while IFS= read -r line; do
+        header_lines+=("$line")
+    done < "$tmp_header"
+    {
+        if [ -n "$block_start" ]; then echo "$block_start"; fi
+        for i in "${!header_lines[@]}"; do
+            l="${header_lines[$i]}"
+            if [ -n "$line_comment" ]; then
+                out_line="$line_comment $l"
+            else
+                out_line="$l"
+            fi
+            # Add block_end to last line
+            if [ "$i" -eq $((${#header_lines[@]}-1)) ] && [ -n "$block_end" ]; then
+                out_line="$out_line $block_end"
+            fi
+            echo "$out_line"
+        done
+    } > "$formatted_header"
+    # Insert header after shebang or pseudo-shebang
+    if head -n 1 "$file" | grep -q '^#!'; then
+        { head -n 1 "$file"; cat "$formatted_header"; tail -n +2 "$file"; } > "$file.new"
+    elif [[ "$file" == *.bat || "$file" == *.cmd ]]; then
+        { pseudo_shebang_for_batch "$file"; cat "$formatted_header"; tail -n +2 "$file"; } > "$file.new"
     else
-        case "$ext" in
-            sh|bash) mode="shellscript" ;;
-            py) mode="python" ;;
-            js) mode="javascript" ;;
-            ts) mode="typescript" ;;
-            bat|cmd) mode="bat" ;;
-            ps1) mode="powershell" ;;
-            yaml|yml) mode="yaml" ;;
-            sql) mode="sql" ;;
-            *) mode="$ext" ;;
-        esac
+        { cat "$formatted_header"; cat "$file"; } > "$file.new"
     fi
-    echo "$mode"
+    mv "$file.new" "$file"
+    rm -f "$tmp_header" "$formatted_header"
+    # Now update all static and commit-bound fields using a single sed block
+        -e "s|%ccm_git_modify_date: .* %|%ccm_git_modify_date: $modify_date %|g" \
+        -e "s|%ccm_git_author: .* %|%ccm_git_author: $author %|g" \
+        -e "s|%ccm_git_author_email: .* %|%ccm_git_author_email: $author_email %|g" \
+        -e "s|%ccm_git_repo: .* %|%ccm_git_repo: $repo %|g" \
+        -e "s|%ccm_git_branch: .* %|%ccm_git_branch: $branch %|g" \
+        -e "s|%ccm_git_object_id: .* %|%ccm_git_object_id: $file_path:0 %|g" \
+        -e "s|%ccm_git_commit_id: .* %|%ccm_git_commit_id: unknown %|g" \
+        -e "s|%ccm_git_commit_count: .* %|%ccm_git_commit_count: 0 %|g" \
+        -e "s|%git_commit_history: .* %|%ccm_git_commit_message: unknown %|g" \
+        -e "s|%ccm_git_commit_author: .* %|%ccm_git_commit_author: unknown %|g" \
+        -e "s|%ccm_git_commit_email: .* %|%ccm_git_commit_email: unknown %|g" \
+        -e "s|%ccm_git_commit_date: .* %|%ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %|g" \
+        -e "s|%ccm_git_file_last_modified: .* %|%ccm_git_file_last_modified: $file_last_modified %|g" \
+        -e "s|%ccm_git_file_name: .* %|%ccm_git_file_name: $file_name %|g" \
+        -e "s|%ccm_git_file_type: .* %|%ccm_git_file_type: $file_type %|g" \
+        -e "s|%ccm_git_file_encoding: .* %|%ccm_git_file_encoding: $file_encoding %|g" \
+        -e "s|%ccm_git_file_eol: .* %|%ccm_git_file_eol: $file_eol %|g" \
+        -e "s|%ccm_git_path: .* %|%ccm_git_path: $file_path %|g" \
+        -e "s|%ccm_git_blob_sha: .* %|%ccm_git_blob_sha: $blob_sha %|g" \
+        -e "s|%ccm_git_exec: .* %|%ccm_git_exec: $exec_flag %|g" \
+        -e "s|%ccm_git_size: .* %|%ccm_git_size: $file_size %|g" \
+        -e "s|%ccm_git_tag: .* %|%ccm_git_tag:  %|g" \
+        -e "s|%ccm_git_language_mode: .* %|%ccm_git_language_mode: $lang_mode %|g" "$file"
 }
+
+
+
 
 # Main loop: process staged files
 while IFS= read -r -d '' FILE; do
     REL_PATH=$(git ls-files --full-name -- "$FILE" 2>/dev/null || echo "$FILE")
     MIME_INFO=$(file --mime -b "$FILE" 2>/dev/null || echo '')
-    if echo "$MIME_INFO" | grep -qi 'charset=binary'; then continue; fi
+    if echo "$MIME_INFO" | grep -qi 'charset=binary'; then continue; fi 
     if ! echo "$MIME_INFO" | grep -qiE '^text/|charset='; then continue; fi
     FILE_EOL="$(grep -q $'\r\n' "$FILE" && echo "CRLF" || echo "LF")"
+    IFS='|' read -r lang_mode block_start block_end line_comment <<< "$(bash "$REPO_ROOT/git-automation/get_language_mode_and_comments.sh" "$FILE")"
     remove_ccm_header "$FILE"
-    insert_ccm_header "$FILE" "$REL_PATH" "$FILE_EOL"
-    LANG_MODE="$(get_language_mode "$FILE")"
-    sed -i "s|% ccm_git_language_mode: shellscript %|g" "$FILE"
+    insert_ccm_header "$FILE" "$REL_PATH" "$FILE_EOL" "$lang_mode" "$block_start" "$block_end" "$line_comment"
+
     git add "$FILE"
 done < <(git diff --cached --name-only -z)
 
