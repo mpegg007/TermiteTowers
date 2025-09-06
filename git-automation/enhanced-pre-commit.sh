@@ -51,8 +51,8 @@ remove_ccm_header() {
     sed -E \
         -e '/ %ccm_git_.*: .* %/d' \
         -e '/^%ccm_git_.*: .* %/d' \
-        -e '/^# TermiteTowers Continuous Code Management Header TEMPLATE/d' \
-        -e '/^# tt-ccm.header.end/d' \
+        -e '/TermiteTowers Continuous Code Management Header TEMPLATE/d' \
+        -e '/tt-ccm.header.end/d' \
         -e '/^# % ccm_.*: .* %/d' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
 }
 
