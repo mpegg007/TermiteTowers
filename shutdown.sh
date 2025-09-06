@@ -1,54 +1,54 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-#  %ccm_git_modify_date: 2025-09-05 20:23:07 %
-#  %ccm_git_author: mpegg %
-#  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
-#  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: shutdown.sh:0 %
+#  %ccm_git_modify_date: 2025-09-05 20:30:57 %
+#  %ccm_git_author:  %
+#  %ccm_git_author_email:  %
+#  %ccm_git_repo:  %
+#  %ccm_git_branch:  %
+#  %ccm_git_object_id: :0 %
 #  %ccm_git_commit_id: unknown %
 #  %ccm_git_commit_count: 0 %
 #  %ccm_git_commit_message: unknown %
 #  %ccm_git_commit_author: unknown %
 #  %ccm_git_commit_email: unknown %
 #  %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
-#  %ccm_git_file_last_modified: 2025-09-05 20:23:07 %
-#  %ccm_git_file_name: shutdown.sh %
-#  %ccm_git_file_type: text/plain %
-#  %ccm_git_file_encoding: us-ascii %
-#  %ccm_git_file_eol: CRLF %
-#  %ccm_git_path: shutdown.sh %
-#  %ccm_git_blob_sha: ea688a5805e647c9c1f09dc8bbdc17246ff24c93 %
+#  %ccm_git_file_last_modified:  %
+#  %ccm_git_file_name:  %
+#  %ccm_git_file_type:  %
+#  %ccm_git_file_encoding:  %
+#  %ccm_git_file_eol:  %
+#  %ccm_git_path:  %
+#  %ccm_git_blob_sha: 4e4c4534aaee8798c0e1ed01e8f50d52ee2c0306 %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 1556 %
+#  %ccm_git_size: 1573 %
 #  %ccm_git_tag:  %
 #  %ccm_git_language_mode: shellscript %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 
- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
- %ccm_git_modify_date: 2025-09-05 20:23:07 %
- %ccm_git_author: mpegg %
- %ccm_git_author_email: mpegg@hotmail.com %
- %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
- %ccm_git_branch: dev1 %
- %ccm_git_object_id: shutdown.sh:0 %
- %ccm_git_commit_id: unknown %
- %ccm_git_commit_count: 0 %
- %ccm_git_commit_message: unknown %
- %ccm_git_commit_author: unknown %
- %ccm_git_commit_email: unknown %
- %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
- %ccm_git_file_last_modified: 2025-09-05 20:23:07 %
- %ccm_git_file_name: shutdown.sh %
- %ccm_git_file_type: text/plain %
- %ccm_git_file_encoding: us-ascii %
- %ccm_git_file_eol: CRLF %
- %ccm_git_path: shutdown.sh %
- %ccm_git_blob_sha: ea688a5805e647c9c1f09dc8bbdc17246ff24c93 %
- %ccm_git_exec: no %
- %ccm_git_size: 1556 %
- %ccm_git_tag:  %
- %ccm_git_language_mode: shellscript %
- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_modify_date: 2025-09-05 20:30:57 %
+#  %ccm_git_author:  %
+#  %ccm_git_author_email:  %
+#  %ccm_git_repo:  %
+#  %ccm_git_branch:  %
+#  %ccm_git_object_id: :0 %
+#  %ccm_git_commit_id: unknown %
+#  %ccm_git_commit_count: 0 %
 #  %ccm_git_commit_message: unknown %
+#  %ccm_git_commit_author: unknown %
+#  %ccm_git_commit_email: unknown %
+#  %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
+#  %ccm_git_file_last_modified:  %
+#  %ccm_git_file_name:  %
+#  %ccm_git_file_type:  %
+#  %ccm_git_file_encoding:  %
+#  %ccm_git_file_eol:  %
+#  %ccm_git_path:  %
+#  %ccm_git_blob_sha: 4e4c4534aaee8798c0e1ed01e8f50d52ee2c0306 %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 1573 %
+#  %ccm_git_tag:  %
+#  %ccm_git_language_mode: shellscript %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 
+
 
  
 pkill -f "wyoming-faster-whisper/script/run"

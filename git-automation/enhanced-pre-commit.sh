@@ -47,13 +47,22 @@ pseudo_shebang_for_batch() {
 remove_ccm_header() {
     local file="$1"
     # Rename commit message field before removing header lines
-    sed -i -E 's|%ccm_git_commit_message: (.*) %|%git_commit_history: \1 %|g' "$file"
-    sed -E \
-        -e '/ %ccm_git_.*: .* %/d' \
-        -e '/^%ccm_git_.*: .* %/d' \
-        -e '/TermiteTowers Continuous Code Management Header TEMPLATE/d' \
-        -e '/tt-ccm.header.end/d' \
-        -e '/^# % ccm_.*: .* %/d' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+        local tmpfile="${file}.tmp"
+        sed -E \
+            -e 's|%ccm_git_commit_history: (.*) %|%git_commit_history: \1 %|g' \
+            -e '/ %ccm_git_.*: .* %/d' \
+            -e '/^%ccm_git_.*: .* %/d' \
+            -e '/^[[:space:]]*# TermiteTowers Continuous Code Management Header TEMPLATE/d' \
+            -e '/^[[:space:]]*# tt-ccm.header.end/d' \
+            -e '/^[[:space:]]*# % ccm_.*: .* %/d' "$file" > "$tmpfile"
+        if cmp -s "$file" "$tmpfile"; then
+            echo "[ERROR] No header lines removed from $file" >> "$LOG_FILE"
+            rm -f "$tmpfile"
+            return 1
+        else
+            mv "$tmpfile" "$file" && echo "[INFO] Header lines removed from $file" >> "$LOG_FILE"
+            return 0
+        fi
 }
 
 # Helper: Insert CCM header from template
@@ -72,19 +81,43 @@ insert_ccm_header() {
     else
         { cat "$tmp_header"; cat "$file"; } > "$file.new"
     fi
-    mv "$file.new" "$file"
-    rm -f "$tmp_header"
-    # Now update all static and commit-bound fields using a single sed block
-    author=$(git config --get user.name)
-    author_email=$(git config --get user.email)
-    branch=$(git rev-parse --abbrev-ref HEAD)
-    repo=$(git config --get remote.origin.url)
-    file_name=$(basename "$file")
-    file_type=$(file --mime-type -b "$file" 2>/dev/null || echo unknown)
-    file_encoding=$(file -b --mime-encoding "$file" 2>/dev/null || echo unknown)
-    file_eol="$eol"
-    file_path="$rel_path"
-    file_last_modified=$(date -r "$file" +"%Y-%m-%d %H:%M:%S" 2>/dev/null || date +"%Y-%m-%d %H:%M:%S")
+        tmp_header=$(mktemp)
+        cp "$TEMPLATE_FILE" "$tmp_header"
+        formatted_header=$(mktemp)
+        header_lines=()
+        while IFS= read -r line; do
+            header_lines+=("$line")
+        done < "$tmp_header"
+        {
+            if [ -n "$block_start" ]; then echo "$block_start"; fi
+            for i in "${!header_lines[@]}"; do
+                l="${header_lines[$i]}"
+                if [ -n "$line_comment" ]; then
+                    out_line="$line_comment $l"
+                else
+                    out_line="$l"
+                fi
+                if [ "$i" -eq $((${#header_lines[@]}-1)) ] && [ -n "$block_end" ]; then
+                    out_line="$out_line $block_end"
+                fi
+                echo "$out_line"
+            done
+        } > "$formatted_header"
+        if head -n 1 "$file" | grep -q '^#!'; then
+            { head -n 1 "$file"; cat "$formatted_header"; tail -n +2 "$file"; } > "$file.new"
+        elif [[ "$file" == *.bat || "$file" == *.cmd ]]; then
+            { pseudo_shebang_for_batch "$file"; cat "$formatted_header"; tail -n +2 "$file"; } > "$file.new"
+        else
+            { cat "$formatted_header"; cat "$file"; } > "$file.new"
+        fi
+        if cmp -s "$file" "$file.new"; then
+            echo "[ERROR] Header insertion failed for $file" >> "$LOG_FILE"
+            rm -f "$tmp_header" "$formatted_header" "$file.new"
+            return 1
+        else
+            mv "$file.new" "$file" && echo "[INFO] Header inserted for $file" >> "$LOG_FILE"
+            rm -f "$tmp_header" "$formatted_header"
+        fi
     blob_sha=$(git hash-object "$file" 2>/dev/null || echo unknown)
     exec_flag=$(test -x "$file" && echo yes || echo no)
     file_size=$(stat -c%s "$file" 2>/dev/null || echo 0)
