@@ -1,5 +1,5 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-#  %ccm_git_modify_date: 2025-09-05 20:19:35 %
+#  %ccm_git_modify_date: 2025-09-05 20:23:07 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
 #  %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
@@ -11,20 +11,20 @@
 #  %ccm_git_commit_author: unknown %
 #  %ccm_git_commit_email: unknown %
 #  %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
-#  %ccm_git_file_last_modified: 2025-09-05 20:19:35 %
+#  %ccm_git_file_last_modified: 2025-09-05 20:23:07 %
 #  %ccm_git_file_name: shutdown.sh %
 #  %ccm_git_file_type: text/plain %
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_path: shutdown.sh %
-#  %ccm_git_blob_sha: efb17262fe80c1603cf5f390cc56976c789a0f46 %
+#  %ccm_git_blob_sha: ea688a5805e647c9c1f09dc8bbdc17246ff24c93 %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 1522 %
+#  %ccm_git_size: 1556 %
 #  %ccm_git_tag:  %
 #  %ccm_git_language_mode: shellscript %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 
  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
- %ccm_git_modify_date: 2025-09-05 20:19:35 %
+ %ccm_git_modify_date: 2025-09-05 20:23:07 %
  %ccm_git_author: mpegg %
  %ccm_git_author_email: mpegg@hotmail.com %
  %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
@@ -36,18 +36,19 @@
  %ccm_git_commit_author: unknown %
  %ccm_git_commit_email: unknown %
  %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
- %ccm_git_file_last_modified: 2025-09-05 20:19:35 %
+ %ccm_git_file_last_modified: 2025-09-05 20:23:07 %
  %ccm_git_file_name: shutdown.sh %
  %ccm_git_file_type: text/plain %
  %ccm_git_file_encoding: us-ascii %
  %ccm_git_file_eol: CRLF %
  %ccm_git_path: shutdown.sh %
- %ccm_git_blob_sha: efb17262fe80c1603cf5f390cc56976c789a0f46 %
+ %ccm_git_blob_sha: ea688a5805e647c9c1f09dc8bbdc17246ff24c93 %
  %ccm_git_exec: no %
- %ccm_git_size: 1522 %
+ %ccm_git_size: 1556 %
  %ccm_git_tag:  %
  %ccm_git_language_mode: shellscript %
  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 
+#  %ccm_git_commit_message: unknown %
 
  
 pkill -f "wyoming-faster-whisper/script/run"

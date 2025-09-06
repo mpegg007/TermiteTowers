@@ -47,7 +47,7 @@ pseudo_shebang_for_batch() {
 remove_ccm_header() {
     local file="$1"
     # Rename commit message field before removing header lines
-    sed -i -E 's|%ccm_git_commit_history: (.*) %|%git_commit_history: \1 %|g' "$file"
+    sed -i -E 's|%ccm_git_commit_message: (.*) %|%git_commit_history: \1 %|g' "$file"
     sed -E \
         -e '/ %ccm_git_.*: .* %/d' \
         -e '/^%ccm_git_.*: .* %/d' \
