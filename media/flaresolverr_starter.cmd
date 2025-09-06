@@ -1,29 +1,31 @@
 @echo off
 REM  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-REM  %ccm_git_modify_date: 2025-09-06 10:01:24 %
-REM  %ccm_git_author:  %
-REM  %ccm_git_author_email:  %
-REM  %ccm_git_repo:  %
-REM  %ccm_git_branch:  %
-REM  %ccm_git_object_id: :0 %
+REM  %ccm_git_repo: TermiteTowers %
+REM  %ccm_git_branch: dev1 %
+REM  %ccm_git_object_id: media/flaresolverr_starter.cmd:0 %
+REM  %ccm_git_author: mpegg %
+REM  %ccm_git_author_email: mpegg@hotmail.com %
+REM  %ccm_git_blob_sha: abc69c2cbfa3f3bfff7f26460539bfdaa0b997cf %
 REM  %ccm_git_commit_id: unknown %
 REM  %ccm_git_commit_count: 0 %
-REM  %ccm_git_commit_message: unknown %
+REM  %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
 REM  %ccm_git_commit_author: unknown %
 REM  %ccm_git_commit_email: unknown %
-REM  %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
-REM  %ccm_git_file_last_modified:  %
-REM  %ccm_git_file_name:  %
-REM  %ccm_git_file_type:  %
-REM  %ccm_git_file_encoding:  %
-REM  %ccm_git_file_eol:  %
-REM  %ccm_git_path:  %
-REM  %ccm_git_blob_sha: e3d0ca4bcbc6e39a954092e922c1f203e2f11d8a %
-REM  %ccm_git_exec: no %
-REM  %ccm_git_size: 820 %
-REM  %ccm_git_tag:  %
+REM  %ccm_git_commit_message: unknown %
+REM  %ccm_git_modify_date: 2025-09-06 11:51:26 %
+REM  %ccm_git_file_last_modified: 2025-09-06 11:51:26 %
+REM  %ccm_git_file_name: flaresolverr_starter.cmd %
+REM  %ccm_git_path: media/flaresolverr_starter.cmd %
 REM  %ccm_git_language_mode: bat %
-REM  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 
+REM  %ccm_git_file_type: text/x-msdos-batch %
+REM  %ccm_git_file_encoding: us-ascii %
+REM  %ccm_git_file_eol: CRLF %
+REM  %ccm_git_exec: no %
+REM  %ccm_git_size: 833 %
+REM  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+REM %git_commit_history: test % 
+
+
 
 :: Enable logging to a file
 set LOGFILE=c:\jobLogs\flaresolverr_starter.log

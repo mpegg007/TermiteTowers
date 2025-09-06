@@ -5,6 +5,7 @@ set -euo pipefail
 # Post-commit updater: finalize commit-bound fields and amend the commit.
 # Safe defaults: skip on merge or if no HEAD.
 
+REPO_ROOT=$(git rev-parse --show-toplevel)
 
 URL_RAW=$(git config --get remote.origin.url)
 URL_SAFE=$(echo "$URL_RAW" | sed 's/%/%%/g')
@@ -31,20 +32,47 @@ echo "Post-commit updater started at $(date) for $ID" >> "$LOG_FILE"
 
 
 # Only operate on changed files with CCM header, skip binary
-git --no-pager diff-tree --no-commit-id --name-only -r -z HEAD | while IFS= read -r -d '' FILE; do
-  # Skip automation directory
-  case "$FILE" in
-    git-automation/*|*/git-automation/*) continue ;;
-  esac
+if [ -n "${1-}" ] && [ -f "$1" ]; then
+  echo "[DEBUG] Arg1 present and is a file: processing '$1'" >> "$LOG_FILE"
+  FILES_TO_PROCESS=("$1")
+else
+  if [ -n "${1-}" ]; then
+    echo "[DEBUG] Arg1 present but is NOT a file ('$1'), defaulting to staged files" >> "$LOG_FILE"
+  else
+    echo "[DEBUG] No arg1: staged files mode" >> "$LOG_FILE"
+  fi
+  IFS=$'\0' read -d '' -r -a FILES_TO_PROCESS < <(git --no-pager diff-tree --no-commit-id --name-only -r -z HEAD)
+fi
+
+echo "[DEBUG] FILES_TO_PROCESS: ${FILES_TO_PROCESS[*]}" >> "$LOG_FILE"
+
+for FILE in "${FILES_TO_PROCESS[@]}"; do
+  echo "[DEBUG] Considering file: $FILE" >> "$LOG_FILE"
   # Only process files with CCM header
-  if ! grep -qE '%ccm_git_[a-z_]+: .* %' "$FILE"; then continue; fi
+  if ! grep -qE '%ccm_git_.*: .* %' "$FILE"; then
+    echo "[DEBUG] Skipping $FILE: no CCM header found" >> "$LOG_FILE"
+    continue
+  fi
   # Skip binary files
   MIME_INFO=$(file --mime -b "$FILE" 2>/dev/null || echo '')
-  if echo "$MIME_INFO" | grep -qi 'charset=binary'; then continue; fi
-  # Update only commit-bound fields
+  if echo "$MIME_INFO" | grep -qi 'charset=binary'; then
+    echo "[DEBUG] Skipping $FILE: binary file detected ($MIME_INFO)" >> "$LOG_FILE"
+    continue
+  fi
+
+  echo "[DEBUG] Updating CCM fields in $FILE" >> "$LOG_FILE"
+  echo "[DEBUG] %ccm_git_commit_id: $ID" >> "$LOG_FILE"
+  echo "[DEBUG] %ccm_git_commit_count: $REVISION" >> "$LOG_FILE"
+  echo "[DEBUG] %ccm_git_object_id: $FILE:$REVISION" >> "$LOG_FILE"
+  echo "[DEBUG] %ccm_git_commit_message (-> %ccm_git_commit_message): $COMMIT_MESSAGE_SAFE" >> "$LOG_FILE"
+  echo "[DEBUG] %ccm_git_commit_author: $AUTHOR" >> "$LOG_FILE"
+  echo "[DEBUG] %ccm_git_commit_email: $AUTHOR_EMAIL" >> "$LOG_FILE"
+  echo "[DEBUG] %ccm_git_commit_date: $COMMIT_DATE" >> "$LOG_FILE"
+
   sed -i "s|%ccm_git_commit_id: .* %|%ccm_git_commit_id: $ID %|g" "$FILE"
   sed -i "s|%ccm_git_commit_count: .* %|%ccm_git_commit_count: $REVISION %|g" "$FILE"
-  sed -i "s|%git_commit_history: .* %|%ccm_git_commit_message: $COMMIT_MESSAGE_SAFE %|g" "$FILE"
+  sed -i "s|%ccm_git_object_id: .* %|%ccm_git_object_id: $FILE:$REVISION %|g" "$FILE"
+  sed -i "s|%ccm_git_commit_message: .* %|%ccm_git_commit_message: $COMMIT_MESSAGE_SAFE %|g" "$FILE"
   sed -i "s|%ccm_git_commit_author: .* %|%ccm_git_commit_author: $AUTHOR %|g" "$FILE"
   sed -i "s|%ccm_git_commit_email: .* %|%ccm_git_commit_email: $AUTHOR_EMAIL %|g" "$FILE"
   sed -i "s|%ccm_git_commit_date: .* %|%ccm_git_commit_date: $COMMIT_DATE %|g" "$FILE"
@@ -52,7 +80,11 @@ done
 
 # If there are changes, amend the commit (no edit to message). Avoid recursion.
 if ! git diff --quiet; then
-  git add -A
+  if [ "${2-}" = "--try" ]; then
+    echo "[INFO] --try specified, skipping git add command" >> "$LOG_FILE"
+  else
+    git add -A
+  fi
   # Create lock and ensure cleanup
   echo $$ > "$LOCK_FILE"
   trap 'rm -f "$LOCK_FILE"' EXIT
@@ -66,7 +98,11 @@ if ! git diff --quiet; then
   fi
   if [ "$BEHIND" = "0" ]; then
     # Amend without running hooks again
-    git -c core.hooksPath=/dev/null commit --amend --no-edit
+    if [ "${2-}" == "--try" ]; then
+      echo "[INFO] --try specified, skipping git amend command" >> "$LOG_FILE"
+    else
+      git -c core.hooksPath=/dev/null commit --amend --no-edit
+    fi
   else
     echo "Skipping amend: branch is behind upstream (would rewrite history)" >> "$LOG_FILE"
   fi
