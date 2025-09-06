@@ -1,5 +1,6 @@
+#!/usr/bin/env bash
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-#  %ccm_git_modify_date: 2025-09-05 20:30:57 %
+#  %ccm_git_modify_date: 2025-09-05 20:32:18 %
 #  %ccm_git_author:  %
 #  %ccm_git_author_email:  %
 #  %ccm_git_repo:  %
@@ -17,14 +18,14 @@
 #  %ccm_git_file_encoding:  %
 #  %ccm_git_file_eol:  %
 #  %ccm_git_path:  %
-#  %ccm_git_blob_sha: 4e4c4534aaee8798c0e1ed01e8f50d52ee2c0306 %
+#  %ccm_git_blob_sha: ca1805011eeadea3ed05d372d9d749bcd0aa0d93 %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 1573 %
+#  %ccm_git_size: 1571 %
 #  %ccm_git_tag:  %
 #  %ccm_git_language_mode: shellscript %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-#  %ccm_git_modify_date: 2025-09-05 20:30:57 %
+#  %ccm_git_modify_date: 2025-09-05 20:32:18 %
 #  %ccm_git_author:  %
 #  %ccm_git_author_email:  %
 #  %ccm_git_repo:  %
@@ -42,21 +43,18 @@
 #  %ccm_git_file_encoding:  %
 #  %ccm_git_file_eol:  %
 #  %ccm_git_path:  %
-#  %ccm_git_blob_sha: 4e4c4534aaee8798c0e1ed01e8f50d52ee2c0306 %
+#  %ccm_git_blob_sha: ca1805011eeadea3ed05d372d9d749bcd0aa0d93 %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 1573 %
+#  %ccm_git_size: 1571 %
 #  %ccm_git_tag:  %
 #  %ccm_git_language_mode: shellscript %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 
-
-
  
 pkill -f "wyoming-faster-whisper/script/run"
 pkill -f "wyoming-piper/script/run"
 pkill -f "ollama serve"
 pkill -f "llm_server/handlers/home_assistant.py"
 docker stop open-webui lobechat >> "$LOG_FILE" 2>&1
-#!/usr/bin/env bash
 # Wrapper: forward to moved script
 set -e
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
