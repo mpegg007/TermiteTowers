@@ -1,4 +1,28 @@
 #!/usr/bin/env bash
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: git-automation/enhanced-post-commit.sh:85 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 818b10f80f16e03e7862112837844d98e3d5cff1 %
+#  %ccm_git_commit_id: 6ed8d9d5fb6be216e7e0f9c5e931d0b5364b8a67 %
+#  %ccm_git_commit_count: 85 %
+#  %ccm_git_commit_date: 2025-09-06 12:09:11 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: git-automation cleanup %
+#  %ccm_git_modify_date: 2025-09-06 12:02:06 %
+#  %ccm_git_file_last_modified: 2025-09-06 11:52:11 %
+#  %ccm_git_file_name: enhanced-post-commit.sh %
+#  %ccm_git_path: git-automation/enhanced-post-commit.sh %
+#  %ccm_git_language_mode: shellscript %
+#  %ccm_git_file_type: text/x-shellscript %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: yes %
+#  %ccm_git_size: 10950 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 
 set -euo pipefail
 
@@ -69,13 +93,13 @@ for FILE in "${FILES_TO_PROCESS[@]}"; do
   echo "[DEBUG] %ccm_git_commit_email: $AUTHOR_EMAIL" >> "$LOG_FILE"
   echo "[DEBUG] %ccm_git_commit_date: $COMMIT_DATE" >> "$LOG_FILE"
 
-  sed -i "s|%ccm_git_commit_id: .* %|%ccm_git_commit_id: $ID %|g" "$FILE"
-  sed -i "s|%ccm_git_commit_count: .* %|%ccm_git_commit_count: $REVISION %|g" "$FILE"
-  sed -i "s|%ccm_git_object_id: .* %|%ccm_git_object_id: $FILE:$REVISION %|g" "$FILE"
-  sed -i "s|%ccm_git_commit_message: .* %|%ccm_git_commit_message: $COMMIT_MESSAGE_SAFE %|g" "$FILE"
-  sed -i "s|%ccm_git_commit_author: .* %|%ccm_git_commit_author: $AUTHOR %|g" "$FILE"
-  sed -i "s|%ccm_git_commit_email: .* %|%ccm_git_commit_email: $AUTHOR_EMAIL %|g" "$FILE"
-  sed -i "s|%ccm_git_commit_date: .* %|%ccm_git_commit_date: $COMMIT_DATE %|g" "$FILE"
+  sed -i "s|%ccm_git_commit_id: 6ed8d9d5fb6be216e7e0f9c5e931d0b5364b8a67 %|g" "$FILE"
+  sed -i "s|%ccm_git_commit_count: 85 %|g" "$FILE"
+  sed -i "s|%ccm_git_object_id: git-automation/enhanced-post-commit.sh:85 %|g" "$FILE"
+  sed -i "s|%ccm_git_commit_message: git-automation cleanup %|g" "$FILE"
+  sed -i "s|%ccm_git_commit_author: mpegg %|g" "$FILE"
+  sed -i "s|%ccm_git_commit_email: mpegg@hotmail.com %|g" "$FILE"
+  sed -i "s|%ccm_git_commit_date: 2025-09-06 12:09:11 -0400 %|g" "$FILE"
 done
 
 # If there are changes, amend the commit (no edit to message). Avoid recursion.

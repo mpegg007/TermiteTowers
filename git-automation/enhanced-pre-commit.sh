@@ -1,7 +1,29 @@
 #!/usr/bin/env bash
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: git-automation/enhanced-pre-commit.sh:0 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 818b10f80f16e03e7862112837844d98e3d5cff1 %
+#  %ccm_git_commit_id: unknown %
+#  %ccm_git_commit_count: 0 %
+#  %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
+#  %ccm_git_commit_author: unknown %
+#  %ccm_git_commit_email: unknown %
+#  %ccm_git_commit_message: unknown %
+#  %ccm_git_modify_date: 2025-09-06 12:02:06 %
+#  %ccm_git_file_last_modified: 2025-09-06 11:52:11 %
+#  %ccm_git_file_name: enhanced-pre-commit.sh %
+#  %ccm_git_path: git-automation/enhanced-pre-commit.sh %
+#  %ccm_git_language_mode: shellscript %
+#  %ccm_git_file_type: text/x-shellscript %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: yes %
+#  %ccm_git_size: 10950 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 
-# %git_commit_history: unknown %
-# %end of template --- %ccm_git_header_end:
 # enhanced-pre-commit.sh: Enhanced pre-commit hook for TermiteTowers
 # Incorporates logic from update-keywords.sh, with improvements
 
