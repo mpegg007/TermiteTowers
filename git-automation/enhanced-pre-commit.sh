@@ -49,12 +49,11 @@ remove_ccm_header() {
     # Rename commit message field before removing header lines
         local tmpfile="${file}.tmp"
         sed -E \
-            -e 's|%ccm_git_commit_history: (.*) %|%git_commit_history: \1 %|g' \
-            -e '/ %ccm_git_.*: .* %/d' \
-            -e '/^%ccm_git_.*: .* %/d' \
-            -e '/^[[:space:]]*# TermiteTowers Continuous Code Management Header TEMPLATE/d' \
-            -e '/^[[:space:]]*# tt-ccm.header.end/d' \
-            -e '/^[[:space:]]*# % ccm_.*: .* %/d' "$file" > "$tmpfile"
+            -e 's| %ccm_git_commit_history: | %git_commit_history: |g' \
+            -e '/^.{0,9}%ccm_.*: .* %/d' \
+            -e '/^.{0,9}% ccm_.*: .* %/d' \
+            -e '/^.{0,9}TermiteTowers Continuous Code Management Header TEMPLATE/d' \
+            -e '/^.{0,9}tt-ccm.header.end/d' "$file" > "$tmpfile"
         if cmp -s "$file" "$tmpfile"; then
             echo "[ERROR] No header lines removed from $file" >> "$LOG_FILE"
             rm -f "$tmpfile"
