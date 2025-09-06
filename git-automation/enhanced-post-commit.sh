@@ -2,16 +2,16 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: git-automation/enhanced-post-commit.sh:88 %
+#  %ccm_git_object_id: git-automation/enhanced-post-commit.sh:85 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
 #  %ccm_git_blob_sha: 818b10f80f16e03e7862112837844d98e3d5cff1 %
-#  %ccm_git_commit_id: 3a0a85b049cdd15e418cb59bb782b256f2c12c1b %
-#  %ccm_git_commit_count: 88 %
-#  %ccm_git_commit_date: 2025-09-06 12:56:39 -0400 %
+#  %ccm_git_commit_id: 6ed8d9d5fb6be216e7e0f9c5e931d0b5364b8a67 %
+#  %ccm_git_commit_count: 85 %
+#  %ccm_git_commit_date: 2025-09-06 12:09:11 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: test %
+#  %ccm_git_commit_message: git-automation cleanup %
 #  %ccm_git_modify_date: 2025-09-06 12:02:06 %
 #  %ccm_git_file_last_modified: 2025-09-06 11:52:11 %
 #  %ccm_git_file_name: enhanced-post-commit.sh %
@@ -71,7 +71,14 @@ fi
 
 echo "[DEBUG] FILES_TO_PROCESS: ${FILES_TO_PROCESS[*]}" >> "$LOG_FILE"
 
+# --- MAIN FILE PROCESSING LOOP ---
 for FILE in "${FILES_TO_PROCESS[@]}"; do
+  # --- Exclude enhanced-post-commit.sh from processing ---
+  if [[ "$(basename "$FILE")" == "enhanced-post-commit.sh" ]]; then
+    echo "[INFO] Skipping $FILE (post-commit script itself)" >> "$LOG_FILE"
+    continue
+  fi
+
   echo "[DEBUG] Considering file: $FILE" >> "$LOG_FILE"
   # Only process files with CCM header
   if ! grep -qE '%ccm_git_.*: .* %' "$FILE"; then
@@ -85,6 +92,7 @@ for FILE in "${FILES_TO_PROCESS[@]}"; do
     continue
   fi
 
+  # --- CCM FIELD UPDATE SECTION ---
   echo "[DEBUG] Updating CCM fields in $FILE" >> "$LOG_FILE"
   echo "[DEBUG] %ccm_git_commit_id: $ID" >> "$LOG_FILE"
   echo "[DEBUG] %ccm_git_commit_count: $REVISION" >> "$LOG_FILE"
@@ -96,13 +104,13 @@ for FILE in "${FILES_TO_PROCESS[@]}"; do
 
   # Update CCM fields for each file (generic patterns)
   sed -i \
-    -e "s|%ccm_git_commit_id: 3a0a85b049cdd15e418cb59bb782b256f2c12c1b %|g" \
-    -e "s|%ccm_git_commit_count: 88 %|g" \
-    -e "s|%ccm_git_object_id: git-automation/enhanced-post-commit.sh:88 %|g" \
-    -e "s|%ccm_git_commit_message: test %|g" \
-    -e "s|%ccm_git_commit_author: mpegg %|g" \
-    -e "s|%ccm_git_commit_email: mpegg@hotmail.com %|g" \
-    -e "s|%ccm_git_commit_date: 2025-09-06 12:56:39 -0400 %|g" \
+    -e "s|%ccm_git_commit_id: .* %|%ccm_git_commit_id: $ID %|g" \
+    -e "s|%ccm_git_commit_count: .* %|%ccm_git_commit_count: $REVISION %|g" \
+    -e "s|%ccm_git_object_id: .* %|%ccm_git_object_id: $FILE:$REVISION %|g" \
+    -e "s|%ccm_git_commit_message: .* %|%ccm_git_commit_message: $COMMIT_MESSAGE_SAFE %|g" \
+    -e "s|%ccm_git_commit_author: .* %|%ccm_git_commit_author: $AUTHOR %|g" \
+    -e "s|%ccm_git_commit_email: .* %|%ccm_git_commit_email: $AUTHOR_EMAIL %|g" \
+    -e "s|%ccm_git_commit_date: .* %|%ccm_git_commit_date: $COMMIT_DATE %|g" \
     "$FILE"
 done
 
