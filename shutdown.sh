@@ -1,5 +1,30 @@
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_modify_date: 2025-09-05 20:17:21 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: shutdown.sh:0 %
+#  %ccm_git_commit_id: unknown %
+#  %ccm_git_commit_count: 0 %
+#  %ccm_git_commit_message: unknown %
+#  %ccm_git_commit_author: unknown %
+#  %ccm_git_commit_email: unknown %
+#  %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
+#  %ccm_git_file_last_modified: 2025-09-05 20:17:21 %
+#  %ccm_git_file_name: shutdown.sh %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_path: shutdown.sh %
+#  %ccm_git_blob_sha: 00da98595ae4ed4050e427872d1e01bcb727e044 %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 1521 %
+#  %ccm_git_tag:  %
+#  %ccm_git_language_mode: shellscript %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 
  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
- %ccm_git_modify_date: 2025-09-05 20:13:29 %
+ %ccm_git_modify_date: 2025-09-05 20:17:21 %
  %ccm_git_author: mpegg %
  %ccm_git_author_email: mpegg@hotmail.com %
  %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
@@ -11,7 +36,7 @@
  %ccm_git_commit_author: unknown %
  %ccm_git_commit_email: unknown %
  %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
- %ccm_git_file_last_modified: 2025-09-05 20:13:29 %
+ %ccm_git_file_last_modified: 2025-09-05 20:17:21 %
  %ccm_git_file_name: shutdown.sh %
  %ccm_git_file_type: text/plain %
  %ccm_git_file_encoding: us-ascii %
