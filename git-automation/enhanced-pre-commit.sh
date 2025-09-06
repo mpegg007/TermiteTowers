@@ -222,8 +222,8 @@ if [ -n "${1-}" ] && [ -f "$1" ]; then
   echo "[DEBUG] Arg1 present and is a file: processing '$1'" >> "$LOG_FILE"
   FILES_TO_PROCESS=("$1")
 else
-    # Read staged files into array
-    IFS=$'\0' read -d '' -r -a FILES_TO_PROCESS < <(git diff --cached --name-only -z)
+    # Read staged files into array (fix: use correct read and git diff command)
+    mapfile -d '' -t FILES_TO_PROCESS < <(git diff --cached --name-only -z)
 fi
 
   if [ "${2-}" = "--force" ]; then

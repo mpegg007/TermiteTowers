@@ -65,7 +65,8 @@ else
   else
     echo "[DEBUG] No arg1: staged files mode" >> "$LOG_FILE"
   fi
-  IFS=$'\0' read -d '' -r -a FILES_TO_PROCESS < <(git --no-pager diff-tree --no-commit-id --name-only -r -z HEAD)
+  # Fix: use mapfile for proper array population
+  mapfile -d '' -t FILES_TO_PROCESS < <(git --no-pager diff-tree --no-commit-id --name-only -r -z HEAD)
 fi
 
 echo "[DEBUG] FILES_TO_PROCESS: ${FILES_TO_PROCESS[*]}" >> "$LOG_FILE"
