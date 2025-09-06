@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-#  %ccm_git_modify_date: 2025-09-05 20:33:05 %
+#  %ccm_git_modify_date: 2025-09-05 20:55:08 %
 #  %ccm_git_author:  %
 #  %ccm_git_author_email:  %
 #  %ccm_git_repo:  %
@@ -18,34 +18,9 @@
 #  %ccm_git_file_encoding:  %
 #  %ccm_git_file_eol:  %
 #  %ccm_git_path:  %
-#  %ccm_git_blob_sha: ca1805011eeadea3ed05d372d9d749bcd0aa0d93 %
+#  %ccm_git_blob_sha: 43388091ce29acaf142addfc64afa59b4763ecd6 %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 1571 %
-#  %ccm_git_tag:  %
-#  %ccm_git_language_mode: shellscript %
-#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 
-#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-#  %ccm_git_modify_date: 2025-09-05 20:33:05 %
-#  %ccm_git_author:  %
-#  %ccm_git_author_email:  %
-#  %ccm_git_repo:  %
-#  %ccm_git_branch:  %
-#  %ccm_git_object_id: :0 %
-#  %ccm_git_commit_id: unknown %
-#  %ccm_git_commit_count: 0 %
-#  %ccm_git_commit_message: unknown %
-#  %ccm_git_commit_author: unknown %
-#  %ccm_git_commit_email: unknown %
-#  %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
-#  %ccm_git_file_last_modified:  %
-#  %ccm_git_file_name:  %
-#  %ccm_git_file_type:  %
-#  %ccm_git_file_encoding:  %
-#  %ccm_git_file_eol:  %
-#  %ccm_git_path:  %
-#  %ccm_git_blob_sha: ca1805011eeadea3ed05d372d9d749bcd0aa0d93 %
-#  %ccm_git_exec: no %
-#  %ccm_git_size: 1571 %
+#  %ccm_git_size: 505 %
 #  %ccm_git_tag:  %
 #  %ccm_git_language_mode: shellscript %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 

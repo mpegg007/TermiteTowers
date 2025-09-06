@@ -70,62 +70,16 @@ insert_ccm_header() {
     local file="$1"
     local rel_path="$2"
     local eol="$3"
-    local tmp_header
-    tmp_header=$(mktemp)
-    cp "$TEMPLATE_FILE" "$tmp_header"
-    # Insert header after shebang or pseudo-shebang
-    if head -n 1 "$file" | grep -q '^#!'; then
-        { head -n 1 "$file"; cat "$tmp_header"; tail -n +2 "$file"; } > "$file.new"
-    elif [[ "$file" == *.bat || "$file" == *.cmd ]]; then
-        { pseudo_shebang_for_batch "$file"; cat "$tmp_header"; tail -n +2 "$file"; } > "$file.new"
-    else
-        { cat "$tmp_header"; cat "$file"; } > "$file.new"
-    fi
-        tmp_header=$(mktemp)
-        cp "$TEMPLATE_FILE" "$tmp_header"
-        formatted_header=$(mktemp)
-        header_lines=()
-        while IFS= read -r line; do
-            header_lines+=("$line")
-        done < "$tmp_header"
-        {
-            if [ -n "$block_start" ]; then echo "$block_start"; fi
-            for i in "${!header_lines[@]}"; do
-                l="${header_lines[$i]}"
-                if [ -n "$line_comment" ]; then
-                    out_line="$line_comment $l"
-                else
-                    out_line="$l"
-                fi
-                if [ "$i" -eq $((${#header_lines[@]}-1)) ] && [ -n "$block_end" ]; then
-                    out_line="$out_line $block_end"
-                fi
-                echo "$out_line"
-            done
-        } > "$formatted_header"
-        if head -n 1 "$file" | grep -q '^#!'; then
-            { head -n 1 "$file"; cat "$formatted_header"; tail -n +2 "$file"; } > "$file.new"
-        elif [[ "$file" == *.bat || "$file" == *.cmd ]]; then
-            { pseudo_shebang_for_batch "$file"; cat "$formatted_header"; tail -n +2 "$file"; } > "$file.new"
-        else
-            { cat "$formatted_header"; cat "$file"; } > "$file.new"
-        fi
-        if cmp -s "$file" "$file.new"; then
-            echo "[ERROR] Header insertion failed for $file" >> "$LOG_FILE"
-            rm -f "$tmp_header" "$formatted_header" "$file.new"
-            return 1
-        else
-            mv "$file.new" "$file" && echo "[INFO] Header inserted for $file" >> "$LOG_FILE"
-            rm -f "$tmp_header" "$formatted_header"
-        fi
-    blob_sha=$(git hash-object "$file" 2>/dev/null || echo unknown)
-    exec_flag=$(test -x "$file" && echo yes || echo no)
-    file_size=$(stat -c%s "$file" 2>/dev/null || echo 0)
-    modify_date=$(date +"%Y-%m-%d %H:%M:%S")
     local lang_mode="$4"
     local block_start="$5"
     local block_end="$6"
     local line_comment="$7"
+
+    blob_sha=$(git hash-object "$file" 2>/dev/null || echo unknown)
+    exec_flag=$(test -x "$file" && echo yes || echo no)
+    file_size=$(stat -c%s "$file" 2>/dev/null || echo 0)
+    modify_date=$(date +"%Y-%m-%d %H:%M:%S")
+
     # Format header with block and line comments
     tmp_header=$(mktemp)
     cp "$TEMPLATE_FILE" "$tmp_header"
@@ -150,6 +104,7 @@ insert_ccm_header() {
             echo "$out_line"
         done
     } > "$formatted_header"
+
     # Insert header after shebang or pseudo-shebang
     if head -n 1 "$file" | grep -q '^#!'; then
         { head -n 1 "$file"; cat "$formatted_header"; tail -n +2 "$file"; } > "$file.new"
@@ -158,8 +113,15 @@ insert_ccm_header() {
     else
         { cat "$formatted_header"; cat "$file"; } > "$file.new"
     fi
-    mv "$file.new" "$file"
-    rm -f "$tmp_header" "$formatted_header"
+    if cmp -s "$file" "$file.new"; then
+        echo "[ERROR] Header insertion failed for $file" >> "$LOG_FILE"
+        rm -f "$tmp_header" "$formatted_header" "$file.new"
+        return 1
+    else
+        mv "$file.new" "$file" && echo "[INFO] Header inserted for $file" >> "$LOG_FILE"
+        rm -f "$tmp_header" "$formatted_header"
+    fi
+
     # Now update all static and commit-bound fields using a single sed block
     sed -i \
         -e "s|%ccm_git_modify_date: .* %|%ccm_git_modify_date: $modify_date %|g" \
