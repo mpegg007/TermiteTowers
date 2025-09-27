@@ -1,0 +1,54 @@
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/dns/zones/reverse/db.192.168.1:0 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: fdc7c9bc5f8d1165562b64bf648913847f1cdd91 %
+#  %ccm_git_commit_id: unknown %
+#  %ccm_git_commit_count: 0 %
+#  %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
+#  %ccm_git_commit_author: unknown %
+#  %ccm_git_commit_email: unknown %
+#  %ccm_git_commit_message: unknown %
+#  %ccm_git_modify_date: 2025-09-27 11:12:10 %
+#  %ccm_git_file_last_modified: 2025-07-30 16:18:51 %
+#  %ccm_git_file_name: db.192.168.1 %
+#  %ccm_git_path: infra/dns/zones/reverse/db.192.168.1 %
+#  %ccm_git_language_mode: 1 %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 1300 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+$TTL    86400
+@       IN      SOA     ns1.tt.omp. admin.tt.omp. (
+                        2025072903 ; Serial
+                        3600       ; Refresh
+                        1800       ; Retry
+                        604800     ; Expire
+                        86400 )    ; Minimum
+
+        IN      NS      ns1.tt.omp.
+
+116     IN      PTR     raspberrypi.tt.omp.
+198     IN      PTR     homeassistant.tt.omp.
+250     IN      PTR     ttdi3-u24-s2501.tt.omp.
+100     IN      PTR     tl.Globe1_plug4.tt.omp.
+101     IN      PTR     tl.Globe1_plug3.tt.omp.
+102     IN      PTR     tl.Globe1_plug1.tt.omp.
+103     IN      PTR     tl.Globe1_plug2.tt.omp.
+104     IN      PTR     tl.Energy_Monitoring_Smart_plug1.tt.omp.
+105     IN      PTR     tl.Energy_Monitoring_Smart_plug2.tt.omp.
+106     IN      PTR     tl.Med_Bulb.tt.omp.
+107     IN      PTR     tl.Light_Panel.tt.omp.
+108     IN      PTR     tl.Triple_Switch1.tt.omp.
+109     IN      PTR     tl.Energy_Monitoring_Smart_plug3.tt.omp.
+111     IN      PTR     tl.Dimmer_switch.tt.omp.
+194     IN      PTR     tl.Office_Pole_Upper_Light.tt.omp.
+207     IN      PTR     tl.Dual_switch.tt.omp.
+213     IN      PTR     tl.USB_4_Way_plug2.tt.omp.
+218     IN      PTR     tl.USB_4_Way_Plug3.tt.omp.
+222     IN      PTR     tl.USB_4_Way_plug1.tt.omp.
+

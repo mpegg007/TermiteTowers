@@ -1,28 +1,28 @@
+<!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+  %ccm_git_repo: TermiteTowers %
+  %ccm_git_branch: dev1 %
+  %ccm_git_object_id: wiki/ports.md:0 %
+  %ccm_git_author: mpegg %
+  %ccm_git_author_email: mpegg@hotmail.com %
+  %ccm_git_blob_sha: 141ec3c9daeadb7c5a13b6d4c7ea9f447d655cae %
+  %ccm_git_commit_id: unknown %
+  %ccm_git_commit_count: 0 %
+  %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
+  %ccm_git_commit_author: unknown %
+  %ccm_git_commit_email: unknown %
+  %ccm_git_commit_message: unknown %
+  %ccm_git_modify_date: 2025-09-27 11:12:10 %
+  %ccm_git_file_last_modified: 2025-09-27 11:12:10 %
+  %ccm_git_file_name: ports.md %
+  %ccm_git_path: wiki/ports.md %
+  %ccm_git_language_mode: markdown %
+  %ccm_git_file_type: text/plain %
+  %ccm_git_file_encoding: us-ascii %
+  %ccm_git_file_eol: CRLF %
+  %ccm_git_exec: no %
+  %ccm_git_size: 2161 %
+  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
 <!--
-TermiteTowers Continuous Code Management Header TEMPLATE
-% ccm_modify_date: 2025-09-01 15:47:12 %
-% ccm_author: mpegg %
-% ccm_author_email: mpegg@hotmail.com %
-% ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
-% ccm_branch: dev1 %
-% ccm_object_id: wiki/ports.md:0 %
-% ccm_commit_id: unknown %
-% ccm_commit_count: 0 %
-% ccm_commit_message: unknown %
-% ccm_commit_author: unknown %
-% ccm_commit_email: unknown %
-% ccm_commit_date: 1970-01-01 00:00:00 +0000 %
-% ccm_file_last_modified: 2025-09-01 10:51:53 %
-% ccm_file_name: ports.md %
-% ccm_file_type: text/plain %
-% ccm_file_encoding: us-ascii %
-% ccm_file_eol: CRLF %
-% ccm_path: wiki/ports.md %
-% ccm_blob_sha: 376f68556ce024928b54f7f65083cf70e0652de5 %
-% ccm_exec: no %
-% ccm_size: 2823 %
-% ccm_tag:  %
-tt-ccm.header.end
 -->
 
 # Ports Inventory
@@ -39,6 +39,7 @@ This page tracks host and service ports used across TermiteTowers.
 | Uptime Kuma    | kuma.termitetowers.ca      | 3301      | 3001           | Nginx -> localhost:3301; Docker 3301:3001  |
 | Dozzle         | dozzle.termitetowers.ca    | 3302      | 8080           | Nginx -> localhost:3302; Docker 3302:8080  |
 | Homarr         | home.termitetowers.ca      | 3303      | 7575           | Nginx -> localhost:3303; Docker 3303:7575  |
+| PowerDNS Admin | dns.termitetowers.ca       | 5380      | 5380           | Nginx -> localhost:5380; Technitium DNS   |
 | Ollama API     | ollama.termitetowers.ca    | 11434     | 11434          | Nginx -> localhost:11434                   |
 | Private PyPI Proxy | pypi.termitetowers.ca  | 4080      | 4080           | Nginx -> localhost:4080                    |
 

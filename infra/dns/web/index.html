@@ -1,0 +1,196 @@
+<!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+  %ccm_git_repo: TermiteTowers %
+  %ccm_git_branch: dev1 %
+  %ccm_git_object_id: infra/dns/web/index.html:0 %
+  %ccm_git_author: mpegg %
+  %ccm_git_author_email: mpegg@hotmail.com %
+  %ccm_git_blob_sha: cf42e2f4b76b270bdb3ae7a80234ec6ea3bcbb78 %
+  %ccm_git_commit_id: unknown %
+  %ccm_git_commit_count: 0 %
+  %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
+  %ccm_git_commit_author: unknown %
+  %ccm_git_commit_email: unknown %
+  %ccm_git_commit_message: unknown %
+  %ccm_git_modify_date: 2025-09-27 11:12:10 %
+  %ccm_git_file_last_modified: 2025-09-24 12:39:33 %
+  %ccm_git_file_name: index.html %
+  %ccm_git_path: infra/dns/web/index.html %
+  %ccm_git_language_mode: html %
+  %ccm_git_file_type: text/html %
+  %ccm_git_file_encoding: utf-8 %
+  %ccm_git_file_eol: CRLF %
+  %ccm_git_exec: no %
+  %ccm_git_size: 8452 %
+  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TermiteTowers DNS Manager</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+        .zone-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .zone-title { font-size: 1.2em; font-weight: bold; color: #007bff; margin-bottom: 10px; }
+        .record { background: #f8f9fa; padding: 10px; margin: 5px 0; border-left: 4px solid #007bff; }
+        .record-type { font-weight: bold; color: #28a745; }
+        .record-name { font-weight: bold; color: #dc3545; }
+        .record-value { color: #333; }
+        .add-record { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 10px 5px; }
+        .add-record:hover { background: #0056b3; }
+        .form-group { margin: 10px 0; }
+        .form-group label { display: inline-block; width: 100px; font-weight: bold; }
+        .form-group input { padding: 5px; margin: 5px; border: 1px solid #ddd; border-radius: 3px; }
+        .metrics-link { background: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 10px 0; }
+        .metrics-link:hover { background: #218838; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏗️ TermiteTowers DNS Manager</h1>
+        
+        <div class="zone-section">
+            <div class="zone-title">📊 DNS Service Status</div>
+            <p>CoreDNS is running and serving the following zones:</p>
+            <a href="http://192.168.1.194:9153/metrics" target="_blank" class="metrics-link">View DNS Metrics</a>
+            <a href="http://192.168.1.194:9153/health" target="_blank" class="metrics-link">Health Check</a>
+        </div>
+
+        <div class="zone-section">
+            <div class="zone-title">🌐 tt.omp Zone Records</div>
+            <div id="tt-omp-records">
+                <div class="record">
+                    <span class="record-type">SOA</span>
+                    <span class="record-name">tt.omp</span>
+                    <span class="record-value">ns1.tt.omp. admin.tt.omp. (2024092303 3600 1800 604800 86400)</span>
+                </div>
+                <div class="record">
+                    <span class="record-type">NS</span>
+                    <span class="record-name">tt.omp</span>
+                    <span class="record-value">ns1.tt.omp.</span>
+                </div>
+                <div class="record">
+                    <span class="record-type">A</span>
+                    <span class="record-name">ns1.tt.omp</span>
+                    <span class="record-value">192.168.1.194</span>
+                </div>
+                <div class="record">
+                    <span class="record-type">A</span>
+                    <span class="record-name">monolith.tt.omp</span>
+                    <span class="record-value">192.168.1.194</span>
+                </div>
+                <div class="record">
+                    <span class="record-type">A</span>
+                    <span class="record-name">monolith4.tt.omp</span>
+                    <span class="record-value">192.168.4.10</span>
+                </div>
+                <div class="record">
+                    <span class="record-type">A</span>
+                    <span class="record-name">homeassistant.tt.omp</span>
+                    <span class="record-value">192.168.1.85</span>
+                </div>
+            </div>
+            <button class="add-record" onclick="showAddForm('tt.omp')">+ Add Record</button>
+        </div>
+
+        <div class="zone-section">
+            <div class="zone-title">🔄 Reverse DNS (192.168.1.x)</div>
+            <div id="reverse-1-records">
+                <div class="record">
+                    <span class="record-type">PTR</span>
+                    <span class="record-name">194.1.168.192.in-addr.arpa</span>
+                    <span class="record-value">monolith.tt.omp.</span>
+                </div>
+                <div class="record">
+                    <span class="record-type">PTR</span>
+                    <span class="record-name">194.1.168.192.in-addr.arpa</span>
+                    <span class="record-value">dns.tt.omp.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="zone-section">
+            <div class="zone-title">🔄 Reverse DNS (192.168.4.x)</div>
+            <div id="reverse-4-records">
+                <div class="record">
+                    <span class="record-type">PTR</span>
+                    <span class="record-name">10.4.168.192.in-addr.arpa</span>
+                    <span class="record-value">monolith4.tt.omp.</span>
+                </div>
+                <div class="record">
+                    <span class="record-type">PTR</span>
+                    <span class="record-name">10.4.168.192.in-addr.arpa</span>
+                    <span class="record-value">dns4.tt.omp.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="zone-section">
+            <div class="zone-title">➕ Add New DNS Record</div>
+            <div id="add-form" style="display:none;">
+                <div class="form-group">
+                    <label>Type:</label>
+                    <select id="record-type">
+                        <option value="A">A</option>
+                        <option value="AAAA">AAAA</option>
+                        <option value="CNAME">CNAME</option>
+                        <option value="MX">MX</option>
+                        <option value="TXT">TXT</option>
+                        <option value="PTR">PTR</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input type="text" id="record-name" placeholder="hostname.tt.omp">
+                </div>
+                <div class="form-group">
+                    <label>Value:</label>
+                    <input type="text" id="record-value" placeholder="192.168.1.100">
+                </div>
+                <div class="form-group">
+                    <label>TTL:</label>
+                    <input type="text" id="record-ttl" value="3600">
+                </div>
+                <button class="add-record" onclick="addRecord()">Add Record</button>
+                <button class="add-record" onclick="hideAddForm()" style="background:#6c757d;">Cancel</button>
+            </div>
+        </div>
+
+        <div class="zone-section">
+            <div class="zone-title">⚠️ Important Notes</div>
+            <p><strong>This is a READ-ONLY interface</strong> showing current DNS records.</p>
+            <p>To actually add/edit records, you need to:</p>
+            <ul>
+                <li>Edit zone files in: <code>/home/mpegg-adm/source/TermiteTowers/infra/dns/configs/coredns/zones/</code></li>
+                <li>Restart CoreDNS: <code>docker compose -f coredns-kea-dev1.yml restart coredns</code></li>
+                <li>Or use the helper script: <code>./add-device-4net.sh hostname 192.168.4.100</code></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function showAddForm(zone) {
+            document.getElementById('add-form').style.display = 'block';
+        }
+        
+        function hideAddForm() {
+            document.getElementById('add-form').style.display = 'none';
+        }
+        
+        function addRecord() {
+            const type = document.getElementById('record-type').value;
+            const name = document.getElementById('record-name').value;
+            const value = document.getElementById('record-value').value;
+            const ttl = document.getElementById('record-ttl').value;
+            
+            alert('This is a demonstration interface.\n\nTo actually add this record:\n' + 
+                  type + ' record: ' + name + ' -> ' + value + ' (TTL: ' + ttl + ')\n\n' +
+                  'Edit the zone file manually and restart CoreDNS.');
+            
+            hideAddForm();
+        }
+    </script>
+</body>
+</html>

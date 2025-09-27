@@ -1,0 +1,74 @@
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/dns/zones/templates/forward-zone.template:0 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 1e6ffcf5d6bc65ad97a87c924eacf745327b8b66 %
+#  %ccm_git_commit_id: unknown %
+#  %ccm_git_commit_count: 0 %
+#  %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
+#  %ccm_git_commit_author: unknown %
+#  %ccm_git_commit_email: unknown %
+#  %ccm_git_commit_message: unknown %
+#  %ccm_git_modify_date: 2025-09-27 11:12:10 %
+#  %ccm_git_file_last_modified: 2025-09-20 12:49:23 %
+#  %ccm_git_file_name: forward-zone.template %
+#  %ccm_git_path: infra/dns/zones/templates/forward-zone.template %
+#  %ccm_git_language_mode: template %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 1340 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+;
+; DNS Zone Template for Forward Lookup
+; Domain: {{DOMAIN_NAME}}
+; Generated: {{GENERATION_DATE}}
+;
+
+$TTL {{DEFAULT_TTL}}
+@       IN      SOA     {{PRIMARY_NS}}. {{ADMIN_EMAIL}}. (
+                        {{SERIAL}}      ; Serial number
+                        {{REFRESH}}     ; Refresh
+                        {{RETRY}}       ; Retry
+                        {{EXPIRE}}      ; Expire
+                        {{MIN_TTL}}     ; Minimum TTL
+                        )
+
+; Name servers
+@       IN      NS      {{PRIMARY_NS}}.
+{% for ns in SECONDARY_NS %}
+@       IN      NS      {{ns}}.
+{% endfor %}
+
+; Mail servers
+{% for mx in MX_RECORDS %}
+@       IN      MX      {{mx.priority}}     {{mx.server}}.
+{% endfor %}
+
+; A Records
+{% for record in A_RECORDS %}
+{{record.name}}     IN      A       {{record.ip}}
+{% endfor %}
+
+; AAAA Records (IPv6)
+{% for record in AAAA_RECORDS %}
+{{record.name}}     IN      AAAA    {{record.ipv6}}
+{% endfor %}
+
+; CNAME Records
+{% for record in CNAME_RECORDS %}
+{{record.name}}     IN      CNAME   {{record.target}}.
+{% endfor %}
+
+; TXT Records
+{% for record in TXT_RECORDS %}
+{{record.name}}     IN      TXT     "{{record.text}}"
+{% endfor %}
+
+; SRV Records
+{% for record in SRV_RECORDS %}
+{{record.name}}     IN      SRV     {{record.priority}} {{record.weight}} {{record.port}} {{record.target}}.
+{% endfor %}
