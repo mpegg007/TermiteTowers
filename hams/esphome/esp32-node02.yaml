@@ -1,0 +1,228 @@
+## For Node02 (formerly breakout-board/hydra) 
+# esphome upload esp32-node02.yaml --device 192.168.1.XXX
+# esphome logs esp32-node02.yaml --device 192.168.1.XXX
+
+esphome:
+  name: esp32-node02
+  friendly_name: "ESP32 Node02"
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret api_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Esp32-Hydra"
+    password: !secret fallback_ap_password
+
+captive_portal:
+
+# ==============================================================================
+# COMMUNICATION INTERFACES
+# ==============================================================================
+
+# I2C bus for environmental sensors and BH1750 light sensor
+i2c:
+  sda: GPIO21
+  scl: GPIO22
+  scan: true
+
+# I2S interface for digital microphone
+i2s_audio:
+  - id: i2s_audio_bus
+    i2s_lrclk_pin: GPIO25   # WS (Word Select)
+    i2s_bclk_pin: GPIO26    # SCK (Serial Clock)
+
+# ==============================================================================
+# AUDIO COMPONENTS
+# ==============================================================================
+
+microphone:
+  - platform: i2s_audio
+    id: mic
+    i2s_audio_id: i2s_audio_bus
+    i2s_din_pin: GPIO27     # SD (Serial Data)
+    adc_type: external
+    pdm: false
+    # Add explicit sample rate
+    sample_rate: 16000
+    bits_per_sample: 16bit
+
+voice_assistant:
+  microphone: mic
+  on_start:
+    - logger.log: "Audio activity detected"
+    - sensor.template.publish:
+        id: sound_activity
+        state: 100.0
+  on_end:
+    - logger.log: "Audio activity ended"
+    - sensor.template.publish:
+        id: sound_activity
+        state: 0.0
+  on_listening:
+    - sensor.template.publish:
+        id: sound_activity
+        state: 50.0
+
+# ==============================================================================
+# BINARY SENSORS (Motion & Audio Detection)
+# ==============================================================================
+
+binary_sensor:
+  # PIR motion sensor
+  - platform: gpio
+    pin:
+      number: GPIO19
+      mode: INPUT_PULLUP
+    name: "Breakout Board PIR Motion"
+    id: pir_motion
+    device_class: motion
+    filters:
+      - delayed_on: 100ms
+      - delayed_off: 10s
+
+  # Audio detection (based on analog sound level)
+  - platform: template
+    name: "Breakout Board Audio Detected"
+    id: audio_detected
+    device_class: sound
+    lambda: |-
+      return id(sound_level_analog).state > 0.3;
+
+  # KY-037 Digital Sound Detection (moved to GPIO4 for testing)
+  - platform: gpio
+    pin:
+      number: GPIO4
+      mode: INPUT_PULLUP
+    name: "Breakout Board Sound Trigger"
+    id: sound_trigger
+    device_class: sound
+    filters:
+      - delayed_on: 50ms
+      - delayed_off: 1s
+
+# ==============================================================================
+# SENSORS (Environmental & Distance)
+# ==============================================================================
+
+sensor:
+  # Environmental sensors (I2C)
+  - platform: sht3xd
+    temperature:
+      name: "Breakout Board SHT Temperature"
+      id: sht_temp
+    humidity:
+      name: "Breakout Board Humidity"
+      id: sht_humidity
+    address: 0x44
+    update_interval: 30s
+
+  # DSM501A Air Quality Sensor
+  - platform: template
+    name: "Breakout Board PM1.0"
+    id: pm1_0
+    unit_of_measurement: "μg/m³"
+    accuracy_decimals: 1
+    update_interval: 30s
+    lambda: |-
+      // Calculate PM1.0 from DSM501A Vout1 duty cycle
+      // This is a simplified calculation - may need calibration
+      return id(dsm501a_vout1_duty).state * 100.0;
+
+  - platform: template
+    name: "Breakout Board PM2.5"
+    id: pm2_5
+    unit_of_measurement: "μg/m³"
+    accuracy_decimals: 1
+    update_interval: 30s
+    lambda: |-
+      // Calculate PM2.5 from DSM501A Vout2 duty cycle
+      // This is a simplified calculation - may need calibration
+      return id(dsm501a_vout2_duty).state * 100.0;
+
+  # DSM501A duty cycle sensors (internal calculations)
+  - platform: duty_cycle
+    pin: GPIO16
+    name: "DSM501A Vout1 Duty Cycle"
+    id: dsm501a_vout1_duty
+    internal: true  # Hide from Home Assistant
+    update_interval: 30s
+
+  - platform: duty_cycle
+    pin: GPIO17
+    name: "DSM501A Vout2 Duty Cycle"
+    id: dsm501a_vout2_duty
+    internal: true  # Hide from Home Assistant
+    update_interval: 30s
+
+  # Distance sensor
+  - platform: ultrasonic
+    trigger_pin: GPIO14
+    echo_pin: GPIO13
+    name: "Breakout Board Distance"
+    id: ultrasonic_sensor
+    update_interval: 2s
+    timeout: 4m
+
+  # Audio activity indicator (based on analog sound level)
+  - platform: template
+    name: "Breakout Board Sound Activity"
+    id: sound_activity
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    update_interval: 1s
+    lambda: |-
+      float analog_level = id(sound_level_analog).state;
+      if (analog_level > 0.5) {
+        return 100.0;  // High activity
+      } else if (analog_level > 0.2) {
+        return 50.0;   // Medium activity
+      } else {
+        return 0.0;    // Low/no activity
+      }
+
+  # BH1750 Light Sensor (I2C) - Professional light measurement
+  - platform: bh1750
+    name: "Breakout Board Light Level"
+    id: light_level
+    address: 0x23
+    update_interval: 10s
+
+  # KY-037 Analog Sound Level (testing with 0db attenuation)
+  - platform: adc
+    pin: GPIO32
+    name: "Breakout Board Sound Level"
+    id: sound_level_analog
+    update_interval: 500ms
+    attenuation: 0db
+    unit_of_measurement: "V"
+    accuracy_decimals: 3
+
+  # KY-037 Sound Level Percentage (0-100%)
+  - platform: template
+    name: "Breakout Board Sound Percentage"
+    id: sound_percentage
+    unit_of_measurement: "%"
+    accuracy_decimals: 1
+    update_interval: 500ms
+    lambda: |-
+      float voltage = id(sound_level_analog).state;
+      // Convert 0-3.3V to 0-100%
+      return (voltage / 3.3) * 100.0;

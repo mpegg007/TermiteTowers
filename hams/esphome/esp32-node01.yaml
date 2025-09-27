@@ -1,0 +1,218 @@
+## For Node01 (formerly green-room/orion)
+# esphome upload esp32-node01.yaml --device 192.168.1.XXX
+# esphome logs esp32-node01.yaml --device 192.168.1.XXX
+
+esphome:
+  name: esp32-node01
+  friendly_name: "ESP32 Node01"
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret api_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Esp32-Orion"
+    password: !secret fallback_ap_password
+
+captive_portal:
+
+# ==============================================================================
+# COMMUNICATION INTERFACES
+# ==============================================================================
+
+# I2C bus for environmental sensors
+i2c:
+  sda: GPIO21
+  scl: GPIO22
+  scan: true
+
+# I2S interface for digital microphone
+i2s_audio:
+  - id: i2s_audio_bus
+    i2s_lrclk_pin: GPIO25   # WS (Word Select)
+    i2s_bclk_pin: GPIO26    # SCK (Serial Clock)
+
+# UART for mmWave radar sensor
+uart:
+  - id: s3km1110_uart
+    tx_pin: GPIO17          # TX2 → S3KM1110 RX
+    rx_pin: GPIO16          # RX2 ← S3KM1110 TX
+    baud_rate: 115200
+    debug:
+      direction: RX
+      dummy_receiver: false
+
+# ==============================================================================
+# AUDIO COMPONENTS
+# ==============================================================================
+
+microphone:
+  - platform: i2s_audio
+    id: mic
+    i2s_audio_id: i2s_audio_bus
+    i2s_din_pin: GPIO27     # SD (Serial Data)
+    adc_type: external
+    pdm: false
+
+voice_assistant:
+  microphone: mic
+  on_start:
+    - logger.log: "Audio activity detected"
+    - sensor.template.publish:
+        id: sound_activity
+        state: 100.0
+  on_end:
+    - logger.log: "Audio activity ended"
+    - sensor.template.publish:
+        id: sound_activity
+        state: 0.0
+  on_listening:
+    - sensor.template.publish:
+        id: sound_activity
+        state: 50.0
+
+# ==============================================================================
+# BINARY SENSORS (Motion & Audio Detection)
+# ==============================================================================
+
+binary_sensor:
+  # mmWave radar presence detection
+  - platform: gpio
+    pin:
+      number: GPIO18
+      mode: INPUT_PULLUP
+    name: "Green Room mmWave Presence"
+    id: mmwave_presence
+    device_class: motion
+    filters:
+      - delayed_on: 100ms
+      - delayed_off: 30s
+
+  # PIR motion sensor
+  - platform: gpio
+    pin:
+      number: GPIO19
+      mode: INPUT_PULLUP
+    name: "Green Room PIR Motion"
+    id: pir_motion
+    device_class: motion
+    filters:
+      - delayed_on: 100ms
+      - delayed_off: 10s
+
+  # Audio detection
+  - platform: template
+    name: "Green Room Audio Detected"
+    id: audio_detected
+    device_class: sound
+    lambda: |-
+      return id(sound_activity).state > 10.0;
+
+  # Combined motion detection
+  - platform: template
+    name: "Green Room Any Motion"
+    id: any_motion
+    device_class: motion
+    lambda: |-
+      return id(mmwave_presence).state || id(pir_motion).state;
+
+# ==============================================================================
+# SENSORS (Environmental & Distance)
+# ==============================================================================
+
+sensor:
+  # Environmental sensors (I2C)
+  - platform: bmp280_i2c
+    temperature:
+      name: "Green Room BMP Temperature"
+      id: bmp_temp
+    pressure:
+      name: "Green Room Pressure"
+      id: bmp_pressure
+    address: 0x76
+    update_interval: 30s
+
+  - platform: sht3xd
+    temperature:
+      name: "Green Room SHT Temperature"
+      id: sht_temp
+    humidity:
+      name: "Green Room Humidity"
+      id: sht_humidity
+    address: 0x44
+    update_interval: 30s
+
+  # Distance sensor
+  - platform: ultrasonic
+    trigger_pin: GPIO14
+    echo_pin: GPIO13
+    name: "Green Room Distance"
+    id: ultrasonic_sensor
+    update_interval: 2s
+    timeout: 4m
+
+  # Audio activity indicator
+  - platform: template
+    name: "Green Room Sound Activity"
+    id: sound_activity
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    update_interval: 1s
+
+  # RGB light sensor channels
+  - platform: adc
+    pin: GPIO32
+    name: "Green Room Light Red"
+    id: light_red
+    update_interval: 2s
+    attenuation: 11db
+    unit_of_measurement: "V"
+    accuracy_decimals: 2
+
+  - platform: adc
+    pin: GPIO33
+    name: "Green Room Light Green"
+    id: light_green
+    update_interval: 2s
+    attenuation: 11db
+    unit_of_measurement: "V"
+    accuracy_decimals: 2
+
+  - platform: adc
+    pin: GPIO35
+    name: "Green Room Light Blue"
+    id: light_blue
+    update_interval: 2s
+    attenuation: 11db
+    unit_of_measurement: "V"
+    accuracy_decimals: 2
+
+  # Calculated total light level
+  - platform: template
+    name: "Green Room Light Level"
+    id: total_light
+    unit_of_measurement: "lux"
+    accuracy_decimals: 1
+    update_interval: 2s
+    lambda: |-
+      float red = id(light_red).state;
+      float green = id(light_green).state;
+      float blue = id(light_blue).state;
+      return (red + green + blue) * 100.0;
