@@ -12,8 +12,8 @@
 #  %ccm_git_commit_author: unknown %
 #  %ccm_git_commit_email: unknown %
 #  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2025-09-27 11:12:09 %
-#  %ccm_git_file_last_modified: 2025-09-27 09:58:13 %
+#  %ccm_git_modify_date: 2025-09-27 11:27:57 %
+#  %ccm_git_file_last_modified: 2025-09-27 11:27:57 %
 #  %ccm_git_file_name: install_kea.sh %
 #  %ccm_git_path: infra/dhcp/scripts/install_kea.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -23,6 +23,7 @@
 #  %ccm_git_exec: no %
 #  %ccm_git_size: 1597 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: service updates % 
 
 # DHCP KEA Install Script
 # Installs KEA DHCP service on a Debian-based system

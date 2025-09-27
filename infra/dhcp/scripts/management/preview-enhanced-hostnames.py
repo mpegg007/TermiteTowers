@@ -12,17 +12,18 @@
 #  %ccm_git_commit_author: unknown %
 #  %ccm_git_commit_email: unknown %
 #  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2025-09-27 11:12:09 %
-#  %ccm_git_file_last_modified: 2025-09-27 10:44:56 %
+#  %ccm_git_modify_date: 2025-09-27 11:27:57 %
+#  %ccm_git_file_last_modified: 2025-09-27 11:27:57 %
 #  %ccm_git_file_name: preview-enhanced-hostnames.py %
 #  %ccm_git_path: infra/dhcp/scripts/management/preview-enhanced-hostnames.py %
 #  %ccm_git_language_mode: python %
 #  %ccm_git_file_type: text/x-script.python %
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
-#  %ccm_git_exec: yes %
+#  %ccm_git_exec: no %
 #  %ccm_git_size: 3909 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: service updates % 
 """
 Enhanced hostname generator for Technitium DHCP reservations
 Creates descriptive hostnames using all available CSV data

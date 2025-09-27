@@ -11,8 +11,8 @@
   %ccm_git_commit_author: unknown %
   %ccm_git_commit_email: unknown %
   %ccm_git_commit_message: unknown %
-  %ccm_git_modify_date: 2025-09-27 11:12:09 %
-  %ccm_git_file_last_modified: 2025-09-25 18:26:27 %
+  %ccm_git_modify_date: 2025-09-27 11:27:56 %
+  %ccm_git_file_last_modified: 2025-09-27 11:27:56 %
   %ccm_git_file_name: DHCP_SCOPES_EXPLAINED.md %
   %ccm_git_path: infra/dhcp/docs/DHCP_SCOPES_EXPLAINED.md %
   %ccm_git_language_mode: markdown %
@@ -22,6 +22,7 @@
   %ccm_git_exec: no %
   %ccm_git_size: 4742 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- %git_commit_history: service updates % -->
 # DHCP Scopes in Technitium DNS Server
 
 ## What Are DHCP Scopes?

@@ -11,8 +11,8 @@
   %ccm_git_commit_author: unknown %
   %ccm_git_commit_email: unknown %
   %ccm_git_commit_message: unknown %
-  %ccm_git_modify_date: 2025-09-27 11:12:09 %
-  %ccm_git_file_last_modified: 2025-09-25 18:23:56 %
+  %ccm_git_modify_date: 2025-09-27 11:27:57 %
+  %ccm_git_file_last_modified: 2025-09-27 11:27:57 %
   %ccm_git_file_name: TECHNITIUM_VISIBILITY.md %
   %ccm_git_path: infra/dhcp/docs/TECHNITIUM_VISIBILITY.md %
   %ccm_git_language_mode: markdown %
@@ -22,6 +22,7 @@
   %ccm_git_exec: no %
   %ccm_git_size: 4157 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- %git_commit_history: service updates % -->
 # Technitium DHCP Reservation Information Overview
 
 ## What Will Be Visible in Technitium DNS Server

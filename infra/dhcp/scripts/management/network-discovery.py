@@ -12,17 +12,18 @@
 #  %ccm_git_commit_author: unknown %
 #  %ccm_git_commit_email: unknown %
 #  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2025-09-27 11:12:09 %
-#  %ccm_git_file_last_modified: 2025-09-27 10:44:56 %
+#  %ccm_git_modify_date: 2025-09-27 11:27:57 %
+#  %ccm_git_file_last_modified: 2025-09-27 11:27:57 %
 #  %ccm_git_file_name: network-discovery.py %
 #  %ccm_git_path: infra/dhcp/scripts/management/network-discovery.py %
 #  %ccm_git_language_mode: python %
 #  %ccm_git_file_type: text/x-script.python %
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
-#  %ccm_git_exec: yes %
+#  %ccm_git_exec: no %
 #  %ccm_git_size: 14011 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: service updates % 
 """
 Network Device Discovery and Display Script
 Discovers devices on both 192.168.1.0/24 and 192.168.4.0/24 networks
