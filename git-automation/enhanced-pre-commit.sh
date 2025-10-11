@@ -2,16 +2,16 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: git-automation/enhanced-pre-commit.sh:96 %
+#  %ccm_git_object_id: git-automation/enhanced-pre-commit.sh:100 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
 #  %ccm_git_blob_sha: 818b10f80f16e03e7862112837844d98e3d5cff1 %
-#  %ccm_git_commit_id: d81e9d0cfc5eb9b2d625176730ff2e3009a94a18 %
-#  %ccm_git_commit_count: 96 %
-#  %ccm_git_commit_date: 2025-10-10 20:38:35 -0400 %
-#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_id: 043d1161f28704961fc3977112b42f1a9c83dd93 %
+#  %ccm_git_commit_count: 100 %
+#  %ccm_git_commit_date: 2025-10-11 10:56:22 -0400 %
+#  %ccm_git_commit_author: Matthew Pegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: feat: per-file secret scanning integrated into pre-commit hook %
+#  %ccm_git_commit_message: libre logon fix plus hook rework for win.os %
 #  %ccm_git_modify_date: 2025-09-06 12:02:06 %
 #  %ccm_git_file_last_modified: 2025-09-06 11:52:11 %
 #  %ccm_git_file_name: enhanced-pre-commit.sh %
@@ -102,9 +102,9 @@ insert_ccm_header() {
 
     # Scan file for first commit message before header removal
     local preserved_commit_message
-    preserved_commit_message=$(grep -m1 -E '%ccm_git_commit_message: feat: per-file secret scanning integrated into pre-commit hook %.*/\1/')
+    preserved_commit_message=$(grep -m1 '%ccm_git_commit_message:' "$file" | sed 's/^.*%ccm_git_commit_message: libre logon fix plus hook rework for win.os %.*$//' || echo "")
     local history_commit_message
-    history_commit_message=$(grep -m1 -E '%git_commit_history: .* %' "$file" | sed -E 's/.*%git_commit_history: (.*) %.*/\1/')
+    history_commit_message=$(grep -m1 '%git_commit_history:' "$file" | sed 's/^.*%git_commit_history: //;s/ %.*$//' || echo "")
 
     echo "[DEBUG] Found preserved_commit_message='$preserved_commit_message' for $file" >> "$LOG_FILE"
     echo "[DEBUG] Found history_commit_message='$history_commit_message' for $file" >> "$LOG_FILE"
@@ -145,6 +145,8 @@ insert_ccm_header() {
     formatted_header=$(mktemp)
     header_lines=()
     while IFS= read -r line; do
+        # Strip trailing whitespace and carriage returns (Windows CRLF compatibility)
+        line="${line%$'\r'}"
         header_lines+=("$line")
     done < "$tmp_header"
     {
@@ -178,13 +180,13 @@ insert_ccm_header() {
         -e "s|%ccm_git_author_email: .* %|%ccm_git_author_email: $author_email %|g" \
         -e "s|%ccm_git_repo: .* %|%ccm_git_repo: $repo %|g" \
         -e "s|%ccm_git_branch: .* %|%ccm_git_branch: $branch %|g" \
-        -e "s|%ccm_git_object_id: git-automation/enhanced-pre-commit.sh:96 %|g" \
-        -e "s|%ccm_git_commit_id: d81e9d0cfc5eb9b2d625176730ff2e3009a94a18 %|g" \
-        -e "s|%ccm_git_commit_count: 96 %|g" \
-        -e "s|%ccm_git_commit_message: feat: per-file secret scanning integrated into pre-commit hook %|g" \
-        -e "s|%ccm_git_commit_author: mpegg %|g" \
+        -e "s|%ccm_git_object_id: git-automation/enhanced-pre-commit.sh:100 %|g" \
+        -e "s|%ccm_git_commit_id: 043d1161f28704961fc3977112b42f1a9c83dd93 %|g" \
+        -e "s|%ccm_git_commit_count: 100 %|g" \
+        -e "s|%ccm_git_commit_message: libre logon fix plus hook rework for win.os %|g" \
+        -e "s|%ccm_git_commit_author: Matthew Pegg %|g" \
         -e "s|%ccm_git_commit_email: mpegg@hotmail.com %|g" \
-        -e "s|%ccm_git_commit_date: 2025-10-10 20:38:35 -0400 %|g" \
+        -e "s|%ccm_git_commit_date: 2025-10-11 10:56:22 -0400 %|g" \
         -e "s|%ccm_git_file_last_modified: .* %|%ccm_git_file_last_modified: $file_last_modified %|g" \
         -e "s|%ccm_git_file_name: .* %|%ccm_git_file_name: $file_name %|g" \
         -e "s|%ccm_git_file_type: .* %|%ccm_git_file_type: $file_type %|g" \

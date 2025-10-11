@@ -1,27 +1,29 @@
 <##  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-#  %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
-#  %ccm_git_branch: main %
-#  %ccm_git_object_id: health/libre/LibreLink.get.ps1:98 %
-#  %ccm_git_author: CCM Maintainer %
-#  %ccm_git_author_email: ccm@test %
-#  %ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
-#  %ccm_git_commit_id: fed9d4456d8e6b65603ee812afc2468a1be54fd3 %
-#  %ccm_git_commit_count: 98 %
-#  %ccm_git_commit_date: 2025-10-11 10:28:24 -0400 %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: health/libre/LibreLink.get.ps1:100 %
+#  %ccm_git_author: Matthew Pegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: a92c686e8ca2b0e9484773deac3109c97e640076 %
+#  %ccm_git_commit_id: 043d1161f28704961fc3977112b42f1a9c83dd93 %
+#  %ccm_git_commit_count: 100 %
+#  %ccm_git_commit_date: 2025-10-11 10:56:22 -0400 %
 #  %ccm_git_commit_author: Matthew Pegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: fix: update LibreLink.get.ps1 for LibreView API v4.16.0 - add account-id header and update version %
-#  %ccm_git_modify_date: 2025-08-29 07:37:53 %
-#  %ccm_git_file_last_modified: 2025-08-29 07:37:52 %
-#  %ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
-#  %ccm_git_path: CCM_HEADER_TEMPLATE.txt %
-#  %ccm_git_language_mode:  %
+#  %ccm_git_commit_message: libre logon fix plus hook rework for win.os %
+#  %ccm_git_modify_date: 2025-10-11 10:56:23 %
+#  %ccm_git_file_last_modified: 2025-10-11 10:56:23 %
+#  %ccm_git_file_name: LibreLink.get.ps1 %
+#  %ccm_git_path: health/libre/LibreLink.get.ps1 %
+#  %ccm_git_language_mode: powershell %
 #  %ccm_git_file_type: text/plain %
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 659 %
-#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  #>
+#  %ccm_git_size: 3395 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  #>
+<## %git_commit_history: hook final alpha v0.1 % #>
+<## %git_commit_history: fix: update LibreLink.get.ps1 for LibreView API v4.16.0 - add account-id header and update version % #>
 
 
 # Load credentials from an external configuration file

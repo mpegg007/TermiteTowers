@@ -1,27 +1,28 @@
 <##  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-#  %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
-#  %ccm_git_branch: main %
-#  %ccm_git_object_id: health/libre/LibreLink.log.ps1:99 %
-#  %ccm_git_author: CCM Maintainer %
-#  %ccm_git_author_email: ccm@test %
-#  %ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
-#  %ccm_git_commit_id: fdd5a462e92cd6c0edee95d543ff210ba1975833 %
-#  %ccm_git_commit_count: 99 %
-#  %ccm_git_commit_date: 2025-10-11 10:34:48 -0400 %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: health/libre/LibreLink.log.ps1:100 %
+#  %ccm_git_author: Matthew Pegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: bf603f9c6a4a4092a5280f7be4eea2cfb747ed28 %
+#  %ccm_git_commit_id: 043d1161f28704961fc3977112b42f1a9c83dd93 %
+#  %ccm_git_commit_count: 100 %
+#  %ccm_git_commit_date: 2025-10-11 10:56:22 -0400 %
 #  %ccm_git_commit_author: Matthew Pegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: fix: update LibreLink.log.ps1 for LibreView API v4.16.0 - add account-id header and remove debug out %
-#  %ccm_git_modify_date: 2025-08-29 07:37:53 %
-#  %ccm_git_file_last_modified: 2025-08-29 07:37:52 %
-#  %ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
-#  %ccm_git_path: CCM_HEADER_TEMPLATE.txt %
-#  %ccm_git_language_mode:  %
+#  %ccm_git_commit_message: libre logon fix plus hook rework for win.os %
+#  %ccm_git_modify_date: 2025-10-11 10:56:25 %
+#  %ccm_git_file_last_modified: 2025-10-11 10:56:25 %
+#  %ccm_git_file_name: LibreLink.log.ps1 %
+#  %ccm_git_path: health/libre/LibreLink.log.ps1 %
+#  %ccm_git_language_mode: powershell %
 #  %ccm_git_file_type: text/plain %
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 659 %
-#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  #>
+#  %ccm_git_size: 6296 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  #>
+<## %git_commit_history: fix: update LibreLink.log.ps1 for LibreView API v4.16.0 - add account-id header and remove debug out % #>
 
 # Relaunch the script in a new PowerShell window with specific size and position
 if (-not $Host.UI.RawUI.WindowTitle -like "*LibreLink Script*") {
