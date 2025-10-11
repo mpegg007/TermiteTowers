@@ -73,11 +73,13 @@ echo "[DEBUG] FILES_TO_PROCESS: ${FILES_TO_PROCESS[*]}" >> "$LOG_FILE"
 
 # --- MAIN FILE PROCESSING LOOP ---
 for FILE in "${FILES_TO_PROCESS[@]}"; do
-  # --- Exclude enhanced-post-commit.sh from processing ---
-  if [[ "$(basename "$FILE")" == "enhanced-post-commit.sh" ]]; then
-    echo "[INFO] Skipping $FILE (post-commit script itself)" >> "$LOG_FILE"
-    continue
-  fi
+  # --- Exclude git-automation folder from processing ---
+  case "$FILE" in
+    git-automation/*|*/git-automation/*)
+      echo "[INFO] Skipping $FILE (in git-automation folder)" >> "$LOG_FILE"
+      continue
+      ;;
+  esac
 
   echo "[DEBUG] Considering file: $FILE" >> "$LOG_FILE"
   # Only process files with CCM header
