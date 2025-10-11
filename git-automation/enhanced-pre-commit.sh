@@ -180,13 +180,13 @@ insert_ccm_header() {
         -e "s|%ccm_git_author_email: .* %|%ccm_git_author_email: $author_email %|g" \
         -e "s|%ccm_git_repo: .* %|%ccm_git_repo: $repo %|g" \
         -e "s|%ccm_git_branch: .* %|%ccm_git_branch: $branch %|g" \
-        -e "s|%ccm_git_object_id: git-automation/enhanced-pre-commit.sh:100 %|g" \
-        -e "s|%ccm_git_commit_id: 043d1161f28704961fc3977112b42f1a9c83dd93 %|g" \
-        -e "s|%ccm_git_commit_count: 100 %|g" \
-        -e "s|%ccm_git_commit_message: libre logon fix plus hook rework for win.os %|g" \
-        -e "s|%ccm_git_commit_author: Matthew Pegg %|g" \
-        -e "s|%ccm_git_commit_email: mpegg@hotmail.com %|g" \
-        -e "s|%ccm_git_commit_date: 2025-10-11 10:56:22 -0400 %|g" \
+        -e "s|%ccm_git_object_id: .* %|%ccm_git_object_id: unknown %|g" \
+        -e "s|%ccm_git_commit_id: .* %|%ccm_git_commit_id: unknown %|g" \
+        -e "s|%ccm_git_commit_count: .* %|%ccm_git_commit_count: unknown %|g" \
+        -e "s|%ccm_git_commit_message: .* %|%ccm_git_commit_message: unknown %|g" \
+        -e "s|%ccm_git_commit_author: .* %|%ccm_git_commit_author: unknown %|g" \
+        -e "s|%ccm_git_commit_email: .* %|%ccm_git_commit_email: unknown %|g" \
+        -e "s|%ccm_git_commit_date: .* %|%ccm_git_commit_date: unknown %|g" \
         -e "s|%ccm_git_file_last_modified: .* %|%ccm_git_file_last_modified: $file_last_modified %|g" \
         -e "s|%ccm_git_file_name: .* %|%ccm_git_file_name: $file_name %|g" \
         -e "s|%ccm_git_file_type: .* %|%ccm_git_file_type: $file_type %|g" \
