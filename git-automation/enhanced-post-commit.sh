@@ -119,7 +119,8 @@ if ! git diff --quiet; then
   if [ "${2-}" = "--try" ]; then
     echo "[INFO] --try specified, skipping git add command" >> "$LOG_FILE"
   else
-    git add -A
+    # git add -A
+    git add "${FILES_TO_PROCESS[@]}"  # Only stages files from the original commit
   fi
   # Create lock and ensure cleanup
   echo $$ > "$LOCK_FILE"

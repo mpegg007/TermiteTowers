@@ -34,8 +34,11 @@ SCAN_FAILED=0
 # Add your custom secret patterns here
 # Format: "pattern|severity|description"
 declare -a PATTERNS=(
-    # Kea DHCP database passwords
-    '"password"\s*:\s*"[^"]+"'"|high|Hardcoded database password in Kea config"
+    # Kea DHCP database passwords (JSON format)
+    '"password"\s*:\s*"[^"]+"'"|high|Hardcoded database password in Kea config (JSON)"
+    
+    # Kea DHCP database passwords (key=value format)
+    'password\s*=\s*[^\s;,#]+|high|Hardcoded database password (key=value)'
     
     # Add more patterns here as needed
     # Example: 'API_KEY\s*=\s*["\047][^"\047]+["\047]|high|Hardcoded API key'

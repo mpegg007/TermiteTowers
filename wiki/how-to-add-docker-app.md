@@ -1,28 +1,28 @@
+<!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+  %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
+  %ccm_git_branch: main %
+  %ccm_git_object_id: wiki/how-to-add-docker-app.md:97 %
+  %ccm_git_author: CCM Maintainer %
+  %ccm_git_author_email: ccm@test %
+  %ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
+  %ccm_git_commit_id: f8d51ae7fe101541b1ccd2f91922878ece0bb306 %
+  %ccm_git_commit_count: 97 %
+  %ccm_git_commit_date: 2025-10-10 20:55:46 -0400 %
+  %ccm_git_commit_author: mpegg %
+  %ccm_git_commit_email: mpegg@hotmail.com %
+  %ccm_git_commit_message: big update %
+  %ccm_git_modify_date: 2025-08-29 07:37:53 %
+  %ccm_git_file_last_modified: 2025-08-29 07:37:52 %
+  %ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
+  %ccm_git_path: CCM_HEADER_TEMPLATE.txt %
+  %ccm_git_language_mode:  %
+  %ccm_git_file_type: text/plain %
+  %ccm_git_file_encoding: us-ascii %
+  %ccm_git_file_eol: CRLF %
+  %ccm_git_exec: no %
+  %ccm_git_size: 659 %
+  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
 <!--
-TermiteTowers Continuous Code Management Header TEMPLATE
-% ccm_modify_date: 2025-08-31 14:31:46 %
-% ccm_author: mpegg %
-% ccm_author_email: mpegg@hotmail.com %
-% ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
-% ccm_branch: dev1 %
-% ccm_object_id: wiki/how-to-add-docker-app.md:0 %
-% ccm_commit_id: unknown %
-% ccm_commit_count: 0 %
-% ccm_commit_message: unknown %
-% ccm_commit_author: unknown %
-% ccm_commit_email: unknown %
-% ccm_commit_date: 1970-01-01 00:00:00 +0000 %
-% ccm_file_last_modified: 2025-08-31 14:30:32 %
-% ccm_file_name: how-to-add-docker-app.md %
-% ccm_file_type: text/plain %
-% ccm_file_encoding: us-ascii %
-% ccm_file_eol: CRLF %
-% ccm_path: wiki/how-to-add-docker-app.md %
-% ccm_blob_sha: 1001ab7378865e12c1a44ea5f85456f5ed79ffce %
-% ccm_exec: no %
-% ccm_size: 5752 %
-% ccm_tag:  %
-tt-ccm.header.end
 -->
 
 # How to add a new Docker app (dev1)
@@ -128,7 +128,7 @@ curl -I https://<short>.termitetowers.ca
 - Edit infra/nginx/www/chat/index.html to add a tile.
 - Deploy to /var/www/chat:
 ```bash
-bash /home/mpegg-adm/source/TermiteTowers/scripts/deploy-chat.sh
+bash /home/mpegg-adm/source/TermiteTowers/scripts/deploy-www.sh
 ```
 
 ## 8) /srv/dev1 convenience path and symlink (optional but recommended)
@@ -148,13 +148,93 @@ Note: the compose file remains source-controlled in TermiteTowers; /srv/dev1 jus
 - (Optional) Add a runbook under wiki/runbook-<service>.md with Start/Stop, Ports & URL, Data, Troubleshooting, and a Deploy block.
 
 ## 10) Sanity and troubleshooting
-- Check container logs:
+
+### Container logs
 ```bash
 docker logs --tail 200 <container_name>
 ```
-- Check Nginx and connectivity:
+
+### Nginx and connectivity
 ```bash
 sudo nginx -t
 curl -I https://<short>.termitetowers.ca
 ```
-- Permissions: most services use 2001:1006 and require group-writable mounts (umask 002). Some may need initial root-owned chown on first start (remove user override if applicable).
+
+### Permissions
+Most services use 2001:1006 and require group-writable mounts (umask 002). Some may need initial root-owned chown on first start (remove user override if applicable).
+
+### GitHub Container Registry (ghcr.io) Pull Issues
+
+**Symptom:** `Error response from daemon: Head "https://ghcr.io/v2/.../manifests/...": denied: denied`
+
+**Problem:** 
+- Stale cached images (e.g., `:main` tag from months ago)
+- GitHub rate limits on anonymous pulls
+- Expired authentication tokens
+
+**Diagnosis:**
+```bash
+# Check when your cached image was created
+docker images <image-name> --format "table {{.Repository}}\t{{.Tag}}\t{{.CreatedAt}}"
+
+# Example: Image shows "2025-08-22" but current date is "2025-10-08" = 2 months old!
+```
+
+**Fix - Force Fresh Pull:**
+
+1. Stop and remove container:
+```bash
+docker stop <container-name>
+docker rm <container-name>
+```
+
+2. Remove stale cached image:
+```bash
+# Check for ghost containers
+docker ps -a | grep <container-name>
+
+# Force remove any blocking containers by ID
+docker rm -f <container-id>
+
+# Force remove old cached image
+docker rmi -f ghcr.io/<org>/<image>:<tag>
+```
+
+3. Pull fresh image:
+```bash
+# Docker will use credentials from ~/.docker/config.json if available
+docker pull ghcr.io/<org>/<image>:<tag>
+
+# If still denied, logout and retry (sometimes helps)
+docker logout ghcr.io
+docker pull ghcr.io/<org>/<image>:<tag>
+```
+
+4. Restart with fresh image:
+```bash
+docker compose -f /home/mpegg-adm/source/TermiteTowers/infra/docker/<service>-dev1.yml up -d
+```
+
+**Real Example - Open WebUI Stuck on Old Version:**
+```bash
+# Problem: openwebui-dev1 stuck on v0.6.25, need v0.6.31+ for MCP support
+# Cached image was from August, need October version
+
+# Solution:
+docker stop openwebui-dev1
+docker rm openwebui-dev1
+docker rm -f $(docker ps -aq --filter name=openwebui)  # Remove any ghost containers
+docker rmi -f ghcr.io/open-webui/open-webui:main
+docker pull ghcr.io/open-webui/open-webui:main
+docker compose -f infra/docker/openweb-dev1.yml up -d
+
+# Verify new version
+docker exec openwebui-dev1 python -c "from open_webui.env import VERSION; print(f'Version: {VERSION}')"
+```
+
+**Prevention:**
+- Periodically clean old images: `docker image prune -a`
+- For production, use specific version tags (`:v0.6.33`) instead of `:main` or `:latest`
+- Keep GitHub token fresh in `~/.docker/config.json`
+- Schedule manual update checks for rolling tags like `:main`
+

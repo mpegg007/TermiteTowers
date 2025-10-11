@@ -1,38 +1,48 @@
+<!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+  %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
+  %ccm_git_branch: main %
+  %ccm_git_object_id: wiki/README.md:97 %
+  %ccm_git_author: CCM Maintainer %
+  %ccm_git_author_email: ccm@test %
+  %ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
+  %ccm_git_commit_id: f8d51ae7fe101541b1ccd2f91922878ece0bb306 %
+  %ccm_git_commit_count: 97 %
+  %ccm_git_commit_date: 2025-10-10 20:55:46 -0400 %
+  %ccm_git_commit_author: mpegg %
+  %ccm_git_commit_email: mpegg@hotmail.com %
+  %ccm_git_commit_message: big update %
+  %ccm_git_modify_date: 2025-08-29 07:37:53 %
+  %ccm_git_file_last_modified: 2025-08-29 07:37:52 %
+  %ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
+  %ccm_git_path: CCM_HEADER_TEMPLATE.txt %
+  %ccm_git_language_mode:  %
+  %ccm_git_file_type: text/plain %
+  %ccm_git_file_encoding: us-ascii %
+  %ccm_git_file_eol: CRLF %
+  %ccm_git_exec: no %
+  %ccm_git_size: 659 %
+  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
 <!--
-TermiteTowers Continuous Code Management Header TEMPLATE
-% ccm_modify_date: 2025-08-31 14:14:22 %
-% ccm_author: mpegg %
-% ccm_author_email: mpegg@hotmail.com %
-% ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
-% ccm_branch: dev1 %
-% ccm_object_id: wiki/README.md:0 %
-% ccm_commit_id: unknown %
-% ccm_commit_count: 0 %
-% ccm_commit_message: unknown %
-% ccm_commit_author: unknown %
-% ccm_commit_email: unknown %
-% ccm_commit_date: 1970-01-01 00:00:00 +0000 %
-% ccm_file_last_modified: 2025-08-31 14:11:33 %
-% ccm_file_name: README.md %
-% ccm_file_type: text/plain %
-% ccm_file_encoding: us-ascii %
-% ccm_file_eol: CRLF %
-% ccm_path: wiki/README.md %
-% ccm_blob_sha: c7bb9ef08469e3c80ce6c289e994ef7301f164d0 %
-% ccm_exec: no %
-% ccm_size: 2140 %
-% ccm_tag:  %
-tt-ccm.header.end
 -->
 
 # TermiteTowers Ops Docs
 
 These Markdown pages are ready to import into Wiki.js. They capture the storage/permissions model and Docker Compose conventions we implemented.
 
-- Storage model: `storage-model.md`
-- Compose conventions: `compose-conventions.md`
-- Service runbooks: `runbook-openwebui.md`, `runbook-lobechat.md`, `runbook-tortoise.md`, `runbook-whisper.md`, `runbook-wikijs.md`, `runbook-kitchenowl.md`, `runbook-uptime-kuma.md`, `runbook-dozzle.md`, `runbook-homarr.md`
-- Quick refs: `env-variables.md`, `paths-and-symlinks.md`, `ports.md`, `how-to-add-docker-app.md`
+## Infrastructure Docs
+
+- **Domain strategy**: `domains.md` - termitetowers.ca vs analacres.ca domain architecture
+- **Storage model**: `storage-model.md`
+- **Compose conventions**: `compose-conventions.md`
+- **Quick refs**: `env-variables.md`, `paths-and-symlinks.md`, `ports.md`, `how-to-add-docker-app.md`, `how-to-add-mcp-server.md`
+
+## Service Runbooks
+
+- `runbook-openwebui.md`, `runbook-lobechat.md`, `runbook-tortoise.md`, `runbook-whisper.md`, `runbook-wikijs.md`, `runbook-kitchenowl.md`, `runbook-uptime-kuma.md`, `runbook-dozzle.md`, `runbook-homarr.md`, `runbook-ha-hal-bridge.md`, `runbook-piper.md`
+
+## Vision & Architecture
+
+- **HAL Vision**: `vision-hal-enterprise-computer.md` - End-state HAL 9000/Enterprise Computer system goals
 
 ## System architecture (Mermaid)
 

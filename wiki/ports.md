@@ -1,64 +1,204 @@
 <!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-  %ccm_git_repo: TermiteTowers %
-  %ccm_git_branch: dev1 %
-  %ccm_git_object_id: wiki/ports.md:0 %
-  %ccm_git_author: mpegg %
-  %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: 141ec3c9daeadb7c5a13b6d4c7ea9f447d655cae %
-  %ccm_git_commit_id: unknown %
-  %ccm_git_commit_count: 0 %
-  %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
-  %ccm_git_commit_author: unknown %
-  %ccm_git_commit_email: unknown %
-  %ccm_git_commit_message: unknown %
-  %ccm_git_modify_date: 2025-09-27 11:27:57 %
-  %ccm_git_file_last_modified: 2025-09-27 11:27:57 %
-  %ccm_git_file_name: ports.md %
-  %ccm_git_path: wiki/ports.md %
-  %ccm_git_language_mode: markdown %
+  %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
+  %ccm_git_branch: main %
+  %ccm_git_object_id: wiki/ports.md:97 %
+  %ccm_git_author: CCM Maintainer %
+  %ccm_git_author_email: ccm@test %
+  %ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
+  %ccm_git_commit_id: f8d51ae7fe101541b1ccd2f91922878ece0bb306 %
+  %ccm_git_commit_count: 97 %
+  %ccm_git_commit_date: 2025-10-10 20:55:46 -0400 %
+  %ccm_git_commit_author: mpegg %
+  %ccm_git_commit_email: mpegg@hotmail.com %
+  %ccm_git_commit_message: big update %
+  %ccm_git_modify_date: 2025-08-29 07:37:53 %
+  %ccm_git_file_last_modified: 2025-08-29 07:37:52 %
+  %ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
+  %ccm_git_path: CCM_HEADER_TEMPLATE.txt %
+  %ccm_git_language_mode:  %
   %ccm_git_file_type: text/plain %
   %ccm_git_file_encoding: us-ascii %
   %ccm_git_file_eol: CRLF %
   %ccm_git_exec: no %
-  %ccm_git_size: 2161 %
+  %ccm_git_size: 659 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
 <!-- %git_commit_history: service updates % -->
-<!--
--->
 
-# Ports Inventory
 
-This page tracks host and service ports used across TermiteTowers.
+# Ports Inventory 
 
-| Service        | Subdomain                  | Host Port | Container Port | Notes                                      |
-|----------------|----------------------------|-----------|----------------|--------------------------------------------|
-| WebAI          | webai.termitetowers.ca     | 3000      | 8080/3000      | Nginx -> localhost:3000                    |
-| LobeChat       | lobe.termitetowers.ca      | 3100      | 3210/3100      | Nginx -> localhost:3100                    |
-| Wiki.js        | wiki.termitetowers.ca      | 3200      | 3000           | Nginx -> localhost:3200; Docker 3200:3000  |
-| Private PyPI   | packages.termitetowers.ca  | 3141      | 3141           | Nginx -> localhost:3141                    |
-| KitchenOwl     | kitchenowl.termitetowers.ca| 3300      | 8080           | Nginx -> localhost:3300; Docker 3300:8080  |
-| Uptime Kuma    | kuma.termitetowers.ca      | 3301      | 3001           | Nginx -> localhost:3301; Docker 3301:3001  |
-| Dozzle         | dozzle.termitetowers.ca    | 3302      | 8080           | Nginx -> localhost:3302; Docker 3302:8080  |
-| Homarr         | home.termitetowers.ca      | 3303      | 7575           | Nginx -> localhost:3303; Docker 3303:7575  |
-| PowerDNS Admin | dns.termitetowers.ca       | 5380      | 5380           | Nginx -> localhost:5380; Technitium DNS   |
-| Ollama API     | ollama.termitetowers.ca    | 11434     | 11434          | Nginx -> localhost:11434                   |
-| Private PyPI Proxy | pypi.termitetowers.ca  | 4080      | 4080           | Nginx -> localhost:4080                    |
+This page tracks host and service ports used across TermiteTowers using a systematic range-based allocation.
 
-## Allocated Ports
+## Port Allocation Strategy
 
-| Service | Port  |
-|---------|-------|
-| Vault   | 3304  |
-| ESO     | 3305  |
-| SOPS    | 3306  |
+| Range | Category | Description |
+|-------|----------|-------------|
+| 3000-3099 | Core Infrastructure | Primary services, admin interfaces, DNS |
+| 3100-3199 | Development & DevOps | Package registries, development tools |
+| 3200-3299 | Content & Documentation | Wiki, documentation, CMS |
+| 3300-3399 | Home Automation & Daily | Dashboard, kitchen, daily tools |
+| 3400-3499 | Media & Entertainment | Plex, *arr services, torrents |
+| 3500-3599 | Security & Secrets | Vault, SOPS, auth services |
+| 3600-3699 | Databases & Data | DB admin tools, data management |
+| 3700-3799 | Monitoring & Ops | Uptime, logs, metrics, observability |
+| 3800-3899 | AI & Machine Learning | Ollama, LLM interfaces, AI tools |
+| 3900-3999 | Asset & IT Management | Asset tracking, inventory, tickets |
+
+## Current Service Allocation
+
+| Service        | Subdomain                  | Host Port | Container Port | Category | Status |
+|----------------|----------------------------|-----------|----------------|----------|--------|
+| WebAI          | webai.termitetowers.ca     | 3000      | 8080           | Core     | ✅ Correct |
+| PowerDNS Admin | dns.termitetowers.ca       | 3020,3021 | 80,8080        | Core     | ✅ **UPDATED** |
+| LobeChat       | lobe.termitetowers.ca      | 3100      | 3210           | DevOps   | ✅ Correct |
+| Private PyPI   | packages.termitetowers.ca  | 3110      | 3141           | DevOps   | 🔄 **TO MIGRATE** |
+| PyPI Proxy     | pypi.termitetowers.ca      | 3120      | 4080           | DevOps   | 🔄 **TO MIGRATE** |
+| SearXNG        | search.termitetowers.ca    | 3130      | 8080           | DevOps   | ✅ Correct |
+| Wiki.js        | wiki.termitetowers.ca      | 3200      | 3000           | Content  | ✅ Correct |
+| KitchenOwl     | kitchenowl.termitetowers.ca| 3300      | 8080           | Home     | ✅ Correct |
+| Homarr         | home.termitetowers.ca      | 3310      | 7575           | Home     | ✅ **UPDATED** |
+| LLM Server API | llmapi.termitetowers.ca    | 3350      | 8000           | Home     | ✅ **NEW** |
+| Vault          | vault.termitetowers.ca     | 3500      | 3000           | Security | 🔄 **TO MIGRATE** |
+| SOPS           | sops.termitetowers.ca      | 3510      | 3000           | Security | 🔄 **TO MIGRATE** |
+| ESO            | eso.termitetowers.ca       | 3520      | 3000           | Security | 🔄 **TO MIGRATE** |
+| dbGate         | dba.termitetowers.ca       | 3600      | 3000           | Database | ✅ **WORKING** |
+| Uptime Kuma    | kuma.termitetowers.ca      | 3700      | 3001           | Monitor  | ✅ **UPDATED** |
+| Dozzle         | dozzle.termitetowers.ca    | 3710      | 8080           | Monitor  | ✅ **UPDATED** |
+| Ollama API     | ollama.termitetowers.ca    | 3800      | 11434          | AI       | 🔄 **TO MIGRATE** |
+| Snipe-IT       | asset.termitetowers.ca     | 3900      | 80             | Assets   | ✅ **UPDATED** |
+
+
+## Migration Progress
+
+Track the migration of services to the new port allocation:
+
+| Service | Old Port | New Port | Docker ✅ | Nginx ✅ | Complete |
+|---------|----------|----------|-----------|----------|----------|
+| PowerDNS Admin | 3304 | 3020 | ✅ | ✅ | ⚠️ Docker issue |
+| Vault | 3307 | 3500 | ✅ | ✅ | ✅ |
+| Private PyPI | 3141 | 3110 | ⏳ | ⏳ | ❌ |
+| PyPI Proxy | 4080 | 3120 | ⏳ | ⏳ | ❌ |
+| Homarr | 3303 | 3310 | ⏳ | ⏳ | ❌ |
+| Vault | 3307 | 3500 | ⏳ | ⏳ | ❌ |
+| SOPS | 3306 | 3510 | ⏳ | ⏳ | ❌ |
+| ESO | 3305 | 3520 | ⏳ | ⏳ | ❌ |
+| dbGate | 3308 | 3600 | ⏳ | ⏳ | ❌ |
+| Uptime Kuma | 3301 | 3700 | ⏳ | ⏳ | ❌ |
+| Dozzle | 3302 | 3710 | ⏳ | ⏳ | ❌ |
+| Ollama API | 11434 | 3800 | ⏳ | ⏳ | ❌ |
+| Snipe-IT | 3310 | 3900 | ⏳ | ⏳ | ❌ |
 
 ## Notes
-- Ensure no port conflicts before assigning new ports.
-- Update this document whenever a new service is added or ports are reallocated.
 
-Notes:
-- Host ports are typically bound on 0.0.0.0 in Compose where applicable.
-- Nginx proxies HTTPS subdomains to the above localhost ports.
-- Keep this list updated when adding services.
+- Port allocation follows systematic ranges for easy management and discovery
+- Each category has 100 ports available for growth
+- Migration should be done service by service: Docker first, then Nginx
+- Test each service after migration to ensure functionality
+- Update this document as migrations are completed
 
-Updated: 2025-08-31
+Updated: 2025-09-29
+
+Additional Information: Port Allocation Rationale & Strategy
+Looking at your current port allocation, I can see it's quite scattered and lacks a clear organizational scheme. Here's a better systematic approach:
+
+🎯 Proposed Port Allocation Strategy
+
+Current Issues:
+
+Ports are scattered (3000, 3100, 3200, 3141, 3300-3310, 4080, 11434)
+No logical grouping by service type
+Hard to remember and manage
+Gaps make it unclear what's available
+Better Approach: Range-Based Allocation
+
+3000-3099: Core Infrastructure & Admin
+3100-3199: Development & DevOps Tools
+3200-3299: Content & Documentation
+3300-3399: Home Automation & IoT
+3400-3499: Media & Entertainment
+3500-3599: Security & Secrets Management
+3600-3699: Databases & Data Tools
+3700-3799: Monitoring & Observability
+3800-3899: AI & Machine Learning
+3900-3999: Reserved/Future Use
+Proposed Port Reassignment:
+
+Core Infrastructure (3000-3099):
+
+3000 - WebAI (keep as-is, primary web interface)
+3010 - Nginx Admin/Config UI (future)
+3020 - DNS Management (PowerDNS Admin)
+3030 - Network Tools (future DHCP admin)
+3040 - Load Balancer Admin (future)
+Development & DevOps (3100-3199):
+
+3100 - LobeChat (keep as-is)
+3110 - Package Registry (PyPI)
+3120 - PyPI Proxy
+3130 - Git Services (future Gitea/GitLab)
+3140 - CI/CD (future Jenkins/GitHub Actions runner)
+Content & Documentation (3200-3299):
+
+3200 - Wiki.js (keep as-is)
+3210 - Documentation sites (future)
+3220 - Blog/CMS (future)
+3230 - File sharing (future)
+Home Automation & Daily Tools (3300-3399):
+
+3300 - KitchenOwl (keep as-is)
+3310 - Home Dashboard (Homarr)
+3320 - Calendar/Planning tools (future)
+3330 - Note-taking apps (future)
+Media & Entertainment (3400-3499):
+
+3400 - Plex/Media Server
+3410 - Sonarr
+3420 - Radarr
+3430 - Prowlarr
+3440 - qBittorrent
+3450 - Lidarr
+3460 - Readarr
+Security & Secrets (3500-3599):
+
+3500 - Vault (Infisical)
+3510 - SOPS Interface
+3520 - ESO (External Secrets Operator)
+3530 - Auth/SSO services (future)
+3540 - Certificate management (future)
+Databases & Data (3600-3699):
+
+3600 - dbGate (primary DB admin)
+3610 - pgAdmin (PostgreSQL specific)
+3620 - MySQL Workbench equivalent
+3630 - Redis admin (future)
+3640 - MongoDB admin (future)
+Monitoring & Ops (3700-3799):
+
+3700 - Uptime Kuma
+3710 - Dozzle (container logs)
+3720 - Grafana (future)
+3730 - Prometheus (future)
+3740 - Log aggregation (future)
+3750 - Performance monitoring (future)
+AI & ML (3800-3899):
+
+3800 - Ollama API (move from 11434)
+3810 - Text generation UI
+3820 - Stable Diffusion
+3830 - ComfyUI
+3840 - Model management
+3850 - AI training tools
+Asset Management (3900-3999):
+
+3900 - Snipe-IT (asset tracking)
+3910 - Inventory management
+3920 - IT documentation
+3930 - Ticketing system (future)
+Benefits of This Approach:
+
+🧠 Memorable: Easy to remember service types by range
+📈 Scalable: Room for growth in each category
+🔍 Discoverable: Know immediately what type of service a port hosts
+🛠️ Maintainable: Easy to add new services without conflicts
+📚 Self-Documenting: Port number tells you the service category
+
