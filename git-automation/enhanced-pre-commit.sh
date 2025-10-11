@@ -2,16 +2,16 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: git-automation/enhanced-pre-commit.sh:0 %
+#  %ccm_git_object_id: git-automation/enhanced-pre-commit.sh:95 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
 #  %ccm_git_blob_sha: 818b10f80f16e03e7862112837844d98e3d5cff1 %
-#  %ccm_git_commit_id: unknown %
-#  %ccm_git_commit_count: 0 %
-#  %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
-#  %ccm_git_commit_author: unknown %
-#  %ccm_git_commit_email: unknown %
-#  %ccm_git_commit_message: unknown %
+#  %ccm_git_commit_id: 6d741b8416e3c0d8e313b1c1f644a42a32cb309c %
+#  %ccm_git_commit_count: 95 %
+#  %ccm_git_commit_date: 2025-10-10 20:23:28 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: test: verify enhanced secret scanner integration %
 #  %ccm_git_modify_date: 2025-09-06 12:02:06 %
 #  %ccm_git_file_last_modified: 2025-09-06 11:52:11 %
 #  %ccm_git_file_name: enhanced-pre-commit.sh %
@@ -49,6 +49,16 @@ TEMPLATE_FILE="$REPO_ROOT/git-automation/CCM_HEADER_TEMPLATE.txt"
 LOG_FILE="$REPO_ROOT/git-automation/enhanced-hooks.log"
 
 echo "Enhanced pre-commit hook started at $(date)" >> "$LOG_FILE"
+
+# --- Enhanced Secret Scanning ---
+# Runs both custom patterns and GitGuardian ggshield
+if [ -x "$REPO_ROOT/git-automation/enhanced-secrets-pattern-scanner.sh" ]; then
+    if ! "$REPO_ROOT/git-automation/enhanced-secrets-pattern-scanner.sh"; then
+        exit 1
+    fi
+else
+    echo "  ⚠️  enhanced-secrets-pattern-scanner.sh not found or not executable" >> "$LOG_FILE"
+fi
 
 # --- Commit-wide variables ---
 author=$(git config user.name)
@@ -102,7 +112,7 @@ insert_ccm_header() {
 
     # Scan file for first commit message before header removal
     local preserved_commit_message
-    preserved_commit_message=$(grep -m1 -E '%ccm_git_commit_message: .* %' "$file" | sed -E 's/.*%ccm_git_commit_message: (.*) %.*/\1/')
+    preserved_commit_message=$(grep -m1 -E '%ccm_git_commit_message: test: verify enhanced secret scanner integration %.*/\1/')
     local history_commit_message
     history_commit_message=$(grep -m1 -E '%git_commit_history: .* %' "$file" | sed -E 's/.*%git_commit_history: (.*) %.*/\1/')
 
@@ -178,13 +188,13 @@ insert_ccm_header() {
         -e "s|%ccm_git_author_email: .* %|%ccm_git_author_email: $author_email %|g" \
         -e "s|%ccm_git_repo: .* %|%ccm_git_repo: $repo %|g" \
         -e "s|%ccm_git_branch: .* %|%ccm_git_branch: $branch %|g" \
-        -e "s|%ccm_git_object_id: .* %|%ccm_git_object_id: $file_path:0 %|g" \
-        -e "s|%ccm_git_commit_id: .* %|%ccm_git_commit_id: unknown %|g" \
-        -e "s|%ccm_git_commit_count: .* %|%ccm_git_commit_count: 0 %|g" \
-        -e "s|%ccm_git_commit_message: .* %|%ccm_git_commit_message: unknown %|g" \
-        -e "s|%ccm_git_commit_author: .* %|%ccm_git_commit_author: unknown %|g" \
-        -e "s|%ccm_git_commit_email: .* %|%ccm_git_commit_email: unknown %|g" \
-        -e "s|%ccm_git_commit_date: .* %|%ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %|g" \
+        -e "s|%ccm_git_object_id: git-automation/enhanced-pre-commit.sh:95 %|g" \
+        -e "s|%ccm_git_commit_id: 6d741b8416e3c0d8e313b1c1f644a42a32cb309c %|g" \
+        -e "s|%ccm_git_commit_count: 95 %|g" \
+        -e "s|%ccm_git_commit_message: test: verify enhanced secret scanner integration %|g" \
+        -e "s|%ccm_git_commit_author: mpegg %|g" \
+        -e "s|%ccm_git_commit_email: mpegg@hotmail.com %|g" \
+        -e "s|%ccm_git_commit_date: 2025-10-10 20:23:28 -0400 %|g" \
         -e "s|%ccm_git_file_last_modified: .* %|%ccm_git_file_last_modified: $file_last_modified %|g" \
         -e "s|%ccm_git_file_name: .* %|%ccm_git_file_name: $file_name %|g" \
         -e "s|%ccm_git_file_type: .* %|%ccm_git_file_type: $file_type %|g" \
