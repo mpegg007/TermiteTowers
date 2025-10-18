@@ -1,4 +1,30 @@
 #!/usr/bin/env bash
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: unknown %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 06ef2d319857274e03b2c2d461c0afe3874eee00 %
+#  %ccm_git_commit_id: unknown %
+#  %ccm_git_commit_count: unknown %
+#  %ccm_git_commit_date: unknown %
+#  %ccm_git_commit_author: unknown %
+#  %ccm_git_commit_email: unknown %
+#  %ccm_git_commit_message: unknown %
+#  %ccm_git_modify_date: 2025-10-12 10:23:19 %
+#  %ccm_git_file_last_modified: 2025-10-12 10:23:19 %
+#  %ccm_git_file_name: enhanced-secrets-pattern-scanner.sh %
+#  %ccm_git_path: git-automation/enhanced-secrets-pattern-scanner.sh %
+#  %ccm_git_language_mode: shellscript %
+#  %ccm_git_file_type: text/x-shellscript %
+#  %ccm_git_file_encoding: utf-8 %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 3141 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: #  %ccm_git_commit_message: unknown % 
+# %git_commit_history: #  %ccm_git_commit_message: testing hooks again % 
 #  TermiteTowers Enhanced Secrets Pattern Scanner
 #  This script checks a SINGLE file for secrets using:
 #    1. Custom regex patterns (easily configurable below)
@@ -18,7 +44,7 @@ if [ $# -ne 1 ]; then
     exit 1
 fi
 
-FILE="$1"
+FILE="$1" 
 
 # Skip if file doesn't exist
 if [ ! -f "$FILE" ]; then

@@ -223,29 +223,39 @@ insert_ccm_header() {
 if [ -n "${1-}" ] && [ -f "$1" ]; then
   echo "[DEBUG] Arg1 present and is a file: processing '$1'" >> "$LOG_FILE"
   FILES_TO_PROCESS=("$1")
+  GIT_MODE=N
 else
     # Read staged files into array (fix: use correct read and git diff command)
     mapfile -d '' -t FILES_TO_PROCESS < <(git diff --cached --name-only -z)
+    GIT_MODE=Y
 fi
 
-  if [ "${2-}" = "--force" ]; then
-    echo "[INFO] --force specified, skipping directory exclusion" >> "$LOG_FILE"
-    do_gitAF=--force
-  else
-    do_gitAF=
-  fi
+if [ "${2-}" == "--try" ] || [ "$GIT_MODE" == "N" ]; then
+  try_mode="--try"
+else
+  try_mode=""
+fi
+
+echo "[DEBUG] try_mode set to '$try_mode'" >> "$LOG_FILE"
 
 for FILE in "${FILES_TO_PROCESS[@]}"; do
-    # Skip files in git-automation folder
-  if [ "${do_gitAF}" = "--force" ]; then
-    echo "[INFO] --force specified, skipping directory exclusion" >> "$LOG_FILE"
+
+  # --- Exclude git-automation folder from processing ---
+  if grep -q "tt-hooks.skip-post-commit" "$FILE"; then
+    echo "[INFO] Skipping $FILE (contains tt-hooks.skip-post-commit)" >> "$LOG_FILE"
+    continue
+  fi
+
+  # Skip files in git-automation folder
+  if [ "${try_mode}" = "--try" ]; then
+    echo "[INFO] --try specified, skipping directory exclusion" >> "$LOG_FILE"
   else
-      case "$FILE" in
-        git-automation/*|*/git-automation/*)
-            echo "[INFO] Skipping $FILE (in git-automation folder)" >> "$LOG_FILE"
-            continue
-            ;;
-    esac
+    case "$FILE" in
+      git-automation/enhanced-pre-commit.sh|git-automation/enhanced-post-commit.sh)
+        echo "[INFO] Skipping $FILE (in git-automation folder)" >> "$LOG_FILE"
+        continue
+        ;;
+    esac 
   fi
 
     REL_PATH=$(git ls-files --full-name -- "$FILE" 2>/dev/null || echo "$FILE")
@@ -284,11 +294,14 @@ for FILE in "${FILES_TO_PROCESS[@]}"; do
         continue
     fi
 
-    # Only add to git if not in single-file mode
-    if [ $# -ne 1 ]; then
+    if [ "${try_mode-}" = "--try" ]; then
+      echo "[INFO] --try specified, skipping git add command" >> "$LOG_FILE"
+    else
+        # git add -A
         git add "$FILE"
         echo "[INFO] Added $FILE to git index" >> "$LOG_FILE"
     fi
+  
 done
 
 echo "Enhanced pre-commit hook finished at $(date)" >> "$LOG_FILE"
