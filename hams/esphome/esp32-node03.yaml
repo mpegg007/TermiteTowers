@@ -1,0 +1,87 @@
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: hams/esphome/esp32-node03.yaml:102 %
+#  %ccm_git_author: Matthew Pegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 74bc2ed59e268425b196cd6f0e960632f6c682ce %
+#  %ccm_git_commit_id: 0fe5f85b2d82fa548d0ef593b302bf3f28915940 %
+#  %ccm_git_commit_count: 102 %
+#  %ccm_git_commit_date: 2025-10-18 16:33:31 -0400 %
+#  %ccm_git_commit_author: Matthew Pegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: esphome %
+#  %ccm_git_modify_date: 2025-10-18 16:33:45 %
+#  %ccm_git_file_last_modified: 2025-10-04 10:41:11 %
+#  %ccm_git_file_name: esp32-node03.yaml %
+#  %ccm_git_path: hams/esphome/esp32-node03.yaml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 1614 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+## For Boiler Room - ESP32 with SHT3x and 8-Relay Module
+# esphome upload esp32-node03.yaml --device 192.168.1.XXX
+# esphome logs esp32-node03.yaml --device 192.168.1.XXX
+
+substitutions:
+  friendly_name: "ESP32 Boiler Room"
+
+esphome:
+  name: esp32-boiler
+  friendly_name: "${friendly_name}"
+
+# Import common TermiteTowers ESP32 base configuration
+<<: !include tt-esp-base.yaml
+
+# Override only the fallback AP name (keep base WiFi config)
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "Esp32-Boiler"
+    password: !secret fallback_ap_password
+
+# ==============================================================================
+# DEVICE-SPECIFIC CONFIGURATION
+# ==============================================================================
+
+# SHT3x Temperature & Humidity Sensor (I2C)
+sensor:
+  - platform: sht3xd
+    temperature:
+      name: "Boiler Room Temperature"
+      id: boiler_temp
+    humidity:
+      name: "Boiler Room Humidity"
+      id: boiler_humidity
+    address: 0x44
+    update_interval: 30s
+
+# Sainsmart 8-Relay Module (GPIOs)
+switch:
+  - platform: gpio
+    name: "Boiler Relay 1"
+    pin: GPIO18
+  - platform: gpio
+    name: "Boiler Relay 2"
+    pin: GPIO19
+  - platform: gpio
+    name: "Boiler Relay 3"
+    pin: GPIO27
+  - platform: gpio
+    name: "Boiler Relay 4"
+    pin: GPIO26
+  - platform: gpio
+    name: "Boiler Relay 5"
+    pin: GPIO25
+  - platform: gpio
+    name: "Boiler Relay 6"
+    pin: GPIO33
+
+# Notes:
+# - Adjust relay GPIOs as needed for your wiring
+# - All relays default to OFF at boot
+# - SHT3x sensor uses I2C bus (GPIO21/22 from base config)

@@ -1,0 +1,29 @@
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: hams/esphome/.gitignore:102 %
+#  %ccm_git_author: Matthew Pegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: d8b4157aef93a9ac611766077b969c9f87628941 %
+#  %ccm_git_commit_id: 0fe5f85b2d82fa548d0ef593b302bf3f28915940 %
+#  %ccm_git_commit_count: 102 %
+#  %ccm_git_commit_date: 2025-10-18 16:33:31 -0400 %
+#  %ccm_git_commit_author: Matthew Pegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: esphome %
+#  %ccm_git_modify_date: 2025-10-18 16:33:35 %
+#  %ccm_git_file_last_modified: 2025-10-18 16:33:34 %
+#  %ccm_git_file_name: .gitignore %
+#  %ccm_git_path: hams/esphome/.gitignore %
+#  %ccm_git_language_mode: git %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 170 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# Gitignore settings for ESPHome
+# This is an example and may include too much for your use-case.
+# You can modify this file to suit your needs.
+/.esphome/
+/secrets.yaml

@@ -1,54 +1,71 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: hams/esphome/esp32-node01.yaml:102 %
+#  %ccm_git_object_id: hams/esphome/esp32-orion.yaml:102 %
 #  %ccm_git_author: Matthew Pegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: ec4320c0d689590420bc8fb3194bff57c2d5b3d2 %
+#  %ccm_git_blob_sha: 12585c366a9541cb96fe1f2268bf44747d951d70 %
 #  %ccm_git_commit_id: 0fe5f85b2d82fa548d0ef593b302bf3f28915940 %
 #  %ccm_git_commit_count: 102 %
 #  %ccm_git_commit_date: 2025-10-18 16:33:31 -0400 %
 #  %ccm_git_commit_author: Matthew Pegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
 #  %ccm_git_commit_message: esphome %
-#  %ccm_git_modify_date: 2025-10-18 16:33:42 %
-#  %ccm_git_file_last_modified: 2025-09-20 17:34:30 %
-#  %ccm_git_file_name: esp32-node01.yaml %
-#  %ccm_git_path: hams/esphome/esp32-node01.yaml %
+#  %ccm_git_modify_date: 2025-10-18 16:33:59 %
+#  %ccm_git_file_last_modified: 2025-09-18 18:14:43 %
+#  %ccm_git_file_name: esp32-orion.yaml %
+#  %ccm_git_path: hams/esphome/esp32-orion.yaml %
 #  %ccm_git_language_mode: yaml %
 #  %ccm_git_file_type: text/plain %
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 5002 %
+#  %ccm_git_size: 5237 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 ## For Node01 (formerly green-room/orion)
 # esphome upload esp32-node01.yaml --device 192.168.1.XXX
 # esphome logs esp32-node01.yaml --device 192.168.1.XXX
 
-substitutions:
-  friendly_name: "ESP32 Node01"
-
 esphome:
   name: esp32-node01
-  friendly_name: "${friendly_name}"
+  friendly_name: "ESP32 Node01"
 
-# Import common TermiteTowers ESP32 base configuration
-<<: !include tt-esp-base.yaml
-
-# Override framework to esp-idf for advanced features
 esp32:
+  board: esp32dev
   framework:
     type: esp-idf
 
-# Override fallback AP name
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret api_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
 wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "Esp32-Node01"
+    ssid: "Esp32-Orion"
+    password: !secret fallback_ap_password
+
+captive_portal:
 
 # ==============================================================================
-# DEVICE-SPECIFIC INTERFACES
+# COMMUNICATION INTERFACES
 # ==============================================================================
+
+# I2C bus for environmental sensors
+i2c:
+  sda: GPIO21
+  scl: GPIO22
+  scan: true
 
 # I2S interface for digital microphone
 i2s_audio:
