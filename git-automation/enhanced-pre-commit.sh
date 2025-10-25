@@ -102,7 +102,7 @@ insert_ccm_header() {
 
     # Scan file for first commit message before header removal
     local preserved_commit_message
-    preserved_commit_message=$(grep -m1 '%ccm_git_commit_message:' "$file" | sed 's/^.*%ccm_git_commit_message: libre logon fix plus hook rework for win.os %.*$//' || echo "")
+    preserved_commit_message=$(grep -m1 '%ccm_git_commit_message:' "$file" | sed 's/^.*%ccm_git_commit_message: //;s/ %.*$//' || echo "")
     local history_commit_message
     history_commit_message=$(grep -m1 '%git_commit_history:' "$file" | sed 's/^.*%git_commit_history: //;s/ %.*$//' || echo "")
 
@@ -239,6 +239,14 @@ fi
 echo "[DEBUG] try_mode set to '$try_mode'" >> "$LOG_FILE"
 
 for FILE in "${FILES_TO_PROCESS[@]}"; do
+
+  # --- CRITICAL: Never process hook files or git-automation scripts ---
+  case "$FILE" in
+    git-automation/*.sh|.git/hooks/*)
+      echo "[INFO] SAFETY: Skipping $FILE (hook/automation script - never process)" >> "$LOG_FILE"
+      continue
+      ;;
+  esac
 
   # --- Exclude git-automation folder from processing ---
   if grep -q "tt-hooks.skip-post-commit" "$FILE"; then
