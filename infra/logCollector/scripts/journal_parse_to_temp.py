@@ -1,27 +1,28 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/logCollector/scripts/journal_parse_to_temp.py:110 %
+#  %ccm_git_object_id: infra/logCollector/scripts/journal_parse_to_temp.py:111 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
 #  %ccm_git_blob_sha: 01cf79210cb802acf880460a1615b95389e010e0 %
-#  %ccm_git_commit_id: f58291ad575edfb9a551f895005def9b9f831304 %
-#  %ccm_git_commit_count: 110 %
-#  %ccm_git_commit_date: 2025-10-25 14:11:42 -0400 %
+#  %ccm_git_commit_id: c95decaaa02c45bee627cd315be8d2b7aefd7fc5 %
+#  %ccm_git_commit_count: 111 %
+#  %ccm_git_commit_date: 2025-10-29 19:12:44 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: dhcp logging %
-#  %ccm_git_modify_date: 2025-10-25 14:11:42 %
-#  %ccm_git_file_last_modified: 2025-10-25 10:55:54 %
+#  %ccm_git_commit_message: docker updates %
+#  %ccm_git_modify_date: 2025-10-29 19:12:45 %
+#  %ccm_git_file_last_modified: 2025-10-29 19:12:45 %
 #  %ccm_git_file_name: journal_parse_to_temp.py %
 #  %ccm_git_path: infra/logCollector/scripts/journal_parse_to_temp.py %
-#  %ccm_git_language_mode: nginx %
+#  %ccm_git_language_mode: python %
 #  %ccm_git_file_type: text/plain %
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
-#  %ccm_git_exec: yes %
+#  %ccm_git_exec: no %
 #  %ccm_git_size: 4154 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: dhcp logging % 
 import os
 import csv
 import re

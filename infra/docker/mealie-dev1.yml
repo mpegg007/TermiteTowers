@@ -1,10 +1,10 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/docker/uptime-kuma-dev1.yml:111 %
+#  %ccm_git_object_id: infra/docker/mealie-dev1.yml:111 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 983bb817c40d1903d1f7d60dead4f5bb30f69acd %
+#  %ccm_git_blob_sha: 058d22314dd36240d51d51942f4ca7fc774d7d01 %
 #  %ccm_git_commit_id: c95decaaa02c45bee627cd315be8d2b7aefd7fc5 %
 #  %ccm_git_commit_count: 111 %
 #  %ccm_git_commit_date: 2025-10-29 19:12:44 -0400 %
@@ -13,41 +13,33 @@
 #  %ccm_git_commit_message: docker updates %
 #  %ccm_git_modify_date: 2025-10-29 19:12:44 %
 #  %ccm_git_file_last_modified: 2025-10-29 19:12:44 %
-#  %ccm_git_file_name: uptime-kuma-dev1.yml %
-#  %ccm_git_path: infra/docker/uptime-kuma-dev1.yml %
+#  %ccm_git_file_name: mealie-dev1.yml %
+#  %ccm_git_path: infra/docker/mealie-dev1.yml %
 #  %ccm_git_language_mode: yaml %
 #  %ccm_git_file_type: text/plain %
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 915 %
+#  %ccm_git_size: 621 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
-name: uptime-kuma-dev1
+name: mealie-dev1
 
 services:
-  uptime-kuma:
-    image: louislam/uptime-kuma:latest
-    container_name: uptime-kuma-dev1
+  mealie:
+    image: ghcr.io/mealie-recipes/mealie:latest
+    container_name: mealie-dev1
     restart: unless-stopped
     ports:
-      - "0.0.0.0:3700:3001"  # Standardized port for Uptime Kuma per ports.md
-    volumes:
-      - /mnt/ai_storage/uptime-kuma/data:/app/data
-    logging:
-      driver: json-file
-      options:
-        max-size: "50m"
-        max-file: "5"
+      - "3301:9000"  # Correct port mapping for Mealie
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - BASE_URL=http://mealie.termitetowers.ca
+      # Add other Mealie environment variables as needed
     networks:
-      - monitor-apps-net-dev1
-# Docker external network definition
+      - app-services-net-dev1
 networks:
-  monitor-apps-net-dev1:
+  app-services-net-dev1:
     external: true
-
-# Usage:
-#   sudo mkdir -p /mnt/ai_storage/uptime-kuma/data && \
-#   sudo chown -R 2001:1006 /mnt/ai_storage/uptime-kuma && \
-#   sudo chmod -R u+rwX,g+rwX /mnt/ai_storage/uptime-kuma && \
-#   docker compose -f infra/docker/uptime-kuma-dev1.yml up -d

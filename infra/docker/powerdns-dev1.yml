@@ -1,0 +1,127 @@
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/powerdns-dev1.yml:111 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 903f886f446142f9415ab713b65a93190d669ad4 %
+#  %ccm_git_commit_id: c95decaaa02c45bee627cd315be8d2b7aefd7fc5 %
+#  %ccm_git_commit_count: 111 %
+#  %ccm_git_commit_date: 2025-10-29 19:12:44 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: docker updates %
+#  %ccm_git_modify_date: 2025-10-29 19:12:44 %
+#  %ccm_git_file_last_modified: 2025-10-29 19:12:44 %
+#  %ccm_git_file_name: powerdns-dev1.yml %
+#  %ccm_git_path: infra/docker/powerdns-dev1.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: utf-8 %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 3154 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+##version: "3.8"
+name: powerdns-dev1
+
+services:
+  powerdns-db:
+    image: mysql:8.0
+    container_name: powerdns-db-dev1
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-powerdns123}
+      - MYSQL_DATABASE=powerdns
+      - MYSQL_USER=powerdns
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-powerdns123}
+      - TZ=${TZ:-America/Toronto}
+    volumes:
+      - /mnt/ai_storage/dns/powerdns-mysql:/var/lib/mysql  # ⚠️ CANNOT CHANGE: Runtime data path
+    networks:
+      - core-infra-net-dev1
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  powerdns:
+    image: pschiffe/pdns-mysql:latest
+    container_name: powerdns-dev1
+    restart: unless-stopped
+    # DNS server ports - Authoritative DNS on port 3053
+    # Listens on same IPs as Pi-hole but different port
+    # Pi-hole (port 53) forwards local domain queries here
+    ports:
+      - "192.168.1.10:3053:53/udp"
+      - "192.168.1.10:3053:53/tcp"
+      - "192.168.4.10:3053:53/udp"
+      - "192.168.4.10:3053:53/tcp"
+      - "0.0.0.0:3021:8081"
+    environment:
+      - TZ=${TZ:-America/Toronto}
+      - PDNS_gmysql_host=powerdns-db
+      - PDNS_gmysql_port=3306
+      - PDNS_gmysql_user=powerdns
+      - PDNS_gmysql_password=${MYSQL_PASSWORD:-powerdns123}
+      - PDNS_gmysql_dbname=powerdns
+      - PDNS_api=yes
+      - PDNS_api_key=${PDNS_API_KEY:-changeme123}
+      - PDNS_webserver=yes
+      - PDNS_webserver_address=0.0.0.0
+      - PDNS_webserver_port=8081
+      - PDNS_webserver_allow_from=0.0.0.0/0
+      - PDNS_security_poll_suffix=
+      # Enable dynamic DNS updates (RFC 2136)
+      - PDNS_dnsupdate=yes
+      - PDNS_allow_dnsupdate_from=192.168.1.0/24,192.168.4.0/22
+    depends_on:
+      - powerdns-db
+    networks:
+      - core-infra-net-dev1
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  powerdns-admin-db:
+    image: postgres:15
+    container_name: powerdns-admin-db-dev1
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=powerdnsadmin
+      - POSTGRES_USER=pdnsadmin
+      - POSTGRES_PASSWORD=pdnsadmin123
+      - TZ=${TZ:-America/Toronto}
+    volumes:
+      - /mnt/ai_storage/dns/powerdns-admin-data:/var/lib/postgresql/data  # ⚠️ CANNOT CHANGE: Runtime data path
+    networks:
+      - core-infra-net-dev1
+
+  powerdns-admin-dev1:
+    image: ngoduykhanh/powerdns-admin:latest
+    container_name: powerdns-admin-dev1
+    restart: unless-stopped
+    ports:
+      - "3020:80"
+    environment:
+      - SECRET_KEY=changeme456789
+      - SQLALCHEMY_DATABASE_URI=postgresql://pdnsadmin:pdnsadmin123@powerdns-admin-db-dev1/powerdnsadmin
+      - PDNS_API_KEY=changeme123
+      - PDNS_API_URL=http://powerdns:8081
+      - PDNS_VERSION=4.3
+      - PDNS_ADMIN_USERNAME=admin 
+      - PDNS_ADMIN_PASSWORD=admin
+    depends_on:
+      - powerdns-admin-db
+      - powerdns
+    networks:
+      - core-infra-net-dev1
+
+# Docker external network definition
+networks:
+  core-infra-net-dev1:
+    external: true

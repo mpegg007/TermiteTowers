@@ -1,33 +1,42 @@
 <!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-  %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
-  %ccm_git_branch: main %
-  %ccm_git_object_id: wiki/how-to-add-docker-app.md:97 %
-  %ccm_git_author: CCM Maintainer %
-  %ccm_git_author_email: ccm@test %
-  %ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
-  %ccm_git_commit_id: f8d51ae7fe101541b1ccd2f91922878ece0bb306 %
-  %ccm_git_commit_count: 97 %
-  %ccm_git_commit_date: 2025-10-10 20:55:46 -0400 %
+  %ccm_git_repo: TermiteTowers %
+  %ccm_git_branch: dev1 %
+  %ccm_git_object_id: wiki/how-to-add-docker-app.md:111 %
+  %ccm_git_author: mpegg %
+  %ccm_git_author_email: mpegg@hotmail.com %
+  %ccm_git_blob_sha: 32f1c35543b8b999a55a5a551bd962c9243aa3b5 %
+  %ccm_git_commit_id: c95decaaa02c45bee627cd315be8d2b7aefd7fc5 %
+  %ccm_git_commit_count: 111 %
+  %ccm_git_commit_date: 2025-10-29 19:12:44 -0400 %
   %ccm_git_commit_author: mpegg %
   %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: big update %
-  %ccm_git_modify_date: 2025-08-29 07:37:53 %
-  %ccm_git_file_last_modified: 2025-08-29 07:37:52 %
-  %ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
-  %ccm_git_path: CCM_HEADER_TEMPLATE.txt %
-  %ccm_git_language_mode:  %
+  %ccm_git_commit_message: docker updates %
+  %ccm_git_modify_date: 2025-10-29 19:12:45 %
+  %ccm_git_file_last_modified: 2025-10-29 19:12:45 %
+  %ccm_git_file_name: how-to-add-docker-app.md %
+  %ccm_git_path: wiki/how-to-add-docker-app.md %
+  %ccm_git_language_mode: markdown %
   %ccm_git_file_type: text/plain %
-  %ccm_git_file_encoding: us-ascii %
+  %ccm_git_file_encoding: utf-8 %
   %ccm_git_file_eol: CRLF %
   %ccm_git_exec: no %
-  %ccm_git_size: 659 %
+  %ccm_git_size: 9180 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- %git_commit_history: big update % -->
 <!--
 -->
 
 # How to add a new Docker app (dev1)
 
 This is the repeatable pattern we use for adding services (Compose + Nginx + Chat tile), with optional secrets and the /srv/dev1 symlink convention.
+
+## Docker Network Selection
+Services should be grouped by function and port category. Use:
+- `powerdns-dev1_powerdns-net` for core infrastructure (DNS, Pi-hole, PowerDNS, etc.)
+- `app-services-net-dev1` for app services (KitchenOwl, Mealie, Homarr, LLM Server API, etc.)
+- Create additional networks for other categories if needed (media, monitoring, AI, etc.)
+
+When adding a new app service (e.g., Mealie, KitchenOwl), attach it to `app-services-net-dev1` for isolation and easier management.
 
 ## TL;DR checklist
 - Pick a subdomain and host port; confirm no conflicts.
@@ -41,13 +50,53 @@ This is the repeatable pattern we use for adding services (Compose + Nginx + Cha
 - Update wiki/ports.md and (optionally) add a service runbook.
 
 ## 1) Choose names and ports
+
+### Service naming
 - Subdomain: e.g., example.termitetowers.ca
-- Host port: follow the 3300+ pattern when possible
-- Check for collisions:
+- Short name: lowercase, no special chars (e.g., `example`)
+
+### Port selection (IMPORTANT!)
+**Always consult wiki/ports.md for the port allocation strategy before choosing a port.**
+
+Port ranges are organized by category:
+
+| Range | Category | Examples |
+|-------|----------|----------|
+| 3000-3099 | Core Infrastructure | DNS, admin interfaces |
+| 3100-3199 | Development & DevOps | Package registries, CI/CD |
+| 3200-3299 | Content & Documentation | Wiki, CMS |
+| 3300-3399 | Home Automation & Daily | Dashboard, kitchen tools |
+| 3400-3499 | Media & Entertainment | Plex, *arr services |
+| 3500-3599 | Security & Secrets | Vault, SOPS, auth |
+| 3600-3699 | Databases & Data | DB admin tools |
+| 3700-3799 | Monitoring & Ops | Uptime, logs, metrics |
+| 3800-3899 | AI & Machine Learning | Ollama, LLM interfaces |
+| 3900-3999 | Asset & IT Management | Asset tracking, tickets |
+
+**Steps to pick a port:**
+1. Identify which category your service belongs to
+2. Check wiki/ports.md for already-allocated ports in that range
+3. Choose the next available port in sequence (e.g., if 3720 is taken, use 3730)
+4. Update wiki/ports.md with your new allocation
+
+### Check for port conflicts
 ```bash
+# Check Nginx configs for port usage
 rg -n "proxy_pass\\s+http://localhost:(\\d+)" infra/nginx/sites-available/*.conf
+
+# Check Docker compose files for port bindings
 rg -n "(?:0\\.0\\.0\\.0:)?(\\d{2,5}):(\\d{2,5})" infra/docker/*.yml
+
+# Check if port is already listening on host
+sudo netstat -tlnp | grep :3XXX
 ```
+
+**Example:**
+- Service: Prometheus (monitoring tool)
+- Category: Monitoring & Ops
+- Range: 3700-3799
+- Check ports.md: 3700 (Uptime Kuma), 3710 (Dozzle) are taken
+- Choose: 3720 ✅
 
 ## 2) Create data directories and permissions
 ```bash
@@ -91,6 +140,8 @@ services:
       options:
         max-size: "50m"
         max-file: "5"
+    networks:
+      - app-services-net-dev1  # Use this for app services
 ```
 
 ## 4) Secrets (optional)

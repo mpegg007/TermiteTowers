@@ -1,0 +1,106 @@
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/prometheus-dev1.yml:111 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 1dd35469d6472ee78dee25fb884976484e7db17b %
+#  %ccm_git_commit_id: c95decaaa02c45bee627cd315be8d2b7aefd7fc5 %
+#  %ccm_git_commit_count: 111 %
+#  %ccm_git_commit_date: 2025-10-29 19:12:44 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: docker updates %
+#  %ccm_git_modify_date: 2025-10-29 19:12:44 %
+#  %ccm_git_file_last_modified: 2025-10-29 19:12:44 %
+#  %ccm_git_file_name: prometheus-dev1.yml %
+#  %ccm_git_path: infra/docker/prometheus-dev1.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 2638 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/sche# 7. Verify:
+#   docker logs --tail 100 prometheus-dev1
+#   curl http://localhost:3720/-/healthycompose-spec.json
+# Prometheus - Monitoring and Alerting System
+# Purpose: Time-series database and monitoring solution for metrics collection
+# Access: https://prometheus.termitetowers.ca
+# Port: 3720 (host) -> 9090 (container)
+# Category: Monitoring & Ops (3700-3799 range per wiki/ports.md)
+name: prometheus-dev1
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus-dev1
+    restart: unless-stopped
+    
+    ports:
+      - "0.0.0.0:3720:9090"
+    
+    environment:
+      - TZ=America/New_York
+    
+    volumes:
+      - /mnt/ai_storage/prometheus/data:/prometheus
+      - /mnt/ai_storage/prometheus/config:/etc/prometheus
+    
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    
+    user: "2001:1006"
+    
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    
+    networks:
+      - monitor-apps-net-dev1
+
+# Docker external network definition
+networks:
+  monitor-apps-net-dev1:
+    external: true
+
+# Setup Instructions:
+# 1. Create data directories:
+#   sudo mkdir -p /mnt/ai_storage/prometheus/{data,config}
+#   sudo chown -R 2001:1006 /mnt/ai_storage/prometheus
+#   sudo chmod -R u+rwX,g+rwX /mnt/ai_storage/prometheus
+#
+# 2. Create basic prometheus.yml config:
+#   cat > /tmp/prometheus.yml << 'EOF'
+#   global:
+#     scrape_interval: 15s
+#     evaluation_interval: 15s
+#   
+#   scrape_configs:
+#     - job_name: 'prometheus'
+#       static_configs:
+#         - targets: ['localhost:9090']
+#   EOF
+#   sudo cp /tmp/prometheus.yml /mnt/ai_storage/prometheus/config/prometheus.yml
+#   sudo chown 2001:1006 /mnt/ai_storage/prometheus/config/prometheus.yml
+#
+# 3. Start the container:
+#   docker compose -f /home/mpegg-adm/source/TermiteTowers/infra/docker/prometheus-dev1.yml up -d
+#
+# 4. Setup Nginx reverse proxy (see wiki/how-to-add-docker-app.md section 6)
+#
+# 5. Create /srv/dev1 convenience symlink:
+#   sudo mkdir -p /srv/dev1/prometheus/docker
+#   sudo ln -sf /home/mpegg-adm/source/TermiteTowers/infra/docker/prometheus-dev1.yml /srv/dev1/prometheus/docker/prometheus-dev1.yml
+#
+# 6. Verify:
+#   docker logs --tail 100 prometheus-dev1
+#   curl http://localhost:3307/-/healthy

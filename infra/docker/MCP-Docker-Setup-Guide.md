@@ -1,27 +1,28 @@
 <!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-  %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
-  %ccm_git_branch: main %
-  %ccm_git_object_id: infra/docker/MCP-Docker-Setup-Guide.md:97 %
-  %ccm_git_author: CCM Maintainer %
-  %ccm_git_author_email: ccm@test %
-  %ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
-  %ccm_git_commit_id: f8d51ae7fe101541b1ccd2f91922878ece0bb306 %
-  %ccm_git_commit_count: 97 %
-  %ccm_git_commit_date: 2025-10-10 20:55:46 -0400 %
+  %ccm_git_repo: TermiteTowers %
+  %ccm_git_branch: dev1 %
+  %ccm_git_object_id: infra/docker/MCP-Docker-Setup-Guide.md:111 %
+  %ccm_git_author: mpegg %
+  %ccm_git_author_email: mpegg@hotmail.com %
+  %ccm_git_blob_sha: 7126ac4a8ab3601df8d824fafd925866c36f694f %
+  %ccm_git_commit_id: c95decaaa02c45bee627cd315be8d2b7aefd7fc5 %
+  %ccm_git_commit_count: 111 %
+  %ccm_git_commit_date: 2025-10-29 19:12:44 -0400 %
   %ccm_git_commit_author: mpegg %
   %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: big update %
-  %ccm_git_modify_date: 2025-08-29 07:37:53 %
-  %ccm_git_file_last_modified: 2025-08-29 07:37:52 %
-  %ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
-  %ccm_git_path: CCM_HEADER_TEMPLATE.txt %
-  %ccm_git_language_mode:  %
+  %ccm_git_commit_message: docker updates %
+  %ccm_git_modify_date: 2025-10-29 19:12:44 %
+  %ccm_git_file_last_modified: 2025-10-29 19:12:44 %
+  %ccm_git_file_name: MCP-Docker-Setup-Guide.md %
+  %ccm_git_path: infra/docker/MCP-Docker-Setup-Guide.md %
+  %ccm_git_language_mode: markdown %
   %ccm_git_file_type: text/plain %
-  %ccm_git_file_encoding: us-ascii %
+  %ccm_git_file_encoding: utf-8 %
   %ccm_git_file_eol: CRLF %
   %ccm_git_exec: no %
-  %ccm_git_size: 659 %
+  %ccm_git_size: 22287 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- %git_commit_history: big update % -->
 <!-- %git_commit_history: service updates % -->
 # Docker Application Setup - MCP Prompts Guide
 
@@ -486,5 +487,265 @@ Application details:
 
 IMPORTANT: If this is a Laravel/PHP app or any app that requires .env files in the container, use direct environment variables instead of env_file.
 ```
+
+## 15. DNS Infrastructure Setup - Pi-hole + PowerDNS
+
+### Architecture Overview
+
+TermiteTowers uses a split DNS architecture:
+
+- **Pi-hole (192.168.1.10:53, 192.168.4.10:53)** - Recursive DNS resolver with ad-blocking
+  - Handles all internet DNS queries on standard port 53
+  - Binds to the same IPs PowerDNS was using (192.168.1.10, 192.168.4.10)
+  - Provides network-wide ad and tracker blocking
+  - Forwards local domain queries to PowerDNS on localhost:3053
+  - Upstream DNS: Cloudflare (1.1.1.1, 1.0.0.1)
+  - Web interface on port 3010 (Core Infrastructure range per ports.md)
+
+- **PowerDNS (192.168.1.10:3053, 192.168.4.10:3053)** - Authoritative DNS server for local zones
+  - Authoritative for: `.local`, `.tt.omp`, `.aa.omp`, `.omp`
+  - DNS service on port 3053 (Core Infrastructure range per ports.md)
+  - Managed via PowerDNS Admin web interface (ports 3020-3021)
+  - MySQL backend for zone storage
+
+### Setting Up Pi-hole (Recursive DNS)
+
+Use this prompt to deploy Pi-hole:
+
+```text
+Create a Pi-hole Docker setup for recursive DNS resolution with ad-blocking.
+
+Requirements:
+- Follow TermiteTowers Docker patterns with CCM header
+- Container name: pihole-dev1
+- Bind DNS ports to 192.168.1.10:53 and 192.168.4.10:53 (both TCP and UDP - same IPs PowerDNS was using)
+- Web admin interface on port 3010 (Core Infrastructure range per ports.md)
+- Mount volumes to /mnt/ai_storage/pihole/{config,dnsmasq.d}
+- Use Cloudflare DNS (1.1.1.1, 1.0.0.1) as upstream
+- Enable DNSSEC validation
+- Configure conditional forwarding to PowerDNS (192.168.1.10:3053) for local zones:
+  - .local
+  - .tt.omp
+  - .aa.omp
+  - .omp
+- Include setup instructions for dnsmasq custom forwarding config
+- Logging: json-file with 50m max-size and 5 max files
+
+Save as: infra/docker/pihole-dev1.yml
+```
+
+### Configuring PowerDNS Zones
+
+PowerDNS is already deployed as the authoritative DNS server. Use the PowerDNS Admin interface to manage zones:
+
+**Access PowerDNS Admin:**
+
+- URL: <https://dns.termitetowers.ca> or <http://192.168.1.10:3020>
+- Default credentials: admin/admin (change immediately!)
+
+**Create Authoritative Zones:**
+
+1. **Navigate to Admin → Domains**
+2. **Create new domain** for each local zone:
+   - `local` (for .local domain)
+   - `tt.omp` (for .tt.omp domain)
+   - `aa.omp` (for .aa.omp domain)
+   - `omp` (for .omp domain)
+
+3. **Set zone type:** Native (PowerDNS native replication)
+
+4. **Add DNS records** within each zone:
+   ```
+   # Example records for tt.omp zone
+   A     server1.tt.omp        192.168.1.100
+   A     server2.tt.omp        192.168.1.101
+   CNAME www.tt.omp            server1.tt.omp
+   ```
+
+5. **Set SOA records** (automatically created, but verify):
+   ```
+   Primary NS: ns1.tt.omp
+   Email: admin@tt.omp
+   ```
+
+**PowerDNS Configuration Files:**
+- Compose: `/home/mpegg-adm/source/TermiteTowers/infra/docker/powerdns-dev1.yml`
+- Data: `/mnt/ai_storage/dns/powerdns-mysql` (MySQL database)
+- Admin Data: `/mnt/ai_storage/dns/powerdns-admin-data` (PostgreSQL)
+
+### Pi-hole Custom Forwarding Configuration
+
+After deploying Pi-hole, configure conditional forwarding:
+
+**Method 1: Web Interface**
+1. Navigate to Pi-hole Admin → Settings → DNS
+2. Scroll to "Conditional Forwarding"
+3. Enable and configure:
+   - Local network in CIDR: `192.168.0.0/16`
+   - IP address of DHCP server: `192.168.1.10`
+   - Local domain name: `local`
+
+**Method 2: Manual Configuration (Recommended for multiple zones)**
+
+Create custom dnsmasq config:
+```bash
+# Create custom forwarding configuration
+sudo tee /mnt/ai_storage/pihole/dnsmasq.d/02-local-zones.conf << 'EOF'
+# Forward local zone queries to PowerDNS authoritative server (192.168.1.10:3053)
+server=/local/192.168.1.10#3053
+server=/tt.omp/192.168.1.10#3053
+server=/aa.omp/192.168.1.10#3053
+server=/omp/192.168.1.10#3053
+
+# Don't forward reverse lookups for private ranges
+server=/168.192.in-addr.arpa/192.168.1.10#3053
+EOF
+
+# Restart Pi-hole to apply
+docker restart pihole-dev1
+```
+
+### Network Configuration
+
+**DHCP Server Settings:**
+
+Set the following DNS server for DHCP clients:
+
+- Primary DNS: `192.168.1.10` (Pi-hole on port 53 - recursive with ad-blocking)
+
+**DNS Query Flow:**
+
+```text
+Client (192.168.1.x)
+  ↓
+  → Query: example.com
+  ↓
+Pi-hole (192.168.1.10:53)
+  ↓ [cache miss]
+  → Upstream: Cloudflare 1.1.1.1
+  ↓
+  ← Answer: IP address
+  ↓
+Client receives answer
+
+---
+
+Client (192.168.1.x)
+  ↓
+  → Query: server1.tt.omp
+  ↓
+Pi-hole (192.168.1.10:53)
+  ↓ [matches conditional forwarding]
+  → Forward to: PowerDNS 192.168.1.10:3053
+  ↓
+PowerDNS (192.168.1.10:3053)
+  ↓ [authoritative zone: tt.omp]
+  ← Answer: 192.168.1.100
+  ↓
+Client receives answer
+```
+
+### Testing DNS Resolution
+
+**Test Pi-hole (recursive):**
+
+```bash
+# Test internet domain
+dig @192.168.1.10 google.com
+
+# Test local domain (should forward to PowerDNS)
+dig @192.168.1.10 server1.tt.omp
+```
+
+**Test PowerDNS (authoritative):**
+
+```bash
+# Test local zone directly on port 3053
+dig @192.168.1.10 -p 3053 server1.tt.omp
+
+# PowerDNS only answers authoritative queries for local zones
+```
+
+**Test from client:**
+
+```bash
+# Verify client is using Pi-hole
+nslookup google.com
+# Should show server: 192.168.1.10
+
+nslookup server1.tt.omp
+# Should resolve via Pi-hole → PowerDNS chain
+```
+
+### Monitoring and Troubleshooting
+
+**Pi-hole Logs:**
+```bash
+# View live query log
+docker logs -f pihole-dev1
+
+# Check DNS query statistics
+# Visit: http://192.168.1.11:3010/admin (or https://pihole.termitetowers.ca)
+```
+
+**PowerDNS Logs:**
+```bash
+# View PowerDNS server logs
+docker logs powerdns-dev1
+
+# View PowerDNS Admin logs
+docker logs powerdns-admin-dev1
+```
+
+**Common Issues:**
+
+1. **Local domains not resolving:**
+   - Verify Pi-hole conditional forwarding is configured
+   - Check `/mnt/ai_storage/pihole/dnsmasq.d/02-local-zones.conf`
+   - Restart Pi-hole: `docker restart pihole-dev1`
+
+2. **PowerDNS zones not responding:**
+   - Check zone is properly configured in PowerDNS Admin
+   - Verify zone type is set to "Native"
+   - Test direct query: `dig @192.168.1.10 domain.tt.omp`
+
+3. **DNS not resolving at all:**
+   - Check container status: `docker ps | grep -E 'pihole|powerdns'`
+   - Verify port bindings: `sudo netstat -tulpn | grep :53`
+   - Check for port conflicts between Pi-hole and PowerDNS
+
+### Quick Setup Script
+
+Use this prompt to create a complete setup script:
+
+```text
+Create a bash setup script for TermiteTowers DNS infrastructure that:
+
+1. Creates required directories for Pi-hole
+2. Sets proper permissions (2001:1006, group-writable)
+3. Generates Pi-hole admin password
+4. Creates dnsmasq custom forwarding config for local zones
+5. Starts Pi-hole container
+6. Verifies PowerDNS is running
+7. Tests DNS resolution for both internet and local domains
+8. Displays access URLs for both web interfaces
+
+Save as: scripts/setup-dns-infrastructure.sh
+```
+
+### Integration with Other Services
+
+When deploying new services with custom domains:
+
+1. **For internet domains (termitetowers.ca):**
+   - No DNS changes needed (handled by public DNS)
+   - Configure Nginx reverse proxy
+   - Update certbot for SSL
+
+2. **For local domains (.tt.omp, .aa.omp, etc.):**
+   - Add A/CNAME record in PowerDNS Admin
+   - Configure Nginx reverse proxy
+   - Test resolution: `dig @192.168.1.11 service.tt.omp`
+   - Update chat dashboard tile
 
 ````

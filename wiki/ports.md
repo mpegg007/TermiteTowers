@@ -1,33 +1,50 @@
 <!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-  %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
-  %ccm_git_branch: main %
-  %ccm_git_object_id: wiki/ports.md:97 %
-  %ccm_git_author: CCM Maintainer %
-  %ccm_git_author_email: ccm@test %
-  %ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
-  %ccm_git_commit_id: f8d51ae7fe101541b1ccd2f91922878ece0bb306 %
-  %ccm_git_commit_count: 97 %
-  %ccm_git_commit_date: 2025-10-10 20:55:46 -0400 %
+  %ccm_git_repo: TermiteTowers %
+  %ccm_git_branch: dev1 %
+  %ccm_git_object_id: wiki/ports.md:111 %
+  %ccm_git_author: mpegg %
+  %ccm_git_author_email: mpegg@hotmail.com %
+  %ccm_git_blob_sha: 385b85971d0c7cbf3471de05e6ac46e6dccbc336 %
+  %ccm_git_commit_id: c95decaaa02c45bee627cd315be8d2b7aefd7fc5 %
+  %ccm_git_commit_count: 111 %
+  %ccm_git_commit_date: 2025-10-29 19:12:44 -0400 %
   %ccm_git_commit_author: mpegg %
   %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: big update %
-  %ccm_git_modify_date: 2025-08-29 07:37:53 %
-  %ccm_git_file_last_modified: 2025-08-29 07:37:52 %
-  %ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
-  %ccm_git_path: CCM_HEADER_TEMPLATE.txt %
-  %ccm_git_language_mode:  %
+  %ccm_git_commit_message: docker updates %
+  %ccm_git_modify_date: 2025-10-29 19:12:45 %
+  %ccm_git_file_last_modified: 2025-10-29 19:12:45 %
+  %ccm_git_file_name: ports.md %
+  %ccm_git_path: wiki/ports.md %
+  %ccm_git_language_mode: markdown %
   %ccm_git_file_type: text/plain %
-  %ccm_git_file_encoding: us-ascii %
+  %ccm_git_file_encoding: utf-8 %
   %ccm_git_file_eol: CRLF %
   %ccm_git_exec: no %
-  %ccm_git_size: 659 %
+  %ccm_git_size: 8772 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- %git_commit_history: big update % -->
 <!-- %git_commit_history: service updates % -->
 
 
 # Ports Inventory 
 
 This page tracks host and service ports used across TermiteTowers using a systematic range-based allocation.
+
+## Docker Network Assignment
+
+**Core Infrastructure Network:**
+  - Network: `powerdns-dev1_powerdns-net`
+  - Services: Pi-hole, PowerDNS (DNS/Admin), WebAI, and other services in the 3000-3099 range
+
+**App Services Network:**
+  - Network: `app-services-net-dev1`
+  - Services: KitchenOwl, Mealie, Homarr, LLM Server API, and other Home Automation/Daily Tools in the 3300-3399 range
+
+**Other Categories:**
+  - Media, Security, Databases, Monitoring, AI, Asset Management: Use dedicated networks if needed, or default to app-services-net-dev1 if inter-app communication is required.
+
+**Guidance:**
+- When adding a new app, check its port category and attach it to the recommended network for isolation and management.
 
 ## Port Allocation Strategy
 
@@ -48,23 +65,30 @@ This page tracks host and service ports used across TermiteTowers using a system
 
 | Service        | Subdomain                  | Host Port | Container Port | Category | Status |
 |----------------|----------------------------|-----------|----------------|----------|--------|
-| WebAI          | webai.termitetowers.ca     | 3000      | 8080           | Core     | ✅ Correct |
+| Pi-hole Admin  | pihole.termitetowers.ca    | 3010      | 80             | Core     | ✅ **NEW** |
 | PowerDNS Admin | dns.termitetowers.ca       | 3020,3021 | 80,8080        | Core     | ✅ **UPDATED** |
+| PowerDNS DNS   | (localhost only)           | 3053      | 53             | Core     | ✅ **NEW** |
 | LobeChat       | lobe.termitetowers.ca      | 3100      | 3210           | DevOps   | ✅ Correct |
+| WebAI          | webai.termitetowers.ca     | 3101      | 8080           | DevOps   | ✅ UPDATED |
 | Private PyPI   | packages.termitetowers.ca  | 3110      | 3141           | DevOps   | 🔄 **TO MIGRATE** |
 | PyPI Proxy     | pypi.termitetowers.ca      | 3120      | 4080           | DevOps   | 🔄 **TO MIGRATE** |
 | SearXNG        | search.termitetowers.ca    | 3130      | 8080           | DevOps   | ✅ Correct |
 | Wiki.js        | wiki.termitetowers.ca      | 3200      | 3000           | Content  | ✅ Correct |
-| KitchenOwl     | kitchenowl.termitetowers.ca| 3300      | 8080           | Home     | ✅ Correct |
+| KitchenOwl     | kitchenowl.termitetowers.ca| 3300      | 8080           | Home     | ✅ app-services-net-dev1 |
 | Homarr         | home.termitetowers.ca      | 3310      | 7575           | Home     | ✅ **UPDATED** |
+| Mealie         | mealie.termitetowers.ca     | 3301      | 80             | Home     | ✅ app-services-net-dev1 |
+| EspHome        | esphome.termitetowers.ca   | 6052      | 6052           | Home     | ✅ **HOST** |
 | LLM Server API | llmapi.termitetowers.ca    | 3350      | 8000           | Home     | ✅ **NEW** |
 | Vault          | vault.termitetowers.ca     | 3500      | 3000           | Security | 🔄 **TO MIGRATE** |
 | SOPS           | sops.termitetowers.ca      | 3510      | 3000           | Security | 🔄 **TO MIGRATE** |
 | ESO            | eso.termitetowers.ca       | 3520      | 3000           | Security | 🔄 **TO MIGRATE** |
-| dbGate         | dba.termitetowers.ca       | 3600      | 3000           | Database | ✅ **WORKING** |
+| dbGate         | dba.termitetowers.ca       | 3600      | 3000           | Database | ✅ |
 | Uptime Kuma    | kuma.termitetowers.ca      | 3700      | 3001           | Monitor  | ✅ **UPDATED** |
+| Uptime Kuma    | kuma.termitetowers.ca      | 3700      | 3001           | Monitor  | ✅ |
 | Dozzle         | dozzle.termitetowers.ca    | 3710      | 8080           | Monitor  | ✅ **UPDATED** |
+| Prometheus     | prometheus.termitetowers.ca| 3720      | 9090           | Monitor  | ✅ **NEW** |
 | Ollama API     | ollama.termitetowers.ca    | 3800      | 11434          | AI       | 🔄 **TO MIGRATE** |
+| TensorFlow     | tensorflow.termitetowers.ca| 3810      | 8888           | AI       | ✅ **NEW** |
 | Snipe-IT       | asset.termitetowers.ca     | 3900      | 80             | Assets   | ✅ **UPDATED** |
 
 
@@ -176,9 +200,9 @@ Monitoring & Ops (3700-3799):
 
 3700 - Uptime Kuma
 3710 - Dozzle (container logs)
-3720 - Grafana (future)
-3730 - Prometheus (future)
-3740 - Log aggregation (future)
+3720 - Prometheus
+3730 - Grafana (future)
+3740 - Log aggregation (Syslog-ng)
 3750 - Performance monitoring (future)
 AI & ML (3800-3899):
 

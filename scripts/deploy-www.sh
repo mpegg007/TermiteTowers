@@ -1,28 +1,29 @@
 #!/usr/bin/env bash
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-#  %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
-#  %ccm_git_branch: main %
-#  %ccm_git_object_id: scripts/deploy-www.sh:97 %
-#  %ccm_git_author: CCM Maintainer %
-#  %ccm_git_author_email: ccm@test %
-#  %ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
-#  %ccm_git_commit_id: f8d51ae7fe101541b1ccd2f91922878ece0bb306 %
-#  %ccm_git_commit_count: 97 %
-#  %ccm_git_commit_date: 2025-10-10 20:55:46 -0400 %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: scripts/deploy-www.sh:111 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: c60897f20fb9e0ab16c33a8a119ca5cfbcb25627 %
+#  %ccm_git_commit_id: c95decaaa02c45bee627cd315be8d2b7aefd7fc5 %
+#  %ccm_git_commit_count: 111 %
+#  %ccm_git_commit_date: 2025-10-29 19:12:44 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: big update %
-#  %ccm_git_modify_date: 2025-08-29 07:37:53 %
-#  %ccm_git_file_last_modified: 2025-08-29 07:37:52 %
-#  %ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
-#  %ccm_git_path: CCM_HEADER_TEMPLATE.txt %
-#  %ccm_git_language_mode:  %
-#  %ccm_git_file_type: text/plain %
+#  %ccm_git_commit_message: docker updates %
+#  %ccm_git_modify_date: 2025-10-29 19:12:45 %
+#  %ccm_git_file_last_modified: 2025-10-29 19:12:45 %
+#  %ccm_git_file_name: deploy-www.sh %
+#  %ccm_git_path: scripts/deploy-www.sh %
+#  %ccm_git_language_mode: shellscript %
+#  %ccm_git_file_type: text/x-shellscript %
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 659 %
+#  %ccm_git_size: 1185 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: big update % 
 
 
 set -euo pipefail

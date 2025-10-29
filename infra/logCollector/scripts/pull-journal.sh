@@ -2,27 +2,28 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/logCollector/scripts/pull-journal.sh:110 %
+#  %ccm_git_object_id: infra/logCollector/scripts/pull-journal.sh:111 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 8ac8daf4bc09392f5a03c164bef07da2a3f8726e %
-#  %ccm_git_commit_id: f58291ad575edfb9a551f895005def9b9f831304 %
-#  %ccm_git_commit_count: 110 %
-#  %ccm_git_commit_date: 2025-10-25 14:11:42 -0400 %
+#  %ccm_git_blob_sha: 276c1be37382fee0bc90df8c54384b43b4b2694d %
+#  %ccm_git_commit_id: c95decaaa02c45bee627cd315be8d2b7aefd7fc5 %
+#  %ccm_git_commit_count: 111 %
+#  %ccm_git_commit_date: 2025-10-29 19:12:44 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: dhcp logging %
-#  %ccm_git_modify_date: 2025-10-25 14:11:43 %
-#  %ccm_git_file_last_modified: 2025-10-24 08:59:16 %
+#  %ccm_git_commit_message: docker updates %
+#  %ccm_git_modify_date: 2025-10-29 19:12:45 %
+#  %ccm_git_file_last_modified: 2025-10-29 19:12:45 %
 #  %ccm_git_file_name: pull-journal.sh %
 #  %ccm_git_path: infra/logCollector/scripts/pull-journal.sh %
 #  %ccm_git_language_mode: shellscript %
 #  %ccm_git_file_type: text/x-shellscript %
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
-#  %ccm_git_exec: yes %
-#  %ccm_git_size: 2078 %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 2071 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: dhcp logging % 
 set -euo pipefail
 
 # Usage: pull-journal-proper.sh <host> [--full]
@@ -80,7 +81,7 @@ lines=$(wc -l < "$TMPFILE")
 log "Fetched $lines new journal entries and appended to $OUT_FILE."
 
 # Update marker with latest timestamp from pulled entries
-LATEST_TS=$(awk '{print $1 " " $2}' "$TMPFILE" | tail -1)
+LATEST_TS=$(awk '{print $1}' "$TMPFILE" | tail -1)
 if [ -n "$LATEST_TS" ]; then
     echo "$LATEST_TS" > "$MARKER_FILE"
     log "Updated marker to: $LATEST_TS"

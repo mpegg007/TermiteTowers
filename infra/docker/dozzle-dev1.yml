@@ -1,28 +1,28 @@
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/dozzle-dev1.yml:111 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: a1f9354ba67d3aacbf0d24c81700f84f8703f961 %
+#  %ccm_git_commit_id: c95decaaa02c45bee627cd315be8d2b7aefd7fc5 %
+#  %ccm_git_commit_count: 111 %
+#  %ccm_git_commit_date: 2025-10-29 19:12:44 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: docker updates %
+#  %ccm_git_modify_date: 2025-10-29 19:12:44 %
+#  %ccm_git_file_last_modified: 2025-10-29 19:12:44 %
+#  %ccm_git_file_name: dozzle-dev1.yml %
+#  %ccm_git_path: infra/docker/dozzle-dev1.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 681 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
-# TermiteTowers Continuous Code Management Header TEMPLATE
-# % ccm_modify_date: 2025-08-31 14:31:46 %
-# % ccm_author: mpegg %
-# % ccm_author_email: mpegg@hotmail.com %
-# % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
-# % ccm_branch: dev1 %
-# % ccm_object_id: infra/docker/dozzle-dev1.yml:0 %
-# % ccm_commit_id: unknown %
-# % ccm_commit_count: 0 %
-# % ccm_commit_message: unknown %
-# % ccm_commit_author: unknown %
-# % ccm_commit_email: unknown %
-# % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
-# % ccm_file_last_modified: 2025-08-31 14:30:32 %
-# % ccm_file_name: dozzle-dev1.yml %
-# % ccm_file_type: text/plain %
-# % ccm_file_encoding: us-ascii %
-# % ccm_file_eol: CRLF %
-# % ccm_path: infra/docker/dozzle-dev1.yml %
-# % ccm_blob_sha: da6fe8f5e139f2295633761500efe54d95b5a032 %
-# % ccm_exec: no %
-# % ccm_size: 1451 %
-# % ccm_tag:  %
-# tt-ccm.header.end
 name: dozzle-dev1
 
 services:
@@ -31,7 +31,7 @@ services:
     container_name: dozzle-dev1
     restart: unless-stopped
     ports:
-      - "0.0.0.0:3302:8080"
+      - "0.0.0.0:3710:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
@@ -42,6 +42,11 @@ services:
       options:
         max-size: "50m"
         max-file: "5"
+    networks:
+      - monitor-apps-net-dev1
+networks:
+  monitor-apps-net-dev1:
+    external: true
 
 # Usage:
 #   docker compose -f infra/docker/dozzle-dev1.yml up -d
