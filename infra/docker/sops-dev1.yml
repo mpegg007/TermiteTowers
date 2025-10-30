@@ -1,18 +1,19 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/docker/sops-dev1.yml:111 %
+#  %ccm_git_object_id: unknown %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: cd72c2422c14e5e9b17b3caf48c2d7ef04bc64ea %
-#  %ccm_git_commit_id: c95decaaa02c45bee627cd315be8d2b7aefd7fc5 %
-#  %ccm_git_commit_count: 111 %
-#  %ccm_git_commit_date: 2025-10-29 19:12:44 -0400 %
-#  %ccm_git_commit_author: mpegg %
-#  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: docker updates %
-#  %ccm_git_modify_date: 2025-10-29 19:12:44 %
-#  %ccm_git_file_last_modified: 2025-10-29 18:28:16 %
+#  %ccm_git_blob_sha: e7ba8f78175f8152833d683cf7fd14a475c179bd %
+#  %ccm_git_commit_id: unknown %
+#  %ccm_git_commit_count: unknown %
+#  %ccm_git_commit_date: unknown %
+#  %ccm_git_commit_author: unknown %
+#  %ccm_git_commit_email: unknown %
+#  %ccm_git_commit_message: unknown %
+#  %ccm_git_modify_date: 2025-10-30 12:38:25 %
+#  %ccm_git_file_last_modified: 2025-10-30 12:38:25 %
 #  %ccm_git_file_name: sops-dev1.yml %
 #  %ccm_git_path: infra/docker/sops-dev1.yml %
 #  %ccm_git_language_mode: yaml %
@@ -20,9 +21,9 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 613 %
+#  %ccm_git_size: 615 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
-# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+# %git_commit_history: docker updates % 
 name: sops-dev1
 services:
   sops:
@@ -44,5 +45,5 @@ services:
       - app-services-net-dev1
 # Docker external network definition
 networks:
-  app-services-net-dev1:
+  secret-service-net-dev1:
     external: true

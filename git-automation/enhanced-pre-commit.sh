@@ -200,8 +200,11 @@ insert_ccm_header() {
         -e "s|%ccm_git_language_mode: .* %|%ccm_git_language_mode: $lang_mode %|g" "$formatted_header"
 
     # Insert header after shebang or pseudo-shebang
+    first_line=$(head -n 1 "$file")
     if head -n 1 "$file" | grep -q '^#!'; then
         { head -n 1 "$file"; cat "$formatted_header"; tail -n +2 "$file"; } > "$file.new"
+    elif echo "$first_line" | grep -qE '^(#!|# yaml-language-server:|# *coding[:=]|# *-\\*- coding:|<\\?xml|<!DOCTYPE html|<\\?php)'; then
+        { echo "$first_line"; cat "$formatted_header"; tail -n +2 "$file"; } > "$file.new"
     elif [[ "$file" == *.bat || "$file" == *.cmd ]]; then
         { pseudo_shebang_for_batch "$file"; cat "$formatted_header"; tail -n +2 "$file"; } > "$file.new"
     else

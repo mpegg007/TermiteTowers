@@ -1,18 +1,19 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/docker/openweb-dev1.yml:111 %
+#  %ccm_git_object_id: unknown %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 04345ac577a7f1ba0e4d2e879ba62291416d01cb %
-#  %ccm_git_commit_id: c95decaaa02c45bee627cd315be8d2b7aefd7fc5 %
-#  %ccm_git_commit_count: 111 %
-#  %ccm_git_commit_date: 2025-10-29 19:12:44 -0400 %
-#  %ccm_git_commit_author: mpegg %
-#  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: docker updates %
-#  %ccm_git_modify_date: 2025-10-29 19:12:44 %
-#  %ccm_git_file_last_modified: 2025-10-29 19:12:44 %
+#  %ccm_git_blob_sha: b7f1dbdd5b02a90083ee3dc18fa27bddf17df2bb %
+#  %ccm_git_commit_id: unknown %
+#  %ccm_git_commit_count: unknown %
+#  %ccm_git_commit_date: unknown %
+#  %ccm_git_commit_author: unknown %
+#  %ccm_git_commit_email: unknown %
+#  %ccm_git_commit_message: unknown %
+#  %ccm_git_modify_date: 2025-10-30 12:38:24 %
+#  %ccm_git_file_last_modified: 2025-10-30 12:38:24 %
 #  %ccm_git_file_name: openweb-dev1.yml %
 #  %ccm_git_path: infra/docker/openweb-dev1.yml %
 #  %ccm_git_language_mode: yaml %
@@ -20,9 +21,9 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 1321 %
+#  %ccm_git_size: 1398 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
-# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+# %git_commit_history: docker updates % 
 name: openweb-dev1
 
 services:
@@ -31,13 +32,14 @@ services:
     container_name: openwebui-dev1
     ports:
       - "0.0.0.0:3101:8080"
-    user: "${UID_SVC:-2001}:${GID_TT_AI:-1006}"
+    # user: "${UID_SVC:-2001}:${GID_TT_AI:-1006}"
     environment:
       - OLLAMA_BASE_URL=http://host.docker.internal:11434
       - MODEL_PROVIDER=ollama
       - DEFAULT_MODEL=llama3
       - PYTHONUNBUFFERED=1
       - HF_HOME=/cache/huggingface
+      - WEBUI_SECRET_KEY=your_secret_key_here  # Replace with a secure key
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
