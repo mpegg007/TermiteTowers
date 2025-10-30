@@ -1,18 +1,18 @@
 <!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
   %ccm_git_repo: TermiteTowers %
   %ccm_git_branch: dev1 %
-  %ccm_git_object_id: unknown %
+  %ccm_git_object_id: wiki/ports.md:113 %
   %ccm_git_author: mpegg %
   %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: 4ec039713fea60fb7db70d6c0146b39030d44ee4 %
-  %ccm_git_commit_id: unknown %
-  %ccm_git_commit_count: unknown %
-  %ccm_git_commit_date: unknown %
-  %ccm_git_commit_author: unknown %
-  %ccm_git_commit_email: unknown %
-  %ccm_git_commit_message: unknown %
-  %ccm_git_modify_date: 2025-10-30 12:38:27 %
-  %ccm_git_file_last_modified: 2025-10-30 12:38:27 %
+  %ccm_git_blob_sha: 3a5317ad505f5372d99d2f7cbb51b369b9b2c94a %
+  %ccm_git_commit_id: 8b186f9039f2b3f1503219473a1e2de120c993d1 %
+  %ccm_git_commit_count: 113 %
+  %ccm_git_commit_date: 2025-10-30 12:44:42 -0400 %
+  %ccm_git_commit_author: mpegg %
+  %ccm_git_commit_email: mpegg@hotmail.com %
+  %ccm_git_commit_message: commen block updates %
+  %ccm_git_modify_date: 2025-10-30 12:44:47 %
+  %ccm_git_file_last_modified: 2025-10-30 12:44:47 %
   %ccm_git_file_name: ports.md %
   %ccm_git_path: wiki/ports.md %
   %ccm_git_language_mode: markdown %
@@ -20,8 +20,9 @@
   %ccm_git_file_encoding: utf-8 %
   %ccm_git_file_eol: CRLF %
   %ccm_git_exec: no %
-  %ccm_git_size: 12356 %
+  %ccm_git_size: 12403 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- %git_commit_history: adding secret-service % -->
 <!-- %git_commit_history: docker updates % -->
 <!-- %git_commit_history: big update % -->
 <!-- %git_commit_history: service updates % -->

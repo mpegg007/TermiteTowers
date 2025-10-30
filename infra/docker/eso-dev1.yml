@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: unknown %
+#  %ccm_git_object_id: infra/docker/eso-dev1.yml:113 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 4c38c432d4366f6d0cdd27ef6467f1a13ca7918b %
-#  %ccm_git_commit_id: unknown %
-#  %ccm_git_commit_count: unknown %
-#  %ccm_git_commit_date: unknown %
-#  %ccm_git_commit_author: unknown %
-#  %ccm_git_commit_email: unknown %
-#  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2025-10-30 12:38:23 %
-#  %ccm_git_file_last_modified: 2025-10-30 12:38:23 %
+#  %ccm_git_blob_sha: 9692dc22e6997d552487f0eda08b75499af2edeb %
+#  %ccm_git_commit_id: 8b186f9039f2b3f1503219473a1e2de120c993d1 %
+#  %ccm_git_commit_count: 113 %
+#  %ccm_git_commit_date: 2025-10-30 12:44:42 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: commen block updates %
+#  %ccm_git_modify_date: 2025-10-30 12:44:43 %
+#  %ccm_git_file_last_modified: 2025-10-30 12:44:43 %
 #  %ccm_git_file_name: eso-dev1.yml %
 #  %ccm_git_path: infra/docker/eso-dev1.yml %
 #  %ccm_git_language_mode: yaml %
@@ -21,8 +21,9 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 605 %
+#  %ccm_git_size: 646 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: adding secret-service % 
 # %git_commit_history: docker updates % 
 name: eso-dev1
 services:
