@@ -31,12 +31,11 @@ services:
     image: mysql:8.0
     container_name: powerdns-db-dev1
     restart: unless-stopped
+    env_file:
+      - ./env/powerdns.env
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-powerdns123}
       - MYSQL_DATABASE=powerdns
       - MYSQL_USER=powerdns
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-powerdns123}
-      - TZ=${TZ:-America/Toronto}
     volumes:
       - /mnt/ai_storage/dns/powerdns-mysql:/var/lib/mysql  # ⚠️ CANNOT CHANGE: Runtime data path
     networks:
@@ -51,6 +50,8 @@ services:
     image: pschiffe/pdns-mysql:latest
     container_name: powerdns-dev1
     restart: unless-stopped
+    env_file:
+      - ./env/powerdns.env
     # DNS server ports - Authoritative DNS on port 3053
     # Listens on same IPs as Pi-hole but different port
     # Pi-hole (port 53) forwards local domain queries here
@@ -61,14 +62,11 @@ services:
       - "192.168.4.10:3053:53/tcp"
       - "0.0.0.0:3021:8081"
     environment:
-      - TZ=${TZ:-America/Toronto}
       - PDNS_gmysql_host=powerdns-db
       - PDNS_gmysql_port=3306
       - PDNS_gmysql_user=powerdns
-      - PDNS_gmysql_password=${MYSQL_PASSWORD:-powerdns123}
       - PDNS_gmysql_dbname=powerdns
       - PDNS_api=yes
-      - PDNS_api_key=${PDNS_API_KEY:-changeme123}
       - PDNS_webserver=yes
       - PDNS_webserver_address=0.0.0.0
       - PDNS_webserver_port=8081
@@ -91,11 +89,11 @@ services:
     image: postgres:15
     container_name: powerdns-admin-db-dev1
     restart: unless-stopped
+    env_file:
+      - ./env/powerdns.env
     environment:
       - POSTGRES_DB=powerdnsadmin
       - POSTGRES_USER=pdnsadmin
-      - POSTGRES_PASSWORD=pdnsadmin123
-      - TZ=${TZ:-America/Toronto}
     volumes:
       - /mnt/ai_storage/dns/powerdns-admin-data:/var/lib/postgresql/data  # ⚠️ CANNOT CHANGE: Runtime data path
     networks:
@@ -107,14 +105,11 @@ services:
     restart: unless-stopped
     ports:
       - "3020:80"
+    env_file:
+      - ./env/powerdns.env
     environment:
-      - SECRET_KEY=changeme456789
-      - SQLALCHEMY_DATABASE_URI=postgresql://pdnsadmin:pdnsadmin123@powerdns-admin-db-dev1/powerdnsadmin
-      - PDNS_API_KEY=changeme123
       - PDNS_API_URL=http://powerdns:8081
       - PDNS_VERSION=4.3
-      - PDNS_ADMIN_USERNAME=admin 
-      - PDNS_ADMIN_PASSWORD=admin
     depends_on:
       - powerdns-admin-db
       - powerdns
