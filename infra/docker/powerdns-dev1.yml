@@ -1,16 +1,16 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/docker/powerdns-dev1.yml:111 %
+#  %ccm_git_object_id: infra/docker/powerdns-dev1.yml:118 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
 #  %ccm_git_blob_sha: 903f886f446142f9415ab713b65a93190d669ad4 %
-#  %ccm_git_commit_id: c95decaaa02c45bee627cd315be8d2b7aefd7fc5 %
-#  %ccm_git_commit_count: 111 %
-#  %ccm_git_commit_date: 2025-10-29 19:12:44 -0400 %
+#  %ccm_git_commit_id: 3e6c5853e07a18c88d5f453bca0edcc8123a6488 %
+#  %ccm_git_commit_count: 118 %
+#  %ccm_git_commit_date: 2025-10-31 18:22:30 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: docker updates %
+#  %ccm_git_commit_message: updates %
 #  %ccm_git_modify_date: 2025-10-29 19:12:44 %
 #  %ccm_git_file_last_modified: 2025-10-29 19:12:44 %
 #  %ccm_git_file_name: powerdns-dev1.yml %
