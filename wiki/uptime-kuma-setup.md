@@ -1,18 +1,18 @@
 <!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
   %ccm_git_repo: TermiteTowers %
   %ccm_git_branch: dev1 %
-  %ccm_git_object_id: unknown %
+  %ccm_git_object_id: wiki/uptime-kuma-setup.md:121 %
   %ccm_git_author: mpegg %
   %ccm_git_author_email: mpegg@hotmail.com %
   %ccm_git_blob_sha: 9aa37a0cddfb25b23c3fd80cd46170bb54dfc35b %
-  %ccm_git_commit_id: unknown %
-  %ccm_git_commit_count: unknown %
-  %ccm_git_commit_date: unknown %
-  %ccm_git_commit_author: unknown %
-  %ccm_git_commit_email: unknown %
-  %ccm_git_commit_message: unknown %
-  %ccm_git_modify_date: 2025-11-30 12:11:15 %
-  %ccm_git_file_last_modified: 2025-11-28 17:30:00 %
+  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
+  %ccm_git_commit_count: 121 %
+  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
+  %ccm_git_commit_author: mpegg %
+  %ccm_git_commit_email: mpegg@hotmail.com %
+  %ccm_git_commit_message: cleanup %
+  %ccm_git_modify_date: 2025-11-30 12:28:05 %
+  %ccm_git_file_last_modified: 2025-11-30 12:28:05 %
   %ccm_git_file_name: uptime-kuma-setup.md %
   %ccm_git_path: wiki/uptime-kuma-setup.md %
   %ccm_git_language_mode: markdown %
@@ -22,6 +22,7 @@
   %ccm_git_exec: no %
   %ccm_git_size: 4234 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- %git_commit_history: november changes % -->
 # Uptime Kuma Monitoring for Kea DHCP
 
 ## Access Uptime Kuma

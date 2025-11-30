@@ -1,18 +1,18 @@
 <!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
   %ccm_git_repo: TermiteTowers %
   %ccm_git_branch: dev1 %
-  %ccm_git_object_id: unknown %
+  %ccm_git_object_id: wiki/script-standards.md:121 %
   %ccm_git_author: mpegg %
   %ccm_git_author_email: mpegg@hotmail.com %
   %ccm_git_blob_sha: e966f5c8b0195d83b46ecccdda532b8384bbe045 %
-  %ccm_git_commit_id: unknown %
-  %ccm_git_commit_count: unknown %
-  %ccm_git_commit_date: unknown %
-  %ccm_git_commit_author: unknown %
-  %ccm_git_commit_email: unknown %
-  %ccm_git_commit_message: unknown %
-  %ccm_git_modify_date: 2025-11-30 12:11:12 %
-  %ccm_git_file_last_modified: 2025-11-12 16:22:05 %
+  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
+  %ccm_git_commit_count: 121 %
+  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
+  %ccm_git_commit_author: mpegg %
+  %ccm_git_commit_email: mpegg@hotmail.com %
+  %ccm_git_commit_message: cleanup %
+  %ccm_git_modify_date: 2025-11-30 12:27:22 %
+  %ccm_git_file_last_modified: 2025-11-30 12:27:22 %
   %ccm_git_file_name: script-standards.md %
   %ccm_git_path: wiki/script-standards.md %
   %ccm_git_language_mode: markdown %
@@ -22,6 +22,7 @@
   %ccm_git_exec: no %
   %ccm_git_size: 6255 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- %git_commit_history: november changes % -->
 # Script Standards
 
 This document outlines the coding and logging standards for bash scripts in TermiteTowers.

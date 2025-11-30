@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: unknown %
+#  %ccm_git_object_id: infra/mcp/searxng/test_server.py:121 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
 #  %ccm_git_blob_sha: ba3f46a5ee5c8b44e38f3787193d3e4398de526b %
-#  %ccm_git_commit_id: unknown %
-#  %ccm_git_commit_count: unknown %
-#  %ccm_git_commit_date: unknown %
-#  %ccm_git_commit_author: unknown %
-#  %ccm_git_commit_email: unknown %
-#  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2025-11-30 12:10:20 %
-#  %ccm_git_file_last_modified: 2025-11-30 12:10:20 %
+#  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
+#  %ccm_git_commit_count: 121 %
+#  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: cleanup %
+#  %ccm_git_modify_date: 2025-11-30 12:27:11 %
+#  %ccm_git_file_last_modified: 2025-11-30 12:27:11 %
 #  %ccm_git_file_name: test_server.py %
 #  %ccm_git_path: infra/mcp/searxng/test_server.py %
 #  %ccm_git_language_mode: python %
@@ -23,6 +23,7 @@
 #  %ccm_git_exec: no %
 #  %ccm_git_size: 3546 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: november changes % 
 """
 Test script for SearXNG MCP Server.
 

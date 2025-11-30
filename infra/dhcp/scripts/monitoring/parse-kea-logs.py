@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: unknown %
+#  %ccm_git_object_id: infra/dhcp/scripts/monitoring/parse-kea-logs.py:121 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
 #  %ccm_git_blob_sha: 2f8a7f37cfafd10f6aed3e087e21ef928c6defc6 %
-#  %ccm_git_commit_id: unknown %
-#  %ccm_git_commit_count: unknown %
-#  %ccm_git_commit_date: unknown %
-#  %ccm_git_commit_author: unknown %
-#  %ccm_git_commit_email: unknown %
-#  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2025-11-30 12:10:12 %
-#  %ccm_git_file_last_modified: 2025-11-30 12:10:12 %
+#  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
+#  %ccm_git_commit_count: 121 %
+#  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: cleanup %
+#  %ccm_git_modify_date: 2025-11-30 12:26:12 %
+#  %ccm_git_file_last_modified: 2025-11-30 12:26:12 %
 #  %ccm_git_file_name: parse-kea-logs.py %
 #  %ccm_git_path: infra/dhcp/scripts/monitoring/parse-kea-logs.py %
 #  %ccm_git_language_mode: python %
@@ -23,6 +23,7 @@
 #  %ccm_git_exec: no %
 #  %ccm_git_size: 27752 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: november changes % 
 # %git_commit_history: dhcp logging % 
 #  tt-secrets.skip
 """
