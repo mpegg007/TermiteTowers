@@ -1,0 +1,35 @@
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: unknown %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 58ab9143555ba0f1585e88bfcaed7b19afdbefc1 %
+#  %ccm_git_commit_id: unknown %
+#  %ccm_git_commit_count: unknown %
+#  %ccm_git_commit_date: unknown %
+#  %ccm_git_commit_author: unknown %
+#  %ccm_git_commit_email: unknown %
+#  %ccm_git_commit_message: unknown %
+#  %ccm_git_modify_date: 2025-11-30 12:10:07 %
+#  %ccm_git_file_last_modified: 2025-11-30 12:10:07 %
+#  %ccm_git_file_name: tt-kea-health-check-dev1.service %
+#  %ccm_git_path: infra/dhcp/configs/systemd/tt-kea-health-check-dev1.service %
+#  %ccm_git_language_mode: service %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 254 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+[Unit]
+Description=Kea DHCP Health Check (dev1)
+After=network.target kea-dhcp4-dev1.service postgresql.service
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/srv/dev1/kea/scripts/monitoring/tt-kea-health-check-dev1.sh
+
+[Install]
+WantedBy=multi-user.target

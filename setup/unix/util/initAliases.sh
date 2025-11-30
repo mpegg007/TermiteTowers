@@ -1,3 +1,27 @@
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: unknown %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 5259f2de6f2d26af54c7ad3cf4cfb056a11cac73 %
+#  %ccm_git_commit_id: unknown %
+#  %ccm_git_commit_count: unknown %
+#  %ccm_git_commit_date: unknown %
+#  %ccm_git_commit_author: unknown %
+#  %ccm_git_commit_email: unknown %
+#  %ccm_git_commit_message: unknown %
+#  %ccm_git_modify_date: 2025-11-30 12:11:07 %
+#  %ccm_git_file_last_modified: 2025-11-30 12:11:07 %
+#  %ccm_git_file_name: initAliases.sh %
+#  %ccm_git_path: setup/unix/util/initAliases.sh %
+#  %ccm_git_language_mode: shellscript %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 6267 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 # shellcheck shell=bash
 # Aliases and helper functions for TermiteTowers
 
@@ -28,7 +52,7 @@ cdapp() {
 goapp() {
   local app="$1"
   if [ -z "$app" ]; then
-    echo "Usage: goapp <app>" >&2
+    echo "Usage: goapp <app>" &&ls /srv/dev1 >&2
     return 2
   fi
   local base envscript venv_dir venv_activate
@@ -118,10 +142,127 @@ lobedown() {
   fi
 }
 
-# Generic docker compose shortcuts for current directory
-alias dcu='docker compose up -d'
-alias dcd='docker compose down'
-alias dcl='docker compose logs -f'
+# Generic docker compose wrapper that uses APPID_DOCKER if set
+# Usage: dc <command> [container] [args]
+# Usage: dc <app-name> <command> [container] [args]
+dc() {
+  local app_name="" cmd="" compose_file="" docker_dir=""
+  
+  # Check if first arg looks like an app name (no hyphens, not a docker command)
+  if [[ "$1" =~ ^[a-z0-9]+$ ]] && [ -d "/srv/${tt_scmID}/$1" ]; then
+    app_name="$1"
+    shift
+    cmd="$1"
+    shift
+  else
+    cmd="$1"
+    shift
+    app_name="${APP_NAME:-}"
+  fi
+  
+  if [ -z "$cmd" ]; then
+    echo "Usage: dc [app] <command> [container] [args]"
+    echo "Commands: up, down, start, stop, restart, logs, ps, etc."
+    echo "Example: dc logs pihole"
+    echo "Example: dc eso logs pihole"
+    return 1
+  fi
+  
+  # Determine compose file
+  if [ -n "$app_name" ]; then
+    docker_dir="/srv/${tt_scmID}/${app_name}/docker"
+    if [ -f "${docker_dir}/${app_name}-${tt_scmID}.yml" ]; then
+      compose_file="${docker_dir}/${app_name}-${tt_scmID}.yml"
+    elif [ -f "${docker_dir}/docker-compose.yml" ]; then
+      compose_file="${docker_dir}/docker-compose.yml"
+    fi
+  else
+    compose_file="${APPID_DOCKER:-none}"
+    docker_dir="/srv/${tt_scmID}/${APP_NAME}/docker"
+    if [ "$compose_file" != "none" ]; then
+      compose_file="${docker_dir}/${compose_file}"
+    fi
+  fi
+  
+  if [ -z "$compose_file" ] || [ ! -f "$compose_file" ]; then
+    echo "No docker compose file found. Use 'goapp <app>' first or specify app: dc <app> <command>" >&2
+    return 1
+  fi
+  
+  docker compose -f "$compose_file" "$cmd" "$@"
+}
+
+# Specific shortcuts using dc - these now support optional app name as first arg
+# Examples: dcup, dcup eso, dclogs pihole, dclogs eso pihole
+dcup() {
+  if [[ "$1" =~ ^[a-z0-9]+$ ]] && [ -d "/srv/${tt_scmID}/$1" ]; then
+    dc "$1" up -d "${@:2}"
+  else
+    dc up -d "$@"
+  fi
+}
+
+dcdown() {
+  if [[ "$1" =~ ^[a-z0-9]+$ ]] && [ -d "/srv/${tt_scmID}/$1" ]; then
+    dc "$1" down "${@:2}"
+  else
+    dc down "$@"
+  fi
+}
+
+dcstart() {
+  if [[ "$1" =~ ^[a-z0-9]+$ ]] && [ -d "/srv/${tt_scmID}/$1" ]; then
+    dc "$1" start "${@:2}"
+  else
+    dc start "$@"
+  fi
+}
+
+dcstop() {
+  if [[ "$1" =~ ^[a-z0-9]+$ ]] && [ -d "/srv/${tt_scmID}/$1" ]; then
+    dc "$1" stop "${@:2}"
+  else
+    dc stop "$@"
+  fi
+}
+
+dcrestart() {
+  if [[ "$1" =~ ^[a-z0-9]+$ ]] && [ -d "/srv/${tt_scmID}/$1" ]; then
+    dc "$1" restart "${@:2}"
+  else
+    dc restart "$@"
+  fi
+}
+
+dclogs() {
+  if [[ "$1" =~ ^[a-z0-9]+$ ]] && [ -d "/srv/${tt_scmID}/$1" ]; then
+    dc "$1" logs -f "${@:2}"
+  else
+    dc logs -f "$@"
+  fi
+}
+
+dcps() {
+  if [[ "$1" =~ ^[a-z0-9]+$ ]] && [ -d "/srv/${tt_scmID}/$1" ]; then
+    dc "$1" ps "${@:2}"
+  else
+    dc ps "$@"
+  fi
+}
+
+# Override version: explicitly specify compose file
+dcf() {
+  local compose_file="$1"
+  local cmd="$2"
+  shift 2
+  
+  if [ -z "$compose_file" ] || [ -z "$cmd" ]; then
+    echo "Usage: dcf <compose-file> <command> [args]"
+    return 1
+  fi
+  
+  docker compose -f "$compose_file" "$cmd" "$@"
+}
 
 # Quality-of-life
 alias ll='ls -alF'

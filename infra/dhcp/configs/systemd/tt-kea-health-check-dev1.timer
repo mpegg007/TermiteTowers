@@ -1,0 +1,35 @@
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: unknown %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 86c5e1bebd6ac30609c4db63cf5a7cc56b7b0d9d %
+#  %ccm_git_commit_id: unknown %
+#  %ccm_git_commit_count: unknown %
+#  %ccm_git_commit_date: unknown %
+#  %ccm_git_commit_author: unknown %
+#  %ccm_git_commit_email: unknown %
+#  %ccm_git_commit_message: unknown %
+#  %ccm_git_modify_date: 2025-11-30 12:10:08 %
+#  %ccm_git_file_last_modified: 2025-11-30 12:10:08 %
+#  %ccm_git_file_name: tt-kea-health-check-dev1.timer %
+#  %ccm_git_path: infra/dhcp/configs/systemd/tt-kea-health-check-dev1.timer %
+#  %ccm_git_language_mode: timer %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 208 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+[Unit]
+Description=Kea Health Check Timer (dev1)
+Requires=tt-kea-health-check-dev1.service
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=5min
+Unit=tt-kea-health-check-dev1.service
+
+[Install]
+WantedBy=timers.target

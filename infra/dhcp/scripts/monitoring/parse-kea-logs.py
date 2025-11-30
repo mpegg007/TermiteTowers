@@ -2,27 +2,29 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/dhcp/scripts/monitoring/parse-kea-logs.py:110 %
+#  %ccm_git_object_id: unknown %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 90a404dc7d02a15a06b8adc1f9e37df2f46210f2 %
-#  %ccm_git_commit_id: f58291ad575edfb9a551f895005def9b9f831304 %
-#  %ccm_git_commit_count: 110 %
-#  %ccm_git_commit_date: 2025-10-25 14:11:42 -0400 %
-#  %ccm_git_commit_author: mpegg %
-#  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: dhcp logging %
-#  %ccm_git_modify_date: 2025-10-25 14:11:42 %
-#  %ccm_git_file_last_modified: 2025-10-25 11:11:15 %
+#  %ccm_git_blob_sha: 2f8a7f37cfafd10f6aed3e087e21ef928c6defc6 %
+#  %ccm_git_commit_id: unknown %
+#  %ccm_git_commit_count: unknown %
+#  %ccm_git_commit_date: unknown %
+#  %ccm_git_commit_author: unknown %
+#  %ccm_git_commit_email: unknown %
+#  %ccm_git_commit_message: unknown %
+#  %ccm_git_modify_date: 2025-11-30 12:10:12 %
+#  %ccm_git_file_last_modified: 2025-11-30 12:10:12 %
 #  %ccm_git_file_name: parse-kea-logs.py %
 #  %ccm_git_path: infra/dhcp/scripts/monitoring/parse-kea-logs.py %
 #  %ccm_git_language_mode: python %
 #  %ccm_git_file_type: text/x-script.python %
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
-#  %ccm_git_exec: yes %
-#  %ccm_git_size: 27609 %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 27752 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: dhcp logging % 
+#  tt-secrets.skip
 """
 Kea DHCP Log Parser and Historical Data Collector
 
@@ -690,6 +692,8 @@ def main():
     )
     
     args = parser.parse_args()
+    # Always parse full logs by default unless overridden
+    args.full_parse = True
     
     # Auto-detect parser type based on filename or content
     def detect_parser_type(filepath: str) -> str:

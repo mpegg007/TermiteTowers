@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/dhcp/scripts/monitoring/setup-dhcp-history-db.sh:110 %
+#  %ccm_git_object_id: unknown %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 13b3630165af1059a58e5a5adad71f455e8cd10b %
-#  %ccm_git_commit_id: f58291ad575edfb9a551f895005def9b9f831304 %
-#  %ccm_git_commit_count: 110 %
-#  %ccm_git_commit_date: 2025-10-25 14:11:42 -0400 %
-#  %ccm_git_commit_author: mpegg %
-#  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: dhcp logging %
-#  %ccm_git_modify_date: 2025-10-25 14:11:42 %
-#  %ccm_git_file_last_modified: 2025-10-25 14:11:42 %
+#  %ccm_git_blob_sha: 5af3792e72923bba6dc48fcad82ff8e3543183e7 %
+#  %ccm_git_commit_id: unknown %
+#  %ccm_git_commit_count: unknown %
+#  %ccm_git_commit_date: unknown %
+#  %ccm_git_commit_author: unknown %
+#  %ccm_git_commit_email: unknown %
+#  %ccm_git_commit_message: unknown %
+#  %ccm_git_modify_date: 2025-11-30 12:10:13 %
+#  %ccm_git_file_last_modified: 2025-11-30 12:10:13 %
 #  %ccm_git_file_name: setup-dhcp-history-db.sh %
 #  %ccm_git_path: infra/dhcp/scripts/monitoring/setup-dhcp-history-db.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,8 +21,9 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 3596 %
+#  %ccm_git_size: 3635 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: dhcp logging % 
 
 # Setup script for DHCP History Database
 # Creates dedicated user, schema, and permissions in ttdb_dev1

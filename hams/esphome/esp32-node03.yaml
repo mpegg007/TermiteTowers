@@ -1,18 +1,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: hams/esphome/esp32-node03.yaml:102 %
-#  %ccm_git_author: Matthew Pegg %
+#  %ccm_git_object_id: unknown %
+#  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 74bc2ed59e268425b196cd6f0e960632f6c682ce %
-#  %ccm_git_commit_id: 0fe5f85b2d82fa548d0ef593b302bf3f28915940 %
-#  %ccm_git_commit_count: 102 %
-#  %ccm_git_commit_date: 2025-10-18 16:33:31 -0400 %
-#  %ccm_git_commit_author: Matthew Pegg %
-#  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: esphome %
-#  %ccm_git_modify_date: 2025-10-18 16:33:45 %
-#  %ccm_git_file_last_modified: 2025-10-04 10:41:11 %
+#  %ccm_git_blob_sha: 612e7a99f34d560ba69915f7b1b6d8740a725e7b %
+#  %ccm_git_commit_id: unknown %
+#  %ccm_git_commit_count: unknown %
+#  %ccm_git_commit_date: unknown %
+#  %ccm_git_commit_author: unknown %
+#  %ccm_git_commit_email: unknown %
+#  %ccm_git_commit_message: unknown %
+#  %ccm_git_modify_date: 2025-11-30 12:10:02 %
+#  %ccm_git_file_last_modified: 2025-11-30 12:10:02 %
 #  %ccm_git_file_name: esp32-node03.yaml %
 #  %ccm_git_path: hams/esphome/esp32-node03.yaml %
 #  %ccm_git_language_mode: yaml %
@@ -20,8 +20,9 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 1614 %
+#  %ccm_git_size: 1741 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: esphome % 
 ## For Boiler Room - ESP32 with SHT3x and 8-Relay Module
 # esphome upload esp32-node03.yaml --device 192.168.1.XXX
 # esphome logs esp32-node03.yaml --device 192.168.1.XXX
@@ -40,6 +41,10 @@ esphome:
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
+  manual_ip:
+    static_ip: 192.168.1.130
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
   ap:
     ssid: "Esp32-Boiler"
     password: !secret fallback_ap_password
