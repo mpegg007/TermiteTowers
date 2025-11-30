@@ -49,7 +49,7 @@ TEMPLATE_FILE="$REPO_ROOT/git-automation/CCM_HEADER_TEMPLATE.txt"
 REPO_NAME=$(basename "$REPO_ROOT")
 LOG_DIR="$HOME/log"
 LOG_FILE="$LOG_DIR/${REPO_NAME}-enhanced-hooks.log"
-LOGROTATE_CONF="$REPO_ROOT/git-automation/logrotate.conf"
+LOGROTATE_CONF="$REPO_ROOT/infra/logrotate/logrotate.conf"
 LOGROTATE_STATE="$HOME/.logrotate.state"
 
 # Create log directory if it doesn't exist

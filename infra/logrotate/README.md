@@ -1,20 +1,20 @@
 <!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
   %ccm_git_repo: TermiteTowers %
   %ccm_git_branch: dev1 %
-  %ccm_git_object_id: git-automation/LOGROTATE-README.md:122 %
+  %ccm_git_object_id: unknown %
   %ccm_git_author: mpegg %
   %ccm_git_author_email: mpegg@hotmail.com %
   %ccm_git_blob_sha: 355abf2d821663b1195f26e3f7abcd9e0195157e %
-  %ccm_git_commit_id: 911abf33d3a165541ef9f5e4f965e884eb2a438e %
-  %ccm_git_commit_count: 122 %
-  %ccm_git_commit_date: 2025-11-30 15:57:30 -0500 %
-  %ccm_git_commit_author: mpegg %
-  %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: logging cleanup %
-  %ccm_git_modify_date: 2025-11-30 15:57:31 %
-  %ccm_git_file_last_modified: 2025-11-30 15:43:28 %
-  %ccm_git_file_name: LOGROTATE-README.md %
-  %ccm_git_path: git-automation/LOGROTATE-README.md %
+  %ccm_git_commit_id: unknown %
+  %ccm_git_commit_count: unknown %
+  %ccm_git_commit_date: unknown %
+  %ccm_git_commit_author: unknown %
+  %ccm_git_commit_email: unknown %
+  %ccm_git_commit_message: unknown %
+  %ccm_git_modify_date: 2025-11-30 16:14:02 %
+  %ccm_git_file_last_modified: 2025-11-30 16:14:02 %
+  %ccm_git_file_name: README.md %
+  %ccm_git_path: infra/logrotate/README.md %
   %ccm_git_language_mode: markdown %
   %ccm_git_file_type: text/plain %
   %ccm_git_file_encoding: utf-8 %
@@ -22,6 +22,7 @@
   %ccm_git_exec: no %
   %ccm_git_size: 5924 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- %git_commit_history: logging cleanup % -->
 # Git Hooks Logrotate Integration
 
 This directory contains logrotate configuration files that are **maintained in the repository** and used by the enhanced git hooks to manage log rotation.

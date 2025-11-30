@@ -47,7 +47,7 @@ DATE=$(date +"%Y-%m-%d %H:%M:%S")
 
 LOG_DIR="$HOME/log"
 LOG_FILE="$LOG_DIR/${REPO_NAME}-enhanced-hooks.log"
-LOGROTATE_CONF="$REPO_ROOT/git-automation/logrotate.conf"
+LOGROTATE_CONF="$REPO_ROOT/infra/logrotate/logrotate.conf"
 LOGROTATE_STATE="$HOME/.logrotate.state"
 LOCK_FILE=$(git rev-parse --git-path ccm-post-commit.lock)
 
