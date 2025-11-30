@@ -30,6 +30,7 @@ set -euo pipefail
 # Safe defaults: skip on merge or if no HEAD.
 
 REPO_ROOT=$(git rev-parse --show-toplevel)
+REPO_NAME=$(basename "$REPO_ROOT")
 
 URL_RAW=$(git config --get remote.origin.url)
 URL_SAFE=$(echo "$URL_RAW" | sed 's/%/%%/g')
@@ -44,8 +45,19 @@ COMMIT_DATE=$(git log -1 --pretty=format:'%ci')
 COMMIT_TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
 DATE=$(date +"%Y-%m-%d %H:%M:%S")
 
-LOG_FILE="$REPO_ROOT/git-automation/enhanced-hooks.log"
+LOG_DIR="$HOME/log"
+LOG_FILE="$LOG_DIR/${REPO_NAME}-enhanced-hooks.log"
+LOGROTATE_CONF="$REPO_ROOT/git-automation/logrotate.conf"
+LOGROTATE_STATE="$HOME/.logrotate.state"
 LOCK_FILE=$(git rev-parse --git-path ccm-post-commit.lock)
+
+# Create log directory if it doesn't exist
+mkdir -p "$LOG_DIR"
+
+# Trigger logrotate check (uses repo-maintained config)
+if [ -f "$LOGROTATE_CONF" ]; then
+    logrotate -s "$LOGROTATE_STATE" "$LOGROTATE_CONF" 2>/dev/null || true
+fi
 
 # Prevent recursion: if lock exists, skip
 if [ -f "$LOCK_FILE" ]; then

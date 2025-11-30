@@ -46,14 +46,26 @@
 
 REPO_ROOT=$(git rev-parse --show-toplevel)
 TEMPLATE_FILE="$REPO_ROOT/git-automation/CCM_HEADER_TEMPLATE.txt"
-LOG_FILE="$REPO_ROOT/git-automation/enhanced-hooks.log"
+REPO_NAME=$(basename "$REPO_ROOT")
+LOG_DIR="$HOME/log"
+LOG_FILE="$LOG_DIR/${REPO_NAME}-enhanced-hooks.log"
+LOGROTATE_CONF="$REPO_ROOT/git-automation/logrotate.conf"
+LOGROTATE_STATE="$HOME/.logrotate.state"
+
+# Create log directory if it doesn't exist
+mkdir -p "$LOG_DIR"
+
+# Trigger logrotate check (uses repo-maintained config)
+if [ -f "$LOGROTATE_CONF" ]; then
+    logrotate -s "$LOGROTATE_STATE" "$LOGROTATE_CONF" 2>/dev/null || true
+fi
 
 echo "Enhanced pre-commit hook started at $(date)" >> "$LOG_FILE"
 
 # --- Commit-wide variables ---
 author=$(git config user.name)
 author_email=$(git config user.email)
-repo=$(basename "$REPO_ROOT")
+repo="$REPO_NAME"
 branch=$(git rev-parse --abbrev-ref HEAD)
 
 # Helper: Detect pseudo-shebang for BAT/CMD
@@ -283,18 +295,26 @@ for FILE in "${FILES_TO_PROCESS[@]}"; do
     echo "[INFO] Processing $FILE (relative path: $REL_PATH, mime: $MIME_INFO)" >> "$LOG_FILE"
     
     # --- Enhanced Secret Scanning (per-file) ---
-    # Check for bypass marker in this file
-    if grep -q "tt-secrets.skip\|tt-ggshield.skip" "$FILE" 2>/dev/null; then
-        echo "[INFO] Skipping secret scan for $FILE (bypass marker found)" >> "$LOG_FILE"
-    else
-        # Call secret scanner with this specific file
-        if [ -x "$REPO_ROOT/git-automation/enhanced-secrets-pattern-scanner.sh" ]; then
-            if ! "$REPO_ROOT/git-automation/enhanced-secrets-pattern-scanner.sh" "$FILE"; then
-                echo "[ERROR] Secret detected in $FILE, aborting commit" >> "$LOG_FILE"
-                exit 1
+    # Skip secret scanning for example/template/sample files by pattern
+    case "$FILE" in
+        *.example|*.example.*|*.template|*.template.*|*.sample|*.sample.*|*-example.*|*-template.*|*-sample.*)
+            echo "[INFO] Skipping secret scan for $FILE (example/template/sample file)" >> "$LOG_FILE"
+            ;;
+        *)
+            # Check for bypass marker in this file
+            if grep -q "tt-secrets.skip\|tt-ggshield.skip" "$FILE" 2>/dev/null; then
+                echo "[INFO] Skipping secret scan for $FILE (bypass marker found)" >> "$LOG_FILE"
+            else
+                # Call secret scanner with this specific file
+                if [ -x "$REPO_ROOT/git-automation/enhanced-secrets-pattern-scanner.sh" ]; then
+                    if ! "$REPO_ROOT/git-automation/enhanced-secrets-pattern-scanner.sh" "$FILE"; then
+                        echo "[ERROR] Secret detected in $FILE, aborting commit" >> "$LOG_FILE"
+                        exit 1
+                    fi
+                fi
             fi
-        fi
-    fi
+            ;;
+    esac
     
     IFS='|' read -r lang_mode block_start block_end line_comment <<< "$(bash "$REPO_ROOT/git-automation/get_language_mode_and_comments.sh" "$FILE")"
     echo "[INFO] Language mode: $lang_mode, block_start: $block_start, block_end: $block_end, line_comment: $line_comment" >> "$LOG_FILE"

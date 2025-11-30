@@ -1,18 +1,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: .gitignore:118 %
+#  %ccm_git_object_id: .gitignore:122 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 1568c7248ca8fed3b402031b0726aae962a9dd98 %
-#  %ccm_git_commit_id: 3e6c5853e07a18c88d5f453bca0edcc8123a6488 %
-#  %ccm_git_commit_count: 118 %
-#  %ccm_git_commit_date: 2025-10-31 18:22:30 -0400 %
+#  %ccm_git_blob_sha: 3dacaf3d2dab64fa73a1bd05ecf75b1c7ec70eb6 %
+#  %ccm_git_commit_id: 911abf33d3a165541ef9f5e4f965e884eb2a438e %
+#  %ccm_git_commit_count: 122 %
+#  %ccm_git_commit_date: 2025-11-30 15:57:30 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: updates %
-#  %ccm_git_modify_date: 2025-10-31 18:18:44 %
-#  %ccm_git_file_last_modified: 2025-10-31 18:18:44 %
+#  %ccm_git_commit_message: logging cleanup %
+#  %ccm_git_modify_date: 2025-11-30 15:57:31 %
+#  %ccm_git_file_last_modified: 2025-11-30 15:57:31 %
 #  %ccm_git_file_name: .gitignore %
 #  %ccm_git_path: .gitignore %
 #  %ccm_git_language_mode: git %
@@ -20,8 +20,9 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 444 %
+#  %ccm_git_size: 512 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: updates % 
 # %git_commit_history: update to gitignore % 
 # %git_commit_history: adding secret-service % 
 # %git_commit_history: big update % 
@@ -61,3 +62,4 @@ env/*.env
 infra/docker/env/*.env
 .cache_ggshield
 infra/docker/env/*_password.txt
+hams/esphome/.esphome
