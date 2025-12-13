@@ -1,18 +1,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: hams/esphome/esp32-node03.yaml:121 %
+#  %ccm_git_object_id: hams/esphome/esp32-node03.yaml:124 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 612e7a99f34d560ba69915f7b1b6d8740a725e7b %
-#  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
-#  %ccm_git_commit_count: 121 %
-#  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
+#  %ccm_git_blob_sha: 6d900fa5371ff694a85aab13efb672eb7251209a %
+#  %ccm_git_commit_id: 8b4b8c60fcc3a47d5432304b72990dd91eef1e93 %
+#  %ccm_git_commit_count: 124 %
+#  %ccm_git_commit_date: 2025-12-12 21:43:31 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: cleanup %
-#  %ccm_git_modify_date: 2025-11-30 12:26:02 %
-#  %ccm_git_file_last_modified: 2025-11-30 12:26:02 %
+#  %ccm_git_commit_message: friday checkin %
+#  %ccm_git_modify_date: 2025-12-12 21:43:32 %
+#  %ccm_git_file_last_modified: 2025-12-12 21:43:32 %
 #  %ccm_git_file_name: esp32-node03.yaml %
 #  %ccm_git_path: hams/esphome/esp32-node03.yaml %
 #  %ccm_git_language_mode: yaml %
@@ -20,8 +20,9 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 1741 %
+#  %ccm_git_size: 2872 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: cleanup % 
 # %git_commit_history: november changes % 
 # %git_commit_history: esphome % 
 ## For Boiler Room - ESP32 with SHT3x and 8-Relay Module
@@ -71,22 +72,52 @@ switch:
   - platform: gpio
     name: "Boiler Relay 1"
     pin: GPIO18
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_off:
+      - logger.log: "WARNING: Boiler Relay 1 turned OFF"
+    on_turn_on:
+      - logger.log: "INFO: Boiler Relay 1 turned ON"
   - platform: gpio
     name: "Boiler Relay 2"
     pin: GPIO19
+    restore_mode: RESTORE_DEFAULT_ON
+    on_turn_off:
+      - logger.log: "WARNING: Boiler Relay 2 turned OFF"
+    on_turn_on:
+      - logger.log: "INFO: Boiler Relay 2 turned ON"
   - platform: gpio
     name: "Boiler Relay 3"
     pin: GPIO27
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_off:
+      - logger.log: "WARNING: Boiler Relay 3 turned OFF"
+    on_turn_on:
+      - logger.log: "INFO: Boiler Relay 3 turned ON"
   - platform: gpio
     name: "Boiler Relay 4"
     pin: GPIO26
+    restore_mode: RESTORE_DEFAULT_ON
+    on_turn_off:
+      - logger.log: "WARNING: Boiler Relay 4 turned OFF"
+    on_turn_on:
+      - logger.log: "INFO: Boiler Relay 4 turned ON"
   - platform: gpio
     name: "Boiler Relay 5"
     pin: GPIO25
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_off:
+      - logger.log: "WARNING: Boiler Relay 5 turned OFF"
+    on_turn_on:
+      - logger.log: "INFO: Boiler Relay 5 turned ON"
   - platform: gpio
     name: "Boiler Relay 6"
     pin: GPIO33
-
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_off:
+      - logger.log: "WARNING: Boiler Relay 6 turned OFF"
+    on_turn_on:
+      - logger.log: "INFO: Boiler Relay 6 turned ON"
+    
 # Notes:
 # - Adjust relay GPIOs as needed for your wiring
 # - All relays default to OFF at boot

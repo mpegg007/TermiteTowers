@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/docker/esphome-dev1.yml:121 %
+#  %ccm_git_object_id: infra/docker/esphome-dev1.yml:124 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: e8767e0d7b503891ffecbb23193910848a76b5b8 %
-#  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
-#  %ccm_git_commit_count: 121 %
-#  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
+#  %ccm_git_blob_sha: 2fd280a75c4fe8ccc2bab1010e60fac29044b3c0 %
+#  %ccm_git_commit_id: 8b4b8c60fcc3a47d5432304b72990dd91eef1e93 %
+#  %ccm_git_commit_count: 124 %
+#  %ccm_git_commit_date: 2025-12-12 21:43:31 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: cleanup %
-#  %ccm_git_modify_date: 2025-11-30 12:26:17 %
-#  %ccm_git_file_last_modified: 2025-11-30 12:26:17 %
+#  %ccm_git_commit_message: friday checkin %
+#  %ccm_git_modify_date: 2025-12-12 21:43:33 %
+#  %ccm_git_file_last_modified: 2025-12-12 21:43:33 %
 #  %ccm_git_file_name: esphome-dev1.yml %
 #  %ccm_git_path: infra/docker/esphome-dev1.yml %
 #  %ccm_git_language_mode: yaml %
@@ -21,14 +21,15 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 502 %
+#  %ccm_git_size: 622 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: cleanup % 
 # %git_commit_history: november changes % 
 name: esphome-dev1
 
 services:
   esphome:
-    image: esphome/esphome:latest
+    image: esphome/esphome:2024.10.3
     container_name: esphome-dev1
     restart: unless-stopped
     network_mode: host
@@ -36,6 +37,7 @@ services:
     #  - "0.0.0.0:3320:6052"
     volumes:
       - /home/mpegg-adm/source/TermiteTowers/hams/esphome:/config
+      - /mnt/ai_storage/esphome/.esphome:/mnt/ai_storage/esphome/.esphome
     logging:
       driver: json-file
       options:
