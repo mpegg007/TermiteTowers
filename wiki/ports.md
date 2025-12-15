@@ -1,18 +1,18 @@
 <!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
   %ccm_git_repo: TermiteTowers %
   %ccm_git_branch: dev1 %
-  %ccm_git_object_id: wiki/ports.md:121 %
+  %ccm_git_object_id: wiki/ports.md:125 %
   %ccm_git_author: mpegg %
   %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: 41a2eaf9e3d58fd4020083e1c7c82939a04fcd39 %
-  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
-  %ccm_git_commit_count: 121 %
-  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
+  %ccm_git_blob_sha: 19f8c091d7b77641f35fd27f434e09c799e831d0 %
+  %ccm_git_commit_id: c1f5aa954a589e43600caffa76969fcd4a57b2f1 %
+  %ccm_git_commit_count: 125 %
+  %ccm_git_commit_date: 2025-12-15 10:05:29 -0500 %
   %ccm_git_commit_author: mpegg %
   %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: cleanup %
-  %ccm_git_modify_date: 2025-11-30 12:27:21 %
-  %ccm_git_file_last_modified: 2025-11-30 12:27:21 %
+  %ccm_git_commit_message: monday drop %
+  %ccm_git_modify_date: 2025-12-15 10:05:39 %
+  %ccm_git_file_last_modified: 2025-12-15 10:05:39 %
   %ccm_git_file_name: ports.md %
   %ccm_git_path: wiki/ports.md %
   %ccm_git_language_mode: markdown %
@@ -20,8 +20,9 @@
   %ccm_git_file_encoding: utf-8 %
   %ccm_git_file_eol: CRLF %
   %ccm_git_exec: no %
-  %ccm_git_size: 12641 %
+  %ccm_git_size: 12198 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- %git_commit_history: cleanup % -->
 <!-- %git_commit_history: november changes % -->
 <!-- %git_commit_history: commen block updates % -->
 <!-- %git_commit_history: adding secret-service % -->
@@ -88,18 +89,17 @@ This page tracks host and service ports used across TermiteTowers using a system
 | Git Services (Gitea/GitLab)    | git.termitetowers.ca             | 3131      | TBD            | DevOps    | 🕒 Planned       |
 | CI/CD (Jenkins/GitHub Actions) | cicd.termitetowers.ca            | 3140      | TBD            | DevOps    | 🕒 Planned       |
 | Wiki.js                        | wiki.termitetowers.ca            | 3200      | 3000           | Content   | ✅ Correct       |
-| Documentation Sites            | docs.termitetowers.ca            | 3210      | TBD            | Content   | 🕒 Planned       |
+| MkDocs Documentation           | docs.termitetowers.ca            | 3210      | 8000           | Content   | ✅ **NEW**       |
 | Blog/CMS                       | blog.termitetowers.ca            | 3220      | TBD            | Content   | 🕒 Planned       |
 | File Sharing                   | fileshare.termitetowers.ca       | 3230      | TBD            | Content   | 🕒 Planned       |
-| KitchenOwl                     | kitchenowl.termitetowers.ca      | 3300      | 8080           | Home      | ✅ app-services-net-dev1 |
+
 | Mealie                         | mealie.termitetowers.ca          | 3301      | 80             | Home      | ✅ app-services-net-dev1 |
 | Homarr                         | home.termitetowers.ca            | 3310      | 7575           | Home      | ✅ **UPDATED**   |
 | Calendar/Planning Tools        | calendar.termitetowers.ca        | 3320      | TBD            | Home      | 🕒 Planned       |
 | Note-Taking Apps               | notes.termitetowers.ca           | 3330      | TBD            | Home      | 🕒 Planned       |
 | LLM Server API                 | llmapi.termitetowers.ca          | 3350      | 8000           | Home      | ✅ **NEW**       |
 | Vault                          | vault.termitetowers.ca           | 3500      | 3000           | Security  | 🔄 **TO MIGRATE**|
-| SOPS                           | sops.termitetowers.ca            | 3510      | 3000           | Security  | 🔄 **TO MIGRATE**|
-| ESO                            | eso.termitetowers.ca             | 3520      | 3000           | Security  | 🔄 **TO MIGRATE**|
+
 | Certificate Management         | certs.termitetowers.ca           | 3540      | TBD            | Security  | 🕒 Planned       |
 | dbGate                         | dba.termitetowers.ca             | 3600      | 3000           | Database  | ✅               |
 | MySQL Workbench Equivalent     | mysqlworkbench.termitetowers.ca  | 3620      | TBD            | Database  | 🕒 Planned       |
@@ -192,7 +192,7 @@ Content & Documentation (3200-3299):
 3230 - File sharing (future)
 Home Automation & Daily Tools (3300-3399):
 
-3300 - KitchenOwl (keep as-is)
+
 3310 - Home Dashboard (Homarr)
 3320 - Calendar/Planning tools (future)
 3330 - Note-taking apps (future)
@@ -208,8 +208,7 @@ Media & Entertainment (3400-3499):
 Security & Secrets (3500-3599):
 
 3500 - Vault (Infisical)
-3510 - SOPS Interface
-3520 - ESO (External Secrets Operator)
+
 3530 - Auth/SSO services (future)
 3540 - Certificate management (future)
 Databases & Data (3600-3699):
