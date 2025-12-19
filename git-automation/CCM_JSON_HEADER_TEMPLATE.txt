@@ -1,0 +1,5 @@
+# # %git_commit_history: 2025-09-06 mpegg  hook final alpha v0.1  %  
+# %git_commit_history: 2025-09-06 mpegg  hook final alpha v0.1  % 
+##TEMPLATE_ASIS
+##COMMIT_HISTORY: "%git_commit_history": "$DATE $AUTHOR $MESSAGE",
+##HISTORY_ASIS

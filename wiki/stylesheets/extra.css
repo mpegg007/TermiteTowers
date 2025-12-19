@@ -1,27 +1,5 @@
-/*//  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-//  %ccm_git_repo: TermiteTowers %
-//  %ccm_git_branch: dev1 %
-//  %ccm_git_object_id: wiki/stylesheets/extra.css:125 %
-//  %ccm_git_author: mpegg %
-//  %ccm_git_author_email: mpegg@hotmail.com %
-//  %ccm_git_blob_sha: 6bd010b5287bae452b530cc7f1226ca252787356 %
-//  %ccm_git_commit_id: c1f5aa954a589e43600caffa76969fcd4a57b2f1 %
-//  %ccm_git_commit_count: 125 %
-//  %ccm_git_commit_date: 2025-12-15 10:05:29 -0500 %
-//  %ccm_git_commit_author: mpegg %
-//  %ccm_git_commit_email: mpegg@hotmail.com %
-//  %ccm_git_commit_message: monday drop %
-//  %ccm_git_modify_date: 2025-12-15 10:05:41 %
-//  %ccm_git_file_last_modified: 2025-12-13 13:50:27 %
-//  %ccm_git_file_name: extra.css %
-//  %ccm_git_path: wiki/stylesheets/extra.css %
-//  %ccm_git_language_mode: css %
-//  %ccm_git_file_type: text/plain %
-//  %ccm_git_file_encoding: us-ascii %
-//  %ccm_git_file_eol: CRLF %
-//  %ccm_git_exec: no %
-//  %ccm_git_size: 838 %
-//  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  */
+/*// # %git_commit_history: 2025-09-06 mpegg  hook final alpha v0.1  %  */
+/*// %git_commit_history: 2025-12-15 mpegg  monday drop  % */
 /* Override Material theme's default content width constraint */
 .md-grid {
     max-width: 98% !important;
@@ -32,20 +10,20 @@
 }
 
 /* Force tables to use full width and be scrollable */
+/* Removed custom table display properties that were breaking column alignment */
 .md-typeset table {
-    display: block !important;
     width: 100% !important;
     max-width: 100% !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch;
 }
 
+/* 
 .md-typeset tbody,
 .md-typeset thead {
     display: table !important;
     width: 100% !important;
     table-layout: auto !important;
-}
+} 
+*/
 
 .md-typeset table::-webkit-scrollbar {
     height: 10px;

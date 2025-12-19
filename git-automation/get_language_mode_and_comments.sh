@@ -33,7 +33,7 @@ ext="${file##*.}"
 if [ "$filename" = "$ext" ]; then
     ext=""
 fi
-mode="" block_start="" block_end="" line_comment=""
+mode="" block_start="" block_end="" line_comment="" line_end="" template_file=""
 
 # 1. Check for language mode override from command line argument
 if [ "${VSCODE_LANGUAGE_MODE}" != "" ]; then
@@ -158,7 +158,6 @@ case "$mode" in
     shellscript|bash|zsh|ksh) line_comment="#" ;;
     python) line_comment="#" ;;
     javascript|typescript|javascriptreact|typescriptreact) line_comment="//"; block_start="/*"; block_end="*/" ;;
-    json) line_comment="//"; block_start="/*"; block_end="*/" ;;
     markdown) block_start="<!--"; block_end="-->" ;;
     yaml|yml) line_comment="#" ;;
     xml|html|htm|svg) block_start="<!--"; block_end="-->" ;;
@@ -182,12 +181,14 @@ case "$mode" in
     properties|conf|config) line_comment="#" ;;
     ini) line_comment=";" ;;
     toml) line_comment="#" ;;
-    terraform) line_comment="#"; block_start="/*"; block_end="*/" ;;
+    terraform|tf) line_comment="#"; block_start="/*"; block_end="*/" ;;
+    bicep) line_comment="//"; block_start="/*"; block_end="*/" ;;
     dart) line_comment="//"; block_start="/*"; block_end="*/" ;;
     kotlin) line_comment="//"; block_start="/*"; block_end="*/" ;;
     graphql) line_comment="#" ;;
     plaintext) line_comment="#" ;;
+    json) template_file="CCM_JSON_HEADER_TEMPLATE.txt" ;;
     *) line_comment="#" ;;
 esac
 
-echo "$mode|$block_start|$block_end|$line_comment"
+echo "$mode|$block_start|$block_end|$line_comment|$line_end|$template_file"

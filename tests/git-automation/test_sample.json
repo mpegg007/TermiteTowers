@@ -1,0 +1,16 @@
+{
+# # %git_commit_history: 2025-09-06 mpegg  hook final alpha v0.1  %  
+# %git_commit_history: 2025-09-06 mpegg  hook final alpha v0.1  % 
+"%git_commit_history": "  directive test message",
+ "%ccm_git_commit_message": "directive test message",
+  "name": "test-project",
+  "version": "1.0.0",
+  "description": "A test JSON file for CCM header insertion",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
+
+

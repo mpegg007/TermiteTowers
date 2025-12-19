@@ -88,11 +88,17 @@ remove_ccm_header() {
     local file="$1"
     # Rename commit message field before removing header lines
         local tmpfile="${file}.tmp"
-        sed -E \
+        
+        # Base sed command for all files
+        # NOTE: We do NOT remove %git_commit_history lines - they accumulate as a history trail
+        local sed_cmd=(sed -E \
             -e '/^.{0,9}%ccm_.*: .* %/d' \
             -e '/^.{0,9}% ccm_.*: .* %/d' \
             -e '/^.{0,9}TermiteTowers Continuous Code Management Header TEMPLATE/d' \
-            -e '/^.{0,9}tt-ccm.header.end/d' "$file" > "$tmpfile"
+            -e '/^.{0,9}tt-ccm.header.end/d')
+
+        "${sed_cmd[@]}" "$file" > "$tmpfile"
+        
         if cmp -s "$file" "$tmpfile"; then
             echo "[WARN] No header lines removed from $file" >> "$LOG_FILE"
             rm -f "$tmpfile"
@@ -111,14 +117,60 @@ insert_ccm_header() {
     local block_start="$4"
     local block_end="$5"
     local line_comment="$6"
+    local line_end="$7"
+    local template_file="$8"
 
     # Scan file for first commit message before header removal
     local preserved_commit_message
-    preserved_commit_message=$(grep -m1 '%ccm_git_commit_message:' "$file" | sed 's/^.*%ccm_git_commit_message: //;s/ %.*$//' || echo "")
+    local line
+    line=$(grep -m1 '%ccm_git_commit_message' "$file" || echo "")
+    if [[ "$line" =~ %ccm_git_commit_message\":[[:space:]]*\"([^\"]*)\" ]]; then
+        # JSON format: "key": "value"
+        preserved_commit_message="${BASH_REMATCH[1]}"
+    elif [[ "$line" =~ %ccm_git_commit_message:[[:space:]]*([^%]*)[[:space:]]*% ]]; then
+        # Standard format: key: value %
+        preserved_commit_message="${BASH_REMATCH[1]}"
+    else
+        preserved_commit_message=""
+    fi
+    
+    # Extract commit date from header (just the date portion YYYY-MM-DD)
+    local preserved_commit_date=""
+    line=$(grep -m1 '%ccm_git_commit_date' "$file" || echo "")
+    if [[ "$line" =~ %ccm_git_commit_date\":[[:space:]]*\"([^\"]*)\" ]]; then
+        preserved_commit_date="${BASH_REMATCH[1]}"
+    elif [[ "$line" =~ %ccm_git_commit_date:[[:space:]]*([^%]*)[[:space:]]*% ]]; then
+        preserved_commit_date="${BASH_REMATCH[1]}"
+    fi
+    # Extract just YYYY-MM-DD from date string
+    if [[ "$preserved_commit_date" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2}) ]]; then
+        preserved_commit_date="${BASH_REMATCH[1]}"
+    fi
+    
+    # Extract commit author from header
+    local preserved_commit_author=""
+    line=$(grep -m1 '%ccm_git_commit_author' "$file" || echo "")
+    if [[ "$line" =~ %ccm_git_commit_author\":[[:space:]]*\"([^\"]*)\" ]]; then
+        preserved_commit_author="${BASH_REMATCH[1]}"
+    elif [[ "$line" =~ %ccm_git_commit_author:[[:space:]]*([^%]*)[[:space:]]*% ]]; then
+        preserved_commit_author="${BASH_REMATCH[1]}"
+    fi
+    
     local history_commit_message
-    history_commit_message=$(grep -m1 '%git_commit_history:' "$file" | sed 's/^.*%git_commit_history: //;s/ %.*$//' || echo "")
+    line=$(grep -m1 '%git_commit_history' "$file" || echo "")
+    if [[ "$line" =~ %git_commit_history\":[[:space:]]*\"([^\"]*)\" ]]; then
+        # JSON format: "key": "value"
+        history_commit_message="${BASH_REMATCH[1]}"
+    elif [[ "$line" =~ %git_commit_history:[[:space:]]*([^%]*)[[:space:]]*% ]]; then
+        # Standard format: key: value %
+        history_commit_message="${BASH_REMATCH[1]}"
+    else
+        history_commit_message=""
+    fi
 
     echo "[DEBUG] Found preserved_commit_message='$preserved_commit_message' for $file" >> "$LOG_FILE"
+    echo "[DEBUG] Found preserved_commit_date='$preserved_commit_date' for $file" >> "$LOG_FILE"
+    echo "[DEBUG] Found preserved_commit_author='$preserved_commit_author' for $file" >> "$LOG_FILE"
     echo "[DEBUG] Found history_commit_message='$history_commit_message' for $file" >> "$LOG_FILE"
 
     # Only preserve if not "unknown"
@@ -152,8 +204,34 @@ insert_ccm_header() {
     file_path="$rel_path"
 
     # Format header with block and line comments
+    local current_template="$TEMPLATE_FILE"
+    if [ -n "$template_file" ]; then
+        current_template="$REPO_ROOT/git-automation/$template_file"
+    fi
+
     tmp_header=$(mktemp)
-    cp "$TEMPLATE_FILE" "$tmp_header"
+    cp "$current_template" "$tmp_header"
+    
+    # Parse template directives
+    local template_asis=""
+    local history_asis=""
+    local commit_history_format=""
+    
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^##TEMPLATE_ASIS ]]; then
+            template_asis="yes"
+        elif [[ "$line" =~ ^##HISTORY_ASIS ]]; then
+            history_asis="yes"
+        elif [[ "$line" =~ ^##COMMIT_HISTORY:[[:space:]]*(.*) ]]; then
+            commit_history_format="${BASH_REMATCH[1]}"
+        fi
+    done < "$tmp_header"
+    
+    echo "[DEBUG] Template directives: template_asis='$template_asis', history_asis='$history_asis', commit_history_format='$commit_history_format'" >> "$LOG_FILE"
+    
+    # Remove directive lines from template
+    sed -i '/^##TEMPLATE_ASIS$/d; /^##HISTORY_ASIS$/d; /^##COMMIT_HISTORY:/d' "$tmp_header"
+    
     formatted_header=$(mktemp)
     header_lines=()
     while IFS= read -r line; do
@@ -164,22 +242,41 @@ insert_ccm_header() {
     {
         for i in "${!header_lines[@]}"; do
             out_line="${header_lines[$i]}"
-            # Prepend block_start and line_comment to first line (no space between)
-            if [ "$i" -eq 0 ]; then
-                out_line="${block_start}${line_comment} $out_line"
+            # Apply block_start/line_comment/block_end only if NOT template_asis
+            if [ "$template_asis" = "yes" ]; then
+                # Insert as-is
+                echo "$out_line"
             else
-                out_line="$line_comment $out_line"
+                # Prepend block_start and line_comment to first line (no space between)
+                if [ "$i" -eq 0 ]; then
+                    out_line="${block_start}${line_comment} $out_line"
+                else
+                    out_line="$line_comment $out_line"
+                fi
+                # Append block_end to last line
+                if [ "$i" -eq $((${#header_lines[@]}-1)) ]; then
+                    out_line="$out_line $block_end"
+                fi
+                # Append line_end if specified
+                if [ -n "$line_end" ]; then
+                    out_line="$out_line$line_end"
+                fi
+                echo "$out_line"
             fi
-            # Append block_end to last line
-            if [ "$i" -eq $((${#header_lines[@]}-1)) ]; then
-                out_line="$out_line $block_end"
-            fi
-            echo "$out_line"
         done
         # Add preserved commit message as a single line after header block
-        if [ -n "$preserved_commit_message" ]; then
-            echo "${block_start}${line_comment} %git_commit_history: $preserved_commit_message % $block_end"
-            echo "[DEBUG] Preserved commit message inserted for $file" >> "$LOG_FILE"
+        if [ -n "$preserved_commit_message" ] && [ -n "$commit_history_format" ]; then
+            # Use the template-defined format and substitute placeholders
+            history_line="${commit_history_format}"
+            history_line="${history_line//\$MESSAGE/$preserved_commit_message}"
+            history_line="${history_line//\$DATE/$preserved_commit_date}"
+            history_line="${history_line//\$AUTHOR/$preserved_commit_author}"
+            if [ "$history_asis" = "yes" ]; then
+                echo "$history_line"
+            else
+                echo "${block_start}${line_comment} $history_line $block_end"
+            fi
+            echo "[DEBUG] Preserved commit message inserted for $file using format: $commit_history_format" >> "$LOG_FILE"
         else
             echo "[DEBUG] No preserved commit message inserted for $file" >> "$LOG_FILE"
         fi
@@ -216,6 +313,8 @@ insert_ccm_header() {
     if head -n 1 "$file" | grep -q '^#!'; then
         { head -n 1 "$file"; cat "$formatted_header"; tail -n +2 "$file"; } > "$file.new"
     elif echo "$first_line" | grep -qiE '^(#!|# yaml-language-server:|# *coding[:=]|# *-\*- coding:|<\?xml|<!DOCTYPE html|<\?php)'; then
+        { echo "$first_line"; cat "$formatted_header"; tail -n +2 "$file"; } > "$file.new"
+    elif [[ "$file" == *.json ]] && echo "$first_line" | grep -q '^{'; then
         { echo "$first_line"; cat "$formatted_header"; tail -n +2 "$file"; } > "$file.new"
     elif [[ "$file" == *.bat || "$file" == *.cmd ]]; then
         { pseudo_shebang_for_batch "$file"; cat "$formatted_header"; tail -n +2 "$file"; } > "$file.new"
@@ -316,10 +415,10 @@ for FILE in "${FILES_TO_PROCESS[@]}"; do
             ;;
     esac
     
-    IFS='|' read -r lang_mode block_start block_end line_comment <<< "$(bash "$REPO_ROOT/git-automation/get_language_mode_and_comments.sh" "$FILE")"
-    echo "[INFO] Language mode: $lang_mode, block_start: $block_start, block_end: $block_end, line_comment: $line_comment" >> "$LOG_FILE"
+    IFS='|' read -r lang_mode block_start block_end line_comment line_end template_file <<< "$(bash "$REPO_ROOT/git-automation/get_language_mode_and_comments.sh" "$FILE")"
+    echo "[INFO] Language mode: $lang_mode, block_start: $block_start, block_end: $block_end, line_comment: $line_comment, line_end: $line_end, template_file: $template_file" >> "$LOG_FILE"
 
-    insert_ccm_header "$FILE" "$REL_PATH" "$lang_mode" "$block_start" "$block_end" "$line_comment"
+    insert_ccm_header "$FILE" "$REL_PATH" "$lang_mode" "$block_start" "$block_end" "$line_comment" "$line_end" "$template_file"
     if [ $? -ne 0 ]; then
         echo "[WARN] Failed to insert CCM header for $FILE, skipping file" >> "$LOG_FILE"
         continue

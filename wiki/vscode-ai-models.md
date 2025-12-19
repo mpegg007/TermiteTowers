@@ -1,27 +1,5 @@
-<!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-  %ccm_git_repo: TermiteTowers %
-  %ccm_git_branch: dev1 %
-  %ccm_git_object_id: wiki/vscode-ai-models.md:125 %
-  %ccm_git_author: mpegg %
-  %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: a99dd5ade8082c746722c647b16cb2aab7e7d15b %
-  %ccm_git_commit_id: c1f5aa954a589e43600caffa76969fcd4a57b2f1 %
-  %ccm_git_commit_count: 125 %
-  %ccm_git_commit_date: 2025-12-15 10:05:29 -0500 %
-  %ccm_git_commit_author: mpegg %
-  %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: monday drop %
-  %ccm_git_modify_date: 2025-12-15 10:05:42 %
-  %ccm_git_file_last_modified: 2025-12-15 10:05:42 %
-  %ccm_git_file_name: vscode-ai-models.md %
-  %ccm_git_path: wiki/vscode-ai-models.md %
-  %ccm_git_language_mode: markdown %
-  %ccm_git_file_type: text/plain %
-  %ccm_git_file_encoding: utf-8 %
-  %ccm_git_file_eol: CRLF %
-  %ccm_git_exec: no %
-  %ccm_git_size: 18214 %
-  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- # %git_commit_history: 2025-09-06 mpegg  hook final alpha v0.1  %  -->
+<!-- %git_commit_history: 2025-12-15 mpegg  monday drop  % -->
 <!-- %git_commit_history: friday checkin % -->
 # AI Models Available in GitHub Copilot (VS Code)
 
@@ -50,30 +28,30 @@
 
 ## Local Models (Via Ollama or Other Extensions)
 
-| Model Name | Downloaded | Released | Professor | Subject | Student | Min VRAM | Fits 16GB | Sweet Spot | Speed | Code Changes | Understanding | Autopilot | Strengths | Weaknesses |
-| :--- | :---: | :---: | :--- | :--- | :--- | :--- | :---: | :---: | :--- | :---: | :---: | :---: | :--- | :--- |
-| **DeepSeek-R1 (8B)** | ✅ | 2025 | DeepSeek-R1 | Liberal Arts | Llama 3.1 | 6GB | ✅ | ✅ **Rec** | Fast | ✅ | ✅✅ | ❌ | Great reasoning + natural language | Less code-specialized than Qwen |
-| **DeepSeek-R1 (7B)** | ✅ | 2025 | DeepSeek-R1 | STEM | Qwen 2.5 | 5GB | ✅ | ✅ **Rec** | Fast | ✅ | ✅✅ | ❌ | Excellent logic & math reasoning | Can be terse |
-| **Qwen2.5-Coder (32B)** | ❌ | 2024 | Qwen | Coding | Qwen 2.5 | 20GB | ❌ | ❌ | Slow | ✅ | ✅ | ❌ | Strong code generation | Too big for 16GB VRAM |
-| **Qwen2.5-Coder (14B)** | ✅ | 2024 | Qwen | Coding | Qwen 2.5 | 10GB | ✅ | ✅ **Rec** | Medium | ✅ | ✅ | ❌ | Good balance of speed/capability | Mid-tier performance |
-| **Qwen2.5-Coder (7B)** | ❌ | 2024 | Qwen | Coding | Qwen 2.5 | 6GB | ✅ | ⚠️ | Fast | ✅ | ✅ | ❌ | Efficient, fast | Less capable than 14B |
-| **Qwen2.5-Coder (1.5B)**| ❌ | 2024 | Qwen | Coding | Qwen 2.5 | 2GB | ✅ | ❌ | V.Fast | ⚠️ | ⚠️ | ❌ | Very fast | Weak code quality |
-| **Qwen2.5 (32B)** | ✅ | 2024 | Qwen | STEM | Qwen 2.5 | 20GB | ❌ | ❌ | Slow | ✅ | ✅ | ❌ | Very smart, large knowledge base | Too big for 16GB VRAM |
-| **DeepSeek-Coder-V2 (236B)**| ❌ | 2024 | DeepSeek | Coding | DeepSeek-V2 | 150GB+| ❌ | ❌ | V.Slow | ✅✅ | ✅✅ | ❌ | Near GPT-4 level | Massive hardware reqs |
-| **DeepSeek-Coder-V2 (16B)** | ✅ | 2024 | DeepSeek | Coding | DeepSeek-V2 | 12GB | ✅ | ✅ **Rec** | Medium | ✅✅ | ✅ | ❌ | Strong code, fill-in-middle | No tool calling |
-| **DeepSeek-Coder-V2 (6.7B)**| ❌ | 2024 | DeepSeek | Coding | DeepSeek-V2 | 5GB | ✅ | ⚠️ | Fast | ✅ | ✅ | ❌ | Fast, efficient | Less capable than 16B |
-| **DeepSeek-Coder-V2 (1.3B)**| ❌ | 2024 | DeepSeek | Coding | DeepSeek-V2 | 2GB | ✅ | ❌ | V.Fast | ⚠️ | ⚠️ | ❌ | Very fast | Weak code quality |
-| **CodeLlama (70B)** | ❌ | 2023 | Meta | Coding | Llama 2 | 48GB+ | ❌ | ❌ | V.Slow | ✅ | ✅ | ❌ | Strong capabilities | Very high hardware reqs |
-| **CodeLlama (34B)** | ❌ | 2023 | Meta | Coding | Llama 2 | 22GB | ❌ | ❌ | Slow | ✅ | ✅ | ❌ | Better than 13B | High hardware reqs |
-| **CodeLlama (13B)** | ❌ | 2023 | Meta | Coding | Llama 2 | 9GB | ✅ | ✅ | Medium | ✅ | ✅ | ❌ | Good code completion | Older model |
-| **CodeLlama (7B)** | ❌ | 2023 | Meta | Coding | Llama 2 | 5GB | ✅ | ⚠️ | Fast | ✅ | ✅ | ❌ | Fast, efficient | Less capable than 13B |
-| **StarCoder2 (15B)** | ❌ | 2024 | BigCode | Coding | StarCoder2 | 10GB | ✅ | ✅ | Medium | ✅ | ✅ | ❌ | Better than 7B | Limited context |
-| **StarCoder2 (7B)** | ❌ | 2024 | BigCode | Coding | StarCoder2 | 5GB | ✅ | ⚠️ | Fast | ✅ | ✅ | ❌ | Fast, efficient | Limited capabilities |
-| **StarCoder2 (3B)** | ❌ | 2024 | BigCode | Coding | StarCoder2 | 3GB | ✅ | ❌ | V.Fast | ⚠️ | ✅ | ❌ | Very fast | Limited capabilities |
-| **Phi-3.5 (3.8B)** | ❌ | 2024 | Microsoft | Math/Logic | Phi-3 | 4GB | ✅ | ❌ | V.Fast | ⚠️ | ✅ | ❌ | Lightweight, CPU friendly | Limited capabilities |
-| **Llama 3.1 (70B)** | ❌ | 2024 | Meta | General | Llama 3.1 | 48GB+ | ❌ | ❌ | V.Slow | ⚠️ | ✅ | ❌ | Strong reasoning | Not code-specialized |
-| **Llama 3.1 (8B)** | ✅ | 2024 | Meta | General | Llama 3.1 | 6GB | ✅ | ⚠️ | Fast | ⚠️ | ✅ | ❌ | General purpose | Not code-specialized |
-| **Hermes 3 (8B)** | ✅ | 2024 | Nous Research | Creative/Roleplay | Llama 3.1 | 6GB | ✅ | ✅ **Rec** | Fast | ⚠️ | ✅ | ❌ | Uncensored, creative, follows instructions | Can hallucinate on strict logic |
+| Model | DL | Released | Context | Trainer | Focus | Base | VRAM | Fits | Rec? | Speed | Code | Und. | Auto | Strengths | Weaknesses |
+| :--- | :---: | :---: | :---: | :--- | :--- | :--- | :--- | :---: | :---: | :--- | :---: | :---: | :---: | :--- | :--- |
+| **DeepSeek-R1 (8B)** | ✅ | 2025 | 128K | DeepSeek-R1 | Liberal Arts | Llama 3.1 | 6GB | ✅ | ✅ | Fast | ✅ | ✅✅ | ❌ | Great reasoning + natural language | Less code-specialized than Qwen |
+| **DeepSeek-R1 (7B)** | ✅ | 2025 | 128K | DeepSeek-R1 | STEM | Qwen 2.5 | 5GB | ✅ | ✅ | Fast | ✅ | ✅✅ | ❌ | Excellent logic & math reasoning | Can be terse |
+| **Qwen2.5-Coder (32B)** | ❌ | 2024 | 128K | Qwen | Coding | Qwen 2.5 | 20GB | ❌ | ❌ | Slow | ✅ | ✅ | ❌ | Strong code generation | Too big for 16GB VRAM |
+| **Qwen2.5-Coder (14B)** | ✅ | 2024 | 128K | Qwen | Coding | Qwen 2.5 | 10GB | ✅ | ✅ | Medium | ✅ | ✅ | ❌ | Good balance of speed/capability | Mid-tier performance |
+| **Qwen2.5-Coder (7B)** | ❌ | 2024 | 128K | Qwen | Coding | Qwen 2.5 | 6GB | ✅ | ⚠️ | Fast | ✅ | ✅ | ❌ | Efficient, fast | Less capable than 14B |
+| **Qwen2.5-Coder (1.5B)**| ❌ | 2024 | 128K | Qwen | Coding | Qwen 2.5 | 2GB | ✅ | ❌ | V.Fast | ⚠️ | ⚠️ | ❌ | Very fast | Weak code quality |
+| **Qwen2.5 (32B)** | ✅ | 2024 | 128K | Qwen | STEM | Qwen 2.5 | 20GB | ❌ | ❌ | Slow | ✅ | ✅ | ❌ | Very smart, large knowledge base | Too big for 16GB VRAM |
+| **DeepSeek-Coder-V2 (236B)**| ❌ | 2024 | 128K | DeepSeek | Coding | DeepSeek-V2 | 150GB+| ❌ | ❌ | V.Slow | ✅✅ | ✅✅ | ❌ | Near GPT-4 level | Massive hardware reqs |
+| **DeepSeek-Coder-V2 (16B)** | ✅ | 2024 | 128K | DeepSeek | Coding | DeepSeek-V2 | 12GB | ✅ | ✅ | Medium | ✅✅ | ✅ | ❌ | Strong code, fill-in-middle | No tool calling |
+| **DeepSeek-Coder-V2 (6.7B)**| ❌ | 2024 | 128K | DeepSeek | Coding | DeepSeek-V2 | 5GB | ✅ | ⚠️ | Fast | ✅ | ✅ | ❌ | Fast, efficient | Less capable than 16B |
+| **DeepSeek-Coder-V2 (1.3B)**| ❌ | 2024 | 128K | DeepSeek | Coding | DeepSeek-V2 | 2GB | ✅ | ❌ | V.Fast | ⚠️ | ⚠️ | ❌ | Very fast | Weak code quality |
+| **CodeLlama (70B)** | ❌ | 2023 | 100K | Meta | Coding | Llama 2 | 48GB+ | ❌ | ❌ | V.Slow | ✅ | ✅ | ❌ | Strong capabilities | Very high hardware reqs |
+| **CodeLlama (34B)** | ❌ | 2023 | 100K | Meta | Coding | Llama 2 | 22GB | ❌ | ❌ | Slow | ✅ | ✅ | ❌ | Better than 13B | High hardware reqs |
+| **CodeLlama (13B)** | ❌ | 2023 | 100K | Meta | Coding | Llama 2 | 9GB | ✅ | ✅ | Medium | ✅ | ✅ | ❌ | Good code completion | Older model |
+| **CodeLlama (7B)** | ❌ | 2023 | 100K | Meta | Coding | Llama 2 | 5GB | ✅ | ⚠️ | Fast | ✅ | ✅ | ❌ | Fast, efficient | Less capable than 13B |
+| **StarCoder2 (15B)** | ❌ | 2024 | 16K | BigCode | Coding | StarCoder2 | 10GB | ✅ | ✅ | Medium | ✅ | ✅ | ❌ | Better than 7B | Limited context |
+| **StarCoder2 (7B)** | ❌ | 2024 | 16K | BigCode | Coding | StarCoder2 | 5GB | ✅ | ⚠️ | Fast | ✅ | ✅ | ❌ | Fast, efficient | Limited capabilities |
+| **StarCoder2 (3B)** | ❌ | 2024 | 16K | BigCode | Coding | StarCoder2 | 3GB | ✅ | ❌ | V.Fast | ⚠️ | ✅ | ❌ | Very fast | Limited capabilities |
+| **Phi-3.5 (3.8B)** | ❌ | 2024 | 128K | Microsoft | Math/Logic | Phi-3 | 4GB | ✅ | ❌ | V.Fast | ⚠️ | ✅ | ❌ | Lightweight, CPU friendly | Limited capabilities |
+| **Llama 3.1 (70B)** | ❌ | 2024 | 128K | Meta | General | Llama 3.1 | 48GB+ | ❌ | ❌ | V.Slow | ⚠️ | ✅ | ❌ | Strong reasoning | Not code-specialized |
+| **Llama 3.1 (8B)** | ✅ | 2024 | 128K | Meta | General | Llama 3.1 | 6GB | ✅ | ⚠️ | Fast | ⚠️ | ✅ | ❌ | General purpose | Not code-specialized |
+| **Hermes 3 (8B)** | ✅ | 2024 | 128K | Nous Research | Creative/Roleplay | Llama 3.1 | 6GB | ✅ | ✅ | Fast | ⚠️ | ✅ | ❌ | Uncensored, creative, follows instructions | Can hallucinate on strict logic |
 
 ## Column Definitions
 
@@ -101,23 +79,16 @@
 
 ### Local Models
 
-- **Downloaded**: ✅ = Installed and ready to use on your machine
-- **Professor**: The "Teacher" model or creator (e.g., DeepSeek-R1, Meta)
-- **Subject**: The model's specialization (e.g., STEM, Liberal Arts, Coding)
-- **Student**: The base architecture receiving the knowledge (e.g., Qwen, Llama)
-- **Min VRAM**: Minimum GPU memory needed (assumes 4-bit/8-bit quantized models)
-- **Fits 16GB**: Can this model run on your RTX 5060 Ti (16GB VRAM)
-- **Sweet Spot**: Best models for your hardware (✅ = Recommended, ⚠️ = Alternative if you need speed)
-- **Speed**: Relative inference speed on your hardware
-  - **Why it matters**: Faster = quicker responses, but usually less capable. Medium speed models offer best quality/speed balance.
-  - **V.Fast** = Near-instant responses (<1s)
-  - **Fast** = Quick responses (1-3s)
-  - **Medium** = Balanced (3-8s) - **Best for most tasks**
-  - **Slow** = Longer waits (8-15s)
-  - **V.Slow** = Very long waits (15s+)
-- **Code Changes**: How well the model generates/modifies code
-- **Understanding**: How well the model comprehends existing code
-- **Autopilot**: ❌ for all local models (lack tool calling and VS Code integration)
+- **DL**: Downloaded (✅ = Installed)
+- **Trainer** (Professor): The model creator (e.g., DeepSeek-R1, Meta)
+- **Focus** (Subject): The model's specialization (e.g., STEM, Liberal Arts, Coding)
+- **Base** (Student): The base architecture (e.g., Qwen, Llama)
+- **VRAM**: Minimum GPU memory needed
+- **Fits**: Fits 16GB VRAM?
+- **Rec?** (Sweet Spot): Recommended for your hardware?
+- **Code**: Code Generation capability
+- **Und.**: Code Understanding capability
+- **Auto**: Autopilot capability (❌ for all local models)
 
 **Notes:**
 
@@ -133,6 +104,14 @@
 - Models marked **(Preview)** are experimental and may have limited availability or stability.
 - **VRAM requirements** assume quantized models (e.g., 4-bit or 8-bit); full precision requires 2-4x more VRAM.
 - Local models require Ollama, LM Studio, or similar tools, plus extensions like Continue.
+
+## Understanding the "Lineage" Columns (Trainer, Focus, Base)
+
+Just like people, AI models have a "Nature" (Base) and "Nurture" (Trainer/Focus). We have split the detailed definitions into separate pages for clarity:
+
+*   **[The Trainers (The Universities)](ai-models/trainers.md)**: Who taught the model? (Meta, DeepSeek, Qwen, etc.)
+*   **[The Subjects (The Focus)](ai-models/subjects.md)**: What is the model's major? (STEM, Coding, Creative, etc.)
+*   **[The Bases (The Students)](ai-models/bases.md)**: What is the underlying architecture? (Llama 3.1, Qwen 2.5, etc.)
 
 ## Model Recommendations by Task (Based on Experience)
 
