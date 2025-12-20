@@ -5,15 +5,15 @@
 #  %ccm_git_object_id: git-automation/enhanced-post-commit.sh:85 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 818b10f80f16e03e7862112837844d98e3d5cff1 %
-#  %ccm_git_commit_id: 6ed8d9d5fb6be216e7e0f9c5e931d0b5364b8a67 %
-#  %ccm_git_commit_count: 85 %
-#  %ccm_git_commit_date: 2025-09-06 12:09:11 -0400 %
+#  %ccm_git_blob_sha: 33d947cedafd31db9727a02ef68c77b24b11676d %
+#  %ccm_git_commit_id: 9a5d759366246b925a62863adec0b1df8cc2d5b1 %
+#  %ccm_git_commit_count: 127 %
+#  %ccm_git_commit_date: 2025-12-18 21:32:12 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: git-automation cleanup %
-#  %ccm_git_modify_date: 2025-09-06 12:02:06 %
-#  %ccm_git_file_last_modified: 2025-09-06 11:52:11 %
+#  %ccm_git_commit_message: cleanup %
+#  %ccm_git_modify_date: 2025-12-20 17:38:02 %
+#  %ccm_git_file_last_modified: 2025-12-19 17:18:58 %
 #  %ccm_git_file_name: enhanced-post-commit.sh %
 #  %ccm_git_path: git-automation/enhanced-post-commit.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,7 +21,7 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 10950 %
+#  %ccm_git_size: 7952 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 
 set -euo pipefail
@@ -97,10 +97,19 @@ echo "[DEBUG] FILES_TO_PROCESS: ${FILES_TO_PROCESS[*]}" >> "$LOG_FILE"
 for FILE in "${FILES_TO_PROCESS[@]}"; do
   
   # --- CRITICAL: Never process hook files or git-automation scripts ---
+  # Exception: Allow processing git-automation scripts if explicitly requested (GIT_MODE=N)
   case "$FILE" in
-    git-automation/*.sh|.git/hooks/*)
-      echo "[INFO] SAFETY: Skipping $FILE (hook/automation script - never process)" >> "$LOG_FILE"
+    git-automation/CCM_*_TEMPLATE.txt|.git/hooks/*)
+      echo "[INFO] SAFETY: Skipping $FILE (template/hook - never process)" >> "$LOG_FILE"
       continue
+      ;;
+    git-automation/*.sh)
+      if [ "$GIT_MODE" == "Y" ]; then
+          echo "[INFO] SAFETY: Skipping $FILE (automation script - skipped during hook execution)" >> "$LOG_FILE"
+          continue
+      else
+          echo "[INFO] NOTICE: Processing automation script $FILE (explicitly requested)" >> "$LOG_FILE"
+      fi
       ;;
   esac
 

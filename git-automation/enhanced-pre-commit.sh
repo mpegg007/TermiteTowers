@@ -5,15 +5,15 @@
 #  %ccm_git_object_id: git-automation/enhanced-pre-commit.sh:100 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 818b10f80f16e03e7862112837844d98e3d5cff1 %
-#  %ccm_git_commit_id: 043d1161f28704961fc3977112b42f1a9c83dd93 %
-#  %ccm_git_commit_count: 100 %
-#  %ccm_git_commit_date: 2025-10-11 10:56:22 -0400 %
-#  %ccm_git_commit_author: Matthew Pegg %
+#  %ccm_git_blob_sha: 0b8d66e16d03d923b148eb1449417653f3c46f3c %
+#  %ccm_git_commit_id: 9a5d759366246b925a62863adec0b1df8cc2d5b1 %
+#  %ccm_git_commit_count: 127 %
+#  %ccm_git_commit_date: 2025-12-18 21:32:12 -0500 %
+#  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: libre logon fix plus hook rework for win.os %
-#  %ccm_git_modify_date: 2025-09-06 12:02:06 %
-#  %ccm_git_file_last_modified: 2025-09-06 11:52:11 %
+#  %ccm_git_commit_message: cleanup %
+#  %ccm_git_modify_date: 2025-12-20 17:37:44 %
+#  %ccm_git_file_last_modified: 2025-12-19 17:52:49 %
 #  %ccm_git_file_name: enhanced-pre-commit.sh %
 #  %ccm_git_path: git-automation/enhanced-pre-commit.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,7 +21,7 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 10950 %
+#  %ccm_git_size: 19865 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 
 # enhanced-pre-commit.sh: Enhanced pre-commit hook for TermiteTowers
@@ -89,6 +89,9 @@ remove_ccm_header() {
     # Rename commit message field before removing header lines
         local tmpfile="${file}.tmp"
         
+        # Count lines before removal
+        local line_count_before=$(wc -l < "$file")
+        
         # Base sed command for all files
         # NOTE: We do NOT remove %git_commit_history lines - they accumulate as a history trail
         local sed_cmd=(sed -E \
@@ -99,12 +102,23 @@ remove_ccm_header() {
 
         "${sed_cmd[@]}" "$file" > "$tmpfile"
         
+        # Count lines after removal
+        local line_count_after=$(wc -l < "$tmpfile")
+        local lines_removed=$((line_count_before - line_count_after))
+        
+        # Safety check: abort if more than 30 lines removed
+        if [ "$lines_removed" -gt 30 ]; then
+            echo "[ERROR] SAFETY: Would remove $lines_removed lines from $file (expected ~25). Aborting!" >> "$LOG_FILE"
+            rm -f "$tmpfile"
+            return 1
+        fi
+        
         if cmp -s "$file" "$tmpfile"; then
             echo "[WARN] No header lines removed from $file" >> "$LOG_FILE"
             rm -f "$tmpfile"
             return 1
         else
-            mv "$tmpfile" "$file" && echo "[INFO] Header lines removed from $file" >> "$LOG_FILE"
+            mv "$tmpfile" "$file" && echo "[INFO] Header lines removed from $file (removed: $lines_removed)" >> "$LOG_FILE"
             return 0
         fi
 }
@@ -181,6 +195,11 @@ insert_ccm_header() {
     # If both are present and equal, blank out preserved_commit_message
     if [ -n "$preserved_commit_message" ] && [ -n "$history_commit_message" ] && [ "$preserved_commit_message" = "$history_commit_message" ]; then
         echo "[DEBUG] Blanking preserved_commit_message for $file because it matches history_commit_message" >> "$LOG_FILE"
+        preserved_commit_message=""
+    fi
+    # Blank out if message contains only placeholder patterns (dots, asterisks, spaces)
+    if [ -n "$preserved_commit_message" ] && ! [[ "$preserved_commit_message" =~ [A-Za-z0-9] ]]; then
+        echo "[DEBUG] Blanking preserved_commit_message for $file because it contains only placeholders" >> "$LOG_FILE"
         preserved_commit_message=""
     fi
 
@@ -352,32 +371,29 @@ fi
 
 echo "[DEBUG] try_mode set to '$try_mode'" >> "$LOG_FILE"
 
+
 for FILE in "${FILES_TO_PROCESS[@]}"; do
 
-  # --- CRITICAL: Never process hook files or git-automation scripts ---
-  case "$FILE" in
-    git-automation/*.sh|.git/hooks/*)
-      echo "[INFO] SAFETY: Skipping $FILE (hook/automation script - never process)" >> "$LOG_FILE"
-      continue
-      ;;
-  esac
+    # --- CRITICAL: Never process hook files or template files ---
+    case "$FILE" in
+        git-automation/CCM_*_TEMPLATE.txt|.git/hooks/*)
+            echo "[INFO] SAFETY: Skipping $FILE (template/hook - never process)" >> "$LOG_FILE"
+            continue
+            ;;
+        git-automation/*.sh)
+            if [ "${try_mode}" != "--try" ]; then
+                    echo "[INFO] SAFETY: Skipping $FILE (automation script - skipped except with --try)" >> "$LOG_FILE"
+                    continue
+            else
+                    echo "[INFO] NOTICE: Processing automation script $FILE (explicitly requested with --try)" >> "$LOG_FILE"
+            fi
+            ;;
+    esac
 
-  # --- Exclude git-automation folder from processing ---
+  # --- Exclude git-flaged files from processing ---
   if grep -q "tt-hooks.skip-post-commit" "$FILE"; then
     echo "[INFO] Skipping $FILE (contains tt-hooks.skip-post-commit)" >> "$LOG_FILE"
     continue
-  fi
-
-  # Skip files in git-automation folder
-  if [ "${try_mode}" = "--try" ]; then
-    echo "[INFO] --try specified, skipping directory exclusion" >> "$LOG_FILE"
-  else
-    case "$FILE" in
-      git-automation/enhanced-pre-commit.sh|git-automation/enhanced-post-commit.sh)
-        echo "[INFO] Skipping $FILE (in git-automation folder)" >> "$LOG_FILE"
-        continue
-        ;;
-    esac 
   fi
 
     REL_PATH=$(git ls-files --full-name -- "$FILE" 2>/dev/null || echo "$FILE")

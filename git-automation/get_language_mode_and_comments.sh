@@ -5,15 +5,15 @@
 #  %ccm_git_object_id: git-automation/get_language_mode_and_comments.sh:0 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 818b10f80f16e03e7862112837844d98e3d5cff1 %
-#  %ccm_git_commit_id: unknown %
-#  %ccm_git_commit_count: 0 %
-#  %ccm_git_commit_date: 1970-01-01 00:00:00 +0000 %
-#  %ccm_git_commit_author: unknown %
-#  %ccm_git_commit_email: unknown %
-#  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2025-09-06 12:02:06 %
-#  %ccm_git_file_last_modified: 2025-09-06 11:52:11 %
+#  %ccm_git_blob_sha: 232e8466083f7f04c680ab9339bf4e7b00fabd1b %
+#  %ccm_git_commit_id: 9a5d759366246b925a62863adec0b1df8cc2d5b1 %
+#  %ccm_git_commit_count: 127 %
+#  %ccm_git_commit_date: 2025-12-18 21:32:12 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: cleanup %
+#  %ccm_git_modify_date: 2025-12-20 17:38:37 %
+#  %ccm_git_file_last_modified: 2025-12-18 18:49:19 %
 #  %ccm_git_file_name: get_language_mode_and_comments.sh %
 #  %ccm_git_path: git-automation/get_language_mode_and_comments.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,7 +21,7 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 10950 %
+#  %ccm_git_size: 7991 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 
 file="$1"
