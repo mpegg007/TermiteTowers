@@ -372,6 +372,50 @@ fi
 
 echo "[DEBUG] try_mode set to '$try_mode'" >> "$LOG_FILE"
 
+# --- OPTIMIZATION: Batch GitGuardian Scan ---
+if command -v ggshield &> /dev/null; then
+    echo "[INFO] Preparing batch GitGuardian scan..." >> "$LOG_FILE"
+    FILES_FOR_GGSHIELD=()
+    for FILE in "${FILES_TO_PROCESS[@]}"; do
+        # Replicate exclusion logic for safety
+        case "$FILE" in
+            git-automation/CCM_*_TEMPLATE.txt|.git/hooks/*) continue ;;
+            git-automation/*.sh)
+                 if [ "${try_mode}" != "--try" ]; then continue; fi
+                 ;;
+        esac
+        
+        # Skip skip-post-commit marked files
+        if grep -q "tt-hooks.skip-post-commit" "$FILE"; then continue; fi
+        
+        # Skip binary / non-text
+        if file --mime -b "$FILE" 2>/dev/null | grep -qi 'charset=binary'; then continue; fi
+        
+        # Skip example/template files
+        case "$FILE" in
+             *.example|*.example.*|*.template|*.template.*|*.sample|*.sample.*|*-example.*|*-template.*|*-sample.*) continue ;;
+        esac
+        
+        # Skip if bypass marker exists
+        if grep -q "tt-secrets.skip\|tt-ggshield.skip" "$FILE" 2>/dev/null; then continue; fi
+        
+        FILES_FOR_GGSHIELD+=("$FILE")
+    done
+
+    if [ ${#FILES_FOR_GGSHIELD[@]} -gt 0 ]; then
+        echo "[INFO] Running GitGuardian on ${#FILES_FOR_GGSHIELD[@]} files..." >> "$LOG_FILE"
+        # Run scan. If fail, clean up and exit.
+        if ! ggshield secret scan path "${FILES_FOR_GGSHIELD[@]}" >> "$LOG_FILE" 2>&1; then
+             echo "[ERROR] GitGuardian detected secrets! Aborting commit." >> "$LOG_FILE"
+             echo "  ✘ GitGuardian detected secrets. See log for details." >&2
+             exit 1
+        fi
+        echo "[INFO] GitGuardian batch scan passed." >> "$LOG_FILE"
+        export SKIP_GGSHIELD=1
+    else
+        echo "[INFO] No files eligible for GitGuardian scan." >> "$LOG_FILE"
+    fi
+fi
 
 for FILE in "${FILES_TO_PROCESS[@]}"; do
 

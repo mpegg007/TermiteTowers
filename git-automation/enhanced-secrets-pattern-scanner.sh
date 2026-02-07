@@ -88,16 +88,18 @@ for PATTERN_ENTRY in "${PATTERNS[@]}"; do
 done
 
 # --- GGSHIELD SCANNING ---
-if command -v ggshield &> /dev/null; then
+if [ "${SKIP_GGSHIELD:-0}" -ne 1 ] && command -v ggshield &> /dev/null; then
     if ! ggshield secret scan path "$FILE" 2>> "$LOG_FILE" 1>/dev/null; then
         SCAN_FAILED=1
         echo "  ✘ GitGuardian detected secret in: $FILE" >&2
         echo "  ✘ GitGuardian detected secret in: $FILE" >> "$LOG_FILE"
     fi
 else
-    # Only log once at the start, not per-file
-    if [ ! -f "$REPO_ROOT/.ggshield-not-installed-warned" ]; then
+    if [ "${SKIP_GGSHIELD:-0}" -eq 1 ]; then
+             echo "  Previously scanned batch includes $FILE (skipping individual scan)" >> "$LOG_FILE"
+    elif [ ! -f "$REPO_ROOT/.ggshield-not-installed-warned" ]; then
         echo "  ⚠️  ggshield not installed - only custom patterns checked" >> "$LOG_FILE"
+
         echo "  Install with: pip install ggshield" >> "$LOG_FILE"
         touch "$REPO_ROOT/.ggshield-not-installed-warned"
     fi
