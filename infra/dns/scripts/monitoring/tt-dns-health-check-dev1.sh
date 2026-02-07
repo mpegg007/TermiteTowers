@@ -2,27 +2,28 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: unknown %
+#  %ccm_git_object_id: infra/dns/scripts/monitoring/tt-dns-health-check-dev1.sh:130 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
 #  %ccm_git_blob_sha: 506de66303f6c40fa069d7261e2e40c2e1a7d6a9 %
-#  %ccm_git_commit_id: unknown %
-#  %ccm_git_commit_count: unknown %
-#  %ccm_git_commit_date: unknown %
-#  %ccm_git_commit_author: unknown %
-#  %ccm_git_commit_email: unknown %
-#  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2026-02-07 15:39:18 %
-#  %ccm_git_file_last_modified: 2025-12-18 21:00:41 %
+#  %ccm_git_commit_id: 3395da0009f399bd9abd836085b72ec8a4d7f2f3 %
+#  %ccm_git_commit_count: 130 %
+#  %ccm_git_commit_date: 2026-02-07 15:49:15 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: feb2026.1 %
+#  %ccm_git_modify_date: 2026-02-07 15:49:19 %
+#  %ccm_git_file_last_modified: 2026-02-07 15:49:19 %
 #  %ccm_git_file_name: tt-dns-health-check-dev1.sh %
 #  %ccm_git_path: infra/dns/scripts/monitoring/tt-dns-health-check-dev1.sh %
 #  %ccm_git_language_mode: shellscript %
 #  %ccm_git_file_type: text/x-shellscript %
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
-#  %ccm_git_exec: yes %
+#  %ccm_git_exec: no %
 #  %ccm_git_size: 6941 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2026-02-07 mpegg  feb2026  % 
 # # %git_commit_history: 2025-09-06 mpegg  hook final alpha v0.1  %  
 # DNS Health Check Script for Uptime Kuma
 # Returns exit code 0 if healthy, non-zero if problems detected

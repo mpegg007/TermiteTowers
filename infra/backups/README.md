@@ -1,18 +1,18 @@
 <!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
   %ccm_git_repo: TermiteTowers %
   %ccm_git_branch: dev1 %
-  %ccm_git_object_id: unknown %
+  %ccm_git_object_id: infra/backups/README.md:130 %
   %ccm_git_author: mpegg %
   %ccm_git_author_email: mpegg@hotmail.com %
   %ccm_git_blob_sha: 50d9f3cd3420564171b2a1a2da37f662f8903aeb %
-  %ccm_git_commit_id: unknown %
-  %ccm_git_commit_count: unknown %
-  %ccm_git_commit_date: unknown %
-  %ccm_git_commit_author: unknown %
-  %ccm_git_commit_email: unknown %
-  %ccm_git_commit_message: unknown %
-  %ccm_git_modify_date: 2026-02-07 15:39:15 %
-  %ccm_git_file_last_modified: 2026-01-02 18:10:06 %
+  %ccm_git_commit_id: 3395da0009f399bd9abd836085b72ec8a4d7f2f3 %
+  %ccm_git_commit_count: 130 %
+  %ccm_git_commit_date: 2026-02-07 15:49:15 -0500 %
+  %ccm_git_commit_author: mpegg %
+  %ccm_git_commit_email: mpegg@hotmail.com %
+  %ccm_git_commit_message: feb2026.1 %
+  %ccm_git_modify_date: 2026-02-07 15:49:16 %
+  %ccm_git_file_last_modified: 2026-02-07 15:49:16 %
   %ccm_git_file_name: README.md %
   %ccm_git_path: infra/backups/README.md %
   %ccm_git_language_mode: markdown %
@@ -22,6 +22,7 @@
   %ccm_git_exec: no %
   %ccm_git_size: 1370 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- %git_commit_history: 2026-02-07 mpegg  feb2026  % -->
 # Backup Strategy
 
 This directory contains scripts and configuration for backing up applications and services in TermiteTowers.

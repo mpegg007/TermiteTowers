@@ -55,9 +55,10 @@ LOCK_FILE=$(git rev-parse --git-path ccm-post-commit.lock)
 mkdir -p "$LOG_DIR"
 
 # Trigger logrotate check (uses repo-maintained config)
-if [ -f "$LOGROTATE_CONF" ]; then
-    logrotate -s "$LOGROTATE_STATE" "$LOGROTATE_CONF" 2>/dev/null || true
-fi
+# REMOVED: Now handled by system logrotate via /etc/logrotate.d/git-hooks
+# if [ -f "$LOGROTATE_CONF" ]; then
+#     logrotate -s "$LOGROTATE_STATE" "$LOGROTATE_CONF" 2>/dev/null || true
+# fi
 
 # Prevent recursion: if lock exists, skip
 if [ -f "$LOCK_FILE" ]; then

@@ -56,9 +56,10 @@ LOGROTATE_STATE="$HOME/.logrotate.state"
 mkdir -p "$LOG_DIR"
 
 # Trigger logrotate check (uses repo-maintained config)
-if [ -f "$LOGROTATE_CONF" ]; then
-    logrotate -s "$LOGROTATE_STATE" "$LOGROTATE_CONF" 2>/dev/null || true
-fi
+# REMOVED: Now handled by system logrotate via /etc/logrotate.d/git-hooks
+# if [ -f "$LOGROTATE_CONF" ]; then
+#     logrotate -s "$LOGROTATE_STATE" "$LOGROTATE_CONF" 2>/dev/null || true
+# fi
 
 echo "Enhanced pre-commit hook started at $(date)" >> "$LOG_FILE"
 
