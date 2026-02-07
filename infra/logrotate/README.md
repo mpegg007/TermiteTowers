@@ -1,18 +1,18 @@
 <!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
   %ccm_git_repo: TermiteTowers %
   %ccm_git_branch: dev1 %
-  %ccm_git_object_id: infra/logrotate/README.md:125 %
+  %ccm_git_object_id: unknown %
   %ccm_git_author: mpegg %
   %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: 235f25298e05a5a4f4e79f1b08884eda426fcd4a %
-  %ccm_git_commit_id: c1f5aa954a589e43600caffa76969fcd4a57b2f1 %
-  %ccm_git_commit_count: 125 %
-  %ccm_git_commit_date: 2025-12-15 10:05:29 -0500 %
-  %ccm_git_commit_author: mpegg %
-  %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: monday drop %
-  %ccm_git_modify_date: 2025-12-15 10:05:32 %
-  %ccm_git_file_last_modified: 2025-12-15 10:05:32 %
+  %ccm_git_blob_sha: 9f758d2b098eb887cb2d0fc59d2578474b3f06d6 %
+  %ccm_git_commit_id: unknown %
+  %ccm_git_commit_count: unknown %
+  %ccm_git_commit_date: unknown %
+  %ccm_git_commit_author: unknown %
+  %ccm_git_commit_email: unknown %
+  %ccm_git_commit_message: unknown %
+  %ccm_git_modify_date: 2026-02-07 15:39:31 %
+  %ccm_git_file_last_modified: 2026-02-07 15:39:31 %
   %ccm_git_file_name: README.md %
   %ccm_git_path: infra/logrotate/README.md %
   %ccm_git_language_mode: markdown %
@@ -20,8 +20,9 @@
   %ccm_git_file_encoding: utf-8 %
   %ccm_git_file_eol: CRLF %
   %ccm_git_exec: no %
-  %ccm_git_size: 5972 %
+  %ccm_git_size: 7316 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- %git_commit_history: 2025-12-15 mpegg  monday drop  % -->
 <!-- %git_commit_history: cleanup % -->
 <!-- %git_commit_history: logging cleanup % -->
 # Git Hooks Logrotate Integration
@@ -195,6 +196,34 @@ ls -l ~/.logrotate.state
 ```bash
 logrotate -d git-automation/logrotate.conf
 ```
+
+### Systemd-driven rotation (symlink pattern, no copies)
+
+- Source of truth: `/srv/dev1/logrotate/logrotate.conf` and `/srv/dev1/logrotate/logrotate.d/`
+- Units in repo: `/srv/dev1/systemd/tt-logrotate.service` and `/srv/dev1/systemd/tt-logrotate.timer`
+- Deploy by symlinking into `/etc/systemd/system` (no `install`/`cp`):
+
+  ```bash
+  sudo ln -sf /srv/dev1/systemd/tt-logrotate.service /etc/systemd/system/tt-logrotate.service
+  sudo ln -sf /srv/dev1/systemd/tt-logrotate.timer /etc/systemd/system/tt-logrotate.timer
+  sudo systemctl daemon-reload
+  sudo systemctl enable --now tt-logrotate.timer
+  ```
+
+- `ExecStart` runs `/usr/sbin/logrotate -s /var/lib/logrotate/tt.status /srv/dev1/logrotate/logrotate.conf`
+- Verify: `systemctl status tt-logrotate.timer` and `systemctl list-timers --all | grep tt-logrotate`
+
+### System deployment for tt-* logs (no symlinks)
+
+- Keep the source of truth in the repo: `infra/logrotate/logrotate.d/tt-apps.conf`.
+- Deploy to the host by copying (not symlinking) into `/etc/logrotate.d/`:
+
+  ```bash
+  sudo install -m 0644 /home/mpegg-adm/source/TermiteTowers/infra/logrotate/logrotate.d/tt-apps.conf /etc/logrotate.d/tt-apps.conf
+  sudo logrotate -d /etc/logrotate.conf  # dry-run to verify
+  ```
+
+- Re-run the `install` command whenever the repo config changes.
 
 ## Benefits
 

@@ -12,10 +12,10 @@
 #  %ccm_git_commit_author: unknown %
 #  %ccm_git_commit_email: unknown %
 #  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2025-11-30 12:10:15 %
-#  %ccm_git_file_last_modified: 2025-11-30 12:10:15 %
+#  %ccm_git_modify_date: 2026-02-07 15:39:18 %
+#  %ccm_git_file_last_modified: 2026-02-07 15:39:18 %
 #  %ccm_git_file_name: test-dns.sh %
-#  %ccm_git_path: infra/dns/test-dns.sh %
+#  %ccm_git_path: infra/dns/scripts/monitoring/test-dns.sh %
 #  %ccm_git_language_mode: shellscript %
 #  %ccm_git_file_type: text/x-shellscript %
 #  %ccm_git_file_encoding: us-ascii %
@@ -23,6 +23,7 @@
 #  %ccm_git_exec: no %
 #  %ccm_git_size: 875 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2025-11-30 mpegg  november changes  % 
 # DNS Resolution Test Script
 
 echo "=== DNS Resolution Tests ==="

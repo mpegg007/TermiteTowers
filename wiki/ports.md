@@ -1,18 +1,18 @@
 <!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
   %ccm_git_repo: TermiteTowers %
   %ccm_git_branch: dev1 %
-  %ccm_git_object_id: wiki/ports.md:125 %
+  %ccm_git_object_id: unknown %
   %ccm_git_author: mpegg %
   %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: 19f8c091d7b77641f35fd27f434e09c799e831d0 %
-  %ccm_git_commit_id: c1f5aa954a589e43600caffa76969fcd4a57b2f1 %
-  %ccm_git_commit_count: 125 %
-  %ccm_git_commit_date: 2025-12-15 10:05:29 -0500 %
-  %ccm_git_commit_author: mpegg %
-  %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: monday drop %
-  %ccm_git_modify_date: 2025-12-15 10:05:39 %
-  %ccm_git_file_last_modified: 2025-12-15 10:05:39 %
+  %ccm_git_blob_sha: 8d4b67cc524f855f118e1fbe49efd68e13669e4d %
+  %ccm_git_commit_id: unknown %
+  %ccm_git_commit_count: unknown %
+  %ccm_git_commit_date: unknown %
+  %ccm_git_commit_author: unknown %
+  %ccm_git_commit_email: unknown %
+  %ccm_git_commit_message: unknown %
+  %ccm_git_modify_date: 2026-02-07 15:40:25 %
+  %ccm_git_file_last_modified: 2026-02-07 15:40:25 %
   %ccm_git_file_name: ports.md %
   %ccm_git_path: wiki/ports.md %
   %ccm_git_language_mode: markdown %
@@ -20,8 +20,9 @@
   %ccm_git_file_encoding: utf-8 %
   %ccm_git_file_eol: CRLF %
   %ccm_git_exec: no %
-  %ccm_git_size: 12198 %
+  %ccm_git_size: 12368 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- %git_commit_history: 2025-12-15 mpegg  monday drop  % -->
 <!-- %git_commit_history: cleanup % -->
 <!-- %git_commit_history: november changes % -->
 <!-- %git_commit_history: commen block updates % -->
@@ -91,11 +92,12 @@ This page tracks host and service ports used across TermiteTowers using a system
 | Wiki.js                        | wiki.termitetowers.ca            | 3200      | 3000           | Content   | ✅ Correct       |
 | MkDocs Documentation           | docs.termitetowers.ca            | 3210      | 8000           | Content   | ✅ **NEW**       |
 | Blog/CMS                       | blog.termitetowers.ca            | 3220      | TBD            | Content   | 🕒 Planned       |
+| Nextcloud                      | nextcloud.termitetowers.ca       | 3230      | 80             | Content   | ✅ **NEW**       |
 | File Sharing                   | fileshare.termitetowers.ca       | 3230      | TBD            | Content   | 🕒 Planned       |
 
 | Mealie                         | mealie.termitetowers.ca          | 3301      | 80             | Home      | ✅ app-services-net-dev1 |
 | Homarr                         | home.termitetowers.ca            | 3310      | 7575           | Home      | ✅ **UPDATED**   |
-| Calendar/Planning Tools        | calendar.termitetowers.ca        | 3320      | TBD            | Home      | 🕒 Planned       |
+| Radicale CalDAV                | calendars.termitetowers.ca       | 3320      | 5232           | Home      | ✅ **NEW**       |
 | Note-Taking Apps               | notes.termitetowers.ca           | 3330      | TBD            | Home      | 🕒 Planned       |
 | LLM Server API                 | llmapi.termitetowers.ca          | 3350      | 8000           | Home      | ✅ **NEW**       |
 | Vault                          | vault.termitetowers.ca           | 3500      | 3000           | Security  | 🔄 **TO MIGRATE**|

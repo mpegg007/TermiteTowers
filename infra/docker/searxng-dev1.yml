@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/docker/searxng-dev1.yml:121 %
+#  %ccm_git_object_id: unknown %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: ba0f773059e4d323a2455f42b61653be84067576 %
-#  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
-#  %ccm_git_commit_count: 121 %
-#  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
-#  %ccm_git_commit_author: mpegg %
-#  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: cleanup %
-#  %ccm_git_modify_date: 2025-11-30 12:27:04 %
-#  %ccm_git_file_last_modified: 2025-11-30 12:27:04 %
+#  %ccm_git_blob_sha: 5153831695c332796113082bf8919324df4f2838 %
+#  %ccm_git_commit_id: unknown %
+#  %ccm_git_commit_count: unknown %
+#  %ccm_git_commit_date: unknown %
+#  %ccm_git_commit_author: unknown %
+#  %ccm_git_commit_email: unknown %
+#  %ccm_git_commit_message: unknown %
+#  %ccm_git_modify_date: 2026-02-07 15:39:29 %
+#  %ccm_git_file_last_modified: 2026-02-07 15:39:29 %
 #  %ccm_git_file_name: searxng-dev1.yml %
 #  %ccm_git_path: infra/docker/searxng-dev1.yml %
 #  %ccm_git_language_mode: yaml %
@@ -21,8 +21,9 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 958 %
+#  %ccm_git_size: 991 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2025-11-30 mpegg  cleanup  % 
 # %git_commit_history: docker updates % 
 name: searxng-dev1
 
@@ -30,7 +31,7 @@ services:
   searxng:
     image: searxng/searxng:latest
     container_name: searxng-dev1
-    restart: unless-stopped
+    restart: always
     ports:
       - "0.0.0.0:3130:8080"
     environment:

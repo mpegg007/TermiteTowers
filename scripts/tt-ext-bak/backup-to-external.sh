@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: scripts/tt-ext-bak/backup-to-external.sh:121 %
+#  %ccm_git_object_id: unknown %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 33fd198d26d78dc5df39d440a83cbfdbb1c6847b %
-#  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
-#  %ccm_git_commit_count: 121 %
-#  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
-#  %ccm_git_commit_author: mpegg %
-#  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: cleanup %
-#  %ccm_git_modify_date: 2025-11-30 12:27:15 %
-#  %ccm_git_file_last_modified: 2025-11-30 12:27:15 %
+#  %ccm_git_blob_sha: f2e91838afa5a442367305838d153d733e4f1d96 %
+#  %ccm_git_commit_id: unknown %
+#  %ccm_git_commit_count: unknown %
+#  %ccm_git_commit_date: unknown %
+#  %ccm_git_commit_author: unknown %
+#  %ccm_git_commit_email: unknown %
+#  %ccm_git_commit_message: unknown %
+#  %ccm_git_modify_date: 2026-02-07 15:40:23 %
+#  %ccm_git_file_last_modified: 2026-02-07 15:40:23 %
 #  %ccm_git_file_name: backup-to-external.sh %
 #  %ccm_git_path: scripts/tt-ext-bak/backup-to-external.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,8 +21,9 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 10520 %
+#  %ccm_git_size: 10574 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2025-11-30 mpegg  cleanup  % 
 # %git_commit_history: november changes % 
 # External Disk Backup Script
 # Performs incremental snapshot backups to external USB disk
@@ -32,16 +33,16 @@ set -euo pipefail
 
 # Configuration
 BACKUP_SOURCE="/mnt/ai_storage"
-BACKUP_LABEL="OMP-UD4TB42"  # Drive label to look for
+BACKUP_LABEL="OMP-UD4TB43"  # Drive label to look for
 BACKUP_MOUNT="/mnt/${BACKUP_LABEL}"
 BACKUP_DEST="${BACKUP_MOUNT}/backups"
-MAX_SNAPSHOTS=4
+MAX_SNAPSHOTS=8
 SNAPSHOT_DATE=$(date +%Y-%m-%d_%H-%M-%S)
 SNAPSHOT_DIR="${BACKUP_DEST}/snapshot-${SNAPSHOT_DATE}"
 LATEST_LINK="${BACKUP_DEST}/latest"
 
 # Exclude patterns
-EXCLUDE_FILE="/home/mpegg-adm/source/TermiteTowers/scripts/backup-exclude.txt"
+EXCLUDE_FILE="/home/mpegg-adm/source/TermiteTowers/scripts/tt-ext-bak/backup-exclude.txt"
 
 # Log configuration - similar to OneShow.robocopy.cmd
 LOG_DIR_HOST="/mnt/ai_storage/metadata/logs"

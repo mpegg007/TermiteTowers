@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/dhcp/scripts/monitoring/tt-kea-watchdog-dev1.sh:121 %
+#  %ccm_git_object_id: unknown %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 8212bd7a16e780d1c765916a51400cd9a719c4b6 %
-#  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
-#  %ccm_git_commit_count: 121 %
-#  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
-#  %ccm_git_commit_author: mpegg %
-#  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: cleanup %
-#  %ccm_git_modify_date: 2025-11-30 12:26:14 %
-#  %ccm_git_file_last_modified: 2025-11-30 12:26:14 %
+#  %ccm_git_blob_sha: 4168a41cd4e15b1e1c6e148161ea8b9f0684b3a2 %
+#  %ccm_git_commit_id: unknown %
+#  %ccm_git_commit_count: unknown %
+#  %ccm_git_commit_date: unknown %
+#  %ccm_git_commit_author: unknown %
+#  %ccm_git_commit_email: unknown %
+#  %ccm_git_commit_message: unknown %
+#  %ccm_git_modify_date: 2026-02-07 15:39:17 %
+#  %ccm_git_file_last_modified: 2026-02-07 15:39:17 %
 #  %ccm_git_file_name: tt-kea-watchdog-dev1.sh %
 #  %ccm_git_path: infra/dhcp/scripts/monitoring/tt-kea-watchdog-dev1.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,8 +21,9 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 1229 %
+#  %ccm_git_size: 1272 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2025-11-30 mpegg  cleanup  % 
 # %git_commit_history: november changes % 
 # Kea DHCP Watchdog - Auto-restart services if PostgreSQL connection fails
 # This runs on failure to attempt recovery

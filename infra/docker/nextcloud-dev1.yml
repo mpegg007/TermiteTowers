@@ -5,48 +5,49 @@
 #  %ccm_git_object_id: unknown %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 665a75e86aafc3673c532cbb3ece15201b5c6b5d %
+#  %ccm_git_blob_sha: ca5351eaeec1c0ecd233e880fa940b210c4569ec %
 #  %ccm_git_commit_id: unknown %
 #  %ccm_git_commit_count: unknown %
 #  %ccm_git_commit_date: unknown %
 #  %ccm_git_commit_author: unknown %
 #  %ccm_git_commit_email: unknown %
 #  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2026-02-07 15:39:24 %
-#  %ccm_git_file_last_modified: 2026-02-07 15:39:24 %
-#  %ccm_git_file_name: lobechat-dev1.yml %
-#  %ccm_git_path: infra/docker/lobechat-dev1.yml %
+#  %ccm_git_modify_date: 2026-02-07 15:39:25 %
+#  %ccm_git_file_last_modified: 2026-02-07 15:39:25 %
+#  %ccm_git_file_name: nextcloud-dev1.yml %
+#  %ccm_git_path: infra/docker/nextcloud-dev1.yml %
 #  %ccm_git_language_mode: yaml %
 #  %ccm_git_file_type: text/plain %
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 745 %
+#  %ccm_git_size: 797 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
-# %git_commit_history: 2025-11-30 mpegg  cleanup  % 
-# %git_commit_history: docker updates % 
-name: lobechat-dev1
 
+name: nextcloud-dev1
 services:
-  lobechat:
-    image: lobehub/lobe-chat
-    container_name: lobechat-dev1
-    user: "${UID_SVC:-2001}:${GID_TT_AI:-1006}"
+  nextcloud:
+    image: nextcloud:latest
+    container_name: nextcloud-dev1
+    restart: unless-stopped
     ports:
-      - "0.0.0.0:3100:3210"
-    environment:
-      - OPENAI_API_BASE_URL=http://host.docker.internal:11434/v1
-      - OPENAI_API_KEY=ollama
+      - "0.0.0.0:3230:80"
+    env_file:
+      - ./env/nextcloud.env
+    volumes:
+      - /mnt/ai_storage/nextcloud/data:/var/www/html
+      - /mnt/ai_storage/nextcloud/config:/var/www/html/config
+      - /mnt/ai_storage/nextcloud/custom_apps:/var/www/html/custom_apps
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    restart: always
     logging:
       driver: json-file
       options:
         max-size: "50m"
         max-file: "5"
     networks:
-      - ai-services-net-dev1
+      - app-services-net-dev1
+
 networks:
-  ai-services-net-dev1:
+  app-services-net-dev1:
     external: true
