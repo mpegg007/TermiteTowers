@@ -1,18 +1,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: unknown %
+#  %ccm_git_object_id: setup/unix/util/initAliases.sh:132 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 1327359455582139b1e3576d75d327588932f2d5 %
-#  %ccm_git_commit_id: unknown %
-#  %ccm_git_commit_count: unknown %
-#  %ccm_git_commit_date: unknown %
-#  %ccm_git_commit_author: unknown %
-#  %ccm_git_commit_email: unknown %
-#  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2026-02-07 15:40:24 %
-#  %ccm_git_file_last_modified: 2026-02-07 15:40:24 %
+#  %ccm_git_blob_sha: 3313478aa02b4022744ce3282db8938ab9c0ec82 %
+#  %ccm_git_commit_id: 6e67c9cb056223d2c5e30fd43ff735f0e43b37fb %
+#  %ccm_git_commit_count: 132 %
+#  %ccm_git_commit_date: 2026-02-07 16:19:47 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: comment cleanup %
+#  %ccm_git_modify_date: 2026-02-07 16:19:48 %
+#  %ccm_git_file_last_modified: 2026-02-07 16:19:48 %
 #  %ccm_git_file_name: initAliases.sh %
 #  %ccm_git_path: setup/unix/util/initAliases.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -20,8 +20,9 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 6310 %
+#  %ccm_git_size: 6363 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2026-02-07 mpegg  feb2026  % 
 # %git_commit_history: 2025-11-30 mpegg  cleanup  % 
 # %git_commit_history: november changes % 
 # shellcheck shell=bash

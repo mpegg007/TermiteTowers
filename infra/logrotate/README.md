@@ -1,18 +1,18 @@
 <!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
   %ccm_git_repo: TermiteTowers %
   %ccm_git_branch: dev1 %
-  %ccm_git_object_id: unknown %
+  %ccm_git_object_id: infra/logrotate/README.md:132 %
   %ccm_git_author: mpegg %
   %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: 9f758d2b098eb887cb2d0fc59d2578474b3f06d6 %
-  %ccm_git_commit_id: unknown %
-  %ccm_git_commit_count: unknown %
-  %ccm_git_commit_date: unknown %
-  %ccm_git_commit_author: unknown %
-  %ccm_git_commit_email: unknown %
-  %ccm_git_commit_message: unknown %
-  %ccm_git_modify_date: 2026-02-07 15:39:31 %
-  %ccm_git_file_last_modified: 2026-02-07 15:39:31 %
+  %ccm_git_blob_sha: c94a78c0782d3aa4322e6253307d4d52c0b6a360 %
+  %ccm_git_commit_id: 6e67c9cb056223d2c5e30fd43ff735f0e43b37fb %
+  %ccm_git_commit_count: 132 %
+  %ccm_git_commit_date: 2026-02-07 16:19:47 -0500 %
+  %ccm_git_commit_author: mpegg %
+  %ccm_git_commit_email: mpegg@hotmail.com %
+  %ccm_git_commit_message: comment cleanup %
+  %ccm_git_modify_date: 2026-02-07 16:19:48 %
+  %ccm_git_file_last_modified: 2026-02-07 16:19:48 %
   %ccm_git_file_name: README.md %
   %ccm_git_path: infra/logrotate/README.md %
   %ccm_git_language_mode: markdown %
@@ -20,8 +20,9 @@
   %ccm_git_file_encoding: utf-8 %
   %ccm_git_file_eol: CRLF %
   %ccm_git_exec: no %
-  %ccm_git_size: 7316 %
+  %ccm_git_size: 7379 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- %git_commit_history: 2026-02-07 mpegg  feb2026  % -->
 <!-- %git_commit_history: 2025-12-15 mpegg  monday drop  % -->
 <!-- %git_commit_history: cleanup % -->
 <!-- %git_commit_history: logging cleanup % -->
