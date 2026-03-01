@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/mkdocs-dev1.yml:125 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 8e24183d6c97c20b60ab60054c8cceb566f36a54 %
+#  %ccm_git_commit_id: c1f5aa954a589e43600caffa76969fcd4a57b2f1 %
+#  %ccm_git_commit_count: 125 %
+#  %ccm_git_commit_date: 2025-12-15 10:05:29 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: monday drop %
+#  %ccm_git_modify_date: 2025-12-15 10:05:30 %
+#  %ccm_git_file_last_modified: 2025-12-15 10:05:30 %
+#  %ccm_git_file_name: mkdocs-dev1.yml %
+#  %ccm_git_path: infra/docker/mkdocs-dev1.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 781 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: Add MkDocs documentation site % 
+
+name: mkdocs-dev1
+
+services:
+  mkdocs:
+    image: squidfunk/mkdocs-material:latest
+    container_name: mkdocs_app-dev1
+    restart: unless-stopped
+    user: "${UID_SVC:-2001}:${GID_TT_AI:-1006}"
+    ports:
+      - "0.0.0.0:3210:8000"
+    volumes:
+      - /home/mpegg-adm/source/TermiteTowers:/docs
+      - /mnt/ai_storage/mkdocs/site:/docs/site
+    command: serve --dev-addr=0.0.0.0:8000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - productivity-apps-net-dev1
+
+networks:
+  productivity-apps-net-dev1:
+    external: true

@@ -1,4 +1,30 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/vault-dev1.yml:113 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: e83902ff8b250c07ea06eff3e641f6f523266196 %
+#  %ccm_git_commit_id: 8b186f9039f2b3f1503219473a1e2de120c993d1 %
+#  %ccm_git_commit_count: 113 %
+#  %ccm_git_commit_date: 2025-10-30 12:44:42 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: commen block updates %
+#  %ccm_git_modify_date: 2025-10-30 12:44:45 %
+#  %ccm_git_file_last_modified: 2025-10-30 12:44:45 %
+#  %ccm_git_file_name: vault-dev1.yml %
+#  %ccm_git_path: infra/docker/vault-dev1.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 1248 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: docker updates % 
 name: vault-dev1
 services:
   vault:
@@ -17,7 +43,7 @@ services:
         max-size: "50m"
         max-file: "5"
     networks:
-      - vaultnet
+      - app-services-net-dev1
     depends_on:
       postgres:
         condition: service_healthy
@@ -35,13 +61,14 @@ services:
         max-size: "50m"
         max-file: "5"
     networks:
-      - vaultnet
+      - app-services-net-dev1
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB -h localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
 
+# Docker external network definition
 networks:
-  vaultnet:
-    driver: bridge
+  secret-service-net-dev1:
+    external: true

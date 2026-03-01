@@ -1,18 +1,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: hams/esphome/esp32-node06.yaml:102 %
-#  %ccm_git_author: Matthew Pegg %
+#  %ccm_git_object_id: hams/esphome/esp32-node06.yaml:124 %
+#  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: d1c33b056f7bd7bda47ea1a9151ac55f18bb814e %
-#  %ccm_git_commit_id: 0fe5f85b2d82fa548d0ef593b302bf3f28915940 %
-#  %ccm_git_commit_count: 102 %
-#  %ccm_git_commit_date: 2025-10-18 16:33:31 -0400 %
-#  %ccm_git_commit_author: Matthew Pegg %
+#  %ccm_git_blob_sha: 8f9ac6ad6b9355c83767c2051f9291d03a03f4ef %
+#  %ccm_git_commit_id: 8b4b8c60fcc3a47d5432304b72990dd91eef1e93 %
+#  %ccm_git_commit_count: 124 %
+#  %ccm_git_commit_date: 2025-12-12 21:43:31 -0500 %
+#  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: esphome %
-#  %ccm_git_modify_date: 2025-10-18 16:33:50 %
-#  %ccm_git_file_last_modified: 2025-09-20 17:50:21 %
+#  %ccm_git_commit_message: friday checkin %
+#  %ccm_git_modify_date: 2025-12-12 21:43:32 %
+#  %ccm_git_file_last_modified: 2025-12-12 21:43:32 %
 #  %ccm_git_file_name: esp32-node06.yaml %
 #  %ccm_git_path: hams/esphome/esp32-node06.yaml %
 #  %ccm_git_language_mode: yaml %
@@ -20,8 +20,9 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 1591 %
+#  %ccm_git_size: 1684 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: esphome % 
 ## For Node06 - Environmental Monitoring Station
 # esphome upload esp32-node06.yaml --device 192.168.1.XXX
 # esphome logs esp32-node06.yaml --device 192.168.1.XXX
@@ -46,6 +47,10 @@ esphome:
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
+  manual_ip:
+    static_ip: 192.168.1.129
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
   ap:
     ssid: "Esp32-Node06"
     password: !secret fallback_ap_password

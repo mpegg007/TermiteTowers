@@ -1,3 +1,28 @@
+<!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+  %ccm_git_repo: TermiteTowers %
+  %ccm_git_branch: dev1 %
+  %ccm_git_object_id: wiki/Device-Naming-Standard.md:121 %
+  %ccm_git_author: mpegg %
+  %ccm_git_author_email: mpegg@hotmail.com %
+  %ccm_git_blob_sha: 3af1f7599a1fbc4318951bc1330295728ad508e5 %
+  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
+  %ccm_git_commit_count: 121 %
+  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
+  %ccm_git_commit_author: mpegg %
+  %ccm_git_commit_email: mpegg@hotmail.com %
+  %ccm_git_commit_message: cleanup %
+  %ccm_git_modify_date: 2025-11-30 12:27:19 %
+  %ccm_git_file_last_modified: 2025-11-30 12:27:19 %
+  %ccm_git_file_name: Device-Naming-Standard.md %
+  %ccm_git_path: wiki/Device-Naming-Standard.md %
+  %ccm_git_language_mode: markdown %
+  %ccm_git_file_type: text/plain %
+  %ccm_git_file_encoding: utf-8 %
+  %ccm_git_file_eol: CRLF %
+  %ccm_git_exec: no %
+  %ccm_git_size: 27770 %
+  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- %git_commit_history: november changes % -->
 # TermiteTowers Network Device Naming Standard
 
 ## Overview
@@ -452,6 +477,16 @@ When adding new device categories:
 3. Update MCP prompts section
 4. Document any special naming rules for that category
 
+# IoT Device Naming Clarification
+
+All IoT devices (including ESP32s, sensors, relays, bulbs, switches, etc.) must follow the existing TermiteTowers device naming standard described in this document.
+
+**Do not introduce alternative naming formats.**
+
+Consistency across all device types is critical for scalability, automation, and ease of management. The established pattern (e.g., `esp32-node01`, `esp32-sensor01-garage`) is designed to support large environments and varied device roles.
+
+If you have questions about applying the standard to new device types, refer to the guidelines above or consult the infrastructure team.
+
 ## MCP Prompts for Future Expansion
 
 ### Adding New Device Category
@@ -549,8 +584,31 @@ Ensure hardware capabilities match naming choices:
 - **Gaming consoles**: Use constellation names (don't run general-purpose OS)
 - **Network equipment**: Use constellation names with purpose
 
+
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: September 18, 2025  
+**Document Version**: 1.1  
+**Last Updated**: November 7, 2025  
 **Maintainer**: TermiteTowers Infrastructure Team
+
+## Common IoT Device Type Prefixes
+
+Below are recommended prefixes for common IoT device types. Use these in accordance with the TermiteTowers naming standard:
+
+- `esp32` — ESP32 microcontroller boards
+- `esp8266` — ESP8266 microcontroller boards
+- `rpi` — Raspberry Pi single-board computers (e.g., `rpi4`, `rpi-zero`)
+- `arduino` — Arduino microcontroller boards (e.g., `arduino-uno`)
+- `zigbee` — Zigbee coordinator/bridge devices
+- `zwave` — Z-Wave controller devices
+- `sonoff` — Sonoff smart switches/relays
+- `shelly` — Shelly smart relays/sensors
+- `tuya` — Tuya-based smart devices
+- `bulb` — Smart bulbs (e.g., Hue, Lifx)
+- `switch` — Smart switches
+- `sensor` — Generic sensor modules (if not board-specific)
+- `relay` — Relay modules
+- `camera` — IP/security cameras
+- `plug` — Smart plugs/outlets
+
+Choose prefixes that match the hardware or platform for clarity and consistency.

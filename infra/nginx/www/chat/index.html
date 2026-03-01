@@ -1,32 +1,38 @@
+<!doctype html>
 <!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-  %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
-  %ccm_git_branch: main %
-  %ccm_git_object_id: infra/nginx/www/chat/index.html:97 %
-  %ccm_git_author: CCM Maintainer %
-  %ccm_git_author_email: ccm@test %
-  %ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
-  %ccm_git_commit_id: f8d51ae7fe101541b1ccd2f91922878ece0bb306 %
-  %ccm_git_commit_count: 97 %
-  %ccm_git_commit_date: 2025-10-10 20:55:46 -0400 %
+  %ccm_git_repo: TermiteTowers %
+  %ccm_git_branch: dev1 %
+  %ccm_git_object_id: infra/nginx/www/chat/index.html:132 %
+  %ccm_git_author: mpegg %
+  %ccm_git_author_email: mpegg@hotmail.com %
+  %ccm_git_blob_sha: e172d4ed9a6fbf6f2f30135fcf12744a922280a2 %
+  %ccm_git_commit_id: 6e67c9cb056223d2c5e30fd43ff735f0e43b37fb %
+  %ccm_git_commit_count: 132 %
+  %ccm_git_commit_date: 2026-02-07 16:19:47 -0500 %
   %ccm_git_commit_author: mpegg %
   %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: big update %
-  %ccm_git_modify_date: 2025-08-29 07:37:53 %
-  %ccm_git_file_last_modified: 2025-08-29 07:37:52 %
-  %ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
-  %ccm_git_path: CCM_HEADER_TEMPLATE.txt %
-  %ccm_git_language_mode:  %
-  %ccm_git_file_type: text/plain %
+  %ccm_git_commit_message: comment cleanup %
+  %ccm_git_modify_date: 2026-02-07 16:19:48 %
+  %ccm_git_file_last_modified: 2026-02-07 16:19:48 %
+  %ccm_git_file_name: index.html %
+  %ccm_git_path: infra/nginx/www/chat/index.html %
+  %ccm_git_language_mode: html %
+  %ccm_git_file_type: text/html %
   %ccm_git_file_encoding: us-ascii %
   %ccm_git_file_eol: CRLF %
   %ccm_git_exec: no %
-  %ccm_git_size: 659 %
+  %ccm_git_size: 5674 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- %git_commit_history: 2026-02-07 mpegg  feb2026  % -->
+<!-- %git_commit_history: 2025-12-15 mpegg  monday drop  % -->
+<!-- %git_commit_history: cleanup % -->
+<!-- %git_commit_history: november changes % -->
+<!-- %git_commit_history: index page, comments % -->
+<!-- %git_commit_history: adding mealie % -->
+<!-- %git_commit_history: docker updates % -->
+<!-- %git_commit_history: big update % -->
 <!-- %git_commit_history: service updates % -->
-<!--
--->
 
-<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -53,17 +59,24 @@
       <ul>
     <li><a class="tile" href="https://lobe.termitetowers.ca" target="lobe" rel="noopener"><strong>LobeChat</strong><div class="subtitle">Modern chat UI</div></a></li>
     <li><a class="tile" href="https://webai.termitetowers.ca" target="webai" rel="noopener"><strong>WebAI</strong><div class="subtitle">Your web chat UI</div></a></li>
-  <li><a class="tile" href="https://kitchenowl.termitetowers.ca" target="kitchenowl" rel="noopener"><strong>KitchenOwl</strong><div class="subtitle">Groceries & recipes</div></a></li>
+  <li><a class="tile" href="https://mealie.termitetowers.ca" target="mealie" rel="noopener"><strong>Mealie</strong><div class="subtitle">Groceries & recipes</div></a></li>
+  <li><a class="tile" href="https://calendars.termitetowers.ca" target="calendars" rel="noopener"><strong>Calendars</strong><div class="subtitle">CalDAV sync</div></a></li>
     <li><a class="tile" href="https://search.termitetowers.ca" target="search" rel="noopener"><strong>Search</strong><div class="subtitle">Privacy-focused metasearch</div></a></li>
-    <li><a class="tile" href="https://ollama.termitetowers.ca" target="ollama" rel="noopener"><strong>Ollama API</strong><div class="subtitle">Local models</div></a></li>
+    <li><a class="tile" href="https://pihole.termitetowers.ca/admin/" target="pihole" rel="noopener"><strong>Pi-hole</strong><div class="subtitle">DNS & ad-blocking</div></a></li>
     <li><a class="tile" href="https://hal.termitetowers.ca" target="hal" rel="noopener"><strong>HAL</strong><div class="subtitle">Assistant</div></a></li>
     <li><a class="tile" href="https://wiki.termitetowers.ca" target="wiki" rel="noopener"><strong>Wiki</strong><div class="subtitle">Docs and notes</div></a></li>
+    <li><a class="tile" href="https://docs.termitetowers.ca" target="docs" rel="noopener"><strong>Docs</strong><div class="subtitle">Technical documentation</div></a></li>
+  <li><a class="tile" href="https://nextcloud.termitetowers.ca" target="nextcloud" rel="noopener"><strong>Nextcloud</strong><div class="subtitle">File sync & share</div></a></li>
   <li><a class="tile" href="https://kuma.termitetowers.ca" target="kuma" rel="noopener"><strong>Uptime Kuma</strong><div class="subtitle">Status & monitoring</div></a></li>
   <li><a class="tile" href="https://dozzle.termitetowers.ca" target="dozzle" rel="noopener"><strong>Dozzle</strong><div class="subtitle">Container logs</div></a></li>
+  <li><a class="tile" href="https://watchyourlan.termitetowers.ca" target="watchyourlan" rel="noopener"><strong>watchYourLan</strong><div class="subtitle">Network device scanner</div></a></li>
   <li><a class="tile" href="https://home.termitetowers.ca" target="home" rel="noopener"><strong>Homarr</strong><div class="subtitle">Home dashboard</div></a></li>
   <li><a class="tile" href="https://dns.termitetowers.ca" target="dns" rel="noopener"><strong>DNS Manager</strong><div class="subtitle">PowerDNS</div></a></li>
   <li><a class="tile" href="https://asset.termitetowers.ca" target="asset" rel="noopener"><strong>Snipe-IT</strong><div class="subtitle">Asset management</div></a></li>
   <li><a class="tile" href="https://dba.termitetowers.ca" target="dba" rel="noopener"><strong>Database</strong><div class="subtitle">Database management</div></a></li>
+  <li><a class="tile" href="https://prometheus.termitetowers.ca" target="prometheus" rel="noopener"><strong>Prometheus</strong><div class="subtitle">Monitoring & metrics</div></a></li>
+    <li><a class="tile" href="https://tensorflow.termitetowers.ca" target="tensor" rel="noopener"><strong>TensorFlow</strong><div class="subtitle">Machine learning metrics</div></a></li>
+    <li><a class="tile" href="https://esphome.termitetowers.ca" target="esphome" rel="noopener"><strong>ESPHome</strong><div class="subtitle">Home automation</div></a></li>
       </ul>
     </div>
   </div>

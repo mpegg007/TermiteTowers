@@ -1,27 +1,29 @@
 <!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-  %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
-  %ccm_git_branch: main %
-  %ccm_git_object_id: wiki/how-to-add-docker-app.md:97 %
-  %ccm_git_author: CCM Maintainer %
-  %ccm_git_author_email: ccm@test %
-  %ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
-  %ccm_git_commit_id: f8d51ae7fe101541b1ccd2f91922878ece0bb306 %
-  %ccm_git_commit_count: 97 %
-  %ccm_git_commit_date: 2025-10-10 20:55:46 -0400 %
+  %ccm_git_repo: TermiteTowers %
+  %ccm_git_branch: dev1 %
+  %ccm_git_object_id: wiki/how-to-add-docker-app.md:125 %
+  %ccm_git_author: mpegg %
+  %ccm_git_author_email: mpegg@hotmail.com %
+  %ccm_git_blob_sha: 832adbf6562f3dbef0ca79cda4c6be21120e0bad %
+  %ccm_git_commit_id: c1f5aa954a589e43600caffa76969fcd4a57b2f1 %
+  %ccm_git_commit_count: 125 %
+  %ccm_git_commit_date: 2025-12-15 10:05:29 -0500 %
   %ccm_git_commit_author: mpegg %
   %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: big update %
-  %ccm_git_modify_date: 2025-08-29 07:37:53 %
-  %ccm_git_file_last_modified: 2025-08-29 07:37:52 %
-  %ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
-  %ccm_git_path: CCM_HEADER_TEMPLATE.txt %
-  %ccm_git_language_mode:  %
+  %ccm_git_commit_message: monday drop %
+  %ccm_git_modify_date: 2025-12-15 10:05:36 %
+  %ccm_git_file_last_modified: 2025-12-15 10:05:36 %
+  %ccm_git_file_name: how-to-add-docker-app.md %
+  %ccm_git_path: wiki/how-to-add-docker-app.md %
+  %ccm_git_language_mode: markdown %
   %ccm_git_file_type: text/plain %
-  %ccm_git_file_encoding: us-ascii %
+  %ccm_git_file_encoding: utf-8 %
   %ccm_git_file_eol: CRLF %
   %ccm_git_exec: no %
-  %ccm_git_size: 659 %
+  %ccm_git_size: 9303 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- %git_commit_history: docker updates % -->
+<!-- %git_commit_history: big update % -->
 <!--
 -->
 
@@ -29,25 +31,74 @@
 
 This is the repeatable pattern we use for adding services (Compose + Nginx + Chat tile), with optional secrets and the /srv/dev1 symlink convention.
 
+## Docker Network Selection
+Services should be grouped by function and port category. Use:
+- `powerdns-dev1_powerdns-net` for core infrastructure (DNS, Pi-hole, PowerDNS, etc.)
+- `app-services-net-dev1` for app services (KitchenOwl, Mealie, Homarr, LLM Server API, etc.)
+- Create additional networks for other categories if needed (media, monitoring, AI, etc.)
+
+When adding a new app service (e.g., Mealie, KitchenOwl), attach it to `app-services-net-dev1` for isolation and easier management.
+
 ## TL;DR checklist
 - Pick a subdomain and host port; confirm no conflicts.
 - Create data dir(s) under /mnt/ai_storage/<service> and set perms (2001:1006, group-writable).
 - Add a Compose file under infra/docker/<service>-dev1.yml (schema hint, ports, volumes, logging).
 - If the app needs secrets, add env_file: infra/docker/env/<service>.env (keep example next to it).
+- Create /srv/dev1/<short>/docker and symlink the Compose file.
+- Start container from /srv/dev1/<short>/docker (keeps shell history clean).
 - Add an Nginx site at infra/nginx/sites-available/<short>.conf; enable without .conf on host.
 - Add a tile to infra/nginx/www/chat/index.html and deploy it.
 - add DNS CNAME record for <short> to imono.termitetowers.ca.
-- (Optional) Create /srv/dev1/<short>/docker and symlink the Compose file for convenience.
 - Update wiki/ports.md and (optionally) add a service runbook.
 
 ## 1) Choose names and ports
+
+### Service naming
 - Subdomain: e.g., example.termitetowers.ca
-- Host port: follow the 3300+ pattern when possible
-- Check for collisions:
+- Short name: lowercase, no special chars (e.g., `example`)
+
+### Port selection (IMPORTANT!)
+**Always consult wiki/ports.md for the port allocation strategy before choosing a port.**
+
+Port ranges are organized by category:
+
+| Range | Category | Examples |
+|-------|----------|----------|
+| 3000-3099 | Core Infrastructure | DNS, admin interfaces |
+| 3100-3199 | Development & DevOps | Package registries, CI/CD |
+| 3200-3299 | Content & Documentation | Wiki, CMS |
+| 3300-3399 | Home Automation & Daily | Dashboard, kitchen tools |
+| 3400-3499 | Media & Entertainment | Plex, *arr services |
+| 3500-3599 | Security & Secrets | Vault, SOPS, auth |
+| 3600-3699 | Databases & Data | DB admin tools |
+| 3700-3799 | Monitoring & Ops | Uptime, logs, metrics |
+| 3800-3899 | AI & Machine Learning | Ollama, LLM interfaces |
+| 3900-3999 | Asset & IT Management | Asset tracking, tickets |
+
+**Steps to pick a port:**
+1. Identify which category your service belongs to
+2. Check wiki/ports.md for already-allocated ports in that range
+3. Choose the next available port in sequence (e.g., if 3720 is taken, use 3730)
+4. Update wiki/ports.md with your new allocation
+
+### Check for port conflicts
 ```bash
+# Check Nginx configs for port usage
 rg -n "proxy_pass\\s+http://localhost:(\\d+)" infra/nginx/sites-available/*.conf
+
+# Check Docker compose files for port bindings
 rg -n "(?:0\\.0\\.0\\.0:)?(\\d{2,5}):(\\d{2,5})" infra/docker/*.yml
+
+# Check if port is already listening on host
+sudo netstat -tlnp | grep :3XXX
 ```
+
+**Example:**
+- Service: Prometheus (monitoring tool)
+- Category: Monitoring & Ops
+- Range: 3700-3799
+- Check ports.md: 3700 (Uptime Kuma), 3710 (Dozzle) are taken
+- Choose: 3720 ✅
 
 ## 2) Create data directories and permissions
 ```bash
@@ -91,6 +142,8 @@ services:
       options:
         max-size: "50m"
         max-file: "5"
+    networks:
+      - app-services-net-dev1  # Use this for app services
 ```
 
 ## 4) Secrets (optional)
@@ -106,42 +159,55 @@ SECRET_SOMETHING=
 TZ=UTC
 ```
 
-## 5) Start the container
-```bash
-docker compose -f /home/mpegg-adm/source/TermiteTowers/infra/docker/<service>-dev1.yml up -d
-```
+## 5) /srv/dev1 convenience path and symlink (recommended)
+Create the per-service folder with docker subdir and symlink the Compose file BEFORE starting the container. This ensures your shell history shows clean paths rather than long /home paths.
 
-## 6) Nginx reverse proxy
-- Create infra/nginx/sites-available/<short>.conf with standard proxy to localhost:<hostport>.
-- Enable on host WITHOUT .conf suffix using the helper:
-```bash
-bash /home/mpegg-adm/source/TermiteTowers/scripts/nginx-enable-site.sh \
-  /home/mpegg-adm/source/TermiteTowers/infra/nginx/sites-available/<short>.conf <short>
-```
-- Verify:
-```bash
-sudo nginx -t && sudo systemctl reload nginx
-curl -I https://<short>.termitetowers.ca
-```
-
-## 7) Chat tile + deploy
-- Edit infra/nginx/www/chat/index.html to add a tile.
-- Deploy to /var/www/chat:
-```bash
-bash /home/mpegg-adm/source/TermiteTowers/scripts/deploy-www.sh
-```
-
-## 8) /srv/dev1 convenience path and symlink (optional but recommended)
-We keep a per-service folder with a docker subdir for quick access, and symlink the Compose file back to the repo.
 ```bash
 SHORT=example
 COMPOSE=example-dev1.yml
 sudo mkdir -p /srv/dev1/$SHORT/docker
 sudo ln -sf /home/mpegg-adm/source/TermiteTowers/infra/docker/$COMPOSE /srv/dev1/$SHORT/docker/$COMPOSE
-# Now you can run compose from /srv/dev1/$SHORT/docker if you prefer
-(cd /srv/dev1/$SHORT/docker && docker compose -f $COMPOSE up -d)
 ```
+
 Note: the compose file remains source-controlled in TermiteTowers; /srv/dev1 just provides a stable runtime path.
+
+## 6) Start the container
+Use the /srv/dev1 symlink to keep commands short and history clean:
+
+```bash
+goapp <short>
+dcup
+```
+
+Or without shell aliases:
+
+```bash
+cd /srv/dev1/<short>/docker
+docker compose -f <service>-dev1.yml up -d
+```
+
+## 7) Nginx reverse proxy
+
+- Create infra/nginx/sites-available/<short>.conf with standard proxy to localhost:<hostport>.
+- Enable on host WITHOUT .conf suffix using the helper (this also tests and reloads Nginx):
+
+```bash
+bash /home/mpegg-adm/source/TermiteTowers/scripts/nginx-enable-site.sh \
+  /home/mpegg-adm/source/TermiteTowers/infra/nginx/sites-available/<short>.conf <short>
+```
+
+- Verify:
+
+```bash
+curl -I https://<short>.termitetowers.ca
+```
+
+## 8) Chat tile + deploy
+- Edit infra/nginx/www/chat/index.html to add a tile.
+- Deploy to /var/www/chat:
+```bash
+bash /home/mpegg-adm/source/TermiteTowers/scripts/deploy-www.sh
+```
 
 ## 9) Bookkeeping
 - Update wiki/ports.md with the new service row.

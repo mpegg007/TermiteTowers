@@ -1,0 +1,118 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/calendars-dev1.yml:131 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 6fafb0351dfb488a9d33ce307ab0c5f6e3794837 %
+#  %ccm_git_commit_id: 5437a7d04ed29327b383939e9195b6900e81adb8 %
+#  %ccm_git_commit_count: 131 %
+#  %ccm_git_commit_date: 2026-02-07 16:16:49 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: ci %
+#  %ccm_git_modify_date: 2026-02-07 16:16:50 %
+#  %ccm_git_file_last_modified: 2026-02-07 16:16:50 %
+#  %ccm_git_file_name: calendars-dev1.yml %
+#  %ccm_git_path: infra/docker/calendars-dev1.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 2522 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2026-02-07 mpegg  feb2026  % 
+
+name: calendars-dev1
+services:
+  radicale:
+    image: tomsquest/docker-radicale:latest
+    container_name: radicale-dev1
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:3320:5232"
+    volumes:
+      - /mnt/ai_storage/calendars/radicale:/data
+      - ./radicale/config:/config
+    environment:
+      - TZ=${TZ}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5232"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - app-services-net-dev1
+
+  vdirsyncer_google:
+    image: python:3.11-slim
+    container_name: vdirsyncer-google-dev1
+    restart: unless-stopped
+    volumes:
+      - ./vdirsyncer/google:/config
+      - /mnt/ai_storage/calendars/vdirsyncer_google_cache:/cache
+    command: ["sh", "-c", "pip install vdirsyncer google-api-python-client && vdirsyncer sync"]
+    environment:
+      - TZ=${TZ}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_USER=${GOOGLE_USER}
+      - GOOGLE_PASSWORD=${GOOGLE_PASSWORD}
+    depends_on:
+      - radicale
+    healthcheck:
+      test: ["CMD", "vdirsyncer", "--version"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+    networks:
+      - app-services-net-dev1
+    env_file:
+      - ./env/calendars.env
+
+  vdirsyncer_outlook:
+    image: python:3.11-slim
+    container_name: vdirsyncer-outlook-dev1
+    restart: unless-stopped
+    volumes:
+      - ./vdirsyncer/outlook:/config
+      - /mnt/ai_storage/calendars/vdirsyncer_outlook_cache:/cache
+    command: ["sh", "-c", "pip install vdirsyncer O365 && vdirsyncer sync"]
+    environment:
+      - TZ=${TZ}
+      - OUTLOOK_CLIENT_ID=${OUTLOOK_CLIENT_ID}
+      - OUTLOOK_CLIENT_SECRET=${OUTLOOK_CLIENT_SECRET}
+      - OUTLOOK_USER=${OUTLOOK_USER}
+      - OUTLOOK_PASSWORD=${OUTLOOK_PASSWORD}
+    depends_on:
+      - radicale
+    healthcheck:
+      test: ["CMD", "vdirsyncer", "--version"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+    networks:
+      - app-services-net-dev1
+    env_file:
+      - ./env/calendars.env
+
+networks:
+  app-services-net-dev1:
+    external: true

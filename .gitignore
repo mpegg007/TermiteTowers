@@ -1,27 +1,31 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-#  %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
-#  %ccm_git_branch: main %
-#  %ccm_git_object_id: .gitignore:97 %
-#  %ccm_git_author: CCM Maintainer %
-#  %ccm_git_author_email: ccm@test %
-#  %ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
-#  %ccm_git_commit_id: f8d51ae7fe101541b1ccd2f91922878ece0bb306 %
-#  %ccm_git_commit_count: 97 %
-#  %ccm_git_commit_date: 2025-10-10 20:55:46 -0400 %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: .gitignore:122 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 3dacaf3d2dab64fa73a1bd05ecf75b1c7ec70eb6 %
+#  %ccm_git_commit_id: 911abf33d3a165541ef9f5e4f965e884eb2a438e %
+#  %ccm_git_commit_count: 122 %
+#  %ccm_git_commit_date: 2025-11-30 15:57:30 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: big update %
-#  %ccm_git_modify_date: 2025-08-29 07:37:53 %
-#  %ccm_git_file_last_modified: 2025-08-29 07:37:52 %
-#  %ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
-#  %ccm_git_path: CCM_HEADER_TEMPLATE.txt %
-#  %ccm_git_language_mode:  %
+#  %ccm_git_commit_message: logging cleanup %
+#  %ccm_git_modify_date: 2025-11-30 15:57:31 %
+#  %ccm_git_file_last_modified: 2025-11-30 15:57:31 %
+#  %ccm_git_file_name: .gitignore %
+#  %ccm_git_path: .gitignore %
+#  %ccm_git_language_mode: git %
 #  %ccm_git_file_type: text/plain %
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 659 %
+#  %ccm_git_size: 512 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
 # %git_commit_history: service updates % 
 # Python
 __pycache__/
@@ -55,5 +59,7 @@ build/
 secrets/*.json
 env/*.env
 
-infra/docker/env/snipeit.env
 infra/docker/env/*.env
+.cache_ggshield
+infra/docker/env/*_password.txt
+hams/esphome/.esphome

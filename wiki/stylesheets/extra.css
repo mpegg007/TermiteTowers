@@ -1,0 +1,43 @@
+/*// # %git_commit_history: 2025-09-06 mpegg  hook final alpha v0.1  %  */
+/*// %git_commit_history: 2025-12-15 mpegg  monday drop  % */
+/* Override Material theme's default content width constraint */
+.md-grid {
+    max-width: 98% !important;
+}
+
+.md-typeset {
+    max-width: 100% !important;
+}
+
+/* Force tables to use full width and be scrollable */
+/* Removed custom table display properties that were breaking column alignment */
+.md-typeset table {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* 
+.md-typeset tbody,
+.md-typeset thead {
+    display: table !important;
+    width: 100% !important;
+    table-layout: auto !important;
+} 
+*/
+
+.md-typeset table::-webkit-scrollbar {
+    height: 10px;
+}
+
+.md-typeset table::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.md-typeset table::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+
+.md-typeset table::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

@@ -1,0 +1,77 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/openwebui-dev1.yml:133 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 2284fefcc91b1a3386533dd3c2c66ae3f8f28f7b %
+#  %ccm_git_commit_id: 96284d045860303871df617b9039eb2c1a3e0601 %
+#  %ccm_git_commit_count: 133 %
+#  %ccm_git_commit_date: 2026-02-08 12:06:00 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: updating run uid %
+#  %ccm_git_modify_date: 2026-02-08 12:06:01 %
+#  %ccm_git_file_last_modified: 2026-02-08 12:06:01 %
+#  %ccm_git_file_name: openwebui-dev1.yml %
+#  %ccm_git_path: infra/docker/openwebui-dev1.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 1871 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2026-02-07 mpegg  comment cleanup  % 
+# %git_commit_history: 2026-02-07 mpegg  feb2026  % 
+# %git_commit_history: 2025-12-15 mpegg  monday drop  % 
+# %git_commit_history: cleanup % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: docker updates % 
+name: openwebui-dev1
+
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: openwebui-dev1
+    ports:
+      - "0.0.0.0:3101:8080"
+    user: "${UID_SVC:-2001}:${GID_TT_AI:-1006}"
+    environment:
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - MODEL_PROVIDER=ollama
+      - DEFAULT_MODEL=llama3
+      - PYTHONUNBUFFERED=1
+      - HF_HOME=/cache/huggingface
+      - WEBUI_SECRET_KEY=your_secret_key_here  # Replace with a secure key
+      # Web Search Configuration
+      - ENABLE_RAG_WEB_SEARCH=true
+      - RAG_WEB_SEARCH_ENGINE=searxng
+      - SEARXNG_QUERY_URL=http://searxng-dev1:8080/search?q=<query>
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - /mnt/ai_storage/openwebui/data:/app/backend/data
+      - /mnt/ai_storage/models/huggingface:/cache/huggingface
+      - /mnt/ai_storage/models/pip:/cache/pip
+      - /mnt/ai_storage/models/torch:/cache/torch
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - ai-services-net-dev1
+      - monitor-apps-net-dev1
+# Docker external network definition
+networks:
+  ai-services-net-dev1:
+    external: true
+  monitor-apps-net-dev1:
+    external: true
+  # Note: If the container cannot reach Ollama via host.docker.internal on Linux,
+  # you can switch to host networking as a fallback:
+  # network_mode: host
+  # and remove the ports/extra_hosts section. Then access at http://localhost:8080

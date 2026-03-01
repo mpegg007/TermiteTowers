@@ -1,74 +1,87 @@
 #!/bin/bash
-# % ccm_modify_date: 2025-05-18 16:57:22 %
-# % ccm_author: mpegg %
-# % version: 20 %
-# % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
-# % ccm_branch: main %
-# % ccm_object_id: MonitorLibreLink.ps1:43 %
-# % ccm_commit_id: 85077287515bd36c372cecb566bd8b590687d30d %
-# % ccm_commit_count: 43 %
-# % ccm_last_commit_message: move config read %
-# % ccm_last_commit_author: Matthew Pegg %
-# % ccm_last_commit_date: 2025-03-22 17:57:56 -0400 %
-# % ccm_file_last_modified: 2025-05-18 16:54:21 %
-# % ccm_file_name: MonitorLibreLink.ps1 %
-# % ccm_file_type: text/plain %
-# % ccm_file_encoding: us-ascii %
-# % ccm_file_eol: CRLF %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: setup/unix/profile.tt:121 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: da5ffe5c2df98500dda7f9ccf61bc8b0289d8f42 %
+#  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
+#  %ccm_git_commit_count: 121 %
+#  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: cleanup %
+#  %ccm_git_modify_date: 2025-11-30 12:27:17 %
+#  %ccm_git_file_last_modified: 2025-11-30 12:27:17 %
+#  %ccm_git_file_name: profile.tt %
+#  %ccm_git_path: setup/unix/profile.tt %
+#  %ccm_git_language_mode: shellscript %
+#  %ccm_git_file_type: text/x-shellscript %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 1983 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: november changes % 
+# TermiteTowers bash initialization
+# Supports both development (~/source) and production (/srv) deployments
 
-LOGNAME=${LOGNAME:=`whoami`}
-export LOGNAME
-
-if [ -x $HOME/.$LOGNAME ]; then 
-  . $HOME/.$LOGNAME
+# Debug tracing support (set tt_debug=1 to enable)
+tt_tracelogDir=${tt_tracelogDir:-$HOME/tmp}
+if [ ! -z ${tt_debug} ]; then
+  mkdir -p "$tt_tracelogDir"
+  tt_tracelog="${tt_tracelogDir}/profile-trace.log.$$"
+  set > "${tt_tracelogDir}/profile-start.setInfo.$$"
+  echo "$(date '+%F %T') - Profile initialization started (PID: $$)" >> "$tt_tracelog"
+else
+  tt_tracelog=/dev/null
 fi
 
-if [ "$0" == "-bash" ]; then  
-  # When sourced, use BASH_SOURCE to get the script path
-  if [ -n "${BASH_SOURCE[0]}" ]; then
-    tt_profiledir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
-  else
-    # Fallback to current directory if BASH_SOURCE not available
-    tt_profiledir=$(pwd)
-  fi
+# Determine script directory
+if [ -n "${BASH_SOURCE[0]}" ]; then
+  tt_profiledir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 else
-  # Get the absolute path to the directory containing this script
-  tt_profiledir=$(cd $(dirname "$0") && pwd)
+  tt_profiledir=$(pwd)
 fi
 export tt_profiledir
 
-tt_tracelogDir=${tt_tracelogDir:=$HOME/tmp}
-if [ ! -z ${tt_debug} ]; then
-  tt_tracelog=${tt_tracelogDir}/profile-trace.log,$$
-  set>${tt_tracelogDir}/profile-start.setInfo,$$
+[ ! -z ${tt_debug} ] && echo "tt_profiledir=$tt_profiledir" >> "$tt_tracelog"
+
+# Set environment defaults
+tt_scmID=${tt_scmID:-dev1}
+tt_appID=${tt_appID:-util}
+tt_regionID=${tt_regionID:-${tt_scmID:0:3}}
+export tt_scmID tt_appID tt_regionID
+
+[ ! -z ${tt_debug} ] && echo "tt_scmID=$tt_scmID tt_appID=$tt_appID tt_regionID=$tt_regionID" >> "$tt_tracelog"
+
+# Determine util directory location
+# Priority: 1) /srv/<scmID>/util/  2) same dir as profile.tt
+if [ -d "/srv/${tt_scmID}/util" ]; then
+  tt_utilDir="/srv/${tt_scmID}/util"
+elif [ -d "${tt_profiledir}/util" ]; then
+  tt_utilDir="${tt_profiledir}/util"
 else
-  tt_tracelog=nul
+  # Fallback: no util scripts available
+  tt_utilDir=""
+fi
+export tt_utilDir
+
+[ ! -z ${tt_debug} ] && echo "tt_utilDir=$tt_utilDir" >> "$tt_tracelog"
+
+# Source util scripts if available
+if [ -n "$tt_utilDir" ] && [ -d "$tt_utilDir" ]; then
+  for script in initENV.sh initHistory.sh initAliases.sh initPrompt.sh; do
+    if [ -f "$tt_utilDir/$script" ]; then
+      [ ! -z ${tt_debug} ] && echo "Sourcing $tt_utilDir/$script" >> "$tt_tracelog"
+      . "$tt_utilDir/$script"
+    fi
+  done
 fi
 
-l_appID=util
-l_scmID=dev1
-tt_appID=${tt_appID:=$l_appID}
-tt_scmID=${tt_scmID:=$l_scmID}
-tt_regionID=${tt_regionID:=${tt_scmID:0:3}}
-
-tt_appUserType=${tt_appUserType:=$tt_regionID}
-tt_appUser=${tt_appUser:=`groups|cut -f 1-2 -d ' '|sed 's/ /|/g'`}
-
-if [ -d /srv/tt.omp ]; then
-  tt_appUser_dflt=${tt_appUser_dflt:=`ls /srv/tt.omp|head -1`}
-  tt_scriptDir=${tt_scriptDir:=/srv/tt.omp/$tt_appUser_dflt/scripts}
-  if [ -x $tt_scriptDir/util/initENV.sh ]; then
-    . $tt_scriptDir/util/initENV.sh
-  fi
-  if [ -x $tt_scriptDir/util/initAliases.sh ]; then
-    . $tt_scriptDir/util/initAliases.sh
-  fi
-  if [ -x $tt_scriptDir/util/initPrompt.sh ]; then
-    . $tt_scriptDir/util/initPrompt.sh
-  fi
+# Debug: capture end state
+if [ ! -z ${tt_debug} ]; then
+  set > "${tt_tracelogDir}/profile-end.setInfo.$$"
+  echo "$(date '+%F %T') - Profile initialization completed (PID: $$)" >> "$tt_tracelog"
 fi
-
-if [ ! -z ${tt_debug} ]; then set>${tt_tracelogDir}/profile-end.setInfo,$$; fi
-
-unset l_appID
-unset l_scmID

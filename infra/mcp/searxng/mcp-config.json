@@ -1,0 +1,38 @@
+/*//  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+//  %ccm_git_repo: TermiteTowers %
+//  %ccm_git_branch: dev1 %
+//  %ccm_git_object_id: infra/mcp/searxng/mcp-config.json:111 %
+//  %ccm_git_author: mpegg %
+//  %ccm_git_author_email: mpegg@hotmail.com %
+//  %ccm_git_blob_sha: e736db8e0a662171ac4e357ad43f70c2926898cc %
+//  %ccm_git_commit_id: c95decaaa02c45bee627cd315be8d2b7aefd7fc5 %
+//  %ccm_git_commit_count: 111 %
+//  %ccm_git_commit_date: 2025-10-29 19:12:44 -0400 %
+//  %ccm_git_commit_author: mpegg %
+//  %ccm_git_commit_email: mpegg@hotmail.com %
+//  %ccm_git_commit_message: docker updates %
+//  %ccm_git_modify_date: 2025-10-29 19:12:45 %
+//  %ccm_git_file_last_modified: 2025-10-08 21:02:01 %
+//  %ccm_git_file_name: mcp-config.json %
+//  %ccm_git_path: infra/mcp/searxng/mcp-config.json %
+//  %ccm_git_language_mode: json %
+//  %ccm_git_file_type: application/json %
+//  %ccm_git_file_encoding: us-ascii %
+//  %ccm_git_file_eol: CRLF %
+//  %ccm_git_exec: no %
+//  %ccm_git_size: 204 %
+//  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  */
+{
+  "mcpServers": {
+    "searxng": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-searxng"
+      ],
+      "env": {
+        "SEARXNG_URL": "http://localhost:3130"
+      }
+    }
+  }
+}

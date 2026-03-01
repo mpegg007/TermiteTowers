@@ -1,0 +1,161 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/pihole-dev1.yml:132 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 0a5491dd1e96b827b41ff99ba32483093a07e837 %
+#  %ccm_git_commit_id: 6e67c9cb056223d2c5e30fd43ff735f0e43b37fb %
+#  %ccm_git_commit_count: 132 %
+#  %ccm_git_commit_date: 2026-02-07 16:19:47 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: comment cleanup %
+#  %ccm_git_modify_date: 2026-02-07 16:19:47 %
+#  %ccm_git_file_last_modified: 2026-02-07 16:19:47 %
+#  %ccm_git_file_name: pihole-dev1.yml %
+#  %ccm_git_path: infra/docker/pihole-dev1.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: utf-8 %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 5479 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2026-02-07 mpegg  feb2026  % 
+# %git_commit_history: 2025-11-30 mpegg  cleanup  % 
+# %git_commit_history: docker updates % 
+
+name: pihole-dev1
+
+services:
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole-dev1
+    restart: always
+    hostname: pihole
+    
+    # DNS port 53 - PRIMARY DNS server (recursive + ad-blocking)
+    # Web admin on port 3010 (Core Infrastructure range per ports.md)
+    ports:
+      - "192.168.1.10:53:53/tcp"
+      - "192.168.1.10:53:53/udp"
+      - "192.168.4.10:53:53/tcp"
+      - "192.168.4.10:53:53/udp"
+      - "0.0.0.0:3010:80/tcp"      # Web admin interface
+      
+    environment:
+      TZ: 'America/New_York'
+      WEBPASSWORD: 'your-secure-password-here'  # Change this!
+      # Set to 'all' to listen on all network interfaces
+      DNSMASQ_LISTENING: 'all'
+      # Permit all origins for Docker bridge networking
+      PIHOLE_DNS_: '1.1.1.1;1.0.0.1'
+      DNSMASQ_USER: 'root'
+      # Upstream DNS servers (Cloudflare)
+      PIHOLE_DNS_1: '1.1.1.1'
+      PIHOLE_DNS_2: '1.0.0.1'
+      # Enable DNSSEC validation
+      DNSSEC: 'true'
+      # CRITICAL FIX: Set listening mode to 'all' instead of 'local'
+      # This allows DNS queries from any source IP, required for Docker bridge mode
+      FTLCONF_dns_listeningMode: 'all'
+      # Conditional forwarding for local domains to PowerDNS
+      REV_SERVER: 'true'
+      REV_SERVER_DOMAIN: 'local'
+      REV_SERVER_TARGET: '192.168.1.10'
+      REV_SERVER_CIDR: '192.168.1.0/24'
+      # Disable FTL blocking to allow pure DNS forwarding
+      FTLCONF_dns_blocking_active: 'false'
+      
+    volumes:
+      - /mnt/ai_storage/pihole/config:/etc/pihole
+      - /mnt/ai_storage/pihole/dnsmasq.d:/etc/dnsmasq.d
+      
+    cap_add:
+      - NET_ADMIN
+      
+    dns:
+      - 127.0.0.1
+      - 1.1.1.1
+      
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    
+    networks:
+      - core-infra-net-dev1
+
+# Docker external network definition
+networks:
+  core-infra-net-dev1:
+    external: true
+
+# Usage:
+#   # 1. Create data directories with proper permissions
+#   sudo mkdir -p /mnt/ai_storage/pihole/{config,dnsmasq.d} && \
+#   sudo chown -R 2001:1006 /mnt/ai_storage/pihole && \
+#   sudo chmod -R u+rwX,g+rwX /mnt/ai_storage/pihole
+#
+#   # 2. (Optional) Create password file for secure password storage
+#   echo "your-secure-password" | sudo tee /home/mpegg-adm/source/TermiteTowers/infra/docker/env/pihole_password.txt && \
+#   sudo chmod 600 /home/mpegg-adm/source/TermiteTowers/infra/docker/env/pihole_password.txt
+#
+#   # 3. Start Pi-hole
+#   docker compose -f /home/mpegg-adm/source/TermiteTowers/infra/docker/pihole-dev1.yml up -d
+#
+#   # 4. Configure conditional forwarding to PowerDNS via web interface
+#   #    Go to: http://192.168.1.10:3010/admin → Settings → DNS → Conditional Forwarding
+#   #    
+#   #    Enable: ✓ Use conditional forwarding
+#   #    Local network in CIDR: 192.168.1.0/24
+#   #    IP address of DHCP server: 172.33.0.4
+#   #    Local domain name: tt.omp (or local/aa.omp/omp for other zones)
+#   #
+#   #    This forwards all local domain queries to PowerDNS at 172.33.0.4 (Docker network IP)
+#   #    Traffic stays within the Docker network and never leaves to external networks
+#
+#   # 5. Access web interface at:
+#   #    http://192.168.1.10:3010/admin or https://pihole.termitetowers.ca
+#   #    Password: bradley (or set via: docker exec pihole-dev1 pihole setpassword 'yourpassword')
+#
+#   # 6. Set Pi-hole as primary DNS in DHCP server:
+#   #    Primary DNS: 192.168.1.10 (Pi-hole for recursive + ad-blocking)
+#
+#   # 7. Verify conditional forwarding is working:
+#   #    dig @192.168.1.10 testserver.tt.omp A
+#   #    Should return 192.168.1.88 from PowerDNS (check logs: forwarded to 172.33.0.4)
+#
+# Architecture:
+#   Pi-hole (192.168.1.10:53, 192.168.4.10:53) - Recursive DNS with ad-blocking
+#   ├── Upstream: Cloudflare DNS (1.1.1.1, 1.0.0.1) for internet domains
+#   └── Conditional Forward: PowerDNS (172.33.0.4 via Docker network) for local zones
+#       
+#   PowerDNS (192.168.1.10:3053, 192.168.4.10:3053) - Authoritative DNS for local domains
+#   ├── Zone: .local
+#   ├── Zone: .tt.omp
+#   ├── Zone: .aa.omp
+#   └── Zone: .omp
+#
+# Network:
+#   - Pi-hole and PowerDNS share the 'powerdns-net' Docker network (172.33.0.0/24)
+#   - Pi-hole IP on Docker network: 172.33.0.6
+#   - PowerDNS IP on Docker network: 172.33.0.4
+#   - Internal DNS queries use PowerDNS IP 172.33.0.4 (stays within Docker network)
+#   - External clients access Pi-hole on 192.168.1.10:53
+#
+# Notes:
+#   - Pi-hole handles all recursive queries and provides ad-blocking
+#   - PowerDNS serves authoritative answers for local zones only
+#   - Clients should use Pi-hole (192.168.1.10:53) as primary DNS
+#   - Pi-hole forwards local domain queries to PowerDNS via Docker network (172.33.0.4)
+#   - All local zone traffic stays within Docker network (no external routing)
+#   - PowerDNS must be running first (start powerdns-dev1 before pihole-dev1)
+#   - Conditional forwarding configured via Pi-hole web admin, not config files
+#   - Web admin password: bradley (change via pihole setpassword command)
+#   - PowerDNS DNS on port 3053 (Core Infrastructure range per ports.md)
+#   - PowerDNS Admin on ports 3020-3021 (web interface)
+#   - Pi-hole Admin on port 3010 (web interface)
