@@ -1,27 +1,29 @@
-<!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-  %ccm_git_repo: TermiteTowers %
-  %ccm_git_branch: dev1 %
-  %ccm_git_object_id: wiki/Device-Naming-Standard.md:121 %
-  %ccm_git_author: mpegg %
-  %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: 3af1f7599a1fbc4318951bc1330295728ad508e5 %
-  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
-  %ccm_git_commit_count: 121 %
-  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
-  %ccm_git_commit_author: mpegg %
-  %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: cleanup %
-  %ccm_git_modify_date: 2025-11-30 12:27:19 %
-  %ccm_git_file_last_modified: 2025-11-30 12:27:19 %
-  %ccm_git_file_name: Device-Naming-Standard.md %
-  %ccm_git_path: wiki/Device-Naming-Standard.md %
-  %ccm_git_language_mode: markdown %
-  %ccm_git_file_type: text/plain %
-  %ccm_git_file_encoding: utf-8 %
-  %ccm_git_file_eol: CRLF %
-  %ccm_git_exec: no %
-  %ccm_git_size: 27770 %
-  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!--||  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+||  %ccm_git_repo: TermiteTowers %
+||  %ccm_git_branch: dev1 %
+||  %ccm_git_object_id: wiki/Device-Naming-Standard.md:136 %
+||  %ccm_git_author: Matthew Pegg %
+||  %ccm_git_author_email: mpegg@hotmail.com %
+||  %ccm_git_blob_sha: 25733977fc306e86e6acc4812b7021558cbe0818 %
+||  %ccm_git_commit_id: bc247a4e65bdd9936cbca62c9b8ae30ec02c3198 %
+||  %ccm_git_commit_count: 136 %
+||  %ccm_git_commit_date: 2026-03-01 12:34:10 -0500 %
+||  %ccm_git_commit_author: Matthew Pegg %
+||  %ccm_git_commit_email: mpegg@hotmail.com %
+||  %ccm_git_commit_message: flaresolver startup script fix %
+||  %ccm_git_modify_date: 2026-03-01 12:34:14 %
+||  %ccm_git_file_last_modified: 2026-03-01 12:34:14 %
+||  %ccm_git_file_name: Device-Naming-Standard.md %
+||  %ccm_git_path: wiki/Device-Naming-Standard.md %
+||  %ccm_git_language_mode: markdown %
+||  %ccm_git_file_type: text/plain %
+||  %ccm_git_file_encoding: utf-8 %
+||  %ccm_git_file_eol: CRLF %
+||  %ccm_git_exec: no %
+||  %ccm_git_size: 29410 %
+||  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 
+|| ##COMMIT_HISTORY: %git_commit_history: $DATE $AUTHOR $MESSAGE % -->
+<!--|| %git_commit_history:   %ccm_git_commit_message: flaresolver startup script fix % -->
 <!-- %git_commit_history: november changes % -->
 # TermiteTowers Network Device Naming Standard
 
@@ -612,3 +614,45 @@ Below are recommended prefixes for common IoT device types. Use these in accorda
 - `plug` — Smart plugs/outlets
 
 Choose prefixes that match the hardware or platform for clarity and consistency.
+
+## Physical Asset Tagging System
+
+### Asset Tag Format
+All physical devices receive unique asset identifiers using the format: **TT-###**
+
+- **Prefix**: `TT-` (TermiteTowers identifier)
+- **Number**: Sequential 3-digit numbers starting from 001
+- **Examples**: `TT-001`, `TT-247`, `TT-999`
+
+### Label Specifications
+
+#### ESP32/Small Device Labels
+- **Dimensions**: 0.75" x 1.5" (19mm x 38mm)
+- **QR Code**: 0.5" x 0.5" square containing asset ID
+- **Text Area**: Remaining 0.5" x 0.25" space for "TT-###" identifier
+- **Material**: Polyester or vinyl for durability
+- **Adhesive**: Permanent, suitable for electronic devices
+
+#### Standard Device Labels  
+- **Dimensions**: 1" x 2.625" (25mm x 67mm)
+- **QR Code**: 0.75" x 0.75" square
+- **Text Area**: Asset ID, device type, and install date
+- **Material**: Same as small device labels
+
+### Asset Tag Database Integration
+- **QR Code Content**: Asset ID (TT-###) links to device database
+- **Database Fields**: Device name, IP address, location, install date, specifications
+- **Scanning**: Mobile app or barcode scanner integration
+- **Updates**: Asset database synchronized with network naming system
+
+### Implementation Guidelines
+- **New Devices**: Apply asset tag before network configuration
+- **Existing Devices**: Retrofit with asset tags during next maintenance
+- **Label Placement**: Consistent location per device type (back panel for ESP32s)
+- **Documentation**: Photo asset tag placement for reference
+
+---
+
+**Document Version**: 1.1  
+**Last Updated**: September 19, 2025  
+**Maintainer**: TermiteTowers Infrastructure Team

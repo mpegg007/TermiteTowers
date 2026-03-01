@@ -1,27 +1,29 @@
-<!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-  %ccm_git_repo: TermiteTowers %
-  %ccm_git_branch: dev1 %
-  %ccm_git_object_id: wiki/IP_ALLOCATION_STRATEGY.md:121 %
-  %ccm_git_author: mpegg %
-  %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: 751feecbe5f3c9e0e659da19e9ef963b730a251c %
-  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
-  %ccm_git_commit_count: 121 %
-  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
-  %ccm_git_commit_author: mpegg %
-  %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: cleanup %
-  %ccm_git_modify_date: 2025-11-30 12:27:20 %
-  %ccm_git_file_last_modified: 2025-11-30 12:27:20 %
-  %ccm_git_file_name: IP_ALLOCATION_STRATEGY.md %
-  %ccm_git_path: wiki/IP_ALLOCATION_STRATEGY.md %
-  %ccm_git_language_mode: markdown %
-  %ccm_git_file_type: text/plain %
-  %ccm_git_file_encoding: utf-8 %
-  %ccm_git_file_eol: CRLF %
-  %ccm_git_exec: no %
-  %ccm_git_size: 7291 %
-  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!--||  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+||  %ccm_git_repo: TermiteTowers %
+||  %ccm_git_branch: dev1 %
+||  %ccm_git_object_id: wiki/IP_ALLOCATION_STRATEGY.md:136 %
+||  %ccm_git_author: Matthew Pegg %
+||  %ccm_git_author_email: mpegg@hotmail.com %
+||  %ccm_git_blob_sha: 796cc2338d1aba608c00976d7ae0c8437b900f13 %
+||  %ccm_git_commit_id: bc247a4e65bdd9936cbca62c9b8ae30ec02c3198 %
+||  %ccm_git_commit_count: 136 %
+||  %ccm_git_commit_date: 2026-03-01 12:34:10 -0500 %
+||  %ccm_git_commit_author: Matthew Pegg %
+||  %ccm_git_commit_email: mpegg@hotmail.com %
+||  %ccm_git_commit_message: flaresolver startup script fix %
+||  %ccm_git_modify_date: 2026-03-01 12:34:18 %
+||  %ccm_git_file_last_modified: 2026-03-01 12:34:18 %
+||  %ccm_git_file_name: IP_ALLOCATION_STRATEGY.md %
+||  %ccm_git_path: wiki/IP_ALLOCATION_STRATEGY.md %
+||  %ccm_git_language_mode: markdown %
+||  %ccm_git_file_type: text/plain %
+||  %ccm_git_file_encoding: utf-8 %
+||  %ccm_git_file_eol: CRLF %
+||  %ccm_git_exec: no %
+||  %ccm_git_size: 13223 %
+||  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 
+|| ##COMMIT_HISTORY: %git_commit_history: $DATE $AUTHOR $MESSAGE % -->
+<!--|| %git_commit_history:   %ccm_git_commit_message: flaresolver startup script fix % -->
 <!-- %git_commit_history: november changes % -->
 # IP Allocation Strategy
 
@@ -30,20 +32,35 @@ This document defines the authoritative strategy for IP address allocation in th
 
 ---
 
+## Network Topology
+- **Subnet:** 192.168.1.0/24
+- **Gateway:** 192.168.1.1
+- **Broadcast:** 192.168.1.255
+- **DHCP Pool:** 192.168.1.200-.240 (dynamic), all other IPs are reserved or static
+- **Philosophy:** IPs never change when devices are moved or renamed
+
+---
+
 ## Subnet: 192.168.1.0/24
 
 | Range                | Usage                        | Notes/Examples                      |
 |----------------------|------------------------------|-------------------------------------|
-| 192.168.1.1          | Default Gateway/Router       | Main router                         |
+| 192.168.1.1          | Default Gateway/Router       | rt01-nexus-main                     |
 | 192.168.1.2 - .9     | Core Infrastructure          | Switches, controllers, firewalls    |
 | 192.168.1.10 - .49   | Servers                      | NAS, Pi-hole, PowerDNS, Prometheus  |
-| 192.168.1.50 - .99   | Reserved (future infra)      | For future expansion                |
+| 192.168.1.50 - .84   | Reserved / Future Expansion  | Available for servers or IoT growth |
+| 192.168.1.85         | **Home Assistant (hal)**      | **NEVER CHANGE** - critical system  |
+| 192.168.1.86 - .99   | Reserved / Future Expansion  | Available for servers or IoT growth |
 | 192.168.1.100 - .149 | VOIP Devices                 | Phones, ATAs (e.g., .100-.110)      |
-| 192.168.1.150 - .199 | Smart Home/IoT               | Plugs, bulbs, sensors               |
+| 192.168.1.150 - .199 | Smart Home/IoT               | Plugs, bulbs, sensors, ESP32 nodes  |
 | 192.168.1.200 - .240 | Dynamic Clients (DHCP Pool)  | Laptops, phones, guests             |
 | 192.168.1.241 - .250 | Printers, Cameras            | Static or reserved                  |
-| 192.168.1.251 - .253 | WiFi Access Points           | APs (e.g., .251, .252, .253)        |
-| 192.168.1.254        | Broadcast                    |                                     |
+| 192.168.1.251 - .253 | WiFi Access Points           | APs                                 |
+| 192.168.1.254        | Main Switch                  | sw01-stellar-main                   |
+| 192.168.1.255        | Broadcast (not assignable)   |                                     |
+
+> **Note:** .85 (Home Assistant / hal) is a permanent exception pinned in the reserved range.
+> It must never be reassigned or changed - the entire home automation stack depends on it.
 
 ---
 
@@ -90,6 +107,7 @@ If you add a new device type or subnet, update this doc so everyone knows the co
 ## See Also
 - [PORTS_STRATEGY.md](./PORTS_STRATEGY.md)
 - [DHCP_SCOPES_EXPLAINED.md](../infra/dhcp/docs/DHCP_SCOPES_EXPLAINED.md)
+- [Device-Naming-Standard.md](./Device-Naming-Standard.md)
 
 ---
 
@@ -106,6 +124,7 @@ If you add a new device type or subnet, update this doc so everyone knows the co
 | WiFi Access Point   | Wireless client access               | UniFi AP, TP-Link EAP         | 192.168.1.251–1.253          |
 | Printer/Camera      | Printing, surveillance               | HP LaserJet, Reolink          | 192.168.1.241–1.250          |
 | Smart Home/IoT      | Automation, sensors, plugs, bulbs    | GlobePlug, Sonoff, Shelly     | 192.168.1.150–1.199          |
+| Home Automation Hub | Central automation controller        | Home Assistant (hal)          | 192.168.1.85 (**pinned**)    |
 | Dynamic Client      | Laptops, phones, guests              | Windows, Mac, iPhone, Android | 192.168.1.200–1.249 (DHCP)   |
 
 ---
@@ -147,3 +166,101 @@ If you add a new device type or subnet, update this doc so everyone knows the co
 
 > **Note:**
 > VOIP ATAs/phones are not considered core infrastructure, so they are assigned from the 100+ range. This makes firewall and QoS rules easier to manage and keeps infrastructure addresses reserved for networking equipment.
+
+
+### **192.168.1.10 - 1.99: "Server Infrastructure"**  
+**Purpose**: Servers, NAS, containers, critical services
+**Policy**: **Never auto-assigned** by DHCP
+**Management**: Manual or reserved assignments
+**Current devices**:
+
+#### Suggested Server Allocation Table (192.168.1.10–1.49)
+
+| IP Address      | Purpose/Reservation         | Notes                        |
+|-----------------|----------------------------|------------------------------|
+| 192.168.1.10-19 | Physical Servers           | Dedicated hardware           |
+| 192.168.1.20    | Reserved (future use)      | Buffer for expansion         |
+| 192.168.1.21-23 | DHCP Servers               | Primary, backup, expansion   |
+| 192.168.1.24-25 | NTP Servers                | Primary, backup              |
+| 192.168.1.26-28 | DNS Servers                | Primary, secondary, tertiary |
+| 192.168.1.29-31 | Database Servers           | Primary, replica, expansion  |
+| 192.168.1.32-34 | Web Servers                | Main, backup, staging        |
+| 192.168.1.35-37 | App Servers                | Application frontends, microservices |
+| 192.168.1.38-39 | NAS/Storage                | File servers                 |
+| 192.168.1.40-42 | Reserved (future use)      | Buffer for growth            |
+| 192.168.1.40-49 | Reserved (misc servers)    |                              |
+You can adjust the categories and reservations as needed for your environment. This approach gives you:
+
+- Dedicated slots for core infrastructure (DNS, DHCP, NTP, web, database, NAS)
+- Room for future servers and easy expansion
+- Clear separation of roles for easier management and troubleshooting
+- Flexibility to adjust as your environment grows
+
+---
+
+## Current Device Assignments
+
+### Infrastructure
+| IP Address       | Device              | Hostname              | Notes                      |
+|------------------|---------------------|-----------------------|----------------------------|
+| 192.168.1.1      | Primary Router      | rt01-nexus-main       | Gateway                    |
+| 192.168.1.2-8    | Core Infrastructure | -                     | Reserved for network gear  |
+| 192.168.1.251    | Wireless AP #3      | ap03-apollo-garage    | Access Point 3             |
+| 192.168.1.252    | Wireless AP #2      | ap02-vega-workshop    | Access Point 2             |
+| 192.168.1.253    | Wireless AP #1      | ap01-hermes-office    | Access Point 1             |
+| 192.168.1.254    | Main Switch         | sw01-stellar-main     | Primary network switch     |
+
+### Servers & Critical Systems
+| IP Address       | Device              | Hostname              | Notes                      |
+|------------------|---------------------|-----------------------|----------------------------|
+| 192.168.1.85     | Home Assistant VM   | hal (vm-haos-hal)     | **NEVER CHANGE**           |
+
+### ESP32 / IoT Nodes
+ESP32 devices are assigned sequentially starting from .101 as they come online:
+
+| IP Address       | Device Name   | Purpose                        | Status               |
+|------------------|---------------|--------------------------------|----------------------|
+| 192.168.1.101    | esp32-node01  | Primary test bed (all sensors) | Assigned             |
+| 192.168.1.102    | esp32-node02  | Secondary test bed (bedroom)   | Assigned             |
+| 192.168.1.103    | esp32-node03  | New device #1                  | Ready for assignment |
+| 192.168.1.104    | esp32-node04  | New device #2                  | Ready for assignment |
+| 192.168.1.105    | esp32-node05  | New device #3                  | Ready for assignment |
+| 192.168.1.106+   | esp32-node06+ | Future ESP32 devices           | Available            |
+
+---
+
+## New Device Workflow
+1. **Device comes online** - gets temporary DHCP IP from dynamic pool
+2. **Determine appropriate range** - match device type to the allocation table above
+3. **Assign next available IP** in the correct range
+4. **Create DHCP reservation** - device gets the same IP every time
+5. **Document assignment** - update this file
+
+---
+
+## Capacity Planning
+
+### Current Utilization
+- **Infrastructure (1-9, 251-254):** ~8 used / 12 available
+- **Servers (10-49):** 1 used / 40 available
+- **IoT/Smart Home (150-199):** ~2 used / 50 available
+- **DHCP Dynamic (200-240):** 41 addresses for guests/transient devices
+
+### Growth Projections
+- Server capacity of 40 slots is generous for a home lab
+- IoT capacity of 50+ supports significant smart home expansion
+- 41-address DHCP pool is adequate for dynamic clients
+
+---
+
+## Future Considerations
+- **Additional subnets:** 192.168.2.x for guest network isolation
+- **VLAN segmentation:** Separate IoT traffic from servers
+- **IPv6:** Dual-stack for future-proofing
+
+### Migration Planning
+If network restructuring becomes necessary:
+1. Plan during low-usage periods
+2. Update all DHCP reservations simultaneously
+3. Update device configurations as needed
+4. Test critical systems (especially Home Assistant at .85)

@@ -1,27 +1,29 @@
-<##  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-#  %ccm_git_repo: TermiteTowers %
-#  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: media/flaresolverr_starter.ps1:110 %
-#  %ccm_git_author: Matthew Pegg %
-#  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 67a4d23e705d01f7b8cbf29173aa944a2390ebac %
-#  %ccm_git_commit_id: 35a045c001b3d242ff49bf676ba42bd6204a4ae0 %
-#  %ccm_git_commit_count: 110 %
-#  %ccm_git_commit_date: 2026-02-28 20:44:31 -0500 %
-#  %ccm_git_commit_author: Matthew Pegg %
-#  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: fix %
-#  %ccm_git_modify_date: 2026-02-28 20:44:33 %
-#  %ccm_git_file_last_modified: 2026-02-28 20:44:32 %
-#  %ccm_git_file_name: flaresolverr_starter.ps1 %
-#  %ccm_git_path: media/flaresolverr_starter.ps1 %
-#  %ccm_git_language_mode: powershell %
-#  %ccm_git_file_type: text/plain %
-#  %ccm_git_file_encoding: utf-8 %
-#  %ccm_git_file_eol: CRLF %
-#  %ccm_git_exec: no %
-#  %ccm_git_size: 5148 %
-#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  #>
+<##||  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#||  %ccm_git_repo: TermiteTowers %
+#||  %ccm_git_branch: dev1 %
+#||  %ccm_git_object_id: media/flaresolverr_starter.ps1:136 %
+#||  %ccm_git_author: Matthew Pegg %
+#||  %ccm_git_author_email: mpegg@hotmail.com %
+#||  %ccm_git_blob_sha: 56933ffbe0c798b1bb3f764c55fe438995a58c74 %
+#||  %ccm_git_commit_id: bc247a4e65bdd9936cbca62c9b8ae30ec02c3198 %
+#||  %ccm_git_commit_count: 136 %
+#||  %ccm_git_commit_date: 2026-03-01 12:34:10 -0500 %
+#||  %ccm_git_commit_author: Matthew Pegg %
+#||  %ccm_git_commit_email: mpegg@hotmail.com %
+#||  %ccm_git_commit_message: flaresolver startup script fix %
+#||  %ccm_git_modify_date: 2026-03-01 12:34:12 %
+#||  %ccm_git_file_last_modified: 2026-03-01 12:34:12 %
+#||  %ccm_git_file_name: flaresolverr_starter.ps1 %
+#||  %ccm_git_path: media/flaresolverr_starter.ps1 %
+#||  %ccm_git_language_mode: powershell %
+#||  %ccm_git_file_type: text/plain %
+#||  %ccm_git_file_encoding: utf-8 %
+#||  %ccm_git_file_eol: CRLF %
+#||  %ccm_git_exec: no %
+#||  %ccm_git_size: 5897 %
+#||  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 
+#|| ##COMMIT_HISTORY: %git_commit_history: $DATE $AUTHOR $MESSAGE % #>
+<##|| %git_commit_history: #  %ccm_git_commit_message: flaresolver startup script fix % #>
 ﻿#Requires -Version 5.1
 <#
 
@@ -47,11 +49,12 @@
 #>
 
 # -- Configuration ----------------------------------------------------------------
-$LogDir       = 'c:\jobLogs'
-$LogFile      = Join-Path $LogDir 'flaresolverr_starter.log'
-$ExePath      = 'C:\ProgramData\flaresolverr\flaresolverr.exe'
-$WakeMaxTries = 5          # number of wake attempts for the USB drive
-$WakeSleepSec = 3          # seconds between retries
+$LogDir            = 'c:\jobLogs'
+$LogFile           = Join-Path $LogDir 'flaresolverr_starter.log'
+$FlaresolverrLog   = Join-Path $LogDir 'flaresolverr_console.log'
+$ExePath           = 'C:\ProgramData\flaresolverr\flaresolverr.exe'
+$WakeMaxTries      = 5     # number of wake attempts for the USB drive
+$WakeSleepSec      = 3     # seconds between retries
 
 # -- Helper: Wake the USB drive behind the symlink ----------------------------
 function Wait-ForLogDrive {
@@ -129,20 +132,31 @@ if ($existing) {
     Write-Log 'No existing flaresolverr process found.'
 }
 
-# 3.  Start FlareSolverr in a visible but minimized console window
-#     (so you can check its console log any time by restoring the window)
+# 3.  Start FlareSolverr with stdout/stderr redirected to a log file.
+#     The OS handles the redirection natively so the log keeps writing
+#     after this script exits.
+#     View live output any time with:
+#       Get-Content c:\jobLogs\flaresolverr_console.log -Tail 50 -Wait
 if (Test-Path $ExePath) {
-    $psi = New-Object System.Diagnostics.ProcessStartInfo
-    $psi.FileName               = $ExePath
-    $psi.WindowStyle            = [System.Diagnostics.ProcessWindowStyle]::Minimized
-    $psi.CreateNoWindow         = $false
-    $psi.UseShellExecute        = $true
-    $psi.RedirectStandardOutput = $false
-    $psi.RedirectStandardError  = $false
+    # Roll the console log - keep previous run as .prev for reference
+    if (Test-Path $FlaresolverrLog) {
+        $prevLog = $FlaresolverrLog -replace '\.log$', '.prev.log'
+        Copy-Item -LiteralPath $FlaresolverrLog -Destination $prevLog -Force -ErrorAction SilentlyContinue
+    }
 
+    # Combine stdout + stderr into one file via cmd /c redirection.
+    # Start-Process -NoNewWindow + redirect keeps it headless and the
+    # child process owns the file handle directly (survives script exit).
+    $stderrLog = $FlaresolverrLog -replace '\.log$', '.stderr.log'
     try {
-        $proc = [System.Diagnostics.Process]::Start($psi)
+        $proc = Start-Process -FilePath $ExePath `
+                              -NoNewWindow `
+                              -RedirectStandardOutput $FlaresolverrLog `
+                              -RedirectStandardError  $stderrLog `
+                              -PassThru
         Write-Log "Started flaresolverr.exe (PID $($proc.Id))."
+        Write-Log "  stdout -> $FlaresolverrLog"
+        Write-Log "  stderr -> $stderrLog"
     }
     catch {
         Write-Log "ERROR: Failed to start flaresolverr.exe - $_"
