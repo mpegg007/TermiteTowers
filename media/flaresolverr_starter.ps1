@@ -1,18 +1,18 @@
 <##||  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #||  %ccm_git_repo: TermiteTowers %
 #||  %ccm_git_branch: dev1 %
-#||  %ccm_git_object_id: media/flaresolverr_starter.ps1:136 %
+#||  %ccm_git_object_id: media/flaresolverr_starter.ps1:137 %
 #||  %ccm_git_author: Matthew Pegg %
 #||  %ccm_git_author_email: mpegg@hotmail.com %
-#||  %ccm_git_blob_sha: 56933ffbe0c798b1bb3f764c55fe438995a58c74 %
-#||  %ccm_git_commit_id: bc247a4e65bdd9936cbca62c9b8ae30ec02c3198 %
-#||  %ccm_git_commit_count: 136 %
-#||  %ccm_git_commit_date: 2026-03-01 12:34:10 -0500 %
+#||  %ccm_git_blob_sha: 147eb27583083b29a3160680c3d2c9d1e6314d08 %
+#||  %ccm_git_commit_id: 01ebf6d73b649abbf1444f8211ffc1cfb8c3afe1 %
+#||  %ccm_git_commit_count: 137 %
+#||  %ccm_git_commit_date: 2026-03-01 12:46:09 -0500 %
 #||  %ccm_git_commit_author: Matthew Pegg %
 #||  %ccm_git_commit_email: mpegg@hotmail.com %
-#||  %ccm_git_commit_message: flaresolver startup script fix %
-#||  %ccm_git_modify_date: 2026-03-01 12:34:12 %
-#||  %ccm_git_file_last_modified: 2026-03-01 12:34:12 %
+#||  %ccm_git_commit_message: shebang fix %
+#||  %ccm_git_modify_date: 2026-03-01 12:46:11 %
+#||  %ccm_git_file_last_modified: 2026-03-01 12:46:11 %
 #||  %ccm_git_file_name: flaresolverr_starter.ps1 %
 #||  %ccm_git_path: media/flaresolverr_starter.ps1 %
 #||  %ccm_git_language_mode: powershell %
@@ -20,11 +20,13 @@
 #||  %ccm_git_file_encoding: utf-8 %
 #||  %ccm_git_file_eol: CRLF %
 #||  %ccm_git_exec: no %
-#||  %ccm_git_size: 5897 %
+#||  %ccm_git_size: 6056 %
 #||  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 
 #|| ##COMMIT_HISTORY: %git_commit_history: $DATE $AUTHOR $MESSAGE % #>
-<##|| %git_commit_history: #  %ccm_git_commit_message: flaresolver startup script fix % #>
-﻿#Requires -Version 5.1
+<##|| %git_commit_history: #||  %ccm_git_commit_message: shebang fix % #>
+#Requires -Version 5.1
+#|| ##COMMIT_HISTORY: %git_commit_history: $DATE $AUTHOR $MESSAGE % #>
+<##|| %git_commit_history: #  %ccm_git_commit_message: shebang fix % #>
 <#
 
   .SYNOPSIS
