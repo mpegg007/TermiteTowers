@@ -1,32 +1,28 @@
-<##||  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-#||  %ccm_git_repo: TermiteTowers %
-#||  %ccm_git_branch: dev1 %
-#||  %ccm_git_object_id: media/flaresolverr_starter.ps1:137 %
-#||  %ccm_git_author: Matthew Pegg %
-#||  %ccm_git_author_email: mpegg@hotmail.com %
-#||  %ccm_git_blob_sha: 147eb27583083b29a3160680c3d2c9d1e6314d08 %
-#||  %ccm_git_commit_id: 01ebf6d73b649abbf1444f8211ffc1cfb8c3afe1 %
-#||  %ccm_git_commit_count: 137 %
-#||  %ccm_git_commit_date: 2026-03-01 12:46:09 -0500 %
-#||  %ccm_git_commit_author: Matthew Pegg %
-#||  %ccm_git_commit_email: mpegg@hotmail.com %
-#||  %ccm_git_commit_message: shebang fix %
-#||  %ccm_git_modify_date: 2026-03-01 12:46:11 %
-#||  %ccm_git_file_last_modified: 2026-03-01 12:46:11 %
-#||  %ccm_git_file_name: flaresolverr_starter.ps1 %
-#||  %ccm_git_path: media/flaresolverr_starter.ps1 %
-#||  %ccm_git_language_mode: powershell %
-#||  %ccm_git_file_type: text/plain %
-#||  %ccm_git_file_encoding: utf-8 %
-#||  %ccm_git_file_eol: CRLF %
-#||  %ccm_git_exec: no %
-#||  %ccm_git_size: 6056 %
-#||  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 
-#|| ##COMMIT_HISTORY: %git_commit_history: $DATE $AUTHOR $MESSAGE % #>
-<##|| %git_commit_history: #||  %ccm_git_commit_message: shebang fix % #>
 #Requires -Version 5.1
-#|| ##COMMIT_HISTORY: %git_commit_history: $DATE $AUTHOR $MESSAGE % #>
-<##|| %git_commit_history: #  %ccm_git_commit_message: shebang fix % #>
+<##  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: media/flaresolverr_starter.ps1:138 %
+#  %ccm_git_author: Matthew Pegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: c0668415b129e015b27a31ff704d7bd78d415d60 %
+#  %ccm_git_commit_id: 002c78fc917275c9c534458206734b661bddf5be %
+#  %ccm_git_commit_count: 138 %
+#  %ccm_git_commit_date: 2026-03-01 12:58:08 -0500 %
+#  %ccm_git_commit_author: Matthew Pegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: header test %
+#  %ccm_git_modify_date: 2026-03-01 12:58:09 %
+#  %ccm_git_file_last_modified: 2026-03-01 12:48:45 %
+#  %ccm_git_file_name: flaresolverr_starter.ps1 %
+#  %ccm_git_path: media/flaresolverr_starter.ps1 %
+#  %ccm_git_language_mode: powershell %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: utf-8 %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 5894 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  #>
 <#
 
   .SYNOPSIS
