@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: scripts/system/start-dockers.sh:132 %
+#  %ccm_git_object_id: scripts/system/start-dockers.sh:139 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 5f6c5f883c94c684e6bf67d01d112eaed2ef4ff4 %
-#  %ccm_git_commit_id: 6e67c9cb056223d2c5e30fd43ff735f0e43b37fb %
-#  %ccm_git_commit_count: 132 %
-#  %ccm_git_commit_date: 2026-02-07 16:19:47 -0500 %
+#  %ccm_git_blob_sha: d3754d770e2d5e19efec6fc1dba448fed79e49f9 %
+#  %ccm_git_commit_id: 4b7c4d5292241b4ba1eb82f1b2ec0509b8fd544f %
+#  %ccm_git_commit_count: 139 %
+#  %ccm_git_commit_date: 2026-03-22 09:03:20 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: comment cleanup %
-#  %ccm_git_modify_date: 2026-02-07 16:19:48 %
-#  %ccm_git_file_last_modified: 2026-02-07 16:19:48 %
+#  %ccm_git_commit_message: march updates %
+#  %ccm_git_modify_date: 2026-03-22 09:03:23 %
+#  %ccm_git_file_last_modified: 2026-03-22 09:03:23 %
 #  %ccm_git_file_name: start-dockers.sh %
 #  %ccm_git_path: scripts/system/start-dockers.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,8 +21,10 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 440 %
+#  %ccm_git_size: 554 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: unknown  unknown  unknown  % 
+# %git_commit_history: 2026-02-07 mpegg  comment cleanup  % 
 # %git_commit_history: 2026-02-07 mpegg  feb2026  % 
 echo "Starting Docker containers..."
 # Databases first

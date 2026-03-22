@@ -1,18 +1,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/dhcp/configs/systemd/kea-dhcp-ddns-dev1.service:121 %
+#  %ccm_git_object_id: infra/dhcp/configs/systemd/kea-dhcp-ddns-dev1.service:139 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 289404a707f1df21307fe889b3c17ae6dc1311b3 %
-#  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
-#  %ccm_git_commit_count: 121 %
-#  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
+#  %ccm_git_blob_sha: 1d76b3e14ef0c7a1a5d377fd171d925b61b8c504 %
+#  %ccm_git_commit_id: 4b7c4d5292241b4ba1eb82f1b2ec0509b8fd544f %
+#  %ccm_git_commit_count: 139 %
+#  %ccm_git_commit_date: 2026-03-22 09:03:20 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: cleanup %
-#  %ccm_git_modify_date: 2025-11-30 12:26:05 %
-#  %ccm_git_file_last_modified: 2025-11-30 12:26:05 %
+#  %ccm_git_commit_message: march updates %
+#  %ccm_git_modify_date: 2026-03-22 09:03:20 %
+#  %ccm_git_file_last_modified: 2026-03-22 09:03:20 %
 #  %ccm_git_file_name: kea-dhcp-ddns-dev1.service %
 #  %ccm_git_path: infra/dhcp/configs/systemd/kea-dhcp-ddns-dev1.service %
 #  %ccm_git_language_mode: service %
@@ -20,8 +20,11 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 244 %
+#  %ccm_git_size: 393 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: unknown  unknown  unknown  % 
+# %git_commit_history: unknown  unknown  unknown  % 
+# %git_commit_history: 2025-11-30 mpegg  cleanup  % 
 # %git_commit_history: november changes % 
 [Unit]
 Description=Kea DHCP-DDNS Server (dev1)
@@ -31,8 +34,8 @@ After=network.target
 ExecStart=/usr/sbin/kea-dhcp-ddns -c /etc/kea/tt-kea-dhcp-ddns-dev1.conf
 Restart=on-failure
 RestartSec=10
-User=root
-Group=root
+User=_kea
+Group=_kea
 
 [Install]
 WantedBy=multi-user.target

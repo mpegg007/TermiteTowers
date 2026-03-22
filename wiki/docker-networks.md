@@ -1,18 +1,18 @@
 <!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
   %ccm_git_repo: TermiteTowers %
   %ccm_git_branch: dev1 %
-  %ccm_git_object_id: wiki/docker-networks.md:113 %
+  %ccm_git_object_id: wiki/docker-networks.md:139 %
   %ccm_git_author: mpegg %
   %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: ee34580914badde5ffd88946a4e4cf8c77c45855 %
-  %ccm_git_commit_id: 8b186f9039f2b3f1503219473a1e2de120c993d1 %
-  %ccm_git_commit_count: 113 %
-  %ccm_git_commit_date: 2025-10-30 12:44:42 -0400 %
+  %ccm_git_blob_sha: d878ec022d1ef5e648d964b0b463f4f77b13fc6b %
+  %ccm_git_commit_id: 4b7c4d5292241b4ba1eb82f1b2ec0509b8fd544f %
+  %ccm_git_commit_count: 139 %
+  %ccm_git_commit_date: 2026-03-22 09:03:20 -0400 %
   %ccm_git_commit_author: mpegg %
   %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: commen block updates %
-  %ccm_git_modify_date: 2025-10-30 12:44:46 %
-  %ccm_git_file_last_modified: 2025-10-30 12:44:46 %
+  %ccm_git_commit_message: march updates %
+  %ccm_git_modify_date: 2026-03-22 09:03:23 %
+  %ccm_git_file_last_modified: 2026-03-22 09:03:23 %
   %ccm_git_file_name: docker-networks.md %
   %ccm_git_path: wiki/docker-networks.md %
   %ccm_git_language_mode: markdown %
@@ -20,8 +20,10 @@
   %ccm_git_file_encoding: us-ascii %
   %ccm_git_file_eol: CRLF %
   %ccm_git_exec: no %
-  %ccm_git_size: 6623 %
+  %ccm_git_size: 6745 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- %git_commit_history: unknown  unknown  unknown  % -->
+<!-- %git_commit_history: 2025-10-30 mpegg  commen block updates  % -->
 <!-- %git_commit_history: adding secret-service % -->
 <!-- %git_commit_history: docker updates % -->
 # Docker Networks Inventory
@@ -58,7 +60,7 @@ _Last updated: 2025-10-30_
 | lobechat-dev1            | ai-services-net-dev1               | docker_default      | 172.18.0.0/16      | Migrated   |
 | dozzle-dev1              | monitor-apps-net-dev1              | dozzle-dev1_default | 172.24.0.0/16      | Migrated   |
 | homarr-dev1              | productivity-apps-net-dev1         | homarr-dev1_default | 172.25.0.0/16      | Migrated   |
-| kitchenowl-dev1          | productivity-apps-net-dev1         | kitchenowl-dev1_default | 172.22.0.0/16      | Migrated   |
+| homepage-dev1            | app-services-net-dev1              |                     |                    |            |
 | llm-server-dev1          | ai-services-net-dev1               | llm-server-dev1_default | 192.168.32.0/20    | Migrated   |
 | mealie-dev1              | productivity-apps-net-dev1         |                     |                    |            |
 | openwebui-dev1           | ai-services-net-dev1               | openweb-dev1_default | 192.168.16.0/20    | Migrated   |

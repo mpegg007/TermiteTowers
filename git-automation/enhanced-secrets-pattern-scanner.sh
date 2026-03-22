@@ -36,7 +36,12 @@
 set -euo pipefail
 
 REPO_ROOT=$(git rev-parse --show-toplevel)
-LOG_FILE="$REPO_ROOT/git-automation/enhanced-hooks.log"
+REPO_NAME=$(basename "$REPO_ROOT")
+LOG_DIR="$HOME/log"
+LOG_FILE="$LOG_DIR/${REPO_NAME}-enhanced-hooks.log"
+
+# Create log directory if it doesn't exist
+mkdir -p "$LOG_DIR"
 
 # Require file argument
 if [ $# -ne 1 ]; then
