@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: media/build_family_map.py:139 %
+#  %ccm_git_object_id: unknown %
 #  %ccm_git_author: Matthew Pegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 1ccb0e8e0835d4c21eedbafbab3f7070b31c8a6f %
-#  %ccm_git_commit_id: 082ff38c260cbc5b6c247b8ea6097056d609d69a %
-#  %ccm_git_commit_count: 139 %
-#  %ccm_git_commit_date: 2026-05-23 16:09:44 -0400 %
-#  %ccm_git_commit_author: Matthew Pegg %
-#  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: image tagging phase 1 %
-#  %ccm_git_modify_date: 2026-05-23 16:09:50 %
-#  %ccm_git_file_last_modified: 2026-05-23 16:09:50 %
+#  %ccm_git_blob_sha: 5e28ee5ef7fc536b6a2e7242e8ecab77ca41a098 %
+#  %ccm_git_commit_id: unknown %
+#  %ccm_git_commit_count: unknown %
+#  %ccm_git_commit_date: unknown %
+#  %ccm_git_commit_author: unknown %
+#  %ccm_git_commit_email: unknown %
+#  %ccm_git_commit_message: unknown %
+#  %ccm_git_modify_date: 2026-05-23 17:21:49 %
+#  %ccm_git_file_last_modified: 2026-05-23 17:21:48 %
 #  %ccm_git_file_name: build_family_map.py %
 #  %ccm_git_path: media/build_family_map.py %
 #  %ccm_git_language_mode: python %
@@ -21,8 +21,9 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 7024 %
+#  %ccm_git_size: 6997 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2026-05-23 Matthew Pegg  image tagging phase 1  % 
 """
 build_family_map.py
 
@@ -73,7 +74,7 @@ class UF:
         if ra != rb:
             self._parent[rb] = ra
 
-    def families(self):
+    def stacks(self):
         groups = {}
         for x in self._parent:
             r = self.find(x)
@@ -156,29 +157,29 @@ def main(archive_root):
     # Build record lookup
     rec_by_path = {r["path"]: r for r in records}
 
-    # Collect and sort families (largest first)
-    raw_families = uf.families()
-    families = []
-    for members in raw_families:
+    # Collect and sort stacks (largest first)
+    raw_stacks = uf.stacks()
+    stacks = []
+    for members in raw_stacks:
         recs = [rec_by_path[p] for p in members if p in rec_by_path]
         FOLDER_ORDER = {"RAW_HDRi": 0, "TIFF_Archive": 1, "JPG_Share": 2, "JPG_Print": 3, "backup": 4}
         recs.sort(key=lambda r: (FOLDER_ORDER.get(r["folder"], 9), r["file_name"]))
-        families.append(recs)
-    families.sort(key=lambda f: -len(f))
+        stacks.append(recs)
+    stacks.sort(key=lambda f: -len(f))
 
     # ── Report ────────────────────────────────────────────────────────────────
-    singletons  = [f for f in families if len(f) == 1]
-    multi       = [f for f in families if len(f) > 1]
+    singletons  = [f for f in stacks if len(f) == 1]
+    multi       = [f for f in stacks if len(f) > 1]
 
-    print(f"Families: {len(multi)} multi-member, {len(singletons)} singletons\n")
+    print(f"Stacks: {len(multi)} multi-member, {len(singletons)} singletons\n")
     print("=" * 70)
 
-    for i, fam in enumerate(multi, 1):
-        hashes = {r["image_hash"] for r in fam}
-        print(f"\nFamily {i}  ({len(fam)} members, {len(hashes)} distinct hash(es))")
+    for i, stk in enumerate(multi, 1):
+        hashes = {r["image_hash"] for r in stk}
+        print(f"\nStack {i}  ({len(stk)} members, {len(hashes)} distinct hash(es))")
         print("-" * 70)
         prev_hash = None
-        for r in fam:
+        for r in stk:
             marker = "  " if r["image_hash"] == prev_hash else "* " if prev_hash else "  "
             rel = os.path.relpath(r["path"], archive_root)
             print(f"  {r['image_hash'][:8]}  [{r['folder']:<14}]  {rel}")
@@ -187,21 +188,21 @@ def main(archive_root):
     if singletons:
         print(f"\n{'=' * 70}")
         print(f"Singletons ({len(singletons)}) — no related files found:")
-        for fam in singletons:
-            r = fam[0]
+        for stk in singletons:
+            r = stk[0]
             rel = os.path.relpath(r["path"], archive_root)
             print(f"  {r['image_hash'][:8]}  [{r['folder']:<14}]  {rel}")
 
     # ── JSON output ───────────────────────────────────────────────────────────
-    out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "families.json")
+    out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "stacks.json")
     json_out = []
-    for fam in families:
+    for stk in stacks:
         json_out.append([{
             "path":       r["path"],
             "folder":     r["folder"],
             "file_name":  r["file_name"],
             "image_hash": r["image_hash"],
-        } for r in fam])
+        } for r in stk])
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(json_out, f, indent=2)
     print(f"\nJSON written to {out_path}")
