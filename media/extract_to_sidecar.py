@@ -1,18 +1,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: media/extract_to_sidecar.py:139 %
+#  %ccm_git_object_id: unknown %
 #  %ccm_git_author: Matthew Pegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 2ccaa3fb604ba7c7d6f096360df248a30b1bd673 %
-#  %ccm_git_commit_id: 082ff38c260cbc5b6c247b8ea6097056d609d69a %
-#  %ccm_git_commit_count: 139 %
-#  %ccm_git_commit_date: 2026-05-23 16:09:44 -0400 %
-#  %ccm_git_commit_author: Matthew Pegg %
-#  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: image tagging phase 1 %
-#  %ccm_git_modify_date: 2026-05-23 16:09:52 %
-#  %ccm_git_file_last_modified: 2026-05-23 15:19:48 %
+#  %ccm_git_blob_sha: 38528bd0a2df477cfa386af8b0dc5ed0c125c606 %
+#  %ccm_git_commit_id: unknown %
+#  %ccm_git_commit_count: unknown %
+#  %ccm_git_commit_date: unknown %
+#  %ccm_git_commit_author: unknown %
+#  %ccm_git_commit_email: unknown %
+#  %ccm_git_commit_message: unknown %
+#  %ccm_git_modify_date: 2026-05-23 18:20:38 %
+#  %ccm_git_file_last_modified: 2026-05-23 18:20:38 %
 #  %ccm_git_file_name: extract_to_sidecar.py %
 #  %ccm_git_path: media/extract_to_sidecar.py %
 #  %ccm_git_language_mode: python %
@@ -20,8 +20,9 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 11614 %
+#  %ccm_git_size: 11615 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2026-05-23 Matthew Pegg  image tagging phase 1  % 
 ﻿#!/usr/bin/env python3
 """
 extract_to_sidecar.py
@@ -171,7 +172,7 @@ def parse_existing_sidecar(sidecar_path):
         result["name_history"].append((ts, val))
     for m in re.finditer(r'^\|\s*(\d{4}-\d{2}-\d{2} \d{2}:\d{2})\s*\|\s*([0-9a-f]{32})\s*\|\s*(.+?)\s*\|$', content, re.MULTILINE):
         result["derived"].append((m.group(1).strip(), m.group(2).strip(), m.group(3).strip()))
-    m = re.search(r'## Current Tag State\n```text\n(.*?)```', content, re.DOTALL)
+    m = re.search(r'## Current Tag State\n+```text\n(.*?)```', content, re.DOTALL)
     if m:
         result["last_tags"] = [l for l in m.group(1).strip().splitlines() if l.strip()]
     else:

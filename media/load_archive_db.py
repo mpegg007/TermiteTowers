@@ -5,15 +5,15 @@
 #  %ccm_git_object_id: unknown %
 #  %ccm_git_author: Matthew Pegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 799f8a7f34be32964adec5a869537732c285965e %
+#  %ccm_git_blob_sha: ed7feeb6524e9451b4095f07c577658ee264d664 %
 #  %ccm_git_commit_id: unknown %
 #  %ccm_git_commit_count: unknown %
 #  %ccm_git_commit_date: unknown %
 #  %ccm_git_commit_author: unknown %
 #  %ccm_git_commit_email: unknown %
 #  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2026-05-23 17:21:55 %
-#  %ccm_git_file_last_modified: 2026-05-23 17:21:55 %
+#  %ccm_git_modify_date: 2026-05-23 18:20:41 %
+#  %ccm_git_file_last_modified: 2026-05-23 18:20:40 %
 #  %ccm_git_file_name: load_archive_db.py %
 #  %ccm_git_path: media/load_archive_db.py %
 #  %ccm_git_language_mode: python %
@@ -21,8 +21,9 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 6917 %
+#  %ccm_git_size: 9623 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: unknown  unknown  unknown  % 
 """
 load_archive_db.py
 
@@ -39,6 +40,7 @@ Usage:
 import os
 import sys
 import re
+from datetime import datetime
 from pathlib import Path
 import psycopg2
 from psycopg2.extras import execute_values
@@ -162,11 +164,64 @@ def load_all(conn, archive_root):
                   data["file_bytes"], data["scan_name"], str(md_path)))
             image_id = cur.fetchone()[0]
 
-            cur.execute("DELETE FROM image_tags WHERE image_id = %s", (image_id,))
-            if data["current_tags"]:
+            # ── Diff tags: only record history when values actually change ──
+            cur.execute(
+                "SELECT tag_key, tag_value FROM image_tags WHERE image_id = %s",
+                (image_id,)
+            )
+            old_tags = {r[0]: r[1] for r in cur.fetchall()}
+            new_tags = data["current_tags"]
+
+            added   = {k: v for k, v in new_tags.items() if k not in old_tags}
+            changed = {k: v for k, v in new_tags.items()
+                       if k in old_tags and old_tags[k] != v}
+            removed = {k for k in old_tags if k not in new_tags}
+
+            # changed_at is always the image file's last-modified date.
+            # Tags live inside the image; the file_date is the tightest upper
+            # bound on when any tag could have been written. now() would just
+            # mean "when we ran this script", which is not meaningful.
+            raw_file_date = data.get("file_date") or ""
+            file_ts = re.sub(r'^(\d{4}):(\d{2}):(\d{2})', r'\1-\2-\3', raw_file_date)
+            if not file_ts:
+                raise ValueError(f"No file_date for {image_path}")
+
+            if added:
                 execute_values(cur,
-                    "INSERT INTO image_tags (image_id, tag_key, tag_value) VALUES %s",
-                    [(image_id, k, v) for k, v in data["current_tags"].items()])
+                    "INSERT INTO image_tags (image_id, tag_key, tag_value, changed_at)"
+                    " VALUES %s",
+                    [(image_id, k, v, file_ts) for k, v in added.items()])
+                execute_values(cur,
+                    "INSERT INTO tag_history"
+                    " (image_id, snapshot_ts, change_type, tag_key, tag_value)"
+                    " VALUES %s ON CONFLICT DO NOTHING",
+                    [(image_id, file_ts, 'added', k, v) for k, v in added.items()])
+
+            for k, v in changed.items():
+                cur.execute(
+                    "UPDATE image_tags SET tag_value = %s, changed_at = %s"
+                    " WHERE image_id = %s AND tag_key = %s",
+                    (v, file_ts, image_id, k))
+                cur.execute(
+                    "INSERT INTO tag_history"
+                    " (image_id, snapshot_ts, change_type, tag_key, tag_value)"
+                    " VALUES (%s,%s,'changed_from',%s,%s) ON CONFLICT DO NOTHING",
+                    (image_id, file_ts, k, old_tags[k]))
+                cur.execute(
+                    "INSERT INTO tag_history"
+                    " (image_id, snapshot_ts, change_type, tag_key, tag_value)"
+                    " VALUES (%s,%s,'changed_to',%s,%s) ON CONFLICT DO NOTHING",
+                    (image_id, file_ts, k, v))
+
+            for k in removed:
+                cur.execute(
+                    "DELETE FROM image_tags WHERE image_id = %s AND tag_key = %s",
+                    (image_id, k))
+                cur.execute(
+                    "INSERT INTO tag_history"
+                    " (image_id, snapshot_ts, change_type, tag_key, tag_value)"
+                    " VALUES (%s,%s,'removed',%s,%s) ON CONFLICT DO NOTHING",
+                    (image_id, file_ts, k, old_tags[k]))
 
             for ts, change_type, tag_key, tag_value in data["history"]:
                 cur.execute("""

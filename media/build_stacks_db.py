@@ -5,15 +5,15 @@
 #  %ccm_git_object_id: unknown %
 #  %ccm_git_author: Matthew Pegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 18ddec9702ecb5d90a220ed71de4d2d9da6e4419 %
+#  %ccm_git_blob_sha: 88009b295ad50057a38a26cac777466c133d97ff %
 #  %ccm_git_commit_id: unknown %
 #  %ccm_git_commit_count: unknown %
 #  %ccm_git_commit_date: unknown %
 #  %ccm_git_commit_author: unknown %
 #  %ccm_git_commit_email: unknown %
 #  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2026-05-23 17:21:51 %
-#  %ccm_git_file_last_modified: 2026-05-23 17:21:51 %
+#  %ccm_git_modify_date: 2026-05-23 18:20:36 %
+#  %ccm_git_file_last_modified: 2026-05-23 18:20:36 %
 #  %ccm_git_file_name: build_stacks_db.py %
 #  %ccm_git_path: media/build_stacks_db.py %
 #  %ccm_git_language_mode: python %
@@ -21,8 +21,9 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 4943 %
+#  %ccm_git_size: 4941 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: unknown  unknown  unknown  % 
 """
 build_stacks_db.py
 
@@ -158,7 +159,7 @@ def main():
 
     conn.commit()
 
-    # Print multi-member families
+    # Print multi-member stacks
     print()
     for group in sorted(multi, key=lambda g: -len(g)):
         group_sorted = sorted(group, key=lambda i: (

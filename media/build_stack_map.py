@@ -5,30 +5,32 @@
 #  %ccm_git_object_id: unknown %
 #  %ccm_git_author: Matthew Pegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 5e28ee5ef7fc536b6a2e7242e8ecab77ca41a098 %
+#  %ccm_git_blob_sha: 09a2d7e25f0a9eaa65d257a4c883464d71d1e30c %
 #  %ccm_git_commit_id: unknown %
 #  %ccm_git_commit_count: unknown %
 #  %ccm_git_commit_date: unknown %
 #  %ccm_git_commit_author: unknown %
 #  %ccm_git_commit_email: unknown %
 #  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2026-05-23 17:21:49 %
-#  %ccm_git_file_last_modified: 2026-05-23 17:21:48 %
-#  %ccm_git_file_name: build_family_map.py %
-#  %ccm_git_path: media/build_family_map.py %
+#  %ccm_git_modify_date: 2026-05-23 18:20:34 %
+#  %ccm_git_file_last_modified: 2026-05-23 18:20:33 %
+#  %ccm_git_file_name: build_stack_map.py %
+#  %ccm_git_path: media/build_stack_map.py %
 #  %ccm_git_language_mode: python %
 #  %ccm_git_file_type: text/x-script.python %
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 6997 %
+#  %ccm_git_size: 7064 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
-# %git_commit_history: 2026-05-23 Matthew Pegg  image tagging phase 1  % 
+# %git_commit_history: unknown  unknown  unknown  % 
+# %git_commit_history: 2026-05-23 Matthew Pegg  image tagging phase 1  %
+ 
 """
-build_family_map.py
+build_stack_map.py
 
 Reads all .md sidecars under the PhotoArchive and groups image files into
-families using union-find with two linking rules:
+stacks using union-find with two linking rules:
 
   1. Same ImageHash  → identical pixel content (copies, format conversions)
   2. Same canonical stem → same renamed file in different formats
@@ -36,12 +38,12 @@ families using union-find with two linking rules:
        Strip extension, compare stems exactly.
        Generic names like "party" are excluded from stem-matching.
 
-Membership is transitive: A==B by hash, B==C by stem → all three are one family.
+Membership is transitive: A==B by hash, B==C by stem → all three are one stack.
 
 Usage:
-    python build_family_map.py [<archive_root>]
+    python build_stack_map.py [<archive_root>]
 
-Output: printed family report + families.json beside this script.
+Output: printed stack report + stacks.json beside this script.
 """
 
 import os
