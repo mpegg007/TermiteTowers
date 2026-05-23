@@ -1,18 +1,18 @@
 <!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
   %ccm_git_repo: TermiteTowers %
   %ccm_git_branch: dev1 %
-  %ccm_git_object_id: wiki/ports.md:132 %
+  %ccm_git_object_id: wiki/ports.md:139 %
   %ccm_git_author: mpegg %
   %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: fdbf468f4f380ba36ade44687c33bef3df7aaa36 %
-  %ccm_git_commit_id: 6e67c9cb056223d2c5e30fd43ff735f0e43b37fb %
-  %ccm_git_commit_count: 132 %
-  %ccm_git_commit_date: 2026-02-07 16:19:47 -0500 %
+  %ccm_git_blob_sha: 53126a51e9616fdd888c3a5f5d56d256c2343ff3 %
+  %ccm_git_commit_id: 4b7c4d5292241b4ba1eb82f1b2ec0509b8fd544f %
+  %ccm_git_commit_count: 139 %
+  %ccm_git_commit_date: 2026-03-22 09:03:20 -0400 %
   %ccm_git_commit_author: mpegg %
   %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: comment cleanup %
-  %ccm_git_modify_date: 2026-02-07 16:19:49 %
-  %ccm_git_file_last_modified: 2026-02-07 16:19:49 %
+  %ccm_git_commit_message: march updates %
+  %ccm_git_modify_date: 2026-03-22 09:03:23 %
+  %ccm_git_file_last_modified: 2026-03-22 09:03:23 %
   %ccm_git_file_name: ports.md %
   %ccm_git_path: wiki/ports.md %
   %ccm_git_language_mode: markdown %
@@ -20,8 +20,9 @@
   %ccm_git_file_encoding: utf-8 %
   %ccm_git_file_eol: CRLF %
   %ccm_git_exec: no %
-  %ccm_git_size: 12431 %
+  %ccm_git_size: 12626 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- %git_commit_history: 2026-02-07 mpegg  comment cleanup  % -->
 <!-- %git_commit_history: 2026-02-07 mpegg  feb2026  % -->
 <!-- %git_commit_history: 2025-12-15 mpegg  monday drop  % -->
 <!-- %git_commit_history: cleanup % -->
@@ -47,7 +48,7 @@ This page tracks host and service ports used across TermiteTowers using a system
 **App Services Network:**
 
 - Network: `app-services-net-dev1`
-- Services: KitchenOwl, Mealie, Homarr, LLM Server API, and other Home Automation/Daily Tools in the 3300-3399 range
+- Services: Homepage, Mealie, Homarr, LLM Server API, and other Home Automation/Daily Tools in the 3300-3399 range
 
 **Other Categories:**
 
@@ -94,13 +95,15 @@ This page tracks host and service ports used across TermiteTowers using a system
 | MkDocs Documentation           | docs.termitetowers.ca            | 3210      | 8000           | Content   | ✅ **NEW**       |
 | Blog/CMS                       | blog.termitetowers.ca            | 3220      | TBD            | Content   | 🕒 Planned       |
 | Nextcloud                      | nextcloud.termitetowers.ca       | 3230      | 80             | Content   | ✅ **NEW**       |
-| File Sharing                   | fileshare.termitetowers.ca       | 3230      | TBD            | Content   | 🕒 Planned       |
+| File Sharing                   | fileshare.termitetowers.ca       | 3240      | TBD            | Content   | 🕒 Planned       |
+| News/RSS                       | news.termitetowers.ca            | 3250      | TBD            | Content   | ✅ **NEW**       |
 
 | Mealie                         | mealie.termitetowers.ca          | 3301      | 80             | Home      | ✅ app-services-net-dev1 |
 | Homarr                         | home.termitetowers.ca            | 3310      | 7575           | Home      | ✅ **UPDATED**   |
 | Radicale CalDAV                | calendars.termitetowers.ca       | 3320      | 5232           | Home      | ✅ **NEW**       |
 | Note-Taking Apps               | notes.termitetowers.ca           | 3330      | TBD            | Home      | 🕒 Planned       |
 | LLM Server API                 | llmapi.termitetowers.ca          | 3350      | 8000           | Home      | ✅ **NEW**       |
+| Homepage                       | homepage.termitetowers.ca        | 3360      | 3000           | Home      | ✅ app-services-net-dev1 |
 | Vault                          | vault.termitetowers.ca           | 3500      | 3000           | Security  | 🔄 **TO MIGRATE**|
 
 | Certificate Management         | certs.termitetowers.ca           | 3540      | TBD            | Security  | 🕒 Planned       |
@@ -109,7 +112,6 @@ This page tracks host and service ports used across TermiteTowers using a system
 | Redis Admin                    | redisadmin.termitetowers.ca      | 3630      | TBD            | Database  | 🕒 Planned       |
 | MongoDB Admin                  | mongodbadmin.termitetowers.ca    | 3640      | TBD            | Database  | 🕒 Planned       |
 | Uptime Kuma                    | kuma.termitetowers.ca            | 3700      | 3001           | Monitor   | ✅ **UPDATED**   |
-| Uptime Kuma                    | kuma.termitetowers.ca            | 3700      | 3001           | Monitor   | ✅               |
 | Dozzle                         | dozzle.termitetowers.ca          | 3710      | 8080           | Monitor   | ✅ **UPDATED**   |
 | Prometheus                     | prometheus.termitetowers.ca      | 3720      | 9090           | Monitor   | ✅ **NEW**       |
 | watchYourLan                   | watchyourlan.termitetowers.ca    | 3730      | 8840           | Monitor   | ✅ **NEW**       |
@@ -120,7 +122,7 @@ This page tracks host and service ports used across TermiteTowers using a system
 | TensorFlow                     | tensorflow.termitetowers.ca      | 3810      | 8888           | AI        | ✅ **NEW**       |
 | Text Generation UI             | textgen.termitetowers.ca         | 3811      | TBD            | AI        | 🕒 Planned       |
 | Stable Diffusion               | stablediff.termitetowers.ca      | 3820      | TBD            | AI        | 🕒 Planned       |
-| ComfyUI                        | comfyui.termitetowers.ca         | 3830      | TBD            | AI        | 🕒 Planned       |
+| ComfyUI                        | comfyui.termitetowers.ca         | 3830      | 8188           | AI        | ✅ **INTEGRATED**|
 | Model Management               | modelmgmt.termitetowers.ca       | 3840      | TBD            | AI        | 🕒 Planned       |
 | AI Training Tools              | aitrain.termitetowers.ca         | 3850      | TBD            | AI        | 🕒 Planned       |
 | Snipe-IT                       | asset.termitetowers.ca           | 3900      | 80             | Assets    | ✅ **UPDATED**   |

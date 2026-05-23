@@ -1,3 +1,27 @@
+<!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+  %ccm_git_repo: TermiteTowers %
+  %ccm_git_branch: dev1 %
+  %ccm_git_object_id: wiki/vscode-ai-models.md:139 %
+  %ccm_git_author: mpegg %
+  %ccm_git_author_email: mpegg@hotmail.com %
+  %ccm_git_blob_sha: a92b01130e046ff63c30cf0543ab36769e478b7f %
+  %ccm_git_commit_id: 4b7c4d5292241b4ba1eb82f1b2ec0509b8fd544f %
+  %ccm_git_commit_count: 139 %
+  %ccm_git_commit_date: 2026-03-22 09:03:20 -0400 %
+  %ccm_git_commit_author: mpegg %
+  %ccm_git_commit_email: mpegg@hotmail.com %
+  %ccm_git_commit_message: march updates %
+  %ccm_git_modify_date: 2026-03-22 09:03:23 %
+  %ccm_git_file_last_modified: 2026-02-14 17:57:46 %
+  %ccm_git_file_name: vscode-ai-models.md %
+  %ccm_git_path: wiki/vscode-ai-models.md %
+  %ccm_git_language_mode: markdown %
+  %ccm_git_file_type: text/plain %
+  %ccm_git_file_encoding: utf-8 %
+  %ccm_git_file_eol: CRLF %
+  %ccm_git_exec: no %
+  %ccm_git_size: 22997 %
+  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
 <!-- # %git_commit_history: 2025-09-06 mpegg  hook final alpha v0.1  %  -->
 <!-- %git_commit_history: 2025-12-15 mpegg  monday drop  % -->
 <!-- %git_commit_history: friday checkin % -->
@@ -28,30 +52,50 @@
 
 ## Local Models (Via Ollama or Other Extensions)
 
-| Model | DL | Released | Context | Trainer | Focus | Base | VRAM | Fits | Rec? | Speed | Code | Und. | Auto | Strengths | Weaknesses |
-| :--- | :---: | :---: | :---: | :--- | :--- | :--- | :--- | :---: | :---: | :--- | :---: | :---: | :---: | :--- | :--- |
-| **DeepSeek-R1 (8B)** | ✅ | 2025 | 128K | DeepSeek-R1 | Liberal Arts | Llama 3.1 | 6GB | ✅ | ✅ | Fast | ✅ | ✅✅ | ❌ | Great reasoning + natural language | Less code-specialized than Qwen |
-| **DeepSeek-R1 (7B)** | ✅ | 2025 | 128K | DeepSeek-R1 | STEM | Qwen 2.5 | 5GB | ✅ | ✅ | Fast | ✅ | ✅✅ | ❌ | Excellent logic & math reasoning | Can be terse |
-| **Qwen2.5-Coder (32B)** | ❌ | 2024 | 128K | Qwen | Coding | Qwen 2.5 | 20GB | ❌ | ❌ | Slow | ✅ | ✅ | ❌ | Strong code generation | Too big for 16GB VRAM |
-| **Qwen2.5-Coder (14B)** | ✅ | 2024 | 128K | Qwen | Coding | Qwen 2.5 | 10GB | ✅ | ✅ | Medium | ✅ | ✅ | ❌ | Good balance of speed/capability | Mid-tier performance |
-| **Qwen2.5-Coder (7B)** | ❌ | 2024 | 128K | Qwen | Coding | Qwen 2.5 | 6GB | ✅ | ⚠️ | Fast | ✅ | ✅ | ❌ | Efficient, fast | Less capable than 14B |
-| **Qwen2.5-Coder (1.5B)**| ❌ | 2024 | 128K | Qwen | Coding | Qwen 2.5 | 2GB | ✅ | ❌ | V.Fast | ⚠️ | ⚠️ | ❌ | Very fast | Weak code quality |
-| **Qwen2.5 (32B)** | ✅ | 2024 | 128K | Qwen | STEM | Qwen 2.5 | 20GB | ❌ | ❌ | Slow | ✅ | ✅ | ❌ | Very smart, large knowledge base | Too big for 16GB VRAM |
-| **DeepSeek-Coder-V2 (236B)**| ❌ | 2024 | 128K | DeepSeek | Coding | DeepSeek-V2 | 150GB+| ❌ | ❌ | V.Slow | ✅✅ | ✅✅ | ❌ | Near GPT-4 level | Massive hardware reqs |
-| **DeepSeek-Coder-V2 (16B)** | ✅ | 2024 | 128K | DeepSeek | Coding | DeepSeek-V2 | 12GB | ✅ | ✅ | Medium | ✅✅ | ✅ | ❌ | Strong code, fill-in-middle | No tool calling |
-| **DeepSeek-Coder-V2 (6.7B)**| ❌ | 2024 | 128K | DeepSeek | Coding | DeepSeek-V2 | 5GB | ✅ | ⚠️ | Fast | ✅ | ✅ | ❌ | Fast, efficient | Less capable than 16B |
-| **DeepSeek-Coder-V2 (1.3B)**| ❌ | 2024 | 128K | DeepSeek | Coding | DeepSeek-V2 | 2GB | ✅ | ❌ | V.Fast | ⚠️ | ⚠️ | ❌ | Very fast | Weak code quality |
-| **CodeLlama (70B)** | ❌ | 2023 | 100K | Meta | Coding | Llama 2 | 48GB+ | ❌ | ❌ | V.Slow | ✅ | ✅ | ❌ | Strong capabilities | Very high hardware reqs |
-| **CodeLlama (34B)** | ❌ | 2023 | 100K | Meta | Coding | Llama 2 | 22GB | ❌ | ❌ | Slow | ✅ | ✅ | ❌ | Better than 13B | High hardware reqs |
-| **CodeLlama (13B)** | ❌ | 2023 | 100K | Meta | Coding | Llama 2 | 9GB | ✅ | ✅ | Medium | ✅ | ✅ | ❌ | Good code completion | Older model |
-| **CodeLlama (7B)** | ❌ | 2023 | 100K | Meta | Coding | Llama 2 | 5GB | ✅ | ⚠️ | Fast | ✅ | ✅ | ❌ | Fast, efficient | Less capable than 13B |
-| **StarCoder2 (15B)** | ❌ | 2024 | 16K | BigCode | Coding | StarCoder2 | 10GB | ✅ | ✅ | Medium | ✅ | ✅ | ❌ | Better than 7B | Limited context |
-| **StarCoder2 (7B)** | ❌ | 2024 | 16K | BigCode | Coding | StarCoder2 | 5GB | ✅ | ⚠️ | Fast | ✅ | ✅ | ❌ | Fast, efficient | Limited capabilities |
-| **StarCoder2 (3B)** | ❌ | 2024 | 16K | BigCode | Coding | StarCoder2 | 3GB | ✅ | ❌ | V.Fast | ⚠️ | ✅ | ❌ | Very fast | Limited capabilities |
-| **Phi-3.5 (3.8B)** | ❌ | 2024 | 128K | Microsoft | Math/Logic | Phi-3 | 4GB | ✅ | ❌ | V.Fast | ⚠️ | ✅ | ❌ | Lightweight, CPU friendly | Limited capabilities |
-| **Llama 3.1 (70B)** | ❌ | 2024 | 128K | Meta | General | Llama 3.1 | 48GB+ | ❌ | ❌ | V.Slow | ⚠️ | ✅ | ❌ | Strong reasoning | Not code-specialized |
-| **Llama 3.1 (8B)** | ✅ | 2024 | 128K | Meta | General | Llama 3.1 | 6GB | ✅ | ⚠️ | Fast | ⚠️ | ✅ | ❌ | General purpose | Not code-specialized |
-| **Hermes 3 (8B)** | ✅ | 2024 | 128K | Nous Research | Creative/Roleplay | Llama 3.1 | 6GB | ✅ | ✅ | Fast | ⚠️ | ✅ | ❌ | Uncensored, creative, follows instructions | Can hallucinate on strict logic |
+| Pull | Model | DL | Released | Context | Trainer | Focus | Base | VRAM | Fits | Rec? | Speed | Code | Und. | Auto | Strengths | Weaknesses |
+| :--- | :--- | :---: | :---: | :---: | :--- | :--- | :--- | :--- | :---: | :---: | :--- | :---: | :---: | :---: | :--- | :--- |
+| deepseek-r1:8b | **DeepSeek-R1 (8B)** | ✅ | 2025 | 128K | DeepSeek-R1 | Liberal Arts | Llama 3.1 | 6GB | ✅ | ✅ | Fast | ✅ | ✅✅ | ❌ | Great reasoning + natural language | Less code-specialized than Qwen |
+| deepseek-r1:7b | **DeepSeek-R1 (7B)** | ✅ | 2025 | 128K | DeepSeek-R1 | STEM | Qwen 2.5 | 5GB | ✅ | ✅ | Fast | ✅ | ✅✅ | ❌ | Excellent logic & math reasoning | Can be terse |
+| qwen2.5-coder:32b | **Qwen2.5-Coder (32B)** | ❌ | 2024 | 128K | Qwen | Coding | Qwen 2.5 | 20GB | ❌ | ❌ | Slow | ✅ | ✅ | ❌ | Strong code generation | Too big for 16GB VRAM |
+| qwen2.5-coder:14b | **Qwen2.5-Coder (14B)** | ✅ | 2024 | 128K | Qwen | Coding | Qwen 2.5 | 10GB | ✅ | ✅ | Medium | ✅ | ✅ | ❌ | Good balance of speed/capability | Mid-tier performance |
+| qwen2.5-coder:7b | **Qwen2.5-Coder (7B)** | ❌ | 2024 | 128K | Qwen | Coding | Qwen 2.5 | 6GB | ✅ | ⚠️ | Fast | ✅ | ✅ | ❌ | Efficient, fast | Less capable than 14B |
+| qwen2.5-coder:1.5b | **Qwen2.5-Coder (1.5B)** | ❌ | 2024 | 128K | Qwen | Coding | Qwen 2.5 | 2GB | ✅ | ❌ | V.Fast | ⚠️ | ⚠️ | ❌ | Very fast | Weak code quality |
+| qwen2.5:32b | **Qwen2.5 (32B)** | ✅ | 2024 | 128K | Qwen | STEM | Qwen 2.5 | 20GB | ❌ | ❌ | Slow | ✅ | ✅ | ❌ | Very smart, large knowledge base | Too big for 16GB VRAM |
+| deepseek-coder-v2:236b | **DeepSeek-Coder-V2 (236B)** | ❌ | 2024 | 128K | DeepSeek | Coding | DeepSeek-V2 | 150GB+ | ❌ | ❌ | V.Slow | ✅✅ | ✅✅ | ❌ | Near GPT-4 level | Massive hardware reqs |
+| deepseek-coder-v2:16b | **DeepSeek-Coder-V2 (16B)** | ✅ | 2024 | 128K | DeepSeek | Coding | DeepSeek-V2 | 12GB | ✅ | ✅ | Medium | ✅✅ | ✅ | ❌ | Strong code, fill-in-middle | No tool calling |
+| deepseek-coder-v2:6.7b | **DeepSeek-Coder-V2 (6.7B)** | ❌ | 2024 | 128K | DeepSeek | Coding | DeepSeek-V2 | 5GB | ✅ | ⚠️ | Fast | ✅ | ✅ | ❌ | Fast, efficient | Less capable than 16B |
+| deepseek-coder-v2:1.3b | **DeepSeek-Coder-V2 (1.3B)** | ❌ | 2024 | 128K | DeepSeek | Coding | DeepSeek-V2 | 2GB | ❌ | ❌ | V.Fast | ⚠️ | ⚠️ | ❌ | Very fast | Weak code quality |
+| codellama:70b | **CodeLlama (70B)** | ❌ | 2023 | 100K | Meta | Coding | Llama 2 | 48GB+ | ❌ | ❌ | V.Slow | ✅ | ✅ | ❌ | Strong capabilities | Very high hardware reqs |
+| codellama:34b | **CodeLlama (34B)** | ❌ | 2023 | 100K | Meta | Coding | Llama 2 | 22GB | ❌ | ❌ | Slow | ✅ | ✅ | ❌ | Better than 13B | High hardware reqs |
+| codellama:13b | **CodeLlama (13B)** | ❌ | 2023 | 100K | Meta | Coding | Llama 2 | 9GB | ✅ | ✅ | Medium | ✅ | ✅ | ❌ | Good code completion | Older model |
+| codellama:7b | **CodeLlama (7B)** | ❌ | 2023 | 100K | Meta | Coding | Llama 2 | 5GB | ✅ | ⚠️ | Fast | ✅ | ✅ | ❌ | Fast, efficient | Less capable than 13B |
+| starcoder2:15b | **StarCoder2 (15B)** | ❌ | 2024 | 16K | BigCode | Coding | StarCoder2 | 10GB | ✅ | ✅ | Medium | ✅ | ✅ | ❌ | Better than 7B | Limited context |
+| starcoder2:7b | **StarCoder2 (7B)** | ❌ | 2024 | 16K | BigCode | Coding | StarCoder2 | 5GB | ✅ | ⚠️ | Fast | ✅ | ✅ | ❌ | Fast, efficient | Limited capabilities |
+| starcoder2:3b | **StarCoder2 (3B)** | ❌ | 2024 | 16K | BigCode | Coding | StarCoder2 | 3GB | ❌ | ❌ | V.Fast | ⚠️ | ✅ | ❌ | Very fast | Limited capabilities |
+| phi3.5:3.8b | **Phi-3.5 (3.8B)** | ❌ | 2024 | 128K | Microsoft | Math/Logic | Phi-3 | 4GB | ❌ | ❌ | V.Fast | ⚠️ | ✅ | ❌ | Lightweight, CPU friendly | Limited capabilities |
+| llama3.1:70b | **Llama 3.1 (70B)** | ❌ | 2024 | 128K | Meta | General | Llama 3.1 | 48GB+ | ❌ | ❌ | V.Slow | ⚠️ | ✅ | ❌ | Strong reasoning | Not code-specialized |
+| llama3.1:8b | **Llama 3.1 (8B)** | ✅ | 2024 | 128K | Meta | General | Llama 3.1 | 6GB | ⚠️ | ⚠️ | Fast | ⚠️ | ✅ | ❌ | General purpose | Not code-specialized |
+| hermes3:8b | **Hermes 3 (8B)** | ✅ | 2024 | 128K | Nous Research | Creative/Roleplay | Llama 3.1 | 6GB | ⚠️ | ⚠️ | Fast | ⚠️ | ✅ | ❌ | Uncensored, creative, follows instructions | Can hallucinate on strict logic |
+| gpt-oss:20b | **GPT‑OSS (20B)** | ✅ | 2025 | 128K | OpenAI‑OSS | Generalist | GPT‑4‑OSS | 16GB | ✅ | 👍 | Med | ✅ | ✅ | ❌ | Strong balanced reasoning + broad domain coverage | Heavier than 8B, slower on 16GB GPUs |
+| gpt-oss:120b | **GPT‑OSS (120B)** | ❌ | 2025 | 128K | OpenAI‑OSS | Generalist | GPT‑4‑OSS | 60–80GB | ❌ | ❌ | Very Slow | ❌ | ✅ | ❌ | High‑end reasoning potential | Requires massive VRAM; unusable on 16GB GPUs |
+| gemma3:1.6b | **Gemma 3 (1.6B)** | ❌ | 2025 | 128K | Google | General | Gemma 3 | 2GB | ✅ | ❌ | V.Fast | ⚠️ | ⚠️ | ❌ | Extremely fast, lightweight, CPU‑friendly | Limited reasoning and coding ability |
+| gemma3:4b   | **Gemma 3 (4B)**   | ❌ | 2025 | 128K | Google | General | Gemma 3 | 4–6GB | ✅ | ⚠️ | Fast | ⚠️ | ✅ | ❌ | Good balance of speed and quality for small size | Still weaker than 7B–8B class models |
+| gemma3:12b  | **Gemma 3 (12B)**  | ❌ | 2025 | 128K | Google | General | Gemma 3 | 10–12GB | ✅ | 👍 | Med | ⚠️ | ✅ | ❌ | Strongest Gemma 3 model available in Ollama; good reasoning | Heavier and slower than 8B models; not code‑specialized |
+| mistral-large | **Mistral Large 3** | ❌ | 2025 | 128K | Mistral | General / Frontier | Mistral Large 3 | 24–32GB | ❌ | ⚠️ | Slow | ⚠️ | ✅ | ❌ | Very strong reasoning and high‑end open‑weight performance | Too large for 16GB VRAM; slow without high‑end GPUs |
+| mistral-small | **Mistral Small 3** | ❌ | 2025 | 128K | Mistral | General | Mistral Small 3 | 4–6GB | ✅ | 👍 | Fast | ⚠️ | ✅ | ❌ | Fast, efficient, good general performance | Not as strong as 12B–20B class models |
+| mistral-nemo | **Mistral Nemo** | ❌ | 2024 | 128K | Mistral | General | Nemo | 8–10GB | ✅ | 👍 | Med | ⚠️ | ✅ | ❌ | Strong reasoning for its size; efficient | Not as capable as frontier‑scale models |
+| mixtral:8x7b | **Mixtral 8×7B** | ❌ | 2023 | 32K | Mistral | General | Mixtral | 16–20GB | ⚠️ | ⚠️ | Med | ⚠️ | ✅ | ❌ | MoE architecture gives high quality for size | VRAM heavy; slower on 16GB GPUs |
+| mixtral:8x22b | **Mixtral 8×22B** | ❌ | 2024 | 64K | Mistral | General | Mixtral | 48–64GB | ❌ | ❌ | V.Slow | ⚠️ | ✅ | ❌ | Very strong reasoning and knowledge | Requires massive VRAM; unusable on 16GB GPUs |
+| mistral:7b | **Mistral 7B Instruct** | ❌ | 2023 | 32K | Mistral | General | Mistral 7B | 6–8GB | ✅ | 👍 | Fast | ⚠️ | ✅ | ❌ | Strong small model; good reasoning | Older architecture; weaker than newer 8B–12B models |
+| llama4 | **Llama 4** | ❌ | 2025 | 128K | Meta | General | Llama 4 | 12–16GB | ⚠️ | 👍 | Med | ⚠️ | ✅ | ❌ | Strong general‑purpose reasoning; modern open‑weight frontier model | Heavier than 8B models; slower on 16GB GPUs; not code‑specialized |
+| llama3.2 | **Llama 3.2 (3B)** | ❌ | 2024 | 128K | Meta | General | Llama 3.2 | 4–6GB | ✅ | 👍 | Fast | ⚠️ | ✅ | ❌ | Very fast, efficient, good small‑model reasoning | Not as capable as 8B–12B class |
+| llama3.2:1b | **Llama 3.2 (1B)** | ❌ | 2024 | 128K | Meta | General | Llama 3.2 | 2GB | ✅ | ❌ | V.Fast | ⚠️ | ⚠️ | ❌ | Extremely fast, CPU‑friendly | Limited reasoning and coding ability |
+| llama3.1:8b | **Llama 3.1 (8B)** | ❌ | 2024 | 128K | Meta | General | Llama 3.1 | 6GB | ⚠️ | 👍 | Fast | ⚠️ | ✅ | ❌ | Strong general model; good balance of speed and quality | Not code‑specialized |
+| llama3.1:70b | **Llama 3.1 (70B)** | ❌ | 2024 | 128K | Meta | General | Llama 3.1 | 48GB+ | ❌ | ❌ | V.Slow | ⚠️ | ✅ | ❌ | High‑end reasoning and knowledge | Requires massive VRAM; unusable on 16GB GPUs |
+| llama3:8b | **Llama 3 (8B)** | ❌ | 2024 | 128K | Meta | General | Llama 3 | 6GB | ⚠️ | 👍 | Fast | ⚠️ | ✅ | ❌ | Good general reasoning; efficient | Older than 3.1/3.2; weaker coding |
+| llama3:70b | **Llama 3 (70B)** | ❌ | 2024 | 128K | Meta | General | Llama 3 | 48GB+ | ❌ | ❌ | V.Slow | ⚠️ | ✅ | ❌ | Strong reasoning | Too large for 16GB VRAM |
+
+
 
 ## Column Definitions
 

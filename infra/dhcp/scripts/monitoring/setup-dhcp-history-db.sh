@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/dhcp/scripts/monitoring/setup-dhcp-history-db.sh:121 %
+#  %ccm_git_object_id: infra/dhcp/scripts/monitoring/setup-dhcp-history-db.sh:139 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 5af3792e72923bba6dc48fcad82ff8e3543183e7 %
-#  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
-#  %ccm_git_commit_count: 121 %
-#  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
+#  %ccm_git_blob_sha: 47efaac387ab0adab1c94dce3fda150bc16d9cd7 %
+#  %ccm_git_commit_id: 4b7c4d5292241b4ba1eb82f1b2ec0509b8fd544f %
+#  %ccm_git_commit_count: 139 %
+#  %ccm_git_commit_date: 2026-03-22 09:03:20 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: cleanup %
-#  %ccm_git_modify_date: 2025-11-30 12:26:13 %
-#  %ccm_git_file_last_modified: 2025-11-30 12:26:13 %
+#  %ccm_git_commit_message: march updates %
+#  %ccm_git_modify_date: 2026-03-22 09:03:20 %
+#  %ccm_git_file_last_modified: 2026-03-22 09:03:20 %
 #  %ccm_git_file_name: setup-dhcp-history-db.sh %
 #  %ccm_git_path: infra/dhcp/scripts/monitoring/setup-dhcp-history-db.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,8 +21,11 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 3635 %
+#  %ccm_git_size: 3784 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: unknown  unknown  unknown  % 
+# %git_commit_history: unknown  unknown  unknown  % 
+# %git_commit_history: 2025-11-30 mpegg  cleanup  % 
 # %git_commit_history: november changes % 
 # %git_commit_history: dhcp logging % 
 

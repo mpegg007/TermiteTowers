@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: scripts/tt-ext-bak/backup-to-external-v2.sh:132 %
+#  %ccm_git_object_id: scripts/tt-ext-bak/backup-to-external-v2.sh:139 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: dd5184930fbc1417eab48859e0215771d5141165 %
-#  %ccm_git_commit_id: 6e67c9cb056223d2c5e30fd43ff735f0e43b37fb %
-#  %ccm_git_commit_count: 132 %
-#  %ccm_git_commit_date: 2026-02-07 16:19:47 -0500 %
+#  %ccm_git_blob_sha: 0d414972f3410e03b5296957aafcf7dfd85d5d03 %
+#  %ccm_git_commit_id: 4b7c4d5292241b4ba1eb82f1b2ec0509b8fd544f %
+#  %ccm_git_commit_count: 139 %
+#  %ccm_git_commit_date: 2026-03-22 09:03:20 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: comment cleanup %
-#  %ccm_git_modify_date: 2026-02-07 16:19:48 %
-#  %ccm_git_file_last_modified: 2026-02-07 16:19:48 %
+#  %ccm_git_commit_message: march updates %
+#  %ccm_git_modify_date: 2026-03-22 09:03:23 %
+#  %ccm_git_file_last_modified: 2026-03-22 09:03:23 %
 #  %ccm_git_file_name: backup-to-external-v2.sh %
 #  %ccm_git_path: scripts/tt-ext-bak/backup-to-external-v2.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,8 +21,10 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 8170 %
+#  %ccm_git_size: 8284 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: unknown  unknown  unknown  % 
+# %git_commit_history: 2026-02-07 mpegg  comment cleanup  % 
 # %git_commit_history: 2026-02-07 mpegg  feb2026  % 
 # TermiteTowers v2 External & Root Disk Backup Script
 # Performs incremental snapshot backups of /mnt/ai_storage and / (monolith_root) to external USB disk

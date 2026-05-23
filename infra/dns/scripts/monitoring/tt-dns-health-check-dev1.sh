@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/dns/scripts/monitoring/tt-dns-health-check-dev1.sh:130 %
+#  %ccm_git_object_id: infra/dns/scripts/monitoring/tt-dns-health-check-dev1.sh:139 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 506de66303f6c40fa069d7261e2e40c2e1a7d6a9 %
-#  %ccm_git_commit_id: 3395da0009f399bd9abd836085b72ec8a4d7f2f3 %
-#  %ccm_git_commit_count: 130 %
-#  %ccm_git_commit_date: 2026-02-07 15:49:15 -0500 %
+#  %ccm_git_blob_sha: eb5bd6e372a8ac8e26e8f4ba68493bb4798f91a7 %
+#  %ccm_git_commit_id: 4b7c4d5292241b4ba1eb82f1b2ec0509b8fd544f %
+#  %ccm_git_commit_count: 139 %
+#  %ccm_git_commit_date: 2026-03-22 09:03:20 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: feb2026.1 %
-#  %ccm_git_modify_date: 2026-02-07 15:49:19 %
-#  %ccm_git_file_last_modified: 2026-02-07 15:49:19 %
+#  %ccm_git_commit_message: march updates %
+#  %ccm_git_modify_date: 2026-03-22 09:03:21 %
+#  %ccm_git_file_last_modified: 2026-03-22 09:03:21 %
 #  %ccm_git_file_name: tt-dns-health-check-dev1.sh %
 #  %ccm_git_path: infra/dns/scripts/monitoring/tt-dns-health-check-dev1.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,8 +21,11 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 6941 %
+#  %ccm_git_size: 8169 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: unknown  unknown  unknown  % 
+# %git_commit_history: unknown  unknown  unknown  % 
+# %git_commit_history: 2026-02-07 mpegg  feb2026.1  % 
 # %git_commit_history: 2026-02-07 mpegg  feb2026  % 
 # # %git_commit_history: 2025-09-06 mpegg  hook final alpha v0.1  %  
 # DNS Health Check Script for Uptime Kuma
@@ -219,6 +222,29 @@ check_container_logs "pihole-dev1" "Pi-hole"
 check_container_logs "powerdns-dev1" "PowerDNS"
 
 log "=== Health Check Complete: $ERRORS errors, $WARNINGS warnings ==="
+
+# ========================================================================
+# Uptime Kuma Monitoring Architecture
+# ========================================================================
+# This script is part of a layered monitoring strategy:
+#
+# 1. DNS Monitor (this script - Push type):
+#    - Checks Pi-hole and PowerDNS containers, ports, resolution, databases
+#    - Validates local and external DNS resolution through our infrastructure
+#    - Runs via systemd timer every 1 minute
+#
+# 2. Internet Up Monitor (simple Kuma Ping type):
+#    - Simple ping to 1.1.1.1 to verify WAN connectivity
+#    - No custom script needed - Kuma native ping monitor
+#    - If this fails, DNS external resolution will also fail
+#
+# 3. DHCP Monitor (separate script - Push type):
+#    - Located at: /srv/dev1/kea/scripts/monitoring/tt-kea-health-check-dev1.sh
+#    - Checks Kea DHCP server health
+#    - Runs via systemd timer
+#
+# This separation provides clear failure isolation and targeted alerting.
+# ========================================================================
 
 # Push to Uptime Kuma
 # Token is stored in secrets file, not in git - tt-secrets.skip marker at top prevents commit
