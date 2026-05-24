@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: unknown %
+#  %ccm_git_object_id: media/ImageArchive/scan_photoarchive.py:145 %
 #  %ccm_git_author: Matthew Pegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 205415e0924affc676fd9277380b38a9e69e1041 %
-#  %ccm_git_commit_id: unknown %
-#  %ccm_git_commit_count: unknown %
-#  %ccm_git_commit_date: unknown %
-#  %ccm_git_commit_author: unknown %
-#  %ccm_git_commit_email: unknown %
-#  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2026-05-24 13:04:32 %
-#  %ccm_git_file_last_modified: 2026-05-24 13:04:31 %
+#  %ccm_git_blob_sha: 2a1284af4221f8f2fb7d293633d7535be7b7f06b %
+#  %ccm_git_commit_id: 613995c2aca19d377baa26d4daae9de8d2232e97 %
+#  %ccm_git_commit_count: 145 %
+#  %ccm_git_commit_date: 2026-05-24 15:14:51 -0400 %
+#  %ccm_git_commit_author: Matthew Pegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: adding readme %
+#  %ccm_git_modify_date: 2026-05-24 15:15:23 %
+#  %ccm_git_file_last_modified: 2026-05-24 15:15:23 %
 #  %ccm_git_file_name: scan_photoarchive.py %
 #  %ccm_git_path: media/ImageArchive/scan_photoarchive.py %
 #  %ccm_git_language_mode: python %
@@ -21,8 +21,9 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 2525 %
+#  %ccm_git_size: 2600 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2026-05-24 Matthew Pegg  imageArchives  % 
 # %git_commit_history: 2026-05-23 Matthew Pegg  image tagging phase 1  % 
 """
 scan_photoarchive.py

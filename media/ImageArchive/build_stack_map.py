@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: unknown %
+#  %ccm_git_object_id: media/ImageArchive/build_stack_map.py:145 %
 #  %ccm_git_author: Matthew Pegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 49b256fd0d44f249c3e9dfc8fd9aa9a18012d7e4 %
-#  %ccm_git_commit_id: unknown %
-#  %ccm_git_commit_count: unknown %
-#  %ccm_git_commit_date: unknown %
-#  %ccm_git_commit_author: unknown %
-#  %ccm_git_commit_email: unknown %
-#  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2026-05-24 13:04:14 %
-#  %ccm_git_file_last_modified: 2026-05-24 13:04:14 %
+#  %ccm_git_blob_sha: b6d2244a2f3a2a1edc2e584427cb01bfc0e85e7b %
+#  %ccm_git_commit_id: 613995c2aca19d377baa26d4daae9de8d2232e97 %
+#  %ccm_git_commit_count: 145 %
+#  %ccm_git_commit_date: 2026-05-24 15:14:51 -0400 %
+#  %ccm_git_commit_author: Matthew Pegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: adding readme %
+#  %ccm_git_modify_date: 2026-05-24 15:15:06 %
+#  %ccm_git_file_last_modified: 2026-05-24 15:15:05 %
 #  %ccm_git_file_name: build_stack_map.py %
 #  %ccm_git_path: media/ImageArchive/build_stack_map.py %
 #  %ccm_git_language_mode: python %
@@ -21,8 +21,9 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 7118 %
+#  %ccm_git_size: 7182 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2026-05-24 Matthew Pegg  imageArchives  % 
 # %git_commit_history: 2026-05-23 Matthew Pegg  image tags  % 
 # %git_commit_history: unknown  unknown  unknown  % 
 # %git_commit_history: 2026-05-23 Matthew Pegg  image tagging phase 1  %

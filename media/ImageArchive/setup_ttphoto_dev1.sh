@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: unknown %
+#  %ccm_git_object_id: media/ImageArchive/setup_ttphoto_dev1.sh:145 %
 #  %ccm_git_author: Matthew Pegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 405714b65d4d84a90900cf5a12a3a4cf6e1094bf %
-#  %ccm_git_commit_id: unknown %
-#  %ccm_git_commit_count: unknown %
-#  %ccm_git_commit_date: unknown %
-#  %ccm_git_commit_author: unknown %
-#  %ccm_git_commit_email: unknown %
-#  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2026-05-24 13:04:34 %
-#  %ccm_git_file_last_modified: 2026-05-24 13:04:34 %
+#  %ccm_git_blob_sha: dc891414480f590c7692c6cf53b77042a767b22a %
+#  %ccm_git_commit_id: 613995c2aca19d377baa26d4daae9de8d2232e97 %
+#  %ccm_git_commit_count: 145 %
+#  %ccm_git_commit_date: 2026-05-24 15:14:51 -0400 %
+#  %ccm_git_commit_author: Matthew Pegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: adding readme %
+#  %ccm_git_modify_date: 2026-05-24 15:15:26 %
+#  %ccm_git_file_last_modified: 2026-05-24 15:15:25 %
 #  %ccm_git_file_name: setup_ttphoto_dev1.sh %
 #  %ccm_git_path: media/ImageArchive/setup_ttphoto_dev1.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,8 +21,9 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 1063 %
+#  %ccm_git_size: 1117 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2026-05-24 Matthew Pegg  imageArchives  % 
 # %git_commit_history: unknown  unknown  unknown  % 
 set -euo pipefail
 

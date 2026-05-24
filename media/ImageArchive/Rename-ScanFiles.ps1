@@ -1,18 +1,18 @@
 <##  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: unknown %
+#  %ccm_git_object_id: media/ImageArchive/Rename-ScanFiles.ps1:145 %
 #  %ccm_git_author: Matthew Pegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 6bb0ece557760843c3f5165921fbffa620e5bdda %
-#  %ccm_git_commit_id: unknown %
-#  %ccm_git_commit_count: unknown %
-#  %ccm_git_commit_date: unknown %
-#  %ccm_git_commit_author: unknown %
-#  %ccm_git_commit_email: unknown %
-#  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2026-05-24 13:04:07 %
-#  %ccm_git_file_last_modified: 2026-05-24 13:04:07 %
+#  %ccm_git_blob_sha: 71a9239ed59cef6d26922d2fc709918ba565c96c %
+#  %ccm_git_commit_id: 613995c2aca19d377baa26d4daae9de8d2232e97 %
+#  %ccm_git_commit_count: 145 %
+#  %ccm_git_commit_date: 2026-05-24 15:14:51 -0400 %
+#  %ccm_git_commit_author: Matthew Pegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: adding readme %
+#  %ccm_git_modify_date: 2026-05-24 15:14:59 %
+#  %ccm_git_file_last_modified: 2026-05-24 15:14:58 %
 #  %ccm_git_file_name: Rename-ScanFiles.ps1 %
 #  %ccm_git_path: media/ImageArchive/Rename-ScanFiles.ps1 %
 #  %ccm_git_language_mode: powershell %
@@ -20,8 +20,9 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 1478 %
+#  %ccm_git_size: 1557 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  #>
+<## %git_commit_history: 2026-05-24 Matthew Pegg  imageArchives  % #>
 <## %git_commit_history: 2026-05-23 Matthew Pegg  image tagging phase 1  % #>
 # Rename-ScanFiles.ps1
 # SilverFast already prefixes files with the scan date (e.g. 20260521_0001.tif).

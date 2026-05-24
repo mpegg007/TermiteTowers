@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: unknown %
+#  %ccm_git_object_id: media/ImageArchive/propagate_tags.py:145 %
 #  %ccm_git_author: Matthew Pegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 1d03aecda227674166acd9c1d56b3e603277de75 %
-#  %ccm_git_commit_id: unknown %
-#  %ccm_git_commit_count: unknown %
-#  %ccm_git_commit_date: unknown %
-#  %ccm_git_commit_author: unknown %
-#  %ccm_git_commit_email: unknown %
-#  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2026-05-24 13:04:29 %
-#  %ccm_git_file_last_modified: 2026-05-24 13:04:29 %
+#  %ccm_git_blob_sha: 090bba44b29d34583ced39e2652c79033e51316f %
+#  %ccm_git_commit_id: 613995c2aca19d377baa26d4daae9de8d2232e97 %
+#  %ccm_git_commit_count: 145 %
+#  %ccm_git_commit_date: 2026-05-24 15:14:51 -0400 %
+#  %ccm_git_commit_author: Matthew Pegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: adding readme %
+#  %ccm_git_modify_date: 2026-05-24 15:15:21 %
+#  %ccm_git_file_last_modified: 2026-05-24 15:15:21 %
 #  %ccm_git_file_name: propagate_tags.py %
 #  %ccm_git_path: media/ImageArchive/propagate_tags.py %
 #  %ccm_git_language_mode: python %
@@ -21,8 +21,9 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 6831 %
+#  %ccm_git_size: 6885 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2026-05-24 Matthew Pegg  imageArchives  % 
 # %git_commit_history: unknown  unknown  unknown  % 
 """
 propagate_tags.py
