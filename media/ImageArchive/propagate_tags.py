@@ -5,24 +5,25 @@
 #  %ccm_git_object_id: unknown %
 #  %ccm_git_author: Matthew Pegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: ed0016e718024b3221876b9a8740f4b8f85606ac %
+#  %ccm_git_blob_sha: 1d03aecda227674166acd9c1d56b3e603277de75 %
 #  %ccm_git_commit_id: unknown %
 #  %ccm_git_commit_count: unknown %
 #  %ccm_git_commit_date: unknown %
 #  %ccm_git_commit_author: unknown %
 #  %ccm_git_commit_email: unknown %
 #  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2026-05-23 17:21:59 %
-#  %ccm_git_file_last_modified: 2026-05-23 17:21:59 %
+#  %ccm_git_modify_date: 2026-05-24 13:04:29 %
+#  %ccm_git_file_last_modified: 2026-05-24 13:04:29 %
 #  %ccm_git_file_name: propagate_tags.py %
-#  %ccm_git_path: media/propagate_tags.py %
+#  %ccm_git_path: media/ImageArchive/propagate_tags.py %
 #  %ccm_git_language_mode: python %
 #  %ccm_git_file_type: text/x-script.python %
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 6669 %
+#  %ccm_git_size: 6831 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: unknown  unknown  unknown  % 
 """
 propagate_tags.py
 
@@ -52,7 +53,7 @@ import subprocess
 from pathlib import Path
 import psycopg2
 
-ENV_FILE       = Path(__file__).parent / ".env"
+ENV_FILE       = Path(__file__).parent.parent / ".env"
 SIDECAR_SCRIPT = Path(__file__).parent / "extract_to_sidecar.py"
 EXIFTOOL       = os.environ.get("EXIFTOOL", r"C:\Apps\exiftool-13.58_64\exiftool.exe")
 
@@ -118,13 +119,13 @@ def main():
     cur  = conn.cursor()
 
     # Check propagatable tags
-    cur.execute("SELECT tag_key, tag_group FROM propagatable_tags ORDER BY tag_key")
+    cur.execute("SELECT tag_key FROM tag_master WHERE propagatable = TRUE ORDER BY tag_key")
     prop_rows = cur.fetchall()
     if not prop_rows:
         print("No propagatable tags defined.")
-        print("Add rows to propagatable_tags, e.g.:")
-        print("  INSERT INTO propagatable_tags (tag_key, tag_group)")
-        print("  VALUES ('EXIF:GPSLatitude','geo'),('EXIF:GPSLongitude','geo');")
+        print("Add rows to tag_master, e.g.:")
+        print("  INSERT INTO tag_master (tag_key, propagatable)")
+        print("  VALUES ('IFD0:Artist', true), ('IFD0:Copyright', true);")
         sys.exit(0)
     print(f"Propagatable tags: {', '.join(r[0] for r in prop_rows)}\n")
 
@@ -139,13 +140,13 @@ def main():
     total_tags_written  = 0
 
     for sid in stack_ids:
-        # Authority: best value per tag across the whole stack
+        # Authority: best value per canonical tag across the whole stack
         cur.execute("""
-            SELECT tag_key, tag_value, source_path
+            SELECT tag_key, tag_value, source_tag_key, source_path
             FROM stack_tag_authority
             WHERE stack_id = %s
         """, (sid,))
-        authority = {row[0]: (row[1], row[2]) for row in cur.fetchall()}
+        authority = {row[0]: (row[1], row[2], row[3]) for row in cur.fetchall()}
         if not authority:
             continue
 
@@ -170,7 +171,7 @@ def main():
                 continue  # never touch HDRi masters
 
             to_write = {}
-            for tag_key, (auth_val, source_path) in authority.items():
+            for tag_key, (auth_val, source_tag_key, source_path) in authority.items():
                 if path == source_path:
                     continue  # this IS the source
                 current_val = (current_tags or {}).get(tag_key, "")
@@ -178,7 +179,8 @@ def main():
                     to_write[tag_key] = auth_val
                     print(f"  {mode_label} {os.path.basename(path)}")
                     print(f"    {tag_key}: {current_val!r} → {auth_val!r}")
-                    print(f"    (from {os.path.basename(source_path)})")
+                    alias_note = f" (via alias {source_tag_key})" if source_tag_key != tag_key else ""
+                    print(f"    (from {os.path.basename(source_path)}{alias_note})")
 
             if to_write:
                 success = write_tags(path, to_write, apply)

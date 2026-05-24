@@ -12,10 +12,10 @@
 #  %ccm_git_commit_author: unknown %
 #  %ccm_git_commit_email: unknown %
 #  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2026-05-23 17:22:01 %
-#  %ccm_git_file_last_modified: 2026-05-23 16:32:53 %
+#  %ccm_git_modify_date: 2026-05-24 13:04:34 %
+#  %ccm_git_file_last_modified: 2026-05-24 13:04:34 %
 #  %ccm_git_file_name: setup_ttphoto_dev1.sh %
-#  %ccm_git_path: media/setup_ttphoto_dev1.sh %
+#  %ccm_git_path: media/ImageArchive/setup_ttphoto_dev1.sh %
 #  %ccm_git_language_mode: shellscript %
 #  %ccm_git_file_type: text/x-shellscript %
 #  %ccm_git_file_encoding: utf-8 %
@@ -23,6 +23,7 @@
 #  %ccm_git_exec: yes %
 #  %ccm_git_size: 1063 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: unknown  unknown  unknown  % 
 set -euo pipefail
 
 echo "=== Creating roles and database ==="

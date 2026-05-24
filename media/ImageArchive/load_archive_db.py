@@ -5,25 +5,27 @@
 #  %ccm_git_object_id: unknown %
 #  %ccm_git_author: Matthew Pegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: ed7feeb6524e9451b4095f07c577658ee264d664 %
+#  %ccm_git_blob_sha: 8f0f23f270f5ab0e7c02fc45e8f6afec27b4e0ce %
 #  %ccm_git_commit_id: unknown %
 #  %ccm_git_commit_count: unknown %
 #  %ccm_git_commit_date: unknown %
 #  %ccm_git_commit_author: unknown %
 #  %ccm_git_commit_email: unknown %
 #  %ccm_git_commit_message: unknown %
-#  %ccm_git_modify_date: 2026-05-23 18:20:41 %
-#  %ccm_git_file_last_modified: 2026-05-23 18:20:40 %
+#  %ccm_git_modify_date: 2026-05-24 13:04:25 %
+#  %ccm_git_file_last_modified: 2026-05-24 13:04:25 %
 #  %ccm_git_file_name: load_archive_db.py %
-#  %ccm_git_path: media/load_archive_db.py %
+#  %ccm_git_path: media/ImageArchive/load_archive_db.py %
 #  %ccm_git_language_mode: python %
 #  %ccm_git_file_type: text/x-script.python %
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 9623 %
+#  %ccm_git_size: 10272 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
-# %git_commit_history: unknown  unknown  unknown  % 
+# %git_commit_history: 2026-05-23 Matthew Pegg  image tags  % 
+# %git_commit_history: unknown  unknown  unknown  %
+ 
 """
 load_archive_db.py
 
@@ -46,7 +48,7 @@ import psycopg2
 from psycopg2.extras import execute_values
 
 ARCHIVE_ROOT = r"C:\media.tt.omp\StorageDisks\OMP-UD14TD2\pmedia.tt.omp\VG\PhotoArchive"
-ENV_FILE     = Path(__file__).parent / ".env"
+ENV_FILE     = Path(__file__).parent.parent / ".env"
 
 # ── Connection ────────────────────────────────────────────────────────────────
 
@@ -124,6 +126,10 @@ def load_all(conn, archive_root):
     )
     print(f"Found {len(md_files)} sidecar(s)")
 
+    # Pre-fetch loaded_at timestamps so we can skip unchanged sidecars
+    cur.execute("SELECT sidecar_path, loaded_at FROM images WHERE sidecar_path IS NOT NULL")
+    loaded_at_by_path = {row[0]: row[1] for row in cur.fetchall()}
+
     loaded = skipped = errors = 0
 
     for md_path in md_files:
@@ -131,6 +137,14 @@ def load_all(conn, archive_root):
         if not image_path.exists():
             skipped += 1
             continue
+
+        # Skip if sidecar hasn't changed since last load
+        prior_loaded_at = loaded_at_by_path.get(str(md_path))
+        if prior_loaded_at is not None:
+            md_mtime = datetime.fromtimestamp(md_path.stat().st_mtime, tz=prior_loaded_at.tzinfo)
+            if md_mtime <= prior_loaded_at:
+                skipped += 1
+                continue
 
         folder = image_path.parent.name
         parts  = image_path.relative_to(archive_root).parts

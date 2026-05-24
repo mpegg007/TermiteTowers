@@ -1,28 +1,29 @@
 <##  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: media/Rename-ScanFiles.ps1:139 %
+#  %ccm_git_object_id: unknown %
 #  %ccm_git_author: Matthew Pegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 5d366d77bc0b6172f0d00c7ef3d11b19a17c1f0d %
-#  %ccm_git_commit_id: 082ff38c260cbc5b6c247b8ea6097056d609d69a %
-#  %ccm_git_commit_count: 139 %
-#  %ccm_git_commit_date: 2026-05-23 16:09:44 -0400 %
-#  %ccm_git_commit_author: Matthew Pegg %
-#  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: image tagging phase 1 %
-#  %ccm_git_modify_date: 2026-05-23 16:09:48 %
-#  %ccm_git_file_last_modified: 2026-05-23 15:33:04 %
+#  %ccm_git_blob_sha: 6bb0ece557760843c3f5165921fbffa620e5bdda %
+#  %ccm_git_commit_id: unknown %
+#  %ccm_git_commit_count: unknown %
+#  %ccm_git_commit_date: unknown %
+#  %ccm_git_commit_author: unknown %
+#  %ccm_git_commit_email: unknown %
+#  %ccm_git_commit_message: unknown %
+#  %ccm_git_modify_date: 2026-05-24 13:04:07 %
+#  %ccm_git_file_last_modified: 2026-05-24 13:04:07 %
 #  %ccm_git_file_name: Rename-ScanFiles.ps1 %
-#  %ccm_git_path: media/Rename-ScanFiles.ps1 %
+#  %ccm_git_path: media/ImageArchive/Rename-ScanFiles.ps1 %
 #  %ccm_git_language_mode: powershell %
 #  %ccm_git_file_type: text/plain %
-#  %ccm_git_file_encoding: utf-8 %
+#  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 1481 %
+#  %ccm_git_size: 1478 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  #>
-﻿# Rename-ScanFiles.ps1
+<## %git_commit_history: 2026-05-23 Matthew Pegg  image tagging phase 1  % #>
+# Rename-ScanFiles.ps1
 # SilverFast already prefixes files with the scan date (e.g. 20260521_0001.tif).
 # This script prepends the owner token and a 14-digit datetime (from the file's
 # last-write time) to any file in RAW_HDRi that doesn't already start with the owner token.
