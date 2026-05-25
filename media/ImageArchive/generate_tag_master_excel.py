@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: media/ImageArchive/generate_tag_master_excel.py:145 %
+#  %ccm_git_object_id: media/ImageArchive/generate_tag_master_excel.py:146 %
 #  %ccm_git_author: Matthew Pegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: a6e73f41e66d80745779d6b65e921f21c0f65c4b %
-#  %ccm_git_commit_id: 613995c2aca19d377baa26d4daae9de8d2232e97 %
-#  %ccm_git_commit_count: 145 %
-#  %ccm_git_commit_date: 2026-05-24 15:14:51 -0400 %
+#  %ccm_git_blob_sha: 6c73ef8b58a4a82fa20cb38e734c5127f38bd537 %
+#  %ccm_git_commit_id: ff10418d79d5d337bca240bb7739df3da4f6892a %
+#  %ccm_git_commit_count: 146 %
+#  %ccm_git_commit_date: 2026-05-24 20:26:55 -0400 %
 #  %ccm_git_commit_author: Matthew Pegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: adding readme %
-#  %ccm_git_modify_date: 2026-05-24 15:15:13 %
-#  %ccm_git_file_last_modified: 2026-05-24 15:15:12 %
+#  %ccm_git_commit_message: track duplicate image locations, scrape from all files %
+#  %ccm_git_modify_date: 2026-05-24 20:27:07 %
+#  %ccm_git_file_last_modified: 2026-05-24 20:27:06 %
 #  %ccm_git_file_name: generate_tag_master_excel.py %
 #  %ccm_git_path: media/ImageArchive/generate_tag_master_excel.py %
 #  %ccm_git_language_mode: python %
@@ -21,9 +21,11 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 13638 %
+#  %ccm_git_size: 15863 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
-# %git_commit_history: 2026-05-24 Matthew Pegg  imageArchives  % 
+# %git_commit_history: 2026-05-24 Matthew Pegg  adding readme  % 
+# %git_commit_history: 2026-05-24 Matthew Pegg  imageArchives  %
+ 
 """
 generate_tag_master_excel.py
 
@@ -135,7 +137,7 @@ EXACT_RULES = {
 # Prefix rules for everything not matched by exact rules
 PREFIX_RULES = [
     # (prefix, propagatable, include_in_report, canonical_key, description_template)
-    ("Composite:",      False, False, None, "Computed composite — not stored in file"),
+    ("Composite:",      False, True,  None, "Computed composite — not stored in file (report only)"),
     ("ExifTool:",       False, False, None, "ExifTool metadata — not in image"),
     ("File:",           False, False, None, "File container metadata"),
     ("System:",         False, False, None, "Filesystem metadata"),
@@ -145,8 +147,8 @@ PREFIX_RULES = [
     ("ICC_Profile:",    False, False, None, "ICC colour profile matrix/data"),
     ("IFD1:",           False, False, None, "Thumbnail IFD — not propagated"),
     ("IFD2:",           False, False, None, "Transparency mask IFD — not propagated"),
-    ("GPS:",            False, False, None, "GPS coordinates (scan — likely absent)"),
-    ("ExifIFD:",        False, False, None, "Exif IFD — camera exposure/capture data"),
+    ("GPS:",            True,  True,  None, "GPS geolocation coordinates"),
+    ("ExifIFD:",        True,  True,  None, "Exif IFD — camera exposure/capture data"),
     ("IPTC:",           False, False, None, "IPTC technical field"),
     ("IFD0:",           False, False, None, "IFD0 technical field"),
     ("XMP-Silverfast:", False, False, None, "SilverFast scan parameter"),
@@ -171,8 +173,37 @@ def classify(tag_key):
 def main():
     conn = psycopg2.connect(DSN)
     cur  = conn.cursor()
-    cur.execute("SELECT DISTINCT tag_key FROM image_tags ORDER BY tag_key")
-    tag_keys = [r[0] for r in cur.fetchall()]
+    cur.execute("""
+        WITH agg AS (
+            SELECT it.tag_key,
+                   COUNT(DISTINCT it.image_id)  AS image_count,
+                   COUNT(DISTINCT it.tag_value) AS distinct_values,
+                   STRING_AGG(DISTINCT i.archive_owner, ', '
+                              ORDER BY i.archive_owner) AS owners
+            FROM image_tags it
+            LEFT JOIN images i ON i.id = it.image_id
+            GROUP BY it.tag_key
+        ),
+        val_counts AS (
+            SELECT tag_key, tag_value, COUNT(*) AS cnt
+            FROM image_tags
+            WHERE tag_value IS NOT NULL AND tag_value <> ''
+            GROUP BY tag_key, tag_value
+        ),
+        top_val AS (
+            SELECT DISTINCT ON (tag_key) tag_key, tag_value AS most_common_value
+            FROM val_counts
+            ORDER BY tag_key, cnt DESC
+        )
+        SELECT a.tag_key, a.image_count, a.distinct_values, a.owners,
+               t.most_common_value
+        FROM agg a
+        LEFT JOIN top_val t ON a.tag_key = t.tag_key
+        ORDER BY a.tag_key
+    """)
+    rows      = cur.fetchall()
+    tag_keys  = [r[0] for r in rows]
+    tag_stats = {r[0]: (r[1], r[2], r[3], r[4]) for r in rows}
     conn.close()
 
     wb = openpyxl.Workbook()
@@ -196,11 +227,20 @@ def main():
     headers = ["tag_key", "propagatable", "include_in_report",
                "canonical_key", "description", "notes"]
     col_widths = [60, 14, 18, 62, 45, 30]
+    N_EDITABLE = len(headers)
 
-    for col, (h, w) in enumerate(zip(headers, col_widths), 1):
+    # View-only stats — not read by the update process
+    info_headers    = ["image_count", "distinct_values", "owners", "most_common_value"]
+    info_col_widths = [13,             15,                25,       42]
+    info_hdr_fill   = PatternFill("solid", fgColor="595959")   # dark grey
+
+    all_headers    = headers    + info_headers
+    all_col_widths = col_widths + info_col_widths
+
+    for col, (h, w) in enumerate(zip(all_headers, all_col_widths), 1):
         cell = ws.cell(row=1, column=col, value=h)
         cell.font  = hdr_font
-        cell.fill  = hdr_fill
+        cell.fill  = hdr_fill if col <= N_EDITABLE else info_hdr_fill
         cell.alignment = center
         cell.border = border
         ws.column_dimensions[get_column_letter(col)].width = w
@@ -224,13 +264,19 @@ def main():
         else:
             fill = FILLS["neither"]
 
+        img_count, dist_vals, owners_str, top_val_str = tag_stats.get(
+            tag_key, (0, 0, None, None))
+        if top_val_str and len(top_val_str) > 50:
+            top_val_str = top_val_str[:47] + "..."
+
         values = [tag_key, "Y" if prop else "N", "Y" if report else "N",
-                  canon or "", desc, notes]
+                  canon or "", desc, notes,
+                  img_count, dist_vals, owners_str or "", top_val_str or ""]
         for col, val in enumerate(values, 1):
             cell = ws.cell(row=row_i, column=col, value=val)
             cell.fill      = fill
             cell.border    = border
-            cell.alignment = wrap
+            cell.alignment = wrap if col <= N_EDITABLE else Alignment(wrap_text=False, vertical="top")
             if col in (2, 3):
                 cell.alignment = center
 
@@ -244,6 +290,10 @@ def main():
         ("Blue",   "Alias — value propagated as canonical_key; source tag itself is not the target"),
         ("Yellow", "Report-only — shown in divergent tag report but NOT propagated"),
         ("Red/Pink", "Neither — technical/structural, excluded from report and propagation"),
+        ("", ""),
+        ("Grey headers",
+         "Columns image_count / distinct_values / owners / most_common_value are VIEW-ONLY stats "
+         "pulled from the database — they are not read by the update process and should not be edited."),
     ]
     for r, (a, b) in enumerate(legend, 1):
         leg.cell(row=r, column=1, value=a).font = Font(bold=(r==1))

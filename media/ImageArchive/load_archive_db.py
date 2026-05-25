@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: media/ImageArchive/load_archive_db.py:145 %
+#  %ccm_git_object_id: media/ImageArchive/load_archive_db.py:146 %
 #  %ccm_git_author: Matthew Pegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 59ac07f2ae8db3c7159d45c1b37871f41610dddf %
-#  %ccm_git_commit_id: 613995c2aca19d377baa26d4daae9de8d2232e97 %
-#  %ccm_git_commit_count: 145 %
-#  %ccm_git_commit_date: 2026-05-24 15:14:51 -0400 %
+#  %ccm_git_blob_sha: 6a8a59b751d2ad866ff67c44875ce55c0b5aed3a %
+#  %ccm_git_commit_id: ff10418d79d5d337bca240bb7739df3da4f6892a %
+#  %ccm_git_commit_count: 146 %
+#  %ccm_git_commit_date: 2026-05-24 20:26:55 -0400 %
 #  %ccm_git_commit_author: Matthew Pegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: adding readme %
-#  %ccm_git_modify_date: 2026-05-24 15:15:17 %
-#  %ccm_git_file_last_modified: 2026-05-24 15:15:17 %
+#  %ccm_git_commit_message: track duplicate image locations, scrape from all files %
+#  %ccm_git_modify_date: 2026-05-24 20:27:12 %
+#  %ccm_git_file_last_modified: 2026-05-24 20:27:12 %
 #  %ccm_git_file_name: load_archive_db.py %
 #  %ccm_git_path: media/ImageArchive/load_archive_db.py %
 #  %ccm_git_language_mode: python %
@@ -21,10 +21,13 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 10336 %
+#  %ccm_git_size: 10862 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
-# %git_commit_history: 2026-05-24 Matthew Pegg  imageArchives  % 
-# %git_commit_history: 2026-05-23 Matthew Pegg  image tags  % 
+# %git_commit_history: 2026-05-24 Matthew Pegg  adding readme  % 
+# %git_commit_history: 2026-05-24 Matthew Pegg  imageArchives  %
+ 
+# %git_commit_history: 2026-05-23 Matthew Pegg  image tags  %
+ 
 # %git_commit_history: unknown  unknown  unknown  %
  
 """
@@ -201,6 +204,12 @@ def load_all(conn, archive_root):
             if not file_ts:
                 raise ValueError(f"No file_date for {image_path}")
 
+            # recorded_at = File:FileModifyDate from the tag snapshot — best
+            # proxy for when these tags were last written to disk.
+            raw_mod = (data["current_tags"].get("File:FileModifyDate")
+                       or data["current_tags"].get("FileModifyDate") or "")
+            rts = re.sub(r'^(\d{4}):(\d{2}):(\d{2})', r'\1-\2-\3', raw_mod) or None
+
             if added:
                 execute_values(cur,
                     "INSERT INTO image_tags (image_id, tag_key, tag_value, changed_at)"
@@ -208,9 +217,9 @@ def load_all(conn, archive_root):
                     [(image_id, k, v, file_ts) for k, v in added.items()])
                 execute_values(cur,
                     "INSERT INTO tag_history"
-                    " (image_id, snapshot_ts, change_type, tag_key, tag_value)"
+                    " (image_id, snapshot_ts, change_type, tag_key, tag_value, recorded_at)"
                     " VALUES %s ON CONFLICT DO NOTHING",
-                    [(image_id, file_ts, 'added', k, v) for k, v in added.items()])
+                    [(image_id, file_ts, 'added', k, v, rts) for k, v in added.items()])
 
             for k, v in changed.items():
                 cur.execute(
@@ -219,14 +228,14 @@ def load_all(conn, archive_root):
                     (v, file_ts, image_id, k))
                 cur.execute(
                     "INSERT INTO tag_history"
-                    " (image_id, snapshot_ts, change_type, tag_key, tag_value)"
-                    " VALUES (%s,%s,'changed_from',%s,%s) ON CONFLICT DO NOTHING",
-                    (image_id, file_ts, k, old_tags[k]))
+                    " (image_id, snapshot_ts, change_type, tag_key, tag_value, recorded_at)"
+                    " VALUES (%s,%s,'changed_from',%s,%s,%s) ON CONFLICT DO NOTHING",
+                    (image_id, file_ts, k, old_tags[k], rts))
                 cur.execute(
                     "INSERT INTO tag_history"
-                    " (image_id, snapshot_ts, change_type, tag_key, tag_value)"
-                    " VALUES (%s,%s,'changed_to',%s,%s) ON CONFLICT DO NOTHING",
-                    (image_id, file_ts, k, v))
+                    " (image_id, snapshot_ts, change_type, tag_key, tag_value, recorded_at)"
+                    " VALUES (%s,%s,'changed_to',%s,%s,%s) ON CONFLICT DO NOTHING",
+                    (image_id, file_ts, k, v, rts))
 
             for k in removed:
                 cur.execute(
@@ -234,9 +243,9 @@ def load_all(conn, archive_root):
                     (image_id, k))
                 cur.execute(
                     "INSERT INTO tag_history"
-                    " (image_id, snapshot_ts, change_type, tag_key, tag_value)"
-                    " VALUES (%s,%s,'removed',%s,%s) ON CONFLICT DO NOTHING",
-                    (image_id, file_ts, k, old_tags[k]))
+                    " (image_id, snapshot_ts, change_type, tag_key, tag_value, recorded_at)"
+                    " VALUES (%s,%s,'removed',%s,%s,%s) ON CONFLICT DO NOTHING",
+                    (image_id, file_ts, k, old_tags[k], rts))
 
             for ts, change_type, tag_key, tag_value in data["history"]:
                 cur.execute("""
