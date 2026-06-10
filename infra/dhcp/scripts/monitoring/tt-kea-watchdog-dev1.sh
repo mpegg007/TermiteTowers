@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/dhcp/scripts/monitoring/tt-kea-watchdog-dev1.sh:139 %
+#  %ccm_git_object_id: infra/dhcp/scripts/monitoring/tt-kea-watchdog-dev1.sh:147 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 8d2b3812bbd5c5e0a484da7073d853dea206e14b %
-#  %ccm_git_commit_id: 4b7c4d5292241b4ba1eb82f1b2ec0509b8fd544f %
-#  %ccm_git_commit_count: 139 %
-#  %ccm_git_commit_date: 2026-03-22 09:03:20 -0400 %
+#  %ccm_git_blob_sha: 220c05bea884f77d057538c739380cb0645e455b %
+#  %ccm_git_commit_id: 875dba4d1edbc0fb2fe425346b22faa6070d5e41 %
+#  %ccm_git_commit_count: 147 %
+#  %ccm_git_commit_date: 2026-06-10 17:10:31 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: march updates %
-#  %ccm_git_modify_date: 2026-03-22 09:03:20 %
-#  %ccm_git_file_last_modified: 2026-03-22 09:03:20 %
+#  %ccm_git_commit_message: june bulk update %
+#  %ccm_git_modify_date: 2026-06-10 17:10:32 %
+#  %ccm_git_file_last_modified: 2026-06-10 17:10:32 %
 #  %ccm_git_file_name: tt-kea-watchdog-dev1.sh %
 #  %ccm_git_path: infra/dhcp/scripts/monitoring/tt-kea-watchdog-dev1.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,8 +21,9 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 6851 %
+#  %ccm_git_size: 6904 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2026-03-22 mpegg  march updates  % 
 # %git_commit_history: unknown  unknown  unknown  % 
 # %git_commit_history: unknown  unknown  unknown  % 
 # %git_commit_history: 2026-02-07 mpegg  feb2026.1  % 

@@ -1,18 +1,18 @@
 <!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
   %ccm_git_repo: TermiteTowers %
   %ccm_git_branch: dev1 %
-  %ccm_git_object_id: wiki/ports.md:139 %
+  %ccm_git_object_id: wiki/ports.md:147 %
   %ccm_git_author: mpegg %
   %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: 53126a51e9616fdd888c3a5f5d56d256c2343ff3 %
-  %ccm_git_commit_id: 4b7c4d5292241b4ba1eb82f1b2ec0509b8fd544f %
-  %ccm_git_commit_count: 139 %
-  %ccm_git_commit_date: 2026-03-22 09:03:20 -0400 %
+  %ccm_git_blob_sha: 2166d61f6813ebcb7681cf21cc414962e2f120e4 %
+  %ccm_git_commit_id: 875dba4d1edbc0fb2fe425346b22faa6070d5e41 %
+  %ccm_git_commit_count: 147 %
+  %ccm_git_commit_date: 2026-06-10 17:10:31 -0400 %
   %ccm_git_commit_author: mpegg %
   %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: march updates %
-  %ccm_git_modify_date: 2026-03-22 09:03:23 %
-  %ccm_git_file_last_modified: 2026-03-22 09:03:23 %
+  %ccm_git_commit_message: june bulk update %
+  %ccm_git_modify_date: 2026-06-10 17:10:32 %
+  %ccm_git_file_last_modified: 2026-06-10 17:10:32 %
   %ccm_git_file_name: ports.md %
   %ccm_git_path: wiki/ports.md %
   %ccm_git_language_mode: markdown %
@@ -20,8 +20,9 @@
   %ccm_git_file_encoding: utf-8 %
   %ccm_git_file_eol: CRLF %
   %ccm_git_exec: no %
-  %ccm_git_size: 12626 %
+  %ccm_git_size: 13229 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- %git_commit_history: 2026-03-22 mpegg  march updates  % -->
 <!-- %git_commit_history: 2026-02-07 mpegg  comment cleanup  % -->
 <!-- %git_commit_history: 2026-02-07 mpegg  feb2026  % -->
 <!-- %git_commit_history: 2025-12-15 mpegg  monday drop  % -->
@@ -97,6 +98,8 @@ This page tracks host and service ports used across TermiteTowers using a system
 | Nextcloud                      | nextcloud.termitetowers.ca       | 3230      | 80             | Content   | ✅ **NEW**       |
 | File Sharing                   | fileshare.termitetowers.ca       | 3240      | TBD            | Content   | 🕒 Planned       |
 | News/RSS                       | news.termitetowers.ca            | 3250      | TBD            | Content   | ✅ **NEW**       |
+| justanotherhuman.ca (HTTP)     | justanotherhuman.ca              | 3259      | —              | Content   | ✅ External only |
+| justanotherhuman.ca (HTTPS)    | justanotherhuman.ca              | 3260      | —              | Content   | ✅ External only |
 
 | Mealie                         | mealie.termitetowers.ca          | 3301      | 80             | Home      | ✅ app-services-net-dev1 |
 | Homarr                         | home.termitetowers.ca            | 3310      | 7575           | Home      | ✅ **UPDATED**   |
@@ -104,6 +107,7 @@ This page tracks host and service ports used across TermiteTowers using a system
 | Note-Taking Apps               | notes.termitetowers.ca           | 3330      | TBD            | Home      | 🕒 Planned       |
 | LLM Server API                 | llmapi.termitetowers.ca          | 3350      | 8000           | Home      | ✅ **NEW**       |
 | Homepage                       | homepage.termitetowers.ca        | 3360      | 3000           | Home      | ✅ app-services-net-dev1 |
+| Immich                         | immich.justanotherhuman.ca       | 3370      | 3000           | Home      | ✅ app-services-net-dev1 |
 | Vault                          | vault.termitetowers.ca           | 3500      | 3000           | Security  | 🔄 **TO MIGRATE**|
 
 | Certificate Management         | certs.termitetowers.ca           | 3540      | TBD            | Security  | 🕒 Planned       |
@@ -115,6 +119,7 @@ This page tracks host and service ports used across TermiteTowers using a system
 | Dozzle                         | dozzle.termitetowers.ca          | 3710      | 8080           | Monitor   | ✅ **UPDATED**   |
 | Prometheus                     | prometheus.termitetowers.ca      | 3720      | 9090           | Monitor   | ✅ **NEW**       |
 | watchYourLan                   | watchyourlan.termitetowers.ca    | 3730      | 8840           | Monitor   | ✅ **NEW**       |
+| NetAlertX                      | netalert.termitetowers.ca        | 3731      | 8840           | Monitor   | ✅ **NEW**       |
 | Grafana                        | grafana.termitetowers.ca         | 3721      | TBD            | Monitor   | 🕒 Planned       |
 | Log Aggregation                | logs.termitetowers.ca            | 3740      | TBD            | Monitor   | 🕒 Planned       |
 | Performance Monitoring         | perfmon.termitetowers.ca         | 3750      | TBD            | Monitor   | 🕒 Planned       |

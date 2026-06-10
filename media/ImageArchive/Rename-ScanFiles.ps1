@@ -1,18 +1,18 @@
 <##  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: media/ImageArchive/Rename-ScanFiles.ps1:146 %
-#  %ccm_git_author: Matthew Pegg %
+#  %ccm_git_object_id: media/ImageArchive/Rename-ScanFiles.ps1:147 %
+#  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 5bb29cfcb9a1735bd201317299591b947f945602 %
-#  %ccm_git_commit_id: ff10418d79d5d337bca240bb7739df3da4f6892a %
-#  %ccm_git_commit_count: 146 %
-#  %ccm_git_commit_date: 2026-05-24 20:26:55 -0400 %
-#  %ccm_git_commit_author: Matthew Pegg %
+#  %ccm_git_blob_sha: 7aaae8b727d21830c290b46c7df9e5a42ba6d42e %
+#  %ccm_git_commit_id: 875dba4d1edbc0fb2fe425346b22faa6070d5e41 %
+#  %ccm_git_commit_count: 147 %
+#  %ccm_git_commit_date: 2026-06-10 17:10:31 -0400 %
+#  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: track duplicate image locations, scrape from all files %
-#  %ccm_git_modify_date: 2026-05-24 20:26:57 %
-#  %ccm_git_file_last_modified: 2026-05-24 20:26:56 %
+#  %ccm_git_commit_message: june bulk update %
+#  %ccm_git_modify_date: 2026-06-10 17:10:32 %
+#  %ccm_git_file_last_modified: 2026-06-10 17:10:32 %
 #  %ccm_git_file_name: Rename-ScanFiles.ps1 %
 #  %ccm_git_path: media/ImageArchive/Rename-ScanFiles.ps1 %
 #  %ccm_git_language_mode: powershell %
@@ -20,13 +20,12 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 1881 %
+#  %ccm_git_size: 1993 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  #>
-<## %git_commit_history: 2026-05-24 Matthew Pegg  adding readme  % #>
-<## %git_commit_history: 2026-05-24 Matthew Pegg  imageArchives  %
- #>
-<## %git_commit_history: 2026-05-23 Matthew Pegg  image tagging phase 1  %
- #>
+<## %git_commit_history: 2026-05-24 Matthew Pegg  track duplicate image locations, scrape from all files  % #>
+<## %git_commit_history: 2026-05-24 Matthew Pegg  adding readme  % #>
+<## %git_commit_history: 2026-05-24 Matthew Pegg  imageArchives  % #>
+<## %git_commit_history: 2026-05-23 Matthew Pegg  image tagging phase 1  % #>
 # Rename-ScanFiles.ps1
 # SilverFast already prefixes files with the scan date (e.g. 20260521_0001.tif).
 # This script prepends the owner token and a 14-digit datetime (from the file's

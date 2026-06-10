@@ -2,27 +2,28 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: media/ImageArchive/ingest_folder_db.py:146 %
-#  %ccm_git_author: Matthew Pegg %
+#  %ccm_git_object_id: media/ImageArchive/ingest_folder_db.py:147 %
+#  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 5eb931770c2c659ba89a3333b60e897a03ececdb %
-#  %ccm_git_commit_id: ff10418d79d5d337bca240bb7739df3da4f6892a %
-#  %ccm_git_commit_count: 146 %
-#  %ccm_git_commit_date: 2026-05-24 20:26:55 -0400 %
-#  %ccm_git_commit_author: Matthew Pegg %
+#  %ccm_git_blob_sha: 36d682bf9dd57f97f6e80ee8cdef6e39a270e2d5 %
+#  %ccm_git_commit_id: 875dba4d1edbc0fb2fe425346b22faa6070d5e41 %
+#  %ccm_git_commit_count: 147 %
+#  %ccm_git_commit_date: 2026-06-10 17:10:31 -0400 %
+#  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: track duplicate image locations, scrape from all files %
-#  %ccm_git_modify_date: 2026-05-24 20:27:09 %
-#  %ccm_git_file_last_modified: 2026-05-24 20:27:09 %
+#  %ccm_git_commit_message: june bulk update %
+#  %ccm_git_modify_date: 2026-06-10 17:10:32 %
+#  %ccm_git_file_last_modified: 2026-06-10 17:10:32 %
 #  %ccm_git_file_name: ingest_folder_db.py %
 #  %ccm_git_path: media/ImageArchive/ingest_folder_db.py %
 #  %ccm_git_language_mode: python %
 #  %ccm_git_file_type: text/x-script.python %
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
-#  %ccm_git_exec: yes %
-#  %ccm_git_size: 16725 %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 16786 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2026-05-24 Matthew Pegg  track duplicate image locations, scrape from all files  % 
 """
 ingest_folder_db.py
 
@@ -62,10 +63,11 @@ import json
 # ── Config ─────────────────────────────────────────────────────────────────────
 
 EXIFTOOL = r"C:\Apps\exiftool-13.58_64\exiftool.exe"
+EXIFTOOL = r"/home/mpegg-adm/apps/exiftool/exiftool"
 ENV_FILE  = Path(__file__).parent.parent / ".env"
 
 IMAGE_EXTS = {
-    ".jpg", ".jpeg",
+    ".jpg", ".jpeg", ".png",
     ".tif", ".tiff",
     ".cr2", ".cr3",
     ".nef", ".nrw",

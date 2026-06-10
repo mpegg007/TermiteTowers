@@ -1,0 +1,31 @@
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/systemd/tt-godaddy-ddns.service:147 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: e2e9fdc371626dfe1ec8af7e6d4c9cbc0dc755b1 %
+#  %ccm_git_commit_id: 875dba4d1edbc0fb2fe425346b22faa6070d5e41 %
+#  %ccm_git_commit_count: 147 %
+#  %ccm_git_commit_date: 2026-06-10 17:10:31 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: june bulk update %
+#  %ccm_git_modify_date: 2026-06-10 17:10:32 %
+#  %ccm_git_file_last_modified: 2026-05-16 16:35:31 %
+#  %ccm_git_file_name: tt-godaddy-ddns.service %
+#  %ccm_git_path: infra/systemd/tt-godaddy-ddns.service %
+#  %ccm_git_language_mode: service %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 154 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+[Unit]
+Description=GoDaddy Dynamic DNS Updater
+
+[Service]
+Type=oneshot
+ExecStart=/home/mpegg-adm/source/TermiteTowers/infra/dns/godaddy-ddns.sh
+User=root

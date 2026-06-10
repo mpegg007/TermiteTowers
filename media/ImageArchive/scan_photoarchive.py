@@ -2,29 +2,31 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: media/ImageArchive/scan_photoarchive.py:145 %
-#  %ccm_git_author: Matthew Pegg %
+#  %ccm_git_object_id: media/ImageArchive/scan_photoarchive.py:147 %
+#  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 2a1284af4221f8f2fb7d293633d7535be7b7f06b %
-#  %ccm_git_commit_id: 613995c2aca19d377baa26d4daae9de8d2232e97 %
-#  %ccm_git_commit_count: 145 %
-#  %ccm_git_commit_date: 2026-05-24 15:14:51 -0400 %
-#  %ccm_git_commit_author: Matthew Pegg %
+#  %ccm_git_blob_sha: aab1b32838de0e1d914488d79f78eb5c3cd2f4ba %
+#  %ccm_git_commit_id: 875dba4d1edbc0fb2fe425346b22faa6070d5e41 %
+#  %ccm_git_commit_count: 147 %
+#  %ccm_git_commit_date: 2026-06-10 17:10:31 -0400 %
+#  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: adding readme %
-#  %ccm_git_modify_date: 2026-05-24 15:15:23 %
-#  %ccm_git_file_last_modified: 2026-05-24 15:15:23 %
+#  %ccm_git_commit_message: june bulk update %
+#  %ccm_git_modify_date: 2026-06-10 17:10:32 %
+#  %ccm_git_file_last_modified: 2026-06-10 17:10:32 %
 #  %ccm_git_file_name: scan_photoarchive.py %
 #  %ccm_git_path: media/ImageArchive/scan_photoarchive.py %
 #  %ccm_git_language_mode: python %
 #  %ccm_git_file_type: text/x-script.python %
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
-#  %ccm_git_exec: yes %
-#  %ccm_git_size: 2600 %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 2665 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
-# %git_commit_history: 2026-05-24 Matthew Pegg  imageArchives  % 
-# %git_commit_history: 2026-05-23 Matthew Pegg  image tagging phase 1  % 
+# %git_commit_history: 2026-05-24 Matthew Pegg  adding readme  % 
+# %git_commit_history: 2026-05-24 Matthew Pegg  imageArchives  %
+# %git_commit_history: 2026-05-23 Matthew Pegg  image tagging phase 1  %
+ 
 """
 scan_photoarchive.py
 

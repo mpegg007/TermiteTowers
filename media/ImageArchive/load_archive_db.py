@@ -2,33 +2,31 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: media/ImageArchive/load_archive_db.py:146 %
-#  %ccm_git_author: Matthew Pegg %
+#  %ccm_git_object_id: media/ImageArchive/load_archive_db.py:147 %
+#  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 6a8a59b751d2ad866ff67c44875ce55c0b5aed3a %
-#  %ccm_git_commit_id: ff10418d79d5d337bca240bb7739df3da4f6892a %
-#  %ccm_git_commit_count: 146 %
-#  %ccm_git_commit_date: 2026-05-24 20:26:55 -0400 %
-#  %ccm_git_commit_author: Matthew Pegg %
+#  %ccm_git_blob_sha: 8e4cb68b48008c2750976bcf4e6a471ef282f215 %
+#  %ccm_git_commit_id: 875dba4d1edbc0fb2fe425346b22faa6070d5e41 %
+#  %ccm_git_commit_count: 147 %
+#  %ccm_git_commit_date: 2026-06-10 17:10:31 -0400 %
+#  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: track duplicate image locations, scrape from all files %
-#  %ccm_git_modify_date: 2026-05-24 20:27:12 %
-#  %ccm_git_file_last_modified: 2026-05-24 20:27:12 %
+#  %ccm_git_commit_message: june bulk update %
+#  %ccm_git_modify_date: 2026-06-10 17:10:32 %
+#  %ccm_git_file_last_modified: 2026-06-10 17:10:32 %
 #  %ccm_git_file_name: load_archive_db.py %
 #  %ccm_git_path: media/ImageArchive/load_archive_db.py %
 #  %ccm_git_language_mode: python %
 #  %ccm_git_file_type: text/x-script.python %
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
-#  %ccm_git_exec: yes %
-#  %ccm_git_size: 10862 %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 10871 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
-# %git_commit_history: 2026-05-24 Matthew Pegg  adding readme  % 
+# %git_commit_history: 2026-05-24 Matthew Pegg  track duplicate image locations, scrape from all files  % 
+# %git_commit_history: 2026-05-24 Matthew Pegg  adding readme  %
 # %git_commit_history: 2026-05-24 Matthew Pegg  imageArchives  %
- 
 # %git_commit_history: 2026-05-23 Matthew Pegg  image tags  %
- 
-# %git_commit_history: unknown  unknown  unknown  %
  
 """
 load_archive_db.py

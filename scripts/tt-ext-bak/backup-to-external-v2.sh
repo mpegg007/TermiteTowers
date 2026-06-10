@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: scripts/tt-ext-bak/backup-to-external-v2.sh:139 %
+#  %ccm_git_object_id: scripts/tt-ext-bak/backup-to-external-v2.sh:147 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 0d414972f3410e03b5296957aafcf7dfd85d5d03 %
-#  %ccm_git_commit_id: 4b7c4d5292241b4ba1eb82f1b2ec0509b8fd544f %
-#  %ccm_git_commit_count: 139 %
-#  %ccm_git_commit_date: 2026-03-22 09:03:20 -0400 %
+#  %ccm_git_blob_sha: 56f8fba19f0b5d43602c0c1264a64d4143aebdaf %
+#  %ccm_git_commit_id: 875dba4d1edbc0fb2fe425346b22faa6070d5e41 %
+#  %ccm_git_commit_count: 147 %
+#  %ccm_git_commit_date: 2026-06-10 17:10:31 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: march updates %
-#  %ccm_git_modify_date: 2026-03-22 09:03:23 %
-#  %ccm_git_file_last_modified: 2026-03-22 09:03:23 %
+#  %ccm_git_commit_message: june bulk update %
+#  %ccm_git_modify_date: 2026-06-10 17:10:32 %
+#  %ccm_git_file_last_modified: 2026-06-10 17:10:32 %
 #  %ccm_git_file_name: backup-to-external-v2.sh %
 #  %ccm_git_path: scripts/tt-ext-bak/backup-to-external-v2.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,8 +21,9 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 8284 %
+#  %ccm_git_size: 8337 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2026-03-22 mpegg  march updates  % 
 # %git_commit_history: unknown  unknown  unknown  % 
 # %git_commit_history: 2026-02-07 mpegg  comment cleanup  % 
 # %git_commit_history: 2026-02-07 mpegg  feb2026  % 
