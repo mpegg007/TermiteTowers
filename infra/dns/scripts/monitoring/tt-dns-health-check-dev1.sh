@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/dns/scripts/monitoring/tt-dns-health-check-dev1.sh:139 %
+#  %ccm_git_object_id: infra/dns/scripts/monitoring/tt-dns-health-check-dev1.sh:148 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: eb5bd6e372a8ac8e26e8f4ba68493bb4798f91a7 %
-#  %ccm_git_commit_id: 4b7c4d5292241b4ba1eb82f1b2ec0509b8fd544f %
-#  %ccm_git_commit_count: 139 %
-#  %ccm_git_commit_date: 2026-03-22 09:03:20 -0400 %
+#  %ccm_git_blob_sha: 75223ce8b0c6d6b709d29b126a9f395abdbddffc %
+#  %ccm_git_commit_id: a05e23946842d7f627bba10740a39e328f03d84e %
+#  %ccm_git_commit_count: 148 %
+#  %ccm_git_commit_date: 2026-06-14 10:37:47 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: march updates %
-#  %ccm_git_modify_date: 2026-03-22 09:03:21 %
-#  %ccm_git_file_last_modified: 2026-03-22 09:03:21 %
+#  %ccm_git_commit_message: sunday updates %
+#  %ccm_git_modify_date: 2026-06-14 10:37:48 %
+#  %ccm_git_file_last_modified: 2026-06-14 10:37:48 %
 #  %ccm_git_file_name: tt-dns-health-check-dev1.sh %
 #  %ccm_git_path: infra/dns/scripts/monitoring/tt-dns-health-check-dev1.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,8 +21,9 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 8169 %
+#  %ccm_git_size: 8222 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2026-03-22 mpegg  march updates  % 
 # %git_commit_history: unknown  unknown  unknown  % 
 # %git_commit_history: unknown  unknown  unknown  % 
 # %git_commit_history: 2026-02-07 mpegg  feb2026.1  % 

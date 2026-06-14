@@ -2,18 +2,18 @@
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/dhcp/scripts/monitoring/tt-kea-health-check-dev1.sh:147 %
+#  %ccm_git_object_id: infra/dhcp/scripts/monitoring/tt-kea-health-check-dev1.sh:148 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 3f97e62b153c907c68380c631db8510cf561aa61 %
-#  %ccm_git_commit_id: 875dba4d1edbc0fb2fe425346b22faa6070d5e41 %
-#  %ccm_git_commit_count: 147 %
-#  %ccm_git_commit_date: 2026-06-10 17:10:31 -0400 %
+#  %ccm_git_blob_sha: 3d65e5d5917947900bf356082e06cdc7409786b1 %
+#  %ccm_git_commit_id: a05e23946842d7f627bba10740a39e328f03d84e %
+#  %ccm_git_commit_count: 148 %
+#  %ccm_git_commit_date: 2026-06-14 10:37:47 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: june bulk update %
-#  %ccm_git_modify_date: 2026-06-10 17:10:32 %
-#  %ccm_git_file_last_modified: 2026-06-10 17:10:32 %
+#  %ccm_git_commit_message: sunday updates %
+#  %ccm_git_modify_date: 2026-06-14 10:37:48 %
+#  %ccm_git_file_last_modified: 2026-06-14 10:37:48 %
 #  %ccm_git_file_name: tt-kea-health-check-dev1.sh %
 #  %ccm_git_path: infra/dhcp/scripts/monitoring/tt-kea-health-check-dev1.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,8 +21,9 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 18388 %
+#  %ccm_git_size: 18447 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2026-06-10 mpegg  june bulk update  % 
 # %git_commit_history: 2026-03-22 mpegg  march updates  % 
 # %git_commit_history: unknown  unknown  unknown  % 
 # %git_commit_history: unknown  unknown  unknown  % 
