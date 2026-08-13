@@ -1,0 +1,22 @@
+# Water Meter web viewer (dev1)
+# Install (keep unit in-repo, symlink into systemd):
+#   sudo ln -s /home/mpegg-adm/source/TermiteTowers/water-meter/systemd/water-meter.service /etc/systemd/system/water-meter.service
+# Then:
+#   sudo systemctl daemon-reload && sudo systemctl enable --now water-meter
+[Unit]
+Description=Water Meter web viewer (FastAPI, dev1)
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mpegg-adm
+Group=mpegg-adm
+WorkingDirectory=/home/mpegg-adm/source/TermiteTowers/water-meter
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/mpegg-adm/source/TermiteTowers/water-meter/.venv/bin/uvicorn water_meter.webapp.main:app --app-dir /home/mpegg-adm/source/TermiteTowers/water-meter/src --host localhost --port 3414 --log-level info
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
