@@ -36,7 +36,7 @@ set -euo pipefail
 # Configuration
 AI_STORAGE_SOURCE="/mnt/ai_storage"
 MONOLITH_ROOT_SOURCE="/"
-BACKUP_LABEL="OMP-UD4TB43"  # Drive label to look for
+BACKUP_LABEL="OMP-UD4TB42"  # Drive label to look for
 BACKUP_MOUNT="/mnt/${BACKUP_LABEL}"
 BACKUP_DEST="${BACKUP_MOUNT}/backups"
 MAX_SNAPSHOTS=8
