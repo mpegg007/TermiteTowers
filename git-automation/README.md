@@ -67,6 +67,11 @@ Bypass markers, if you need them:
 
 ## Things that bite
 
+- **A file that documents the bypass markers is itself skipped.** The marker check is a
+  plain `grep` over file content, so this README and `v2/README.md` are excluded from
+  header processing and secret scanning - they contain the marker strings. That is why
+  neither carries a CCM header. It is not an oversight.
+
 - **Never let a header be inserted into a file under `git-automation/`.** The
   templates are header *sources*; a header inside one would be emitted into every
   header generated afterwards. The hook excludes `git-automation/*.sh` and
