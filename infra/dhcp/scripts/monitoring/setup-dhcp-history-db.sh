@@ -1,28 +1,33 @@
 #!/bin/bash
-#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/dhcp/scripts/monitoring/setup-dhcp-history-db.sh:139 %
+#  %ccm_git_object_id: infra/dhcp/scripts/monitoring/setup-dhcp-history-db.sh:161 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 47efaac387ab0adab1c94dce3fda150bc16d9cd7 %
-#  %ccm_git_commit_id: 4b7c4d5292241b4ba1eb82f1b2ec0509b8fd544f %
-#  %ccm_git_commit_count: 139 %
-#  %ccm_git_commit_date: 2026-03-22 09:03:20 -0400 %
+#  %ccm_git_blob_sha: ec337b1d78ee26929865217315ef566b4d8439f8 %
+#  %ccm_git_commit_id: 5825498f8c6706d637e53e96899fe9094e98be9d %
+#  %ccm_git_commit_count: 161 %
+#  %ccm_git_commit_date: 2026-09-26 15:27:37 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: march updates %
-#  %ccm_git_modify_date: 2026-03-22 09:03:20 %
-#  %ccm_git_file_last_modified: 2026-03-22 09:03:20 %
+#  %ccm_git_commit_message: fix(security): remove the DB password from the DHCP log parser %
+#  %ccm_git_modify_date: 2026-09-26 15:27:37 %
+#  %ccm_git_file_last_modified: 2026-09-26 15:27:10 %
 #  %ccm_git_file_name: setup-dhcp-history-db.sh %
 #  %ccm_git_path: infra/dhcp/scripts/monitoring/setup-dhcp-history-db.sh %
 #  %ccm_git_language_mode: shellscript %
 #  %ccm_git_file_type: text/x-shellscript %
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: CRLF %
-#  %ccm_git_exec: no %
-#  %ccm_git_size: 3784 %
+#  %ccm_git_exec: yes %
+#  %ccm_git_size: 5161 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: unknown  unknown  unknown  % 
+# %git_commit_history: unknown  unknown  unknown  % 
+# %git_commit_history: 2025-11-30 mpegg  cleanup  % 
+# %git_commit_history: november changes % 
+# %git_commit_history: dhcp logging % 
 # %git_commit_history: unknown  unknown  unknown  % 
 # %git_commit_history: unknown  unknown  unknown  % 
 # %git_commit_history: 2025-11-30 mpegg  cleanup  % 
@@ -38,7 +43,9 @@ set -euo pipefail
 DB_NAME="ttdb_dev1"
 SCHEMA_NAME="dhcp_history"
 DB_USER="dhcp_history"
-DB_PASSWORD="termitetowers-db"
+DB_ENV_FILE="${TTDB_ENV_FILE:-/etc/kea/parse-kea-logs.env}"
+[ -f "$DB_ENV_FILE" ] && . "$DB_ENV_FILE"
+DB_PASSWORD="${TTDB_PASSWORD:?no DB password - set TTDB_PASSWORD or create $DB_ENV_FILE}"
 
 echo "=========================================="
 echo "DHCP History Database Setup"
