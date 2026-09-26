@@ -1,27 +1,32 @@
-<!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-  %ccm_git_repo: TermiteTowers %
-  %ccm_git_branch: dev1 %
-  %ccm_git_object_id: wiki/docker-networks.md:139 %
-  %ccm_git_author: mpegg %
-  %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: d878ec022d1ef5e648d964b0b463f4f77b13fc6b %
-  %ccm_git_commit_id: 4b7c4d5292241b4ba1eb82f1b2ec0509b8fd544f %
-  %ccm_git_commit_count: 139 %
-  %ccm_git_commit_date: 2026-03-22 09:03:20 -0400 %
-  %ccm_git_commit_author: mpegg %
-  %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: march updates %
-  %ccm_git_modify_date: 2026-03-22 09:03:23 %
-  %ccm_git_file_last_modified: 2026-03-22 09:03:23 %
-  %ccm_git_file_name: docker-networks.md %
-  %ccm_git_path: wiki/docker-networks.md %
-  %ccm_git_language_mode: markdown %
-  %ccm_git_file_type: text/plain %
-  %ccm_git_file_encoding: us-ascii %
-  %ccm_git_file_eol: CRLF %
-  %ccm_git_exec: no %
-  %ccm_git_size: 6745 %
-  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
+<!-- %ccm_git_repo: TermiteTowers % -->
+<!-- %ccm_git_branch: dev1 % -->
+<!-- %ccm_git_object_id: wiki/docker-networks.md:159 % -->
+<!-- %ccm_git_author: mpegg % -->
+<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
+<!-- %ccm_git_blob_sha: 2f670291aead59a258afdfefc06eb4cbab63d6e8 % -->
+<!-- %ccm_git_commit_id: a435f33611dd9ddaac99463aaf9e6f6ec0d40c66 % -->
+<!-- %ccm_git_commit_count: 159 % -->
+<!-- %ccm_git_commit_date: 2026-09-25 21:16:05 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
+<!-- %ccm_git_commit_message: docs: mark Homarr retired in the network map and agent index % -->
+<!-- %ccm_git_modify_date: 2026-09-25 21:16:05 % -->
+<!-- %ccm_git_file_last_modified: 2026-09-25 21:15:58 % -->
+<!-- %ccm_git_file_name: docker-networks.md % -->
+<!-- %ccm_git_path: wiki/docker-networks.md % -->
+<!-- %ccm_git_language_mode: markdown % -->
+<!-- %ccm_git_file_type: text/plain % -->
+<!-- %ccm_git_file_encoding: us-ascii % -->
+<!-- %ccm_git_file_eol: CRLF % -->
+<!-- %ccm_git_exec: no % -->
+<!-- %ccm_git_size: 7871 % -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+ <!-- %git_commit_history: 2026-03-22 mpegg  march updates  --> 
+<!-- %git_commit_history: unknown  unknown  unknown  % -->
+<!-- %git_commit_history: 2025-10-30 mpegg  commen block updates  % -->
+<!-- %git_commit_history: adding secret-service % -->
+<!-- %git_commit_history: docker updates % -->
 <!-- %git_commit_history: unknown  unknown  unknown  % -->
 <!-- %git_commit_history: 2025-10-30 mpegg  commen block updates  % -->
 <!-- %git_commit_history: adding secret-service % -->
@@ -36,7 +41,7 @@ docker network ls --format '{{.Name}}' | xargs -n1 docker network inspect --form
 | Network Name                | Subnet           | Containers/Apps Assigned                       |
 |-----------------------------|------------------|------------------------------------------------|
 | ai-services-net-dev1        | 10.10.0.0/20     | AI-related apps (e.g., LLM, Whisper, TensorFlow)|
-| app-services-net-dev1       | 10.10.16.0/20    | General app services (e.g., Mealie, Homarr, KitchenOwl, SnipeIT)|
+| app-services-net-dev1       | 10.10.16.0/20    | General app services (e.g., Mealie, KitchenOwl, SnipeIT)     |
 | core-infra-net-dev1         | 10.10.32.0/20    | Core infrastructure (e.g., DNS, DHCP, Nginx)   |
 | docs-services-net-dev1      | 10.10.48.0/20    | Documentation and wiki services                |
 | monitor-apps-net-dev1       | 10.10.64.0/20    | Monitoring/logging (e.g., Prometheus, Uptime Kuma, Dozzle)|
@@ -50,7 +55,7 @@ docker network ls --format '{{.Name}}' | xargs -n1 docker network inspect --form
 - Document new networks and container assignments here after creation.
 - Prune unused networks to keep this list clean.
 
-_Last updated: 2025-10-30_
+_Last updated: 2026-09-26_
 
 ## Current Docker Container to Network Mapping
 
@@ -59,7 +64,7 @@ _Last updated: 2025-10-30_
 | dbgate-dev1              | app-services-net-dev1              | dbgate-dev1_default | 172.30.0.0/16      | Migrated   |
 | lobechat-dev1            | ai-services-net-dev1               | docker_default      | 172.18.0.0/16      | Migrated   |
 | dozzle-dev1              | monitor-apps-net-dev1              | dozzle-dev1_default | 172.24.0.0/16      | Migrated   |
-| homarr-dev1              | productivity-apps-net-dev1         | homarr-dev1_default | 172.25.0.0/16      | Migrated   |
+| homarr-dev1              | productivity-apps-net-dev1         | homarr-dev1_default | 172.25.0.0/16      | Retired    |
 | homepage-dev1            | app-services-net-dev1              |                     |                    |            |
 | llm-server-dev1          | ai-services-net-dev1               | llm-server-dev1_default | 192.168.32.0/20    | Migrated   |
 | mealie-dev1              | productivity-apps-net-dev1         |                     |                    |            |
