@@ -1,18 +1,18 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: .gitignore:154 %
+#  %ccm_git_object_id: .gitignore:157 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 66c00c89dbdcc5ea83f925a9c2f70cb7af18f880 %
-#  %ccm_git_commit_id: 400c179a91cdabc8d280fb0bf38b5603883df534 %
-#  %ccm_git_commit_count: 154 %
-#  %ccm_git_commit_date: 2026-09-25 20:19:32 -0400 %
+#  %ccm_git_blob_sha: 2b56d4bb93afeb4d83d3154b350b812092871eef %
+#  %ccm_git_commit_id: c9d8a29eea9fcc6812c409a08d4917d1187b108c %
+#  %ccm_git_commit_count: 157 %
+#  %ccm_git_commit_date: 2026-09-25 20:36:19 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: fix(git-hooks): activate v2 hooks, track v2, retire dead artifacts %
-#  %ccm_git_modify_date: 2026-09-25 20:19:32 %
-#  %ccm_git_file_last_modified: 2026-09-25 20:18:57 %
+#  %ccm_git_commit_message: chore(gitignore): block credential-bearing local captures from being staged %
+#  %ccm_git_modify_date: 2026-09-25 20:36:20 %
+#  %ccm_git_file_last_modified: 2026-09-25 20:36:12 %
 #  %ccm_git_file_name: .gitignore %
 #  %ccm_git_path: .gitignore %
 #  %ccm_git_language_mode: git %
@@ -20,8 +20,28 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 1891 %
+#  %ccm_git_size: 2704 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
 # %git_commit_history: updates % 
 # %git_commit_history: update to gitignore % 
 # %git_commit_history: adding secret-service % 
@@ -80,3 +100,12 @@ infra/docker/env/*_password.txt
 hams/esphome/.esphome
 # Test artifacts
 tests/**/results.xml
+
+# Local inventories and captures that carry credentials, device keys or tokens
+# (e.g. Tuya localKey values, DHCP syslogs, MCP config tokens). The .example /
+# template equivalents stay trackable; the live files must never be committed.
+hams/inventory/tuyacloud_devices.json
+hams/inventory/network_devices-*.csv
+hams/inventory/dhcp.syslog*
+infra/mcp/home-assistant/mcp-config.json
+trigger-test.env
