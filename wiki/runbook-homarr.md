@@ -1,31 +1,51 @@
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
+<!-- %ccm_git_repo: TermiteTowers % -->
+<!-- %ccm_git_branch: dev1 % -->
+<!-- %ccm_git_object_id: wiki/runbook-homarr.md:158 % -->
+<!-- %ccm_git_author: mpegg % -->
+<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
+<!-- %ccm_git_blob_sha: c016a380e0b77ca6ab70cc73efd38edc905faf1e % -->
+<!-- %ccm_git_commit_id: d7e19382f49384e00dc61fb86a10a9255583a0c8 % -->
+<!-- %ccm_git_commit_count: 158 % -->
+<!-- %ccm_git_commit_date: 2026-09-25 21:05:38 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
+<!-- %ccm_git_commit_message: chore(homarr): retire Homarr - configured but never used day to day % -->
+<!-- %ccm_git_modify_date: 2026-09-25 21:05:38 % -->
+<!-- %ccm_git_file_last_modified: 2026-09-25 21:05:30 % -->
+<!-- %ccm_git_file_name: runbook-homarr.md % -->
+<!-- %ccm_git_path: wiki/runbook-homarr.md % -->
+<!-- %ccm_git_language_mode: markdown % -->
+<!-- %ccm_git_file_type: text/plain % -->
+<!-- %ccm_git_file_encoding: utf-8 % -->
+<!-- %ccm_git_file_eol: CRLF % -->
+<!-- %ccm_git_exec: no % -->
+<!-- %ccm_git_size: 3848 % -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
 <!--
-TermiteTowers Continuous Code Management Header TEMPLATE
-% ccm_modify_date: 2025-08-31 14:14:22 %
-% ccm_author: mpegg %
-% ccm_author_email: mpegg@hotmail.com %
-% ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
-% ccm_branch: dev1 %
-% ccm_object_id: wiki/runbook-homarr.md:0 %
-% ccm_commit_id: unknown %
-% ccm_commit_count: 0 %
-% ccm_commit_message: unknown %
-% ccm_commit_author: unknown %
-% ccm_commit_email: unknown %
-% ccm_commit_date: 1970-01-01 00:00:00 +0000 %
-% ccm_file_last_modified: 2025-08-31 14:14:22 %
-% ccm_file_name: runbook-homarr.md %
-% ccm_file_type: text/plain %
-% ccm_file_encoding: utf-8 %
-% ccm_file_eol: CRLF %
-% ccm_path: wiki/runbook-homarr.md %
-% ccm_blob_sha: 3be7130eba94c4b526fc3e15fd2e7b31cb42f689 %
-% ccm_exec: no %
-% ccm_size: 2633 %
-% ccm_tag:  %
-tt-ccm.header.end
 -->
 
 # Runbook: Homarr (dev1)
+
+> **⛔ RETIRED 2026-09-26** — Homarr was stood up, configured with three
+> integrations, and never used day to day. The container has been removed, the
+> `home` nginx vhost disabled, and `infra/docker/homarr-dev1.yml` together with
+> `infra/docker/env/homarr.env` deleted from the repo. The deploy block below is
+> kept as the revival path.
+>
+> **Revival:** restore the compose file from git (`git log --diff-filter=D --
+> infra/docker/homarr-dev1.yml`, then `git show <commit>^:infra/docker/homarr-dev1.yml
+> > infra/docker/homarr-dev1.yml`), generate a key with `scripts/gen-secret-hex.sh`,
+> create `env/homarr.env` from `env/homarr.env.example`, `docker compose -f
+> infra/docker/homarr-dev1.yml up -d`, then re-enable the site with
+> `scripts/nginx-enable-site.sh infra/nginx/sites-available/home.conf home`.
+>
+> **Security note:** the old database survives on disk in the anonymous volume
+> behind `/appdata` (`34cf8e7f…`). It holds three secrets encrypted with the old
+> `SECRET_ENCRYPTION_KEY`, which is in this repo's public history — so the leaked
+> key still decrypts them while that volume exists. Purge with:
+> `docker volume rm 34cf8e7f15a2cd2086682fa4fbfe6a2353984c7aa7ec72d16553ca81d318b3b5`
+
 
 ## Start/Stop
 - Start: `docker compose -f /home/mpegg-adm/source/TermiteTowers/infra/docker/homarr-dev1.yml up -d`

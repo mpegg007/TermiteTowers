@@ -1,27 +1,28 @@
-<!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-  %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
-  %ccm_git_branch: main %
-  %ccm_git_object_id: wiki/domains.md:97 %
-  %ccm_git_author: CCM Maintainer %
-  %ccm_git_author_email: ccm@test %
-  %ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
-  %ccm_git_commit_id: f8d51ae7fe101541b1ccd2f91922878ece0bb306 %
-  %ccm_git_commit_count: 97 %
-  %ccm_git_commit_date: 2025-10-10 20:55:46 -0400 %
-  %ccm_git_commit_author: mpegg %
-  %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: big update %
-  %ccm_git_modify_date: 2025-08-29 07:37:53 %
-  %ccm_git_file_last_modified: 2025-08-29 07:37:52 %
-  %ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
-  %ccm_git_path: CCM_HEADER_TEMPLATE.txt %
-  %ccm_git_language_mode:  %
-  %ccm_git_file_type: text/plain %
-  %ccm_git_file_encoding: us-ascii %
-  %ccm_git_file_eol: CRLF %
-  %ccm_git_exec: no %
-  %ccm_git_size: 659 %
-  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
+<!-- %ccm_git_repo: TermiteTowers % -->
+<!-- %ccm_git_branch: dev1 % -->
+<!-- %ccm_git_object_id: wiki/domains.md:158 % -->
+<!-- %ccm_git_author: mpegg % -->
+<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
+<!-- %ccm_git_blob_sha: 122d9a8d4019ef486969d26fa2bff1a35f950dfe % -->
+<!-- %ccm_git_commit_id: d7e19382f49384e00dc61fb86a10a9255583a0c8 % -->
+<!-- %ccm_git_commit_count: 158 % -->
+<!-- %ccm_git_commit_date: 2026-09-25 21:05:38 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
+<!-- %ccm_git_commit_message: chore(homarr): retire Homarr - configured but never used day to day % -->
+<!-- %ccm_git_modify_date: 2026-09-25 21:05:38 % -->
+<!-- %ccm_git_file_last_modified: 2026-09-25 21:05:30 % -->
+<!-- %ccm_git_file_name: domains.md % -->
+<!-- %ccm_git_path: wiki/domains.md % -->
+<!-- %ccm_git_language_mode: markdown % -->
+<!-- %ccm_git_file_type: text/plain % -->
+<!-- %ccm_git_file_encoding: utf-8 % -->
+<!-- %ccm_git_file_eol: CRLF % -->
+<!-- %ccm_git_exec: no % -->
+<!-- %ccm_git_size: 6025 % -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+ <!-- %git_commit_history: 2025-10-10 mpegg  big update  --> 
 <!--
 -->
 
@@ -47,7 +48,7 @@ TermiteTowers infrastructure spans multiple domains with distinct purposes and a
 - `lobe.termitetowers.ca` - LobeChat (port 3100)
 - `search.termitetowers.ca` - SearXNG metasearch (port 3130)
 - `wiki.termitetowers.ca` - Wiki.js documentation (port 3200)
-- `home.termitetowers.ca` - Homarr dashboard (port 3310)
+- ~~`home.termitetowers.ca`~~ - Homarr dashboard — RETIRED 2026-09-26 (port 3310 freed)
 - `kitchenowl.termitetowers.ca` - Kitchen/grocery management (port 3300)
 - `llmapi.termitetowers.ca` - LLM server API (port 3350)
 - `kuma.termitetowers.ca` - Uptime monitoring (port 3700)
