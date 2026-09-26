@@ -67,7 +67,7 @@ This page tracks host and service ports used across TermiteTowers using a system
 | 3100-3199 | Development & DevOps | Package registries, development tools |
 | 3200-3299 | Content & Documentation | Wiki, documentation, CMS |
 | 3300-3399 | Home Automation & Daily | Dashboard, kitchen, daily tools |
-| 3400-3499 | Media & Entertainment | Plex, *arr services, torrents |
+| 3400-3499 | Media & Entertainment | Photos, Plex, *arr services, torrents |
 | 3500-3599 | Security & Secrets | Vault, SOPS, auth services |
 | 3600-3699 | Databases & Data | DB admin tools, data management |
 | 3700-3799 | Monitoring & Ops | Uptime, logs, metrics, observability |
@@ -105,9 +105,21 @@ This page tracks host and service ports used across TermiteTowers using a system
 | Homarr                         | home.termitetowers.ca            | 3310      | 7575           | Home      | ✅ **UPDATED**   |
 | Radicale CalDAV                | calendars.termitetowers.ca       | 3320      | 5232           | Home      | ✅ **NEW**       |
 | Note-Taking Apps               | notes.termitetowers.ca           | 3330      | TBD            | Home      | 🕒 Planned       |
+| HA-MCP                         | (private LAN endpoint)           | 3340      | 8086           | Home      | 🕒 Planned       |
 | LLM Server API                 | llmapi.termitetowers.ca          | 3350      | 8000           | Home      | ✅ **NEW**       |
 | Homepage                       | homepage.termitetowers.ca        | 3360      | 3000           | Home      | ✅ app-services-net-dev1 |
-| Immich                         | immich.justanotherhuman.ca       | 3370      | 3000           | Home      | ✅ app-services-net-dev1 |
+| Immich                         | immich.justanotherhuman.ca       | 3400      | 2283           | Media     | ✅ **UPDATED**   |
+| Image Tag API v1               | (immich enhancement)             | 3410      | —              | Media     | ✅ **NEW**       |
+| Image Tag API v2               | (immich enhancement)             | 3411      | —              | Media     | ✅ **NEW**       |
+| Image Tag API v3               | (immich enhancement)             | 3412      | —              | Media     | ✅ **NEW**       |
+| Water Meter Viewer             | (localhost)                       | 3414      | —              | Media     | ✅ **NEW**       |
+| Plex                           | media.termitetowers.ca           | 3420      | 32400          | Media     | 🔒 Reserved      |
+| Sonarr                         | sonarr.termitetowers.ca          | 3421      | 8989           | Media     | 🔒 Reserved      |
+| Radarr                         | radarr.termitetowers.ca          | 3422      | 7878           | Media     | 🔒 Reserved      |
+| Prowlarr                       | prowlarr.termitetowers.ca        | 3423      | 9696           | Media     | 🔒 Reserved      |
+| qBittorrent                    | qbit.termitetowers.ca            | 3424      | 8080           | Media     | 🔒 Reserved      |
+| Lidarr                         | lidarr.termitetowers.ca          | 3425      | 8686           | Media     | 🔒 Reserved      |
+| Readarr                        | readarr.termitetowers.ca         | 3426      | 8787           | Media     | 🔒 Reserved      |
 | Vault                          | vault.termitetowers.ca           | 3500      | 3000           | Security  | 🔄 **TO MIGRATE**|
 
 | Certificate Management         | certs.termitetowers.ca           | 3540      | TBD            | Security  | 🕒 Planned       |
@@ -145,6 +157,8 @@ Track the migration of services to the new port allocation:
 | Private PyPI | 3141 | 3110 | ⏳ | ⏳ | ❌ |
 | PyPI Proxy | 4080 | 3120 | ⏳ | ⏳ | ❌ |
 | Ollama API | 11434 | 3800 | ⏳ | ⏳ | ❌ |
+| Immich | 3370 | 3400 | ✅ | ✅ | ✅ |
+| Image Tag API | 3812-3814 | 3410-3412 | ✅ | ✅ | ✅ |
 
 ## Notes
 
@@ -154,7 +168,7 @@ Track the migration of services to the new port allocation:
 - Test each service after migration to ensure functionality
 - Update this document as migrations are completed
 
-Updated: 2025-09-29
+Updated: 2026-07-18
 
 Additional Information: Port Allocation Rationale & Strategy
 
@@ -208,13 +222,16 @@ Home Automation & Daily Tools (3300-3399):
 3330 - Note-taking apps (future)
 Media & Entertainment (3400-3499):
 
-3400 - Plex/Media Server
-3410 - Sonarr
-3420 - Radarr
-3430 - Prowlarr
-3440 - qBittorrent
-3450 - Lidarr
-3460 - Readarr
+3400 - Immich (photo management)
+3410 - 3412 - Image Tag API (Immich enhancement)
+3414 - Water Meter Viewer
+3420 - Plex/Media Server
+3421 - Sonarr
+3422 - Radarr
+3423 - Prowlarr
+3424 - qBittorrent
+3425 - Lidarr
+3426 - Readarr
 Security & Secrets (3500-3599):
 
 3500 - Vault (Infisical)

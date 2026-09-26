@@ -28,7 +28,7 @@
 # Runbook: Ollama (dev1)
 
 ## Install
-- scripts/system/setup-ollama-dev1.sh (SERVICE_USER/GROUP supported)
+- scripts/system/setup-ollama-dev1.sh (SERVICE_USER/GROUP supported; defaults `ollama:tt-ai-storage`)
 
 ## Start/Stop
 - Start: `sudo systemctl start ollama-dev1`
@@ -40,206 +40,182 @@
 - HTTP API: 0.0.0.0:11434
 
 ## Paths
-- Program: /srv/dev1/ollama
+- Binary: `/usr/lib/ollama/bin/ollama` (via the `/usr/lib/ollama` symlink)
+- Versions: `/usr/lib/ollama-<version>/` (one dir per installed version)
+- WorkingDir/Home: /srv/dev1/ollama
 - Models: /mnt/ai_storage/models/ollama (OLLAMA_MODELS)
 
 ## Notes
 - Open WebUI and Lobe Chat use host.docker.internal:11434
-- Ensure service user has rw access to /mnt/ai_storage/models/ollama
+- Service account: `ollama:tt-ai-storage` (shared storage group, GID 1006)
 
 ## Troubleshooting
-- Permission errors: `sudo chown -R <svc>:<grp> /mnt/ai_storage/models/ollama`
+- Permission errors: `sudo chown -R ollama:tt-ai-storage /mnt/ai_storage/models/ollama`
 - Check connectivity: `curl http://localhost:11434/api/tags`
 
 
-Optimized tool selectionCompacted conversationCertainly! Below is an **upgrade documentation** for Ollama, tailored to address the issues you encountered during the upgrade process. This document will guide you through the steps to ensure a smooth and conflict-free upgrade, especially when dealing with custom service names like `ollama-dev1`.
+## Migrate the existing install (one-time)
 
----
+The current install predates the versioned layout: the binary is `/usr/bin/ollama`
+and its libs are a real directory at `/usr/lib/ollama/`. Repackage them into the
+versioned layout once to confirm the symlink mechanism before the first upgrade
+(no download required). `mv` is used because both paths live on the same
+filesystem under `/usr/lib`.
 
-## **Ollama Upgrade Documentation**
+1. Stop the service:
 
-### **Overview**
-This document provides step-by-step instructions for upgrading Ollama on your system. It addresses common pitfalls encountered during upgrades, such as conflicting service names and ensures that the new version is installed without disrupting existing services.
+   ```bash
+   sudo systemctl stop ollama-dev1
+   ```
 
-### **Prerequisites**
-- Ensure you have administrative privileges (`sudo` access).
-- Verify that your current Ollama installation is running correctly.
-- Have a backup of important data before proceeding with the upgrade.
+2. Get the current version and name the folder:
 
-### **Upgrade Steps**
+   ```bash
+   /usr/bin/ollama -v          # e.g. "ollama version is 0.32.9"
+   VER=0.32.9                  # set to whatever was reported
+   ```
 
-#### **1. Download the Latest Release**
-Download the latest version of Ollama from the official GitHub repository.
+3. Move the existing binary and libs into the versioned layout:
 
-```bash
-sudo curl -L "https://github.com/ollama/ollama/releases/download/v0.30.6/ollama-linux-amd64.tar.zst" -o /tmp/ollama.tar.zst
-```
+   ```bash
+   sudo mkdir -p "/usr/lib/ollama-${VER}/bin" "/usr/lib/ollama-${VER}/lib"
+   sudo mv /usr/bin/ollama "/usr/lib/ollama-${VER}/bin/ollama"
+   sudo mv /usr/lib/ollama "/usr/lib/ollama-${VER}/lib/ollama"
+   ```
 
-#### **2. Extract the New Version**
-Extract the downloaded tarball to usr.
+4. Create the `/usr/lib/ollama` symlink and verify it resolves:
 
-```bash
-sudo tar --zstd -xf /tmp/ollama.tar.zst -C /usr/
-```
+   ```bash
+   sudo ln -s "/usr/lib/ollama-${VER}" /usr/lib/ollama
+   readlink -f /usr/lib/ollama
+   /usr/lib/ollama/bin/ollama -v
+   ```
 
-**Note:** Ensure that you extract the files correctly without overwriting existing configurations.
+5. Install the updated unit (`ExecStart` now uses the symlink) and restart:
 
-#### **3. Stop and Disable the Existing Service (if applicable)**
-If you have a custom service name like `ollama-dev1`, stop and disable it to prevent conflicts during the upgrade.
+   ```bash
+   sudo install -m 0644 /home/mpegg-adm/source/TermiteTowers/infra/systemd/ollama-dev1.service /etc/systemd/system/
+   sudo systemctl daemon-reload
+   sudo systemctl start ollama-dev1
+   systemctl status ollama-dev1 --no-pager
+   curl http://localhost:11434/api/tags
+   ```
 
-```bash
-sudo systemctl stop ollama-dev1 2>/dev/null
-sudo systemctl disable ollama-dev1 2>/dev/null
-```
+6. Optional: put the `ollama` CLI back on PATH:
 
-**Important:** If your service name is different, replace `ollama-dev1` with your actual service name.
+   ```bash
+   sudo ln -sfn /usr/lib/ollama/bin/ollama /usr/local/bin/ollama
+   ```
 
-#### **4. Remove Old Executable (if necessary)**
-If the old executable (ollama) exists and you want to ensure it's replaced, remove it.
+Once `curl http://localhost:11434/api/tags` returns the tag list, the versioned
+layout is working; the next upgrade is just [extract + symlink swap](#upgrade).
 
-```bash
-sudo rm -f /usr/bin/ollama
-```
 
-**Caution:** Only remove the old executable if you're sure that the new version will replace it correctly. Otherwise, skip this step.
+## Upgrade
 
-#### **5. Verify the New Installation**
-Ensure that the new Ollama binary is installed and accessible.
+> **Do not run the official installer** (`curl -fsSL https://ollama.com/install.sh | sh`)
+> on this host. It creates and enables its own `ollama.service`, which collides with
+> `ollama-dev1` on port 11434. Upgrade the binary manually instead.
 
-```bash
-/usr/bin/ollama -v
-```
+Each version is installed into its own dir (`/usr/lib/ollama-<version>/`) and the
+active version is selected by the `/usr/lib/ollama` symlink. Models live in
+`/mnt/ai_storage/models/ollama` and are not touched by an upgrade. The service runs
+as `ollama:tt-ai-storage` (`User`/`Group` are set in `ollama-dev1.service`, with a
+drop-in override at `/etc/systemd/system/ollama-dev1.service.d/override.conf`).
 
-You should see the version information for the newly installed Ollama.
+1. Record the current version:
 
-#### **6. Update Systemd Service Configuration (if necessary)**
-If you have a custom service file like ollama-dev1.service, update it to point to the new binary location and ensure all paths are correct.
+   ```bash
+   /usr/lib/ollama/bin/ollama -v
+   ```
 
-**Example `ollama-dev1.service` Content:**
+2. Stop the service:
 
-```ini
-[Unit]
-Description=Ollama Service
-After=network.target
+   ```bash
+   sudo systemctl stop ollama-dev1
+   ```
 
-[Service]
-Type=simple
-User=ollama
-Group=tt-ai-storage
-ExecStart=/usr/bin/ollama start --config /srv/dev1/ollama/config.yaml
-Restart=always
-RestartSec=5s
-LimitNOFILE=65536
+3. Download the version you want and extract it into its own versioned dir
+   (set `VER` to the release you want; use `ollama-linux-arm64` on ARM or the
+   `-rocm` build on AMD GPUs):
 
-[Install]
-WantedBy=multi-user.target
-```
+   ```bash
+   VER=0.33.0
+   sudo curl -L "https://github.com/ollama/ollama/releases/download/v${VER}/ollama-linux-amd64.tar.zst" \
+     -o "/tmp/ollama-${VER}.tar.zst"
+   sudo mkdir -p "/usr/lib/ollama-${VER}"
+   sudo tar --zstd -xf "/tmp/ollama-${VER}.tar.zst" -C "/usr/lib/ollama-${VER}"
+   ```
 
-**Steps to Update:**
+   If `tar --zstd` is unavailable (older GNU tar), use:
 
-1. Open the service file for editing:
+   ```bash
+   zstd -dc "/tmp/ollama-${VER}.tar.zst" | sudo tar -xf - -C "/usr/lib/ollama-${VER}"
+   ```
 
-    ```bash
-    sudo nano /etc/systemd/system/ollama-dev1.service
-    ```
+   This produces `/usr/lib/ollama-${VER}/bin/ollama` and its libs under
+   `/usr/lib/ollama-${VER}/lib/ollama/`.
 
-2. Ensure that `ExecStart` points to the correct binary and configuration paths.
+4. Point the `/usr/lib/ollama` symlink at the new version (atomic swap) and
+   verify it resolves:
 
-3. Save and exit the editor (`Ctrl+X`, then `Y`, then `Enter`).
+   ```bash
+   sudo ln -s "/usr/lib/ollama-${VER}" /usr/lib/ollama.new
+   sudo mv -Tf /usr/lib/ollama.new /usr/lib/ollama
+   readlink -f /usr/lib/ollama
+   /usr/lib/ollama/bin/ollama -v
+   ```
 
-4. Reload the systemd daemon to apply changes:
+   Optional: keep the `ollama` CLI on PATH:
 
-    ```bash
-    sudo systemctl daemon-reload
-    ```
+   ```bash
+   sudo ln -sfn /usr/lib/ollama/bin/ollama /usr/local/bin/ollama
+   ```
 
-#### **7. Enable and Start the Updated Service**
-Enable and start your custom service to ensure it runs on boot.
+5. Start the service and confirm it is healthy:
 
-```bash
-sudo systemctl enable --now ollama-dev1
-```
+   ```bash
+   sudo systemctl start ollama-dev1
+   systemctl status ollama-dev1 --no-pager
+   curl http://localhost:11434/api/tags
+   ```
 
-**Note:** Replace `ollama-dev1` with your actual service name if different.
+6. Reinstall the systemd unit **only** if `infra/systemd/ollama-dev1.service`
+   changed in the repo:
 
-#### **8. Verify the Service Status**
-Check that the service is running correctly without any errors.
+   ```bash
+   sudo install -m 0644 /home/mpegg-adm/source/TermiteTowers/infra/systemd/ollama-dev1.service /etc/systemd/system/
+   sudo systemctl daemon-reload
+   sudo systemctl restart ollama-dev1
+   ```
 
-```bash
-sudo systemctl status ollama-dev1
-```
+   The `User=`/`Group=` drop-in is separate, so the service account remains
+   `ollama:tt-ai-storage`.
 
-You should see an output indicating that the service is active and running.
+### Rollback
 
-#### **9. Check Logs for Any Issues**
-Review the logs to ensure there are no errors or warnings during startup.
-
-```bash
-sudo journalctl -u ollama-dev1 -n 20 --no-pager
-```
-
-**Troubleshooting Tips:**
-
-- If you encounter any issues, check the service file configuration.
-- Ensure that all paths (e.g., binary location, config path) are correct.
-- Verify that the user and group specified in the service file have the necessary permissions.
-
-#### **10. Adjust Permissions for Data Directory**
-Ensure that the data directory has the correct ownership and permissions to allow Ollama to read/write files.
-
-```bash
-sudo chown -R ollama:tt-ai-storage /srv/dev1/ollama
-sudo chmod -R 775 /srv/dev1/ollama
-```
-
-**Note:** Adjust the user, group, and directory paths as per your setup.
-
-#### **11. Restart the Service (if necessary)**
-If you made any changes to the service configuration or data permissions, restart the service to apply them.
+If the new version misbehaves, repoint the symlink at a previous version and
+restart — no re-download or reinstall needed:
 
 ```bash
+sudo ln -s /usr/lib/ollama-0.32.9 /usr/lib/ollama.new
+sudo mv -Tf /usr/lib/ollama.new /usr/lib/ollama
 sudo systemctl restart ollama-dev1
+/usr/lib/ollama/bin/ollama -v
 ```
 
-#### **12. Verify the Upgrade**
-Finally, verify that Ollama is running the correct version and functioning as expected.
+Keep old version dirs until you are confident in the new one; remove them when
+no longer needed with `sudo rm -rf /usr/lib/ollama-<old-version>`.
 
-```bash
-ollama --version
-```
+### What not to do
 
-You should see the version information for the newly installed Ollama.
+- Do not edit `ExecStart` to `ollama start --config ...` — the correct command is
+  `/usr/lib/ollama/bin/ollama serve`, and this setup uses environment variables
+  (`OLLAMA_HOST`, `OLLAMA_MODELS`) in the unit, not a config file.
+- Do not overwrite `/usr/lib/ollama-<version>` for a version that is currently
+  selected — extract each release into its own dir so rollback stays possible.
+- Do not `chown` `/srv/dev1/ollama` or the models dir to `ollama:ollama` — use
+  `ollama:tt-ai-storage` (shared storage group), and models live in
+  `/mnt/ai_storage/models/ollama`.
+- Do not disable the service during the upgrade; a plain `stop`/`start` is enough.
 
-### **Common Issues and Solutions**
-
-- **Conflicting Service Names:**
-  - **Issue:** Stopping and disabling the default `ollama` service might interfere with your custom `ollama-dev1`.
-  - **Solution:** Always stop and disable your custom service before proceeding with the upgrade. Use commands like:
-    ```bash
-    sudo systemctl stop ollama-dev1
-    sudo systemctl disable ollama-dev1
-    ```
-
-- **Incorrect Executable Path:**
-  - **Issue:** The new Ollama binary might not replace the old one correctly.
-  - **Solution:** Ensure that the `ExecStart` path in your service file points to ollama. Verify this by checking:
-    ```bash
-    cat /etc/systemd/system/ollama-dev1.service | grep ExecStart
-    ```
-
-- **Permission Errors:**
-  - **Issue:** Ollama might not have the necessary permissions to access its data directory.
-  - **Solution:** Adjust ownership and permissions as shown in Step 10:
-    ```bash
-    sudo chown -R ollama:tt-ai-storage /srv/dev1/ollama
-    sudo chmod -R 775 /srv/dev1/ollama
-    ```
-
-### **Conclusion**
-By following these steps, you can upgrade Ollama without encountering conflicts with existing services or configurations. Always ensure that your custom service names and paths are correctly updated to avoid any issues during the upgrade process.
-
-If you encounter any further problems, please refer to the official [Ollama documentation](https://docs.ollama.com/) or seek assistance from the community forums.
-
----
-
-Feel free to reach out if you need further assistance with the upgrade process!

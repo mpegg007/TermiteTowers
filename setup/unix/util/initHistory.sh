@@ -29,6 +29,11 @@
 # %git_commit_history: november changes % 
 # initHistory.sh - History management for TermiteTowers
 
+# Isolate VS Code terminal history to avoid polluting real bash history
+if [[ "$TERM_PROGRAM" == "vscode" ]]; then
+  HISTFILE="$HOME/.bash_history_vscode"
+fi
+
 # Enhanced history settings
 export HISTSIZE=50000                    # Commands in memory
 export HISTFILESIZE=100000               # Commands in file

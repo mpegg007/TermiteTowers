@@ -31,7 +31,7 @@ name: lobechat-dev1
 
 services:
   lobechat:
-    image: lobehub/lobe-chat
+    image: lobehub/lobe-chat:latest
     container_name: lobechat-dev1
     user: "${UID_SVC:-2001}:${GID_TT_AI:-1006}"
     ports:
@@ -51,3 +51,4 @@ services:
 networks:
   ai-services-net-dev1:
     external: true
+

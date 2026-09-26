@@ -37,9 +37,9 @@ Environment=HOME=/srv/dev1/ollama
 Environment=OLLAMA_HOST=0.0.0.0:11434
 Environment=OLLAMA_MODELS=/mnt/ai_storage/models/ollama
 Environment=OLLAMA_ORIGINS=*
-ExecStart=/usr/bin/ollama serve
+ExecStart=/usr/lib/ollama/bin/ollama serve
 User=ollama
-Group=ollama
+Group=tt-ai-storage
 Restart=always
 RestartSec=3
 Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"

@@ -192,7 +192,8 @@ dc() {
     return 1
   fi
   
-  docker compose -f "$compose_file" "$cmd" "$@"
+  # Run from the docker directory so .env and relative paths resolve correctly
+  ( cd "$docker_dir" && docker compose -f "$compose_file" "$cmd" "$@" )
 }
 
 # Specific shortcuts using dc - these now support optional app name as first arg
@@ -271,3 +272,100 @@ dcf() {
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
+
+# ============================================================================
+# SECTION: General Docker Shortcuts
+# ============================================================================
+
+alias dps='docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"'
+alias dpsa='docker ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"'
+alias dimg='docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}"'
+alias dprune='docker system prune -a --volumes'
+
+# ============================================================================
+# SECTION: Systemd Service Helpers
+# ============================================================================
+
+# Generic systemctl shortcut (sctl <action> <service>)
+sctl() {
+  local action="$1" svc="$2"
+  if [ -z "$action" ] || [ -z "$svc" ]; then
+    echo "Usage: sctl <action> <service>" >&2
+    echo "Examples: sctl status ollama-dev1, sctl restart comfyui-dev1" >&2
+    return 2
+  fi
+  sudo systemctl "$action" "$svc"
+}
+
+# Shortcuts for checking service status and logs
+alias scs='sudo systemctl status'
+alias jc='sudo journalctl -u'
+
+# ============================================================================
+# SECTION: Navigation & Workspace Shortcuts
+# ============================================================================
+
+# TermiteTowers project directories
+alias cdtt='cd ~/source/TermiteTowers'
+alias cdsc='cd ~/source/TermiteTowers/scripts'
+alias cdwi='cd ~/source/TermiteTowers/wiki'
+alias cdin='cd ~/source/TermiteTowers/infra'
+alias cddc='cd ~/source/TermiteTowers/infra/docker'
+
+# Directory traversal shortcuts
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+
+# VS Code workspace shortcuts
+alias codeaa='code ~/source/AnalAcres.code-workspace'
+alias codemr='code ~/source/Multi-root.code-workspace'
+alias codett='code ~/source/TermiteTowers.code-workspace'
+
+# ============================================================================
+# SECTION: Saner Defaults for Common Commands
+# ============================================================================
+
+alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias df='df -h'
+alias du='du -h'
+alias free='free -h'
+alias mkdir='mkdir -p'
+alias diff='diff --color=auto'
+
+# ============================================================================
+# SECTION: Network & System Quick-Checks
+# ============================================================================
+
+alias myip='hostname -I'
+alias ports='ss -tlnp'
+alias mypubip='curl -s ifconfig.me && echo'
+
+# ============================================================================
+# SECTION: Reload & Utilities
+# ============================================================================
+
+# Reload all TermiteTowers shell init without opening a new shell
+alias reload='. "$tt_utilDir/initHistory.sh" && . "$tt_utilDir/initAliases.sh"'
+
+# List all apps in the current region under /srv/<region>/
+lsapps() {
+  local region="${tt_scmID:-dev1}"
+  echo "Apps under /srv/${region}/:"
+  ls -1 "/srv/${region}/" 2>/dev/null || echo "  (no apps found or region missing)"
+}
+
+# Search all runbook markdown files for a keyword
+rbgrep() {
+  if [ -z "$1" ]; then
+    echo "Usage: rbgrep <keyword>" >&2
+    return 2
+  fi
+  grep -rin --color=auto "$1" ~/source/TermiteTowers/wiki/runbook-*.md
+}
+
+# Quick disk usage check for AI storage mount
+alias dfai='df -h /mnt/ai_storage'
