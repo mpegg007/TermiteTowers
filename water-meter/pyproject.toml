@@ -1,0 +1,54 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: water-meter/pyproject.toml:156 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: b9478ab3112a754861d4cc759d42262629ea321a %
+#  %ccm_git_commit_id: 7297d224e38a7887c494edb01cda0f8167185bf0 %
+#  %ccm_git_commit_count: 156 %
+#  %ccm_git_commit_date: 2026-09-25 20:27:36 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: cleanup %
+#  %ccm_git_modify_date: 2026-09-25 20:27:37 %
+#  %ccm_git_file_last_modified: 2026-08-07 19:00:55 %
+#  %ccm_git_file_name: pyproject.toml %
+#  %ccm_git_path: water-meter/pyproject.toml %
+#  %ccm_git_language_mode: toml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 602 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "water-meter"
+version = "2.0.0"
+description = "Water meter CV pipeline + FastAPI web viewer"
+requires-python = ">=3.10"
+dependencies = [
+    "sqlalchemy>=2.0",
+    "psycopg2-binary>=2.9",
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "numpy",
+    "opencv-python",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "httpx>=0.24",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = ["src/water_meter/core"]
