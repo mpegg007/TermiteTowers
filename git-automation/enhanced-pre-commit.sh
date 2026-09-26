@@ -348,6 +348,7 @@ insert_ccm_header() {
         return 1
     else
         mv "$file.new" "$file" && echo "[INFO] Header inserted for $file" >> "$LOG_FILE"
+	[ "$exec_flag" = "yes" ] && chmod +x "$file" && echo "[INFO] Restored execute permission for $file" >> "$LOG_FILE"
         rm -f "$tmp_header" "$formatted_header"
     fi
 
