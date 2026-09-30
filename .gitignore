@@ -1,18 +1,18 @@
-# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: .gitignore:157 %
-#  %ccm_git_author: mpegg %
+#  %ccm_git_object_id: .gitignore:161 %
+#  %ccm_git_author: Matthew Pegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 2b56d4bb93afeb4d83d3154b350b812092871eef %
-#  %ccm_git_commit_id: c9d8a29eea9fcc6812c409a08d4917d1187b108c %
-#  %ccm_git_commit_count: 157 %
-#  %ccm_git_commit_date: 2026-09-25 20:36:19 -0400 %
-#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_blob_sha: 89fba186fa98f868a98308a315201fb9a9e59d95 %
+#  %ccm_git_commit_id: 348f5181e5b74f74e51b2c3f6b0e7280c4dbe562 %
+#  %ccm_git_commit_count: 161 %
+#  %ccm_git_commit_date: 2026-09-30 13:47:03 -0400 %
+#  %ccm_git_commit_author: Matthew Pegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: chore(gitignore): block credential-bearing local captures from being staged %
-#  %ccm_git_modify_date: 2026-09-25 20:36:20 %
-#  %ccm_git_file_last_modified: 2026-09-25 20:36:12 %
+#  %ccm_git_commit_message: gitignore %
+#  %ccm_git_modify_date: 2026-09-30 13:47:05 %
+#  %ccm_git_file_last_modified: 2026-09-30 13:47:04 %
 #  %ccm_git_file_name: .gitignore %
 #  %ccm_git_path: .gitignore %
 #  %ccm_git_language_mode: git %
@@ -20,8 +20,9 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 2704 %
+#  %ccm_git_size: 2465 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2026-09-25 mpegg  chore(gitignore): block credential-bearing local captures from being staged  % 
 # %git_commit_history: updates % 
 # %git_commit_history: update to gitignore % 
 # %git_commit_history: adding secret-service % 
@@ -109,3 +110,5 @@ hams/inventory/network_devices-*.csv
 hams/inventory/dhcp.syslog*
 infra/mcp/home-assistant/mcp-config.json
 trigger-test.env
+/config.json
+/client_secret.json
