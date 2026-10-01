@@ -1,27 +1,29 @@
-<!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-  %ccm_git_repo: TermiteTowers %
-  %ccm_git_branch: dev1 %
-  %ccm_git_object_id: wiki/systemd-naming-standard.md:121 %
-  %ccm_git_author: mpegg %
-  %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: 807005174b06b13c0284aa3703ec796a24973141 %
-  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
-  %ccm_git_commit_count: 121 %
-  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
-  %ccm_git_commit_author: mpegg %
-  %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: cleanup %
-  %ccm_git_modify_date: 2025-11-30 12:28:04 %
-  %ccm_git_file_last_modified: 2025-11-30 12:28:04 %
-  %ccm_git_file_name: systemd-naming-standard.md %
-  %ccm_git_path: wiki/systemd-naming-standard.md %
-  %ccm_git_language_mode: markdown %
-  %ccm_git_file_type: text/plain %
-  %ccm_git_file_encoding: utf-8 %
-  %ccm_git_file_eol: CRLF %
-  %ccm_git_exec: no %
-  %ccm_git_size: 17206 %
-  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
+<!-- %ccm_git_repo: TermiteTowers % -->
+<!-- %ccm_git_branch: dev1 % -->
+<!-- %ccm_git_object_id: wiki/systemd-naming-standard.md:162 % -->
+<!-- %ccm_git_author: mpegg % -->
+<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
+<!-- %ccm_git_blob_sha: 0d92dc0d839e15817eb0393e8a6fe4ca79d13003 % -->
+<!-- %ccm_git_commit_id: 2dd3c0f7b311b738f89cecd1f28f55e0b795b3cb % -->
+<!-- %ccm_git_commit_count: 162 % -->
+<!-- %ccm_git_commit_date: 2026-09-26 15:43:25 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
+<!-- %ccm_git_commit_message: chore(kea): placeholder the rotated credential and retire the dead deploy scripts % -->
+<!-- %ccm_git_modify_date: 2026-09-26 15:43:25 % -->
+<!-- %ccm_git_file_last_modified: 2026-09-26 15:43:18 % -->
+<!-- %ccm_git_file_name: systemd-naming-standard.md % -->
+<!-- %ccm_git_path: wiki/systemd-naming-standard.md % -->
+<!-- %ccm_git_language_mode: markdown % -->
+<!-- %ccm_git_file_type: text/plain % -->
+<!-- %ccm_git_file_encoding: utf-8 % -->
+<!-- %ccm_git_file_eol: CRLF % -->
+<!-- %ccm_git_exec: no % -->
+<!-- %ccm_git_size: 18083 % -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+ <!-- %git_commit_history: 2025-11-30 mpegg  cleanup  --> 
+<!-- %git_commit_history: november changes % -->
 <!-- %git_commit_history: november changes % -->
 # Systemd Service and Script Naming Standards
 
@@ -213,9 +215,7 @@ infra/dhcp/scripts/monitoring/
 **Examples**:
 ```
 infra/dhcp/scripts/deploy/
-├── deploy-kea-config.sh         # Deploy configuration files
-├── deploy-kea-ddns.sh           # Deploy DDNS-specific config
-└── deploy-dhcp-config.sh        # Deploy ISC DHCP config
+└── deploy-kea-ddns.sh           # Deploy DDNS-specific config (local)
 ```
 
 **Rules**:
@@ -408,9 +408,7 @@ infra/dhcp/
 │       └── kea-status-endpoint.conf
 ├── scripts/
 │   ├── deploy/
-│   │   ├── deploy-kea-config.sh
-│   │   ├── deploy-kea-ddns.sh
-│   │   └── migrate-to-tt-naming.sh
+│   │   └── deploy-kea-ddns.sh
 │   ├── monitoring/
 │   │   ├── tt-kea-health-check-dev1.sh      # YOUR script (tt- prefix)
 │   │   ├── tt-kea-watchdog-dev1.sh          # YOUR script
@@ -462,7 +460,6 @@ infra/dhcp/
 │       └── tt-kea-dhcp-ddns-dev1.conf
 ├── scripts/
 │   ├── deploy/
-│   │   ├── deploy-kea-config.sh
 │   │   └── deploy-kea-ddns.sh
 │   ├── monitoring/
 │   │   ├── tt-kea-health-check-dev1.sh  # Comprehensive check (tt- prefix)
@@ -523,7 +520,7 @@ WantedBy=multi-user.target
 | **Config File** | `tt-<service>-<component>-<env>.conf` | `tt-kea-dhcp4-dev1.conf` |
 | **Health Check Script** | `tt-<service>-<function>-<env>.sh` | `tt-kea-health-check-dev1.sh` |
 | **Watchdog Script** | `tt-<service>-watchdog-<env>.sh` | `tt-kea-watchdog-dev1.sh` |
-| **Deployment Script** | `deploy-<component>-<action>.sh` | `deploy-kea-config.sh` |
+| **Deployment Script** | `deploy-<component>-<action>.sh` | `deploy-kea-ddns.sh` |
 | **Log File** | `/var/log/tt-<service>-<function>-<env>.log` | `/var/log/tt-kea-watchdog-dev1.log` |
 
 ## Migration Checklist

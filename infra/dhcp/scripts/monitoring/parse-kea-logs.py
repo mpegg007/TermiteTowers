@@ -1,31 +1,32 @@
 #!/usr/bin/env python3
-#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/dhcp/scripts/monitoring/parse-kea-logs.py:121 %
+#  %ccm_git_object_id: infra/dhcp/scripts/monitoring/parse-kea-logs.py:161 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 2f8a7f37cfafd10f6aed3e087e21ef928c6defc6 %
-#  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
-#  %ccm_git_commit_count: 121 %
-#  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
+#  %ccm_git_blob_sha: 40e79ba8c5399af8e4549fd468e545cd7901a23a %
+#  %ccm_git_commit_id: 5825498f8c6706d637e53e96899fe9094e98be9d %
+#  %ccm_git_commit_count: 161 %
+#  %ccm_git_commit_date: 2026-09-26 15:27:37 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: cleanup %
-#  %ccm_git_modify_date: 2025-11-30 12:26:12 %
-#  %ccm_git_file_last_modified: 2025-11-30 12:26:12 %
+#  %ccm_git_commit_message: fix(security): remove the DB password from the DHCP log parser %
+#  %ccm_git_modify_date: 2026-09-26 15:27:37 %
+#  %ccm_git_file_last_modified: 2026-09-26 15:26:05 %
 #  %ccm_git_file_name: parse-kea-logs.py %
 #  %ccm_git_path: infra/dhcp/scripts/monitoring/parse-kea-logs.py %
 #  %ccm_git_language_mode: python %
 #  %ccm_git_file_type: text/x-script.python %
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: CRLF %
-#  %ccm_git_exec: no %
-#  %ccm_git_size: 27752 %
+#  %ccm_git_exec: yes %
+#  %ccm_git_size: 30364 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 # %git_commit_history: november changes % 
 # %git_commit_history: dhcp logging % 
-#  tt-secrets.skip
+# %git_commit_history: november changes % 
+# %git_commit_history: dhcp logging % 
 """
 Kea DHCP Log Parser and Historical Data Collector
 
@@ -39,6 +40,7 @@ Logs parsed:
 Database: ttdb-dev1.dhcp_history schema
 """
 
+import os
 import re
 import sys
 import psycopg2
@@ -60,12 +62,44 @@ SYSLOG_PATHS = [
     "/home/mpegg-adm/source/TermiteTowers/infra/dhcp/inventory/dhcp.syslog.mono", # Kea syslog from monolith
 ]
 
+# Database credentials.
+#
+# The password is deliberately NOT stored in this file: it is committed to a
+# public repository, and the value that used to sit here had to be rotated.
+# Resolution order is environment variable, then the env file below, so the
+# systemd units set EnvironmentFile=-/etc/kea/parse-kea-logs.env (root, 0600).
+def _load_env_file(path: str) -> Dict[str, str]:
+    """Minimal KEY=VALUE reader, so no credential needs to live in this file."""
+    values: Dict[str, str] = {}
+    try:
+        with open(path, encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                key, value = line.split("=", 1)
+                values[key.strip()] = value.strip().strip('"').strip("'")
+    except OSError:
+        pass
+    return values
+
+
+ENV_FILE = os.environ.get("TTDB_ENV_FILE", "/etc/kea/parse-kea-logs.env")
+_ENV = _load_env_file(ENV_FILE)
+
 DB_CONFIG = {
-    "host": "localhost",
-    "database": "ttdb_dev1",
-    "user": "dhcp_history",
-    "password": "termitetowers-db"
+    "host": os.environ.get("TTDB_HOST", _ENV.get("TTDB_HOST", "localhost")),
+    "database": os.environ.get("TTDB_NAME", _ENV.get("TTDB_NAME", "ttdb_dev1")),
+    "user": os.environ.get("TTDB_USER", _ENV.get("TTDB_USER", "dhcp_history")),
+    "password": os.environ.get("TTDB_PASSWORD", _ENV.get("TTDB_PASSWORD", "")),
 }
+
+if not DB_CONFIG["password"]:
+    sys.exit(
+        "ERROR: no database password configured. Set TTDB_PASSWORD, or create "
+        f"{ENV_FILE} containing TTDB_PASSWORD=... "
+        "(see infra/dhcp/scripts/monitoring/SETUP.md)."
+    )
 
 # Regex patterns for Kea log parsing
 KEA_PATTERNS = {

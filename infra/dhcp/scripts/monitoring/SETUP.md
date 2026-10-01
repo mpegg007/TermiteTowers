@@ -1,27 +1,28 @@
-<!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-  %ccm_git_repo: TermiteTowers %
-  %ccm_git_branch: dev1 %
-  %ccm_git_object_id: infra/dhcp/scripts/monitoring/SETUP.md:110 %
-  %ccm_git_author: mpegg %
-  %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: 1028cff899417c7fff33cd82481b382f9daa75cc %
-  %ccm_git_commit_id: f58291ad575edfb9a551f895005def9b9f831304 %
-  %ccm_git_commit_count: 110 %
-  %ccm_git_commit_date: 2025-10-25 14:11:42 -0400 %
-  %ccm_git_commit_author: mpegg %
-  %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: dhcp logging %
-  %ccm_git_modify_date: 2025-10-25 14:11:42 %
-  %ccm_git_file_last_modified: 2025-10-14 20:48:41 %
-  %ccm_git_file_name: SETUP.md %
-  %ccm_git_path: infra/dhcp/scripts/monitoring/SETUP.md %
-  %ccm_git_language_mode: markdown %
-  %ccm_git_file_type: text/plain %
-  %ccm_git_file_encoding: utf-8 %
-  %ccm_git_file_eol: CRLF %
-  %ccm_git_exec: no %
-  %ccm_git_size: 6056 %
-  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
+<!-- %ccm_git_repo: TermiteTowers % -->
+<!-- %ccm_git_branch: dev1 % -->
+<!-- %ccm_git_object_id: infra/dhcp/scripts/monitoring/SETUP.md:161 % -->
+<!-- %ccm_git_author: mpegg % -->
+<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
+<!-- %ccm_git_blob_sha: a95f1fc647283745f98a07072e8b8e875d7e9c8e % -->
+<!-- %ccm_git_commit_id: 5825498f8c6706d637e53e96899fe9094e98be9d % -->
+<!-- %ccm_git_commit_count: 161 % -->
+<!-- %ccm_git_commit_date: 2026-09-26 15:27:37 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
+<!-- %ccm_git_commit_message: fix(security): remove the DB password from the DHCP log parser % -->
+<!-- %ccm_git_modify_date: 2026-09-26 15:27:37 % -->
+<!-- %ccm_git_file_last_modified: 2026-09-26 15:27:10 % -->
+<!-- %ccm_git_file_name: SETUP.md % -->
+<!-- %ccm_git_path: infra/dhcp/scripts/monitoring/SETUP.md % -->
+<!-- %ccm_git_language_mode: markdown % -->
+<!-- %ccm_git_file_type: text/plain % -->
+<!-- %ccm_git_file_encoding: utf-8 % -->
+<!-- %ccm_git_file_eol: CRLF % -->
+<!-- %ccm_git_exec: no % -->
+<!-- %ccm_git_size: 7146 % -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+ <!-- %git_commit_history: 2025-10-25 mpegg  dhcp logging  --> 
 # DHCP History Monitoring Setup Guide
 
 ## Architecture
@@ -218,7 +219,7 @@ When `ttdb_arc1` is created:
 pg_dump -h localhost -U dhcp_history -d ttdb_dev1 -n dhcp_history -F c -f dhcp_history.dump
 
 # 2. Create user in ttdb_arc1
-psql -h localhost -U postgres -d ttdb_arc1 -c "CREATE ROLE dhcp_history LOGIN PASSWORD 'termitetowers-db';"
+psql -h localhost -U postgres -d ttdb_arc1 -c "CREATE ROLE dhcp_history LOGIN PASSWORD '<set-at-deploy-time>';"
 
 # 3. Restore to archive DB
 pg_restore -h localhost -U postgres -d ttdb_arc1 dhcp_history.dump
