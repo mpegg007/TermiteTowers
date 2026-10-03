@@ -1,27 +1,32 @@
-<!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-  %ccm_git_repo: TermiteTowers %
-  %ccm_git_branch: dev1 %
-  %ccm_git_object_id: infra/logrotate/README.md:132 %
-  %ccm_git_author: mpegg %
-  %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: c94a78c0782d3aa4322e6253307d4d52c0b6a360 %
-  %ccm_git_commit_id: 6e67c9cb056223d2c5e30fd43ff735f0e43b37fb %
-  %ccm_git_commit_count: 132 %
-  %ccm_git_commit_date: 2026-02-07 16:19:47 -0500 %
-  %ccm_git_commit_author: mpegg %
-  %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: comment cleanup %
-  %ccm_git_modify_date: 2026-02-07 16:19:48 %
-  %ccm_git_file_last_modified: 2026-02-07 16:19:48 %
-  %ccm_git_file_name: README.md %
-  %ccm_git_path: infra/logrotate/README.md %
-  %ccm_git_language_mode: markdown %
-  %ccm_git_file_type: text/plain %
-  %ccm_git_file_encoding: utf-8 %
-  %ccm_git_file_eol: CRLF %
-  %ccm_git_exec: no %
-  %ccm_git_size: 7379 %
-  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
+<!-- %ccm_git_repo: TermiteTowers % -->
+<!-- %ccm_git_branch: dev1 % -->
+<!-- %ccm_git_object_id: infra/logrotate/README.md:167 % -->
+<!-- %ccm_git_author: mpegg % -->
+<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
+<!-- %ccm_git_blob_sha: aaa601df793985a2632fa44064ff826a004dce70 % -->
+<!-- %ccm_git_commit_id: af3b4e614eaf7f1e2342aedb19c1c31089a044fd % -->
+<!-- %ccm_git_commit_count: 167 % -->
+<!-- %ccm_git_commit_date: 2026-10-03 17:41:25 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
+<!-- %ccm_git_commit_message: backup scripts % -->
+<!-- %ccm_git_modify_date: 2026-10-03 17:41:25 % -->
+<!-- %ccm_git_file_last_modified: 2026-10-03 17:02:46 % -->
+<!-- %ccm_git_file_name: README.md % -->
+<!-- %ccm_git_path: infra/logrotate/README.md % -->
+<!-- %ccm_git_language_mode: markdown % -->
+<!-- %ccm_git_file_type: text/plain % -->
+<!-- %ccm_git_file_encoding: utf-8 % -->
+<!-- %ccm_git_file_eol: CRLF % -->
+<!-- %ccm_git_exec: no % -->
+<!-- %ccm_git_size: 9844 % -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+ <!-- %git_commit_history: 2026-02-07 mpegg  comment cleanup  --> 
+<!-- %git_commit_history: 2026-02-07 mpegg  feb2026  % -->
+<!-- %git_commit_history: 2025-12-15 mpegg  monday drop  % -->
+<!-- %git_commit_history: cleanup % -->
+<!-- %git_commit_history: logging cleanup % -->
 <!-- %git_commit_history: 2026-02-07 mpegg  feb2026  % -->
 <!-- %git_commit_history: 2025-12-15 mpegg  monday drop  % -->
 <!-- %git_commit_history: cleanup % -->
@@ -243,3 +248,31 @@ logrotate -d git-automation/logrotate.conf
 - `CCM_HEADER_TEMPLATE.txt` - Template for CCM headers
 - `get_language_mode_and_comments.sh` - Language detection helper
 - `enhanced-secrets-pattern-scanner.sh` - Secret scanning integration
+
+## tt-backup service logs (unprivileged writer)
+
+`logrotate.d/tt-backup.conf` covers `/var/log/tt-backup/*.log`, written by the
+non-root `tt-backup` service account (see `infra/backups/README.md`).
+
+```bash
+sudo install -m 0644 /home/mpegg-adm/source/TermiteTowers/infra/logrotate/logrotate.d/tt-backup.conf \
+     /etc/logrotate.d/tt-backup.conf
+sudo logrotate -d /etc/logrotate.conf   # dry-run
+```
+
+Two things make this fragment necessary rather than reusing `tt-apps.conf`:
+
+1. `/etc/logrotate.d/tt-apps` already owns the glob `/var/log/tt-backup-*.log`
+   with `su root adm` and `create 640 root adm`. For a non-root writer that is
+   fatal: after the first rotation the log is recreated `root:adm` and the
+   service can never append again. Overlapping globs would additionally raise
+   logrotate's `duplicate log entry` error, so the two configs must not overlap.
+2. `tt-backup.conf` therefore owns its own directory and rotates as the account
+   itself (`su tt-backup tt-backup`, `create 0640 tt-backup tt-backup`).
+   `/var/log/tt-backup/` is created by `LogsDirectory=tt-backup` in
+   `tt-backup-tthealth.service`, which remains writable even under
+   `ProtectSystem=strict`.
+
+No `olddir` is set: `/var/log/tt-archives` is root-owned and not writable by
+`tt-backup`, so archives stay beside the live log in `/var/log/tt-backup/`.
+

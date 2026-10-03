@@ -1,0 +1,35 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/systemd/tt-backup-tthealth.timer:167 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 297aa7bd06b6c69418486b46fa209cdc76fdc1c3 %
+#  %ccm_git_commit_id: af3b4e614eaf7f1e2342aedb19c1c31089a044fd %
+#  %ccm_git_commit_count: 167 %
+#  %ccm_git_commit_date: 2026-10-03 17:41:25 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: backup scripts %
+#  %ccm_git_modify_date: 2026-10-03 17:41:26 %
+#  %ccm_git_file_last_modified: 2026-10-03 17:00:52 %
+#  %ccm_git_file_name: tt-backup-tthealth.timer %
+#  %ccm_git_path: infra/systemd/tt-backup-tthealth.timer %
+#  %ccm_git_language_mode: timer %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 193 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+[Unit]
+Description=Daily encrypted PostgreSQL backup of tthealth_dev1
+
+[Timer]
+OnCalendar=*-*-* 03:30:00
+RandomizedDelaySec=10m
+AccuracySec=1m
+Persistent=true
+
+[Install]
+WantedBy=timers.target
