@@ -1,0 +1,66 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: .github/workflows/deploy-prd.yml:169 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 3017442a31f9b4daa6dfe4be6b0d866214856aa9 %
+#  %ccm_git_commit_id: d1dd68250ea156e0dd108ea453be02bac31c5cbc %
+#  %ccm_git_commit_count: 169 %
+#  %ccm_git_commit_date: 2026-10-04 11:23:29 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: prd action %
+#  %ccm_git_modify_date: 2026-10-04 11:23:29 %
+#  %ccm_git_file_last_modified: 2026-10-04 11:22:48 %
+#  %ccm_git_file_name: deploy-prd.yml %
+#  %ccm_git_path: .github/workflows/deploy-prd.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 948 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+name: Deploy Production
+
+on:
+  push:
+    branches:
+      - prd
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: jah-prd-deploy
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -e ".[dev]"
+      - run: python -m ruff check .
+      - run: python -m pytest -q
+
+  deploy:
+    needs: test
+    runs-on:
+      - self-hosted
+      - linux
+      - tt-prd
+    steps:
+      - uses: actions/checkout@v4
+      - name: Synchronize approved revision
+        run: >-
+          rsync -a --delete --exclude=.env --exclude=.venv --exclude=.git
+          "$GITHUB_WORKSPACE/" /srv/prd/tt/
+      - name: Install production dependencies
+        run: /srv/prd/tt/.venv/bin/python -m pip install -e /srv/prd/tt
