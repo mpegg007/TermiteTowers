@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+services:
+  tdarr-node:
+    # Intel Quick Sync / VAAPI overlay. Use with: docker compose -f tdarr-node-dev1.yml -f tdarr-node-dev1.intel.yml up -d
+    devices:
+      - /dev/dri:/dev/dri

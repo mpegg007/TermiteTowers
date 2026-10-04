@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/freshrss-dev1.yml:139 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 8695d6c38da3e70311fc2c46c5feb61946e9050a %
+#  %ccm_git_commit_id: 4b7c4d5292241b4ba1eb82f1b2ec0509b8fd544f %
+#  %ccm_git_commit_count: 139 %
+#  %ccm_git_commit_date: 2026-03-22 09:03:20 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: march updates %
+#  %ccm_git_modify_date: 2026-03-22 09:03:21 %
+#  %ccm_git_file_last_modified: 2026-03-22 09:03:21 %
+#  %ccm_git_file_name: freshrss-dev1.yml %
+#  %ccm_git_path: infra/docker/freshrss-dev1.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 1171 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: unknown  unknown  unknown  % 
+# %git_commit_history: unknown  unknown  unknown  % 
+
+name: freshrss-dev1
+services:
+  freshrss:
+    image: freshrss/freshrss:latest
+    container_name: freshrss-dev1
+    restart: always
+    ports:
+      - "3250:80"  # Correct port mapping for freshrss
+    environment:
+      - PUID=2004
+      - PGID=975
+      - TZ=America/Toronto
+      - BASE_URL=http://news.termitetowers.ca
+      - FRESHRSS_ALLOWED_HOSTS=localhost:3250,news.termitetowers.ca
+      # Add other FreshRSS environment variables as needed
+    networks:
+      - app-services-net-dev1
+    volumes:
+      - /mnt/ai_storage/docker/freshrss-data/data:/var/www/FreshRSS/data
+      - /mnt/ai_storage/docker/freshrss-data/extensions:/var/www/FreshRSS/extensions
+networks:
+  app-services-net-dev1:
+    external: true
+
+
+
+## sudo groupadd -g 975 freshrss-group
+## sudo useradd -u 2004 -g 975 freshrss-svc
+## sudo mkdir -p /mnt/ai_storage/docker/freshrss-data/data
+## sudo chown -R 2004:975 /mnt/ai_storage/docker/freshrss-data
+## sudo chmod -R u+rwX,g+rwX  /mnt/ai_storage/docker/freshrss-data

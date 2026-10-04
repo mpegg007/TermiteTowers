@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+name: ha-mcp-dev1
+
+services:
+  ha-mcp:
+    image: ghcr.io/homeassistant-ai/ha-mcp:latest
+    container_name: ha-mcp-dev1
+    command: ha-mcp-web
+    env_file:
+      - ./env/ha-mcp.env
+    environment:
+      - HAMCP_BACKUP_DIR=/home/mcpuser/.ha-mcp/backups
+    ports:
+      - "0.0.0.0:3340:8086"
+    volumes:
+      - /mnt/ai_storage/ha-mcp/data:/home/mcpuser/.ha-mcp
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - app-services-net-dev1
+
+networks:
+  app-services-net-dev1:
+    external: true
+
+# Deployment:
+#   sudo mkdir -p /mnt/ai_storage/ha-mcp/data && \
+#   sudo chown -R 999:999 /mnt/ai_storage/ha-mcp && \
+#   sudo chmod -R u+rwX,g+rwX /mnt/ai_storage/ha-mcp
+#   mkdir -p /srv/dev1/ha-mcp/docker/env
+#   ln -s /home/mpegg-adm/source/TermiteTowers/infra/docker/ha-mcp-dev1.yml \
+#     /srv/dev1/ha-mcp/docker/ha-mcp-dev1.yml
+#   cp /home/mpegg-adm/source/TermiteTowers/infra/docker/env/ha-mcp.env.example \
+#     /srv/dev1/ha-mcp/docker/env/ha-mcp.env
+#   chmod 600 /srv/dev1/ha-mcp/docker/env/ha-mcp.env
+#   cd /srv/dev1/ha-mcp/docker && docker compose -f ha-mcp-dev1.yml up -d

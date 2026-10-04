@@ -1,0 +1,85 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/netalertx-dev1.yml:147 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 86e261c93c0dae2b9676572c4fef35e65571a0de %
+#  %ccm_git_commit_id: 875dba4d1edbc0fb2fe425346b22faa6070d5e41 %
+#  %ccm_git_commit_count: 147 %
+#  %ccm_git_commit_date: 2026-06-10 17:10:31 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: june bulk update %
+#  %ccm_git_modify_date: 2026-06-10 17:10:32 %
+#  %ccm_git_file_last_modified: 2026-06-10 17:10:32 %
+#  %ccm_git_file_name: netalertx-dev1.yml %
+#  %ccm_git_path: infra/docker/netalertx-dev1.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 2364 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+name: netalertx-dev1
+
+services:
+  netalertx:
+    image: jokobsk/netalertx:latest
+    container_name: netalertx-dev1
+    restart: always
+    network_mode: host
+
+    # Restored to allow initial raw network socket hooks
+    user: "0:0"
+
+    read_only: true                                 # Make the container filesystem read-only
+    # Secures the container execution by stripping unused Linux kernel capabilities
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - NET_BIND_SERVICE
+      - CHOWN
+      - SETUID
+      - SETGID
+  
+    # Environment variables for timezone, application port, and primary network interface for arp-scan
+    environment:
+      - TZ=America/Toronto
+      - PORT=3731                  # UI accessible at http://<host-ip>:3731
+      - NETALERTX_IFACE=eno1       # Set primary interface for physical arp-scan execution
+      - SKIP_SYSCTL=true          # Prevents the container from attempting host network modifications
+      # Tells the application to isolate itself to your specific user mapping during execution
+      - PUID=20211
+      - PGID=20211
+      # Explicitly forces the backend scanner to target both physical adapters
+      - SETTING_NETALERTX_IFACE=eno1
+    volumes:
+      # Consolidated single volume mount for the new container architecture
+      - /mnt/ai_storage/netalertx:/data
+
+    # Mounts a single, unrestricted 128MB RAM disk over the entire /tmp root tree
+    tmpfs:
+      - /tmp:size=128M,uid=20211,gid=20211,mode=1777
+      
+    # Resource limits to prevent resource exhaustion
+    mem_limit: 2048m            # Maximum memory usage
+    mem_reservation: 1024m      # Soft memory limit
+    cpu_shares: 512             # Relative CPU weight for CPU contention scenarios
+    pids_limit: 512             # Limit the number of processes/threads to prevent fork bombs
+    
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+# Updated Usage with exact 20211 App IDs:
+#   sudo mkdir -p /mnt/ai_storage/netalertx/{config,data,db,logs} && \
+#   sudo chown -R 20211:20211 /mnt/ai_storage/netalertx && \
+#   sudo chmod -R u+rwX,g+rwX /mnt/ai_storage/netalertx && \
+#   docker compose -f infra/docker/netalertx-dev1.yml up -d

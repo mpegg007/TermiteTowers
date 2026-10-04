@@ -1,0 +1,204 @@
+#!/usr/bin/env bash
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: git-automation/enhanced-post-commit.sh:85 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 33d947cedafd31db9727a02ef68c77b24b11676d %
+#  %ccm_git_commit_id: 9a5d759366246b925a62863adec0b1df8cc2d5b1 %
+#  %ccm_git_commit_count: 127 %
+#  %ccm_git_commit_date: 2025-12-18 21:32:12 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: cleanup %
+#  %ccm_git_modify_date: 2025-12-20 17:38:02 %
+#  %ccm_git_file_last_modified: 2025-12-19 17:18:58 %
+#  %ccm_git_file_name: enhanced-post-commit.sh %
+#  %ccm_git_path: git-automation/enhanced-post-commit.sh %
+#  %ccm_git_language_mode: shellscript %
+#  %ccm_git_file_type: text/x-shellscript %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: yes %
+#  %ccm_git_size: 7952 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+
+set -euo pipefail
+
+# Post-commit updater: finalize commit-bound fields and amend the commit.
+# Safe defaults: skip on merge or if no HEAD.
+
+REPO_ROOT=$(git rev-parse --show-toplevel)
+REPO_NAME=$(basename "$REPO_ROOT")
+
+URL_RAW=$(git config --get remote.origin.url)
+URL_SAFE=$(echo "$URL_RAW" | sed 's/%/%%/g')
+BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+AUTHOR=${GIT_AUTHOR_NAME:-$(git log -1 --pretty=format:'%an')}
+AUTHOR_EMAIL=${GIT_AUTHOR_EMAIL:-$(git log -1 --pretty=format:'%ae')}
+ID=$(git rev-parse HEAD)
+COMMIT_MESSAGE_RAW=$(git log -1 --pretty=format:'%s')
+COMMIT_MESSAGE_SAFE=$(echo "$COMMIT_MESSAGE_RAW" | tr -d '\r\n' | cut -c1-100 | sed 's/%/%%/g')
+REVISION=$(git rev-list --count HEAD)
+COMMIT_DATE=$(git log -1 --pretty=format:'%ci')
+COMMIT_TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
+DATE=$(date +"%Y-%m-%d %H:%M:%S")
+
+LOG_DIR="$HOME/log"
+LOG_FILE="$LOG_DIR/${REPO_NAME}-enhanced-hooks.log"
+LOGROTATE_CONF="$REPO_ROOT/infra/logrotate/logrotate.conf"
+LOGROTATE_STATE="$HOME/.logrotate.state"
+LOCK_FILE=$(git rev-parse --git-path ccm-post-commit.lock)
+
+# Create log directory if it doesn't exist
+mkdir -p "$LOG_DIR"
+
+# Trigger logrotate check (uses repo-maintained config)
+# REMOVED: Now handled by system logrotate via /etc/logrotate.d/git-hooks
+# if [ -f "$LOGROTATE_CONF" ]; then
+#     logrotate -s "$LOGROTATE_STATE" "$LOGROTATE_CONF" 2>/dev/null || true
+# fi
+
+# Prevent recursion: if lock exists, skip
+if [ -f "$LOCK_FILE" ]; then
+  echo "Post-commit: lock present, skipping to avoid recursion" >> "$LOG_FILE"
+  exit 0
+fi
+echo "Post-commit updater started at $(date) for $ID" >> "$LOG_FILE"
+
+
+# Only operate on changed files with CCM header, skip binary
+if [ -n "${1-}" ] && [ -f "$1" ]; then
+  echo "[DEBUG] Arg1 present and is a file: processing '$1'" >> "$LOG_FILE"
+  FILES_TO_PROCESS=("$1")
+  GIT_MODE=N
+else
+  if [ -n "${1-}" ]; then
+    echo "[DEBUG] Arg1 present but is NOT a file ('$1'), defaulting to staged files" >> "$LOG_FILE"
+  else
+    echo "[DEBUG] No arg1: staged files mode" >> "$LOG_FILE"
+  fi
+  # Fix: use mapfile for proper array population
+  mapfile -d '' -t FILES_TO_PROCESS < <(git --no-pager diff-tree --no-commit-id --name-only -r -z HEAD)
+  GIT_MODE=Y
+fi
+
+if [ "${2-}" == "--try" ] || [ "$GIT_MODE" == "N" ]; then
+  try_mode="--try"
+else
+  try_mode=""
+fi
+
+echo "[DEBUG] try_mode set to '$try_mode'" >> "$LOG_FILE"
+
+echo "[DEBUG] FILES_TO_PROCESS: ${FILES_TO_PROCESS[*]}" >> "$LOG_FILE"
+
+# --- MAIN FILE PROCESSING LOOP ---
+for FILE in "${FILES_TO_PROCESS[@]}"; do
+  
+  # --- CRITICAL: Never process hook files or git-automation scripts ---
+  # Exception: Allow processing git-automation scripts if explicitly requested (GIT_MODE=N)
+  case "$FILE" in
+    git-automation/CCM_*_TEMPLATE.txt|.git/hooks/*)
+      echo "[INFO] SAFETY: Skipping $FILE (template/hook - never process)" >> "$LOG_FILE"
+      continue
+      ;;
+    git-automation/*.sh)
+      if [ "$GIT_MODE" == "Y" ]; then
+          echo "[INFO] SAFETY: Skipping $FILE (automation script - skipped during hook execution)" >> "$LOG_FILE"
+          continue
+      else
+          echo "[INFO] NOTICE: Processing automation script $FILE (explicitly requested)" >> "$LOG_FILE"
+      fi
+      ;;
+  esac
+
+  # --- Exclude git-automation folder from processing ---
+  if grep -q "tt-hooks.skip-post-commit" "$FILE"; then
+    echo "[INFO] Skipping $FILE (contains tt-hooks.skip-post-commit)" >> "$LOG_FILE"
+    continue
+  fi
+
+  # Skip files in git-automation folder
+  if [ "${try_mode}" = "--try" ]; then
+    echo "[INFO] --try specified, skipping directory exclusion" >> "$LOG_FILE"
+  else
+    case "$FILE" in
+      git-automation/enhanced-pre-commit.sh|git-automation/enhanced-post-commit.sh)
+        echo "[INFO] Skipping $FILE (in git-automation folder)" >> "$LOG_FILE"
+        continue
+        ;;
+    esac 
+  fi
+
+  echo "[DEBUG] Considering file: $FILE" >> "$LOG_FILE"
+  # Only process files with CCM header
+  if ! grep -qE '%ccm_git_.*: .* %' "$FILE"; then
+    echo "[DEBUG] Skipping $FILE: no CCM header found" >> "$LOG_FILE"
+    continue
+  fi
+  # Skip binary files
+  MIME_INFO=$(file --mime -b "$FILE" 2>/dev/null || echo '')
+  if echo "$MIME_INFO" | grep -qi 'charset=binary'; then
+    echo "[DEBUG] Skipping $FILE: binary file detected ($MIME_INFO)" >> "$LOG_FILE"
+    continue
+  fi
+
+  # --- CCM FIELD UPDATE SECTION ---
+  echo "[DEBUG] Updating CCM fields in $FILE" >> "$LOG_FILE"
+  echo "[DEBUG] %ccm_git_commit_id: $ID" >> "$LOG_FILE"
+  echo "[DEBUG] %ccm_git_commit_count: $REVISION" >> "$LOG_FILE"
+  echo "[DEBUG] %ccm_git_object_id: $FILE:$REVISION" >> "$LOG_FILE"
+  echo "[DEBUG] %ccm_git_commit_message (-> %ccm_git_commit_message): $COMMIT_MESSAGE_SAFE" >> "$LOG_FILE"
+  echo "[DEBUG] %ccm_git_commit_author: $AUTHOR" >> "$LOG_FILE"
+  echo "[DEBUG] %ccm_git_commit_email: $AUTHOR_EMAIL" >> "$LOG_FILE"
+  echo "[DEBUG] %ccm_git_commit_date: $COMMIT_DATE" >> "$LOG_FILE"
+
+  # Update CCM fields for each file (generic patterns)
+  sed -i \
+    -e "s|%ccm_git_commit_id: .* %|%ccm_git_commit_id: $ID %|g" \
+    -e "s|%ccm_git_commit_count: .* %|%ccm_git_commit_count: $REVISION %|g" \
+    -e "s|%ccm_git_object_id: .* %|%ccm_git_object_id: $FILE:$REVISION %|g" \
+    -e "s|%ccm_git_commit_message: .* %|%ccm_git_commit_message: $COMMIT_MESSAGE_SAFE %|g" \
+    -e "s|%ccm_git_commit_author: .* %|%ccm_git_commit_author: $AUTHOR %|g" \
+    -e "s|%ccm_git_commit_email: .* %|%ccm_git_commit_email: $AUTHOR_EMAIL %|g" \
+    -e "s|%ccm_git_commit_date: .* %|%ccm_git_commit_date: $COMMIT_DATE %|g" \
+    "$FILE"
+done
+
+# If there are changes, amend the commit (no edit to message). Avoid recursion.
+if ! git diff --quiet; then
+  if [ "${try_mode-}" = "--try" ]; then
+    echo "[INFO] --try specified, skipping git add command" >> "$LOG_FILE"
+  else
+    # git add -A
+    git add "${FILES_TO_PROCESS[@]}"  # Only stages files from the original commit
+  fi
+  # Create lock and ensure cleanup
+  echo $$ > "$LOCK_FILE"
+  trap 'rm -f "$LOCK_FILE"' EXIT
+  # Safe amend: avoid if behind upstream (to not rewrite shared history)
+  AHEAD_BEHIND=$(git rev-list --left-right --count @{u}...HEAD 2>/dev/null || echo "")
+  if [ -n "$AHEAD_BEHIND" ]; then
+    AHEAD=$(echo "$AHEAD_BEHIND" | awk '{print $2}')
+    BEHIND=$(echo "$AHEAD_BEHIND" | awk '{print $1}')
+  else
+    AHEAD=0; BEHIND=0
+  fi
+  if [ "$BEHIND" = "0" ]; then
+    # Amend without running hooks again
+    if [ "${try_mode-}" == "--try" ]; then
+      echo "[INFO] --try specified, skipping git amend command" >> "$LOG_FILE"
+    else
+      git -c core.hooksPath=/dev/null commit --amend --no-edit
+    fi
+  else
+    echo "Skipping amend: branch is behind upstream (would rewrite history)" >> "$LOG_FILE"
+  fi
+  echo "Amended commit $ID with finalized CCM fields" >> "$LOG_FILE"
+else
+  echo "No final CCM updates needed" >> "$LOG_FILE"
+fi
+
+echo "Post-commit updater finished at $(date)" >> "$LOG_FILE"

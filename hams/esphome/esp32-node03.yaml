@@ -1,0 +1,124 @@
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: hams/esphome/esp32-node03.yaml:124 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 6d900fa5371ff694a85aab13efb672eb7251209a %
+#  %ccm_git_commit_id: 8b4b8c60fcc3a47d5432304b72990dd91eef1e93 %
+#  %ccm_git_commit_count: 124 %
+#  %ccm_git_commit_date: 2025-12-12 21:43:31 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: friday checkin %
+#  %ccm_git_modify_date: 2025-12-12 21:43:32 %
+#  %ccm_git_file_last_modified: 2025-12-12 21:43:32 %
+#  %ccm_git_file_name: esp32-node03.yaml %
+#  %ccm_git_path: hams/esphome/esp32-node03.yaml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 2872 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: cleanup % 
+# %git_commit_history: november changes % 
+# %git_commit_history: esphome % 
+## For Boiler Room - ESP32 with SHT3x and 8-Relay Module
+# esphome upload esp32-node03.yaml --device 192.168.1.XXX
+# esphome logs esp32-node03.yaml --device 192.168.1.XXX
+
+substitutions:
+  friendly_name: "ESP32 Boiler Room"
+
+esphome:
+  name: esp32-boiler
+  friendly_name: "${friendly_name}"
+
+# Import common TermiteTowers ESP32 base configuration
+<<: !include tt-esp-base.yaml
+
+# Override only the fallback AP name (keep base WiFi config)
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  manual_ip:
+    static_ip: 192.168.1.130
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
+  ap:
+    ssid: "Esp32-Boiler"
+    password: !secret fallback_ap_password
+
+# ==============================================================================
+# DEVICE-SPECIFIC CONFIGURATION
+# ==============================================================================
+
+# SHT3x Temperature & Humidity Sensor (I2C)
+sensor:
+  - platform: sht3xd
+    temperature:
+      name: "Boiler Room Temperature"
+      id: boiler_temp
+    humidity:
+      name: "Boiler Room Humidity"
+      id: boiler_humidity
+    address: 0x44
+    update_interval: 30s
+
+# Sainsmart 8-Relay Module (GPIOs)
+switch:
+  - platform: gpio
+    name: "Boiler Relay 1"
+    pin: GPIO18
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_off:
+      - logger.log: "WARNING: Boiler Relay 1 turned OFF"
+    on_turn_on:
+      - logger.log: "INFO: Boiler Relay 1 turned ON"
+  - platform: gpio
+    name: "Boiler Relay 2"
+    pin: GPIO19
+    restore_mode: RESTORE_DEFAULT_ON
+    on_turn_off:
+      - logger.log: "WARNING: Boiler Relay 2 turned OFF"
+    on_turn_on:
+      - logger.log: "INFO: Boiler Relay 2 turned ON"
+  - platform: gpio
+    name: "Boiler Relay 3"
+    pin: GPIO27
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_off:
+      - logger.log: "WARNING: Boiler Relay 3 turned OFF"
+    on_turn_on:
+      - logger.log: "INFO: Boiler Relay 3 turned ON"
+  - platform: gpio
+    name: "Boiler Relay 4"
+    pin: GPIO26
+    restore_mode: RESTORE_DEFAULT_ON
+    on_turn_off:
+      - logger.log: "WARNING: Boiler Relay 4 turned OFF"
+    on_turn_on:
+      - logger.log: "INFO: Boiler Relay 4 turned ON"
+  - platform: gpio
+    name: "Boiler Relay 5"
+    pin: GPIO25
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_off:
+      - logger.log: "WARNING: Boiler Relay 5 turned OFF"
+    on_turn_on:
+      - logger.log: "INFO: Boiler Relay 5 turned ON"
+  - platform: gpio
+    name: "Boiler Relay 6"
+    pin: GPIO33
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_off:
+      - logger.log: "WARNING: Boiler Relay 6 turned OFF"
+    on_turn_on:
+      - logger.log: "INFO: Boiler Relay 6 turned ON"
+    
+# Notes:
+# - Adjust relay GPIOs as needed for your wiring
+# - All relays default to OFF at boot
+# - SHT3x sensor uses I2C bus (GPIO21/22 from base config)

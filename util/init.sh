@@ -1,4 +1,13 @@
-# TermiteTowers util init
+# =============================================================================
+# DEPRECATED: This file is NOT in use. Do NOT modify.
+# The active initialization chain is:
+#   setup/unix/profile.tt -> setup/unix/util/init*.sh
+# This file (util/init.sh) is a stale legacy copy kept for reference only.
+# For the active aliases, see: setup/unix/util/initAliases.sh
+# For the active prompt, see:  setup/unix/util/initPrompt.sh
+# For the active history, see:  setup/unix/util/initHistory.sh
+# =============================================================================
+# TermiteTowers util init (DEPRECATED - NOT ACTIVE)
 # Source prompt and aliases only for interactive bash shells
 
 # shellcheck shell=bash

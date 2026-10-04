@@ -1,3 +1,30 @@
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: setup/unix/util/initAliases.sh:132 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 3313478aa02b4022744ce3282db8938ab9c0ec82 %
+#  %ccm_git_commit_id: 6e67c9cb056223d2c5e30fd43ff735f0e43b37fb %
+#  %ccm_git_commit_count: 132 %
+#  %ccm_git_commit_date: 2026-02-07 16:19:47 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: comment cleanup %
+#  %ccm_git_modify_date: 2026-02-07 16:19:48 %
+#  %ccm_git_file_last_modified: 2026-02-07 16:19:48 %
+#  %ccm_git_file_name: initAliases.sh %
+#  %ccm_git_path: setup/unix/util/initAliases.sh %
+#  %ccm_git_language_mode: shellscript %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 6363 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2026-02-07 mpegg  feb2026  % 
+# %git_commit_history: 2025-11-30 mpegg  cleanup  % 
+# %git_commit_history: november changes % 
 # shellcheck shell=bash
 # Aliases and helper functions for TermiteTowers
 
@@ -28,7 +55,7 @@ cdapp() {
 goapp() {
   local app="$1"
   if [ -z "$app" ]; then
-    echo "Usage: goapp <app>" >&2
+    echo "Usage: goapp <app>" &&ls /srv/dev1 >&2
     return 2
   fi
   local base envscript venv_dir venv_activate
@@ -118,12 +145,227 @@ lobedown() {
   fi
 }
 
-# Generic docker compose shortcuts for current directory
-alias dcu='docker compose up -d'
-alias dcd='docker compose down'
-alias dcl='docker compose logs -f'
+# Generic docker compose wrapper that uses APPID_DOCKER if set
+# Usage: dc <command> [container] [args]
+# Usage: dc <app-name> <command> [container] [args]
+dc() {
+  local app_name="" cmd="" compose_file="" docker_dir=""
+  
+  # Check if first arg looks like an app name (no hyphens, not a docker command)
+  if [[ "$1" =~ ^[a-z0-9]+$ ]] && [ -d "/srv/${tt_scmID}/$1" ]; then
+    app_name="$1"
+    shift
+    cmd="$1"
+    shift
+  else
+    cmd="$1"
+    shift
+    app_name="${APP_NAME:-}"
+  fi
+  
+  if [ -z "$cmd" ]; then
+    echo "Usage: dc [app] <command> [container] [args]"
+    echo "Commands: up, down, start, stop, restart, logs, ps, etc."
+    echo "Example: dc logs pihole"
+    echo "Example: dc eso logs pihole"
+    return 1
+  fi
+  
+  # Determine compose file
+  if [ -n "$app_name" ]; then
+    docker_dir="/srv/${tt_scmID}/${app_name}/docker"
+    if [ -f "${docker_dir}/${app_name}-${tt_scmID}.yml" ]; then
+      compose_file="${docker_dir}/${app_name}-${tt_scmID}.yml"
+    elif [ -f "${docker_dir}/docker-compose.yml" ]; then
+      compose_file="${docker_dir}/docker-compose.yml"
+    fi
+  else
+    compose_file="${APPID_DOCKER:-none}"
+    docker_dir="/srv/${tt_scmID}/${APP_NAME}/docker"
+    if [ "$compose_file" != "none" ]; then
+      compose_file="${docker_dir}/${compose_file}"
+    fi
+  fi
+  
+  if [ -z "$compose_file" ] || [ ! -f "$compose_file" ]; then
+    echo "No docker compose file found. Use 'goapp <app>' first or specify app: dc <app> <command>" >&2
+    return 1
+  fi
+  
+  # Run from the docker directory so .env and relative paths resolve correctly
+  ( cd "$docker_dir" && docker compose -f "$compose_file" "$cmd" "$@" )
+}
+
+# Specific shortcuts using dc - these now support optional app name as first arg
+# Examples: dcup, dcup eso, dclogs pihole, dclogs eso pihole
+dcup() {
+  if [[ "$1" =~ ^[a-z0-9]+$ ]] && [ -d "/srv/${tt_scmID}/$1" ]; then
+    dc "$1" up -d "${@:2}"
+  else
+    dc up -d "$@"
+  fi
+}
+
+dcdown() {
+  if [[ "$1" =~ ^[a-z0-9]+$ ]] && [ -d "/srv/${tt_scmID}/$1" ]; then
+    dc "$1" down "${@:2}"
+  else
+    dc down "$@"
+  fi
+}
+
+dcstart() {
+  if [[ "$1" =~ ^[a-z0-9]+$ ]] && [ -d "/srv/${tt_scmID}/$1" ]; then
+    dc "$1" start "${@:2}"
+  else
+    dc start "$@"
+  fi
+}
+
+dcstop() {
+  if [[ "$1" =~ ^[a-z0-9]+$ ]] && [ -d "/srv/${tt_scmID}/$1" ]; then
+    dc "$1" stop "${@:2}"
+  else
+    dc stop "$@"
+  fi
+}
+
+dcrestart() {
+  if [[ "$1" =~ ^[a-z0-9]+$ ]] && [ -d "/srv/${tt_scmID}/$1" ]; then
+    dc "$1" restart "${@:2}"
+  else
+    dc restart "$@"
+  fi
+}
+
+dclogs() {
+  if [[ "$1" =~ ^[a-z0-9]+$ ]] && [ -d "/srv/${tt_scmID}/$1" ]; then
+    dc "$1" logs -f "${@:2}"
+  else
+    dc logs -f "$@"
+  fi
+}
+
+dcps() {
+  if [[ "$1" =~ ^[a-z0-9]+$ ]] && [ -d "/srv/${tt_scmID}/$1" ]; then
+    dc "$1" ps "${@:2}"
+  else
+    dc ps "$@"
+  fi
+}
+
+# Override version: explicitly specify compose file
+dcf() {
+  local compose_file="$1"
+  local cmd="$2"
+  shift 2
+  
+  if [ -z "$compose_file" ] || [ -z "$cmd" ]; then
+    echo "Usage: dcf <compose-file> <command> [args]"
+    return 1
+  fi
+  
+  docker compose -f "$compose_file" "$cmd" "$@"
+}
 
 # Quality-of-life
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
+
+# ============================================================================
+# SECTION: General Docker Shortcuts
+# ============================================================================
+
+alias dps='docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"'
+alias dpsa='docker ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"'
+alias dimg='docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}"'
+alias dprune='docker system prune -a --volumes'
+
+# ============================================================================
+# SECTION: Systemd Service Helpers
+# ============================================================================
+
+# Generic systemctl shortcut (sctl <action> <service>)
+sctl() {
+  local action="$1" svc="$2"
+  if [ -z "$action" ] || [ -z "$svc" ]; then
+    echo "Usage: sctl <action> <service>" >&2
+    echo "Examples: sctl status ollama-dev1, sctl restart comfyui-dev1" >&2
+    return 2
+  fi
+  sudo systemctl "$action" "$svc"
+}
+
+# Shortcuts for checking service status and logs
+alias scs='sudo systemctl status'
+alias jc='sudo journalctl -u'
+
+# ============================================================================
+# SECTION: Navigation & Workspace Shortcuts
+# ============================================================================
+
+# TermiteTowers project directories
+alias cdtt='cd ~/source/TermiteTowers'
+alias cdsc='cd ~/source/TermiteTowers/scripts'
+alias cdwi='cd ~/source/TermiteTowers/wiki'
+alias cdin='cd ~/source/TermiteTowers/infra'
+alias cddc='cd ~/source/TermiteTowers/infra/docker'
+
+# Directory traversal shortcuts
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+
+# VS Code workspace shortcuts
+alias codeaa='code ~/source/AnalAcres.code-workspace'
+alias codemr='code ~/source/Multi-root.code-workspace'
+alias codett='code ~/source/TermiteTowers.code-workspace'
+
+# ============================================================================
+# SECTION: Saner Defaults for Common Commands
+# ============================================================================
+
+alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias df='df -h'
+alias du='du -h'
+alias free='free -h'
+alias mkdir='mkdir -p'
+alias diff='diff --color=auto'
+
+# ============================================================================
+# SECTION: Network & System Quick-Checks
+# ============================================================================
+
+alias myip='hostname -I'
+alias ports='ss -tlnp'
+alias mypubip='curl -s ifconfig.me && echo'
+
+# ============================================================================
+# SECTION: Reload & Utilities
+# ============================================================================
+
+# Reload all TermiteTowers shell init without opening a new shell
+alias reload='. "$tt_utilDir/initHistory.sh" && . "$tt_utilDir/initAliases.sh"'
+
+# List all apps in the current region under /srv/<region>/
+lsapps() {
+  local region="${tt_scmID:-dev1}"
+  echo "Apps under /srv/${region}/:"
+  ls -1 "/srv/${region}/" 2>/dev/null || echo "  (no apps found or region missing)"
+}
+
+# Search all runbook markdown files for a keyword
+rbgrep() {
+  if [ -z "$1" ]; then
+    echo "Usage: rbgrep <keyword>" >&2
+    return 2
+  fi
+  grep -rin --color=auto "$1" ~/source/TermiteTowers/wiki/runbook-*.md
+}
+
+# Quick disk usage check for AI storage mount
+alias dfai='df -h /mnt/ai_storage'

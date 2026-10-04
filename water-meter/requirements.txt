@@ -1,0 +1,9 @@
+# Runtime dependencies for the water meter pipeline + web viewer.
+# Install with: python3 -m venv .venv && .venv/bin/pip install -e .
+# (pyproject.toml is the source of truth; this file mirrors it.)
+sqlalchemy>=2.0
+psycopg2-binary>=2.9
+fastapi>=0.110
+uvicorn[standard]>=0.29
+numpy
+opencv-python

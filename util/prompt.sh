@@ -1,5 +1,12 @@
+# =============================================================================
+# DEPRECATED: This file is NOT in use. Do NOT modify.
+# The active prompt file is: setup/unix/util/initPrompt.sh
+# This file (util/prompt.sh) is a stale legacy copy kept for reference only.
+# The active initialization chain is:
+#   setup/unix/profile.tt -> setup/unix/util/initPrompt.sh
+# =============================================================================
 # shellcheck shell=bash
-# Prompt for TermiteTowers
+# Prompt for TermiteTowers (DEPRECATED - NOT ACTIVE)
 
 # Build PS1: mm.dd HH:MM:SS user:path [region]
 # Notes:

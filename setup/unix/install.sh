@@ -1,10 +1,36 @@
 #!/usr/bin/env bash
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: setup/unix/install.sh:121 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 930b6f79b825c715926a6bda27600b312d2f02ec %
+#  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
+#  %ccm_git_commit_count: 121 %
+#  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: cleanup %
+#  %ccm_git_modify_date: 2025-11-30 12:27:16 %
+#  %ccm_git_file_last_modified: 2025-11-30 12:27:16 %
+#  %ccm_git_file_name: install.sh %
+#  %ccm_git_path: setup/unix/install.sh %
+#  %ccm_git_language_mode: shellscript %
+#  %ccm_git_file_type: text/x-shellscript %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 1192 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: november changes % 
 set -euo pipefail
 
-UTIL_DIR="$(CDPATH= cd -- "${BASH_SOURCE[0]%/*}" 2>/dev/null && pwd)"
+# Get the directory where this script lives (setup/unix/)
+SCRIPT_DIR="$(CDPATH= cd -- "${BASH_SOURCE[0]%/*}" 2>/dev/null && pwd)"
 MARK_BEGIN="# >>> TermiteTowers util BEGIN >>>"
 MARK_END="# <<< TermiteTowers util END <<<"
-LINE="[ -f \"$UTIL_DIR/profile.tt\" ] && . \"$UTIL_DIR/profile.tt\""
+LINE="[ -f \"$SCRIPT_DIR/profile.tt\" ] && . \"$SCRIPT_DIR/profile.tt\""
 
 BASHRC="$HOME/.bashrc"
 
@@ -32,6 +58,7 @@ else
 fi
 
 # Make scripts executable
-chmod +x "$UTIL_DIR"/*.sh || true
+chmod +x "$SCRIPT_DIR"/*.sh || true
+chmod +x "$SCRIPT_DIR"/util/*.sh || true
 
 echo "Done. Open a new shell or run: source \"$BASHRC\""

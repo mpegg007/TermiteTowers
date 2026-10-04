@@ -1,0 +1,25 @@
+TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+ %ccm_git_repo: TermiteTowers %
+ %ccm_git_branch: dev1 %
+ %ccm_git_object_id: unknown %
+ %ccm_git_author: mpegg %
+ %ccm_git_author_email: mpegg@hotmail.com %
+ %ccm_git_blob_sha: unknown %
+ %ccm_git_commit_id: unknown %
+ %ccm_git_commit_count: unknown %
+ %ccm_git_commit_date: unknown %
+ %ccm_git_commit_author: unknown %
+ %ccm_git_commit_email: unknown %
+ %ccm_git_commit_message: unknown %
+ %ccm_git_modify_date: unknown %
+ %ccm_git_file_last_modified: unknown %
+ %ccm_git_file_name: unknown %
+ %ccm_git_path: unknown %
+ %ccm_git_language_mode: unknown %
+ %ccm_git_file_type: unknown %
+ %ccm_git_file_encoding: unknown %
+ %ccm_git_file_eol: unknown %
+ %ccm_git_exec: unknown %
+ %ccm_git_size: unknown %
+ TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 
+##COMMIT_HISTORY: %git_commit_history: $DATE $AUTHOR $MESSAGE %

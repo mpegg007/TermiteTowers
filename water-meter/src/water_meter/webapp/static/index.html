@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Water Meter Viewer</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;font-size:14px}
+a{color:#58a6ff;text-decoration:none}
+a:hover{text-decoration:underline}
+nav{background:#161b22;border-bottom:1px solid #30363d;padding:8px 20px;display:flex;gap:16px;align-items:center}
+nav a{padding:4px 12px;border-radius:6px;cursor:pointer}
+nav a.active{background:#1f6feb;color:#fff}
+nav .brand{font-weight:700;font-size:16px;margin-right:16px}
+.container{max-width:1400px;margin:0 auto;padding:16px 20px}
+table{width:100%;border-collapse:collapse;margin:12px 0}
+th,td{padding:6px 10px;border:1px solid #30363d;text-align:right}
+th{background:#21262d;position:sticky;top:0}
+th.left,td.left{text-align:left}
+tr:hover{background:#1c2128}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;margin:12px 0}
+.btn{display:inline-block;padding:6px 14px;border-radius:6px;border:1px solid #30363d;background:#21262d;color:#c9d1d9;cursor:pointer;font-size:13px}
+.btn:hover{background:#30363d}
+.btn-primary{background:#238636;border-color:#238636;color:#fff}
+.btn-danger{background:#da3633;border-color:#da3633;color:#fff}
+.btn-sm{padding:3px 8px;font-size:12px}
+input,select{background:#0d1117;border:1px solid #30363d;color:#c9d1d9;padding:5px 10px;border-radius:6px;font-size:13px}
+input:focus,select:focus{outline:none;border-color:#58a6ff}
+.flex-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.stat{text-align:center}
+.stat .value{font-size:32px;font-weight:700}
+.stat .label{color:#8b949e;font-size:12px;text-transform:uppercase}
+img{max-width:100%;border-radius:6px;border:1px solid #30363d}
+.mb{margin-bottom:12px}
+.mt{margin-top:12px}
+.page{display:none}
+.page.active{display:block}
+.tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;background:#21262d;border:1px solid #30363d}
+.tag-ok{border-color:#238636;color:#3fb950}
+.tag-anomaly{border-color:#9e6a03;color:#d29922}
+.tag-fail{border-color:#da3633;color:#f85149}
+.text-sm{font-size:12px;color:#8b949e}
+.status-OK{color:#3fb950}
+.status-ANOMALY{color:#d29922}
+.status-FAIL{color:#f85149}
+</style>
+</head>
+<body>
+<nav>
+  <span class="brand">💧 Water Meter</span>
+  <a onclick="showPage('dashboard')">Dashboard</a>
+  <a onclick="showPage('usage')">Usage</a>
+  <a onclick="showPage('browse')">Browse</a>
+  <a onclick="showPage('templates')">Templates</a>
+</nav>
+<div class="container">
+
+  <!-- Dashboard -->
+  <div id="page-dashboard" class="page active">
+    <h1 class="mb">Dashboard</h1>
+    <div class="grid-3 mb" id="stats-grid"></div>
+    <div class="card mb"><h3>Latest Reading</h3><div id="latest-info" class="flex-row mt"></div></div>
+  </div>
+
+  <!-- Usage -->
+  <div id="page-usage" class="page">
+    <h1 class="mb">Water Usage</h1>
+    <div class="grid-3 mb" id="usage-averages"></div>
+    <div class="card mb">
+      <h3>Daily Usage — Last 30 Days</h3>
+      <canvas id="daily-chart" style="width:100%;height:300px"></canvas>
+    </div>
+    <div class="card">
+      <h3 id="hourly-chart-title">Today's Hourly Usage</h3>
+      <canvas id="hourly-chart" style="width:100%;height:300px;cursor:pointer"></canvas>
+      <div id="hourly-range" class="flex-row mt" style="gap:12px"></div>
+    </div>
+  </div>
+
+  <!-- Browse -->
+  <div id="page-browse" class="page">
+    <h1 class="mb">Browse</h1>
+    <div class="flex-row mb">
+      <select id="browse-status"><option value="">All</option><option value="OK">OK</option><option value="ANOMALY">Anomaly</option><option value="FAIL">Failed</option></select>
+      <input id="browse-search" placeholder="Search filename..." onkeyup="if(event.key==='Enter')loadBrowse(1)">
+      <button class="btn btn-primary" onclick="loadBrowse(1)">Filter</button>
+      <button class="btn btn-sm" onclick="quickRollover()">🎯 Rollover</button>
+      <button class="btn btn-sm" onclick="quickLowConf()">🔍 Low Conf</button>
+      <button class="btn btn-sm" onclick="quickFlagged()">⚠️ Flagged</button>
+      <button class="btn btn-sm" onclick="quickAnomalies()">🚫 Anomalies</button>
+      <button class="btn btn-sm" onclick="quickNonManual()">🔍 Non-Manual</button>
+      <button class="btn btn-sm" onclick="quickNeedsReview()">📋 Needs Review</button>
+      <button class="btn btn-sm" onclick="loadBrowse(1);document.getElementById('browse-status').value='';document.getElementById('browse-search').value='';document.getElementById('browse-minconf').value='';document.getElementById('browse-maxconf').value='';">Reset</button>
+    </div>
+    <div class="flex-row mb text-sm" style="gap:6px">
+      <label>Conf ≥ <input id="browse-minconf" type="number" step="0.1" min="0" max="1" style="width:60px" onchange="loadBrowse(1)"></label>
+      <label>Conf ≤ <input id="browse-maxconf" type="number" step="0.1" min="0" max="1" style="width:60px" onchange="loadBrowse(1)"></label>
+      <label style="margin-left:12px"><input type="checkbox" id="browse-has-image" onchange="loadBrowse(1)"> 📁 Images on disk</label>
+      <button class="btn btn-sm" onclick="quickKeepers()">🖼️ Keepers Only</button>
+    </div>
+    <div id="browse-context" class="flex-row mb"></div>
+    <div id="browse-table"></div>
+    <div id="browse-pager" class="flex-row"></div>
+  </div>
+
+  <!-- Templates -->
+  <div id="page-templates" class="page">
+    <h1 class="mb">Templates</h1>
+    <div id="template-content"></div>
+  </div>
+
+  <!-- Image Detail -->
+  <div id="page-detail" class="page">
+    <div class="flex-row mb">
+      <button class="btn" onclick="showPage('browse')">← Back</button>
+      <h2 id="detail-title"></h2>
+    </div>
+    <div class="flex-row mb" style="gap:4px;align-items:center">
+      <button class="btn btn-sm" onclick="navigateBy('prev','day')" title="Previous day">◀◀ Day</button>
+      <button class="btn btn-sm" onclick="navigateBy('prev','hour')" title="Previous hour">◀ Hour</button>
+      <button class="btn btn-sm" onclick="navigateBy('prev','rotation')" title="Previous rotation anchor">◀ Rot</button>
+      <button class="btn btn-sm" id="detail-prev-btn" onclick="navigateDetail(-1)">← Seq</button>
+      <button class="btn btn-primary btn-sm" onclick="showCorrection()">✏ Correct</button>
+      <button class="btn btn-sm" onclick="reprocessImage()">🔄 Reprocess</button>
+      <button class="btn btn-sm" id="detail-next-btn" onclick="navigateDetail(1)">Seq →</button>
+      <button class="btn btn-sm" onclick="navigateBy('next','rotation')" title="Next rotation anchor">Rot ▶</button>
+      <button class="btn btn-sm" onclick="navigateBy('next','hour')" title="Next hour">Hour ▶</button>
+      <button class="btn btn-sm" onclick="navigateBy('next','day')" title="Next day">Day ▶▶</button>
+    </div>
+    <div class="flex-row mb" style="gap:6px;align-items:center">
+      <label class="text-sm">Jump to reading</label>
+      <input id="nav-reading-value" type="number" step="0.001" placeholder="e.g. 3539.900" style="width:140px;font-family:monospace">
+      <button class="btn btn-sm" onclick="navigateByValue('first')" title="Last reading before the first reading above this value">◀ First</button>
+      <button class="btn btn-sm" onclick="navigateByValue('last')" title="First reading after the last reading at/below this value">Last ▶</button>
+      <span style="width:1px;height:20px;background:#30363d;display:inline-block"></span>
+      <button class="btn btn-sm btn-primary" onclick="recalcForward()" title="Re-run calc_needle_readings from this reading's date">⟳ Calc Forward</button>
+      <span id="recalc-msg" class="text-sm"></span>
+    </div>
+    <div class="grid-2">
+      <div class="card"><h3>Source Image</h3><img id="detail-source" style="margin-top:8px">
+      <div class="flex-row mt" style="gap:6px">
+        <button class="btn btn-sm" onclick="generateDebug()">🔍 Dial Debug</button>
+        <span id="debug-status" class="text-sm"></span>
+      </div>
+      <div id="debug-card" style="display:none;margin-top:8px">
+        <img id="detail-debug" style="max-width:100%">
+      </div>
+      </div>
+      <div class="card"><h3>Odometer Crop</h3><img id="detail-crop" style="margin-top:8px">
+      <div class="flex-row mt" style="gap:6px">
+        <button class="btn btn-sm" onclick="generateOdoDebug()">🔍 Odo Debug</button>
+        <button class="btn btn-sm btn-primary" onclick="generateDecodeDebug()">🔬 Full Decode Debug</button>
+        <span id="odo-debug-status" class="text-sm"></span>
+      </div>
+      <div class="flex-row mt" style="gap:4px">
+        <button class="btn btn-sm" onclick="extractTemplate(0)">📋 Pos0</button>
+        <button class="btn btn-sm" onclick="extractTemplate(1)">📋 Pos1</button>
+        <button class="btn btn-sm" onclick="extractTemplate(2)">📋 Pos2</button>
+        <button class="btn btn-sm" onclick="extractTemplate(3)">📋 Pos3</button>
+        <button class="btn btn-sm" onclick="extractTemplate(4)">📋 Pos4</button>
+        <button class="btn btn-sm btn-primary" onclick="extractTemplate(5)">📋 Pos5</button>
+        <button class="btn btn-sm" onclick="generatePos5BwDebug()" style="background:#8b5cf6;border-color:#7c3aed;color:#fff">🎯 Pos5 B&W</button>
+        <span id="template-msg" class="text-sm"></span>
+      </div>
+      <div id="odo-debug-card" style="display:none;margin-top:8px">
+        <img id="detail-odo-debug" style="max-width:100%">
+        <div id="odo-debug-legend" class="text-sm mt" style="color:#8b949e">
+          Colored boxes = digit slots (solid=original, bright=refined). 
+          Yellow bars = Sobel X edge projection. Green dots = edge peaks.
+        </div>
+      </div>
+    </div>
+    </div>
+    <div id="decode-debug-section" style="display:none" class="card">
+      <h3>Full Decode Debug — Per-Candidate Match Scores</h3>
+      <div class="flex-row mt" style="gap:6px;align-items:center">
+        <img id="decode-debug-img" style="max-width:100%">
+      </div>
+      <div id="decode-debug-table" class="mt" style="overflow-x:auto"></div>
+      <div class="text-sm mt" style="color:#8b949e">
+        Green = ensemble ≥ 0.55, Yellow = ≥ 0.40, Red = < 0.40.
+        Margin = winner − runner-up (lower margin = more ambiguous). 
+        ✓ = chosen digit.
+      </div>
+    </div>
+    <div id="detail-values" class="card"></div>
+    <div class="card">
+      <h3>Status Management</h3>
+      <div class="flex-row mt" style="gap:8px">
+        <select id="status-select">
+          <option value="OK">OK</option>
+          <option value="ANOMALY">ANOMALY</option>
+          <option value="FAIL">FAIL</option>
+        </select>
+        <button class="btn btn-sm btn-primary" onclick="changeStatus()">Update Status</button>
+        <span id="status-msg" class="text-sm"></span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Correction</h3>
+      <div class="flex-row mt">
+        <input id="corr-reading" placeholder="e.g. 3533.05">
+        <input id="corr-digits" placeholder="e.g. 035330" maxlength="6" style="font-family:monospace">
+        <button class="btn btn-primary" onclick="submitCorrection()">Save</button>
+        <span id="corr-msg" class="text-sm"></span>
+      </div>
+    </div>
+    <div class="card" id="notes-card" style="display:none">
+      <h3>Notes <span class="text-sm" style="font-weight:normal">(from DB)</span></h3>
+      <pre id="notes-content" style="white-space:pre-wrap;font-size:12px;color:#8b949e;max-height:200px;overflow-y:auto;margin-top:8px;padding:8px;background:#0d1117;border:1px solid #30363d;border-radius:4px"></pre>
+    </div>
+  </div>
+
+</div>
+<script>
+// ── Navigation ──
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pg = document.getElementById('page-' + name);
+  if (pg) pg.classList.add('active');
+  if (name === 'dashboard') loadDashboard();
+  if (name === 'usage') loadUsage();
+  if (name === 'browse') loadBrowse(1);
+  if (name === 'templates') loadTemplates();
+}
+
+async function loadDashboard() {
+  const resp = await fetch('/api/stats');
+  const d = await resp.json();
+  document.getElementById('stats-grid').innerHTML = [
+    ['Total', d.total], ['OK', d.ok], ['Anomalies', d.anomaly], ['Failed', d.fail],
+    ['With Odo', d.has_odo_reading], ['High Conf', d.high_confidence]
+  ].map(([l,v]) => `<div class="card stat"><div class="value">${v.toLocaleString()}</div><div class="label">${l}</div></div>`).join('');
+  document.getElementById('latest-info').innerHTML = [
+    ['Reading', d.latest_reading != null ? d.latest_reading.toFixed(3) : 'N/A'],
+    ['Timestamp', d.latest_ts || 'N/A'],
+    ['Avg Confidence', d.avg_confidence != null ? d.avg_confidence.toFixed(3) : 'N/A'],
+    ['Manual', d.manual_corrected]
+  ].map(([l,v]) => `<div class="stat"><div class="value">${v}</div><div class="label">${l}</div></div>`).join('');
+}
+
+function _buildBrowseURL(page) {
+  const status = document.getElementById('browse-status').value;
+  const search = document.getElementById('browse-search').value;
+  const minConf = document.getElementById('browse-minconf').value;
+  const maxConf = document.getElementById('browse-maxconf').value;
+  const hasImage = document.getElementById('browse-has-image').checked ? 1 : 0;
+  let url = `/api/readings?page=${page}&per_page=50&status=${encodeURIComponent(status)}&search=${encodeURIComponent(search)}&has_image=${hasImage}`;
+  if (minConf) url += `&min_conf=${encodeURIComponent(minConf)}`;
+  if (maxConf) url += `&max_conf=${encodeURIComponent(maxConf)}`;
+  return url;
+}
+
+function _renderBrowseTable(d, page, navFnName) {
+  if (!d.readings.length) { document.getElementById('browse-table').innerHTML = '<p>No results.</p>'; return; }
+  window.browseContext = { names: d.readings.map(r => r.image_name), fn: navFnName, page: page };
+  const rows = d.readings.map(r => `<tr>
+    <td class="left"><a href="javascript:void(0)" onclick="showDetail('${r.image_name}')">${r.image_name}</a></td>
+    <td class="text-sm">${r.capture_ts||'-'}</td>
+    <td><span class="tag tag-${r.status==='OK'?'ok':r.status==='ANOMALY'?'anomaly':'fail'}">${r.status}</span></td>
+    <td class="left">${r.digits||'-'}</td>
+    <td>${r.odo_reading!=null?r.odo_reading.toFixed(3):'-'}</td>
+    <td>${r.odo_confidence!=null?r.odo_confidence.toFixed(3):'-'}</td>
+    <td>${r.needle_deg!=null?r.needle_deg.toFixed(1):'-'}</td>
+    <td><button class="btn btn-sm" onclick="showDetail('${r.image_name}')">View</button></td>
+  </tr>`).join('');
+  document.getElementById('browse-table').innerHTML = `<table><thead><tr>
+    <th class="left">Image</th><th>Timestamp</th><th>Status</th><th>Digits</th><th>Reading</th><th>Conf</th><th>Needle°</th><th>Actions</th>
+  </tr></thead><tbody>${rows}</tbody></table>`;
+  let pager = '';
+  const fn = navFnName || 'loadBrowse';
+  if (page > 1) pager += `<button class="btn btn-sm" onclick="${fn}(${page-1})">← Prev</button>`;
+  pager += `<span class="text-sm">Page ${page} / ${Math.ceil(d.total/d.per_page)}</span>`;
+  if (page * d.per_page < d.total) pager += `<button class="btn btn-sm" onclick="${fn}(${page+1})">Next →</button>`;
+  document.getElementById('browse-pager').innerHTML = pager;
+}
+
+async function loadBrowse(page) {
+  const resp = await fetch(_buildBrowseURL(page));
+  const d = await resp.json();
+  _renderBrowseTable(d, page, 'loadBrowse');
+}
+
+let detailData = null;
+async function showDetail(imageName) {
+  const resp = await fetch(`/api/reading/${encodeURIComponent(imageName)}/adjacent`);
+  detailData = await resp.json();
+  const r = detailData.reading;
+  document.getElementById('detail-title').textContent = r.image_name;
+  document.getElementById('detail-source').src = `/image_file/${encodeURIComponent(r.image_name)}`;
+  document.getElementById('detail-crop').src = r.odo_crop_file ? `/crop/${encodeURIComponent(r.odo_crop_file)}` : '';
+  document.getElementById('corr-reading').value = '';
+  document.getElementById('corr-digits').value = '';
+  document.getElementById('corr-msg').textContent = '';
+  const navVal = r.odo_published != null ? r.odo_published : r.odo_reading;
+  document.getElementById('nav-reading-value').value = navVal != null ? navVal.toFixed(3) : '';
+  const confSource = r.odo_confidence === 1.0 ? '<span style="color:#3fb950" title="Manual correction">manual</span>' : 'auto';
+  document.getElementById('detail-values').innerHTML = `<h3>Reading</h3>
+    <p>Digits: <strong style="font-family:monospace;font-size:20px">${r.do_digits||r.digits||'-'}</strong></p>
+    <p>Odo Reading: ${(r.do_reading||r.odo_reading)!=null?(r.do_reading||r.odo_reading).toFixed(3):'-'}  |  Confidence: ${(r.do_confidence||r.odo_confidence)!=null?(r.do_confidence||r.odo_confidence).toFixed(4):'-'} (${confSource})</p>
+    <p>Needle: ${(r.dm_needle_deg||r.needle_deg)!=null?(r.dm_needle_deg||r.needle_deg).toFixed(2):'-'}° (npos ${r.dm_npos||r.npos})  |  Hub: (${r.dm_hub_x||'-'},${r.dm_hub_y||'-'}) r=${r.dm_hub_r||'-'}</p>
+    <p>Img brightness: ${r.dm_img_brightness||'-'}  contrast: ${r.dm_img_contrast||'-'}</p>
+    <p>Odo brightness: ${r.dm_odo_brightness||'-'}  contrast: ${r.dm_odo_contrast||'-'}  sobel: ${r.dm_odo_sobel_mean||'-'}  entropy: ${r.dm_odo_hist_entropy!=null?r.dm_odo_hist_entropy.toFixed(2):'-'}</p>
+    <p>dm_status: <span class="tag tag-${(r.dm_status||r.status)==='OK'?'ok':(r.dm_status||r.status)==='ANOMALY'?'anomaly':'fail'}">${r.dm_status||r.status}</span>
+       do_pos5: ${r.do_pos5||'-'}@${r.do_pos5_source||'?'} (conf: ${r.do_pos5_conf!=null?r.do_pos5_conf.toFixed(3):'-'})
+       dr_zone: ${r.dr_zone||'-'} dr_cycle: ${r.dr_cycle||'-'} dr_best: ${r.dr_best?'✓':'·'} dr_score: ${r.dr_score!=null?r.dr_score.toFixed(3):'-'}
+       cn_needle: ${r.cn_needle!=null?r.cn_needle.toFixed(3):'-'} cn_trusted: ${r.cn_visual_trusted?'✓':'·'}
+    </p>
+    <p>Keepers: first=${r.kp_first_of_day?'✓':'·'} last=${r.kp_last_of_day?'✓':'·'} lit=${r.kp_first_lit?'✓':'·'} last_lit=${r.kp_last_lit?'✓':'·'} rot=${r.kp_rotation_best?'✓':'·'} imp=${r.kp_important?'✓':'·'}</p>`;
+  document.getElementById('status-select').value = r.dm_status || r.status || 'OK';
+  document.getElementById('status-msg').textContent = '';
+  const notesEl = document.getElementById('notes-card');
+  const notesContent = document.getElementById('notes-content');
+  if (r.notes) {
+    try {
+      const parsed = typeof r.notes === 'string' ? JSON.parse(r.notes) : r.notes;
+      notesContent.textContent = JSON.stringify(parsed, null, 2);
+      notesEl.style.display = '';
+    } catch(e) {
+      notesContent.textContent = r.notes;
+      notesEl.style.display = '';
+    }
+  } else { notesEl.style.display = 'none'; }
+  document.getElementById('odo-debug-card').style.display = 'none';
+  document.getElementById('odo-debug-status').textContent = '';
+  document.getElementById('debug-card').style.display = 'none';
+  document.getElementById('decode-debug-section').style.display = 'none';
+  document.getElementById('debug-status').textContent = '';
+  document.getElementById('template-msg').textContent = '';
+  document.getElementById('detail-prev-btn').style.display = detailData.prev ? '' : 'none';
+  document.getElementById('detail-next-btn').style.display = detailData.next ? '' : 'none';
+  showPage('detail');
+}
+
+function navigateDetail(dir) {
+  if (window.browseContext && window.browseContext.names && window.browseContext.names.length) {
+    const list = window.browseContext.names;
+    const idx = list.indexOf(detailData?.reading?.image_name);
+    const newIdx = idx + dir;
+    if (newIdx >= 0 && newIdx < list.length) { showDetail(list[newIdx]); return; }
+    if (newIdx < 0 && window.browseContext.page > 1) {
+      const fn = window.browseContext.fn || 'loadBrowse';
+      window._navDir = dir;
+      window[fn](window.browseContext.page - 1);
+      return;
+    }
+    if (newIdx >= list.length) {
+      const fn = window.browseContext.fn || 'loadBrowse';
+      window._navDir = dir;
+      window[fn](window.browseContext.page + 1);
+      return;
+    }
+  }
+  const target = dir < 0 ? detailData?.prev : detailData?.next;
+  if (target) showDetail(target.image_name);
+}
+
+const _origRenderBrowseTable = _renderBrowseTable;
+_renderBrowseTable = function(d, page, navFnName) {
+  _origRenderBrowseTable(d, page, navFnName);
+  if (window._navDir === -1) {
+    setTimeout(() => { if (d.readings.length) showDetail(d.readings[d.readings.length - 1].image_name); }, 100);
+    window._navDir = undefined;
+  } else if (window._navDir === 1) {
+    setTimeout(() => { if (d.readings.length) showDetail(d.readings[0].image_name); }, 100);
+    window._navDir = undefined;
+  }
+};
+
+function showCorrection() {
+  document.getElementById('corr-reading').value = detailData?.reading?.odo_reading||'';
+  document.getElementById('corr-digits').value = detailData?.reading?.digits||'';
+}
+
+async function submitCorrection() {
+  const r = document.getElementById('corr-reading').value.trim();
+  const d = document.getElementById('corr-digits').value.trim();
+  if (!r && !d) return;
+  const resp = await fetch(`/api/reading/${encodeURIComponent(detailData.reading.image_name)}/correct`, {
+    method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({reading:r||null,digits:d||null})
+  });
+  if (resp.ok) { document.getElementById('corr-msg').textContent = '✓ Saved'; showDetail(detailData.reading.image_name); }
+  else { document.getElementById('corr-msg').textContent = '✗ Failed'; }
+}
+
+async function loadTemplates() {
+  const resp = await fetch('/api/templates');
+  const d = await resp.json();
+  let html = `<div class="card"><h3>Pos5 (${d.pos5.length} templates, ${d.missing_pos5.length} missing)</h3>
+    <div style="overflow-x:auto"><table><tr><th class="left">D\\np</th>${[0,10,20,30,70,80,90].map(n=>`<th>n${n}</th>`).join('')}</tr>`;
+  for (let digit=0;digit<10;digit++) {
+    html += `<tr><td class="left"><strong>${digit}</strong></td>`;
+    for (let n of [0,10,20,30,70,80,90]) {
+      const t = d.pos5.find(t=>t.digit===digit&&t.npos===n);
+      html += t ? `<td style="text-align:center"><img src="/images/templates/${encodeURIComponent(t.filename)}" style="width:60px"><br><button class="btn btn-sm btn-danger" onclick="deleteTemplate('${t.filename}')">✕</button></td>` : `<td class="text-sm" style="color:#f85149">-</td>`;
+    }
+    html += '</tr>';
+  }
+  html += '</table></div></div>';
+  html += `<div class="card"><h3>Static Pos0-4 (${d.static.length} templates, ${d.missing_static.length} missing)</h3>
+    <div style="overflow-x:auto"><table><tr><th class="left">P\\D</th>${[...Array(10).keys()].map(d=>`<th>${d}</th>`).join('')}</tr>`;
+  for (let pos=0;pos<5;pos++) {
+    html += `<tr><td class="left"><strong>Pos${pos}</strong></td>`;
+    for (let digit=0;digit<10;digit++) {
+      const t = d.static.find(t=>t.pos===pos&&t.digit===digit);
+      html += t ? `<td style="text-align:center"><img src="/images/templates/${encodeURIComponent(t.filename)}" style="width:45px"><br><button class="btn btn-sm btn-danger" onclick="deleteTemplate('${t.filename}')">✕</button></td>` : `<td class="text-sm" style="color:#f85149">-</td>`;
+    }
+    html += '</tr>';
+  }
+  html += '</table></div></div>';
+  document.getElementById('template-content').innerHTML = html;
+}
+
+async function deleteTemplate(fn) {
+  if (!confirm(`Delete ${fn}?`)) return;
+  await fetch(`/api/templates/${encodeURIComponent(fn)}`, {method:'DELETE'});
+  loadTemplates();
+}
+
+function quickRollover() { loadRollovers(1); }
+async function loadRollovers(page) {
+  const resp = await fetch(`/api/rollovers?page=${page}&per_page=50`);
+  const d = await resp.json();
+  _renderBrowseTable(d, page, 'loadRollovers');
+}
+function quickLowConf() { document.getElementById('browse-maxconf').value='0.6'; loadBrowse(1); }
+function quickFlagged() { loadFlagged(1); }
+async function loadFlagged(page) {
+  const resp = await fetch(`/api/readings?page=${page}&per_page=50&flagged=1&grouped=1`);
+  const d = await resp.json();
+  _renderBrowseTable(d, page, 'loadFlagged');
+}
+function quickAnomalies() { document.getElementById('browse-status').value='ANOMALY'; loadBrowse(1); }
+
+async function generateOdoDebug() {
+  if (!detailData?.reading?.image_name) return;
+  const statusEl = document.getElementById('odo-debug-status');
+  statusEl.textContent = 'Generating...';
+  try {
+    const resp = await fetch(`/api/debug_odo/${encodeURIComponent(detailData.reading.image_name)}`, {method:'POST'});
+    if (!resp.ok) { statusEl.textContent = 'Failed: ' + resp.status; return; }
+    const d = await resp.json();
+    if (d.debug_image) {
+      document.getElementById('detail-odo-debug').src = `/images/debug/${encodeURIComponent(d.debug_image)}`;
+      document.getElementById('odo-debug-card').style.display = '';
+      statusEl.textContent = d.cached ? '✓ Cached' : '✓ Generated';
+    }
+  } catch(e) { statusEl.textContent = 'Error: ' + e.message; }
+}
+
+async function generateDebug() {
+  if (!detailData?.reading?.image_name) return;
+  const statusEl = document.getElementById('debug-status');
+  statusEl.textContent = 'Generating...';
+  try {
+    const resp = await fetch(`/api/debug_image/${encodeURIComponent(detailData.reading.image_name)}`, {method:'POST'});
+    if (!resp.ok) { statusEl.textContent = 'Failed'; return; }
+    const d = await resp.json();
+    if (d.debug_image) {
+      document.getElementById('detail-debug').src = `/images/debug/${encodeURIComponent(d.debug_image)}`;
+      document.getElementById('debug-card').style.display = '';
+      statusEl.textContent = d.cached ? '✓ Cached' : '✓ Generated';
+    }
+  } catch(e) { statusEl.textContent = 'Error: ' + e.message; }
+}
+
+async function changeStatus() {
+  if (!detailData?.reading?.image_name) return;
+  const newStatus = document.getElementById('status-select').value;
+  const msgEl = document.getElementById('status-msg');
+  msgEl.textContent = 'Updating...';
+  try {
+    const resp = await fetch(`/api/reading/${encodeURIComponent(detailData.reading.image_name)}/status`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({status: newStatus})
+    });
+    if (resp.ok) { msgEl.textContent = `✓ Changed to ${newStatus}`; showDetail(detailData.reading.image_name); }
+    else { msgEl.textContent = '✗ Failed'; }
+  } catch(e) { msgEl.textContent = 'Error: ' + e.message; }
+}
+
+function quickNonManual() { document.getElementById('browse-status').value='ANOMALY'; document.getElementById('browse-maxconf').value='0.99'; loadBrowse(1); }
+function quickKeepers() { document.getElementById('browse-has-image').checked=true; loadBrowse(1); }
+function quickNeedsReview() { loadNeedsReviewDays(); }
+
+async function loadNeedsReviewDays() {
+  document.getElementById('browse-context').innerHTML = '';
+  const resp = await fetch('/api/needs_review_daily');
+  const d = await resp.json();
+  const days = d.days || [];
+  let html = '<table><thead><tr><th class="left">Date</th><th>Frames</th><th>Range (m³)</th><th>Median</th><th></th></tr></thead><tbody>';
+  for (const day of days) {
+    const range = (day.min != null && day.max != null) ? day.min.toFixed(3) + ' – ' + day.max.toFixed(3) : '-';
+    const med = day.median != null ? day.median.toFixed(3) : '-';
+    const flag = day.spike ? '<span class="tag" style="color:#f85149">⚠ SPIKE</span>' : '<span class="text-sm">·</span>';
+    html += `<tr style="cursor:pointer" onclick="loadNeedsReviewDate('${day.date}',${day.spike ? 1 : 0})">
+      <td class="left">${day.date}</td><td>${day.n}</td>
+      <td>${range}</td><td>${med}</td><td>${flag}</td></tr>`;
+  }
+  html += '</tbody></table>';
+  document.getElementById('browse-table').innerHTML = html +
+    '<p class="text-sm mt">Click a day to see its frames. ⚠ SPIKE days run well above the day\'s normal line — pin a frame or two to the median value.</p>';
+  document.getElementById('browse-pager').innerHTML = '';
+}
+
+async function loadNeedsReviewDate(date, isSpike) {
+  window._nrDate = date;
+  window._nrSpike = isSpike ? 1 : 0;
+  document.getElementById('browse-context').innerHTML =
+    '<button class="btn btn-sm" onclick="loadNeedsReviewDays()">← All days</button>' +
+    '<span class="text-sm" style="margin-left:8px">' + date + (isSpike ? ' (spike frames)' : ' (needs review)') + '</span>';
+  const filter = isSpike ? 'spike=1' : 'needs_review=1';
+  const resp = await fetch(`/api/readings?page=1&per_page=50&${filter}&grouped=1&date=${date}`);
+  const d = await resp.json();
+  _renderBrowseTable(d, 1, 'loadNeedsReviewDatePage');
+}
+
+async function loadNeedsReviewDatePage(page) {
+  const date = window._nrDate || '';
+  const filter = window._nrSpike ? 'spike=1' : 'needs_review=1';
+  const resp = await fetch(`/api/readings?page=${page}&per_page=50&${filter}&grouped=1&date=${date}`);
+  const d = await resp.json();
+  _renderBrowseTable(d, page, 'loadNeedsReviewDatePage');
+}
+
+async function reprocessImage() {
+  if (!detailData?.reading?.image_name) return;
+  const msgEl = document.getElementById('corr-msg');
+  msgEl.textContent = 'Reprocessing...';
+  try {
+    const resp = await fetch(`/api/reprocess/${encodeURIComponent(detailData.reading.image_name)}`, {method: 'POST'});
+    if (!resp.ok) { msgEl.textContent = 'Reprocess failed: ' + resp.status; return; }
+    msgEl.textContent = '✓ Reprocessed — refreshing...';
+    setTimeout(() => showDetail(detailData.reading.image_name), 500);
+  } catch(e) { msgEl.textContent = 'Error: ' + e.message; }
+}
+
+async function extractTemplate(pos) {
+  if (!detailData?.reading?.image_name) return;
+  const msgEl = document.getElementById('template-msg');
+  msgEl.textContent = 'Extracting...';
+  try {
+    const resp = await fetch(`/api/reading/${encodeURIComponent(detailData.reading.image_name)}/extract_template/${pos}`, {method:'POST'});
+    if (!resp.ok) { msgEl.textContent = 'Failed: ' + resp.status; return; }
+    const d = await resp.json();
+    msgEl.textContent = `Saved ${d.template}`;
+  } catch(e) { msgEl.textContent = 'Error: ' + e.message; }
+}
+
+async function generateDecodeDebug() {
+  if (!detailData?.reading?.image_name) return;
+  const statusEl = document.getElementById('odo-debug-status');
+  const section = document.getElementById('decode-debug-section');
+  statusEl.textContent = 'Running full decode debug...';
+  try {
+    const resp = await fetch(`/api/decode_debug/${encodeURIComponent(detailData.reading.image_name)}`, {method:'POST'});
+    if (!resp.ok) { statusEl.textContent = 'Failed: ' + resp.status; return; }
+    const d = await resp.json();
+    statusEl.textContent = '✓ Generated';
+
+    // Show composite debug image
+    if (d.debug_image) {
+      document.getElementById('decode-debug-img').src = `/images/debug/${encodeURIComponent(d.debug_image)}`;
+    }
+
+    // Build score comparison table
+    let tableHtml = '<p class="text-sm mt">DB digits: ' + (d.db_digits||'-') +
+      '  |  Decode digits: <strong>' + (d.digits||'-') + '</strong>' +
+      '  |  DB reading: ' + (d.db_reading!=null?d.db_reading.toFixed(3):'-') +
+      '  |  Decode reading: ' + (d.reading!=null?d.reading.toFixed(3):'-') +
+      '  |  npos: ' + (d.npos||'?') +
+      '</p>';
+
+    tableHtml += '<table style="font-size:11px"><thead><tr>' +
+      '<th class="left">Pos</th>' +
+      '<th class="left">Chosen</th>';
+
+    // Find max number of candidates across all positions for column headers
+    let maxDigits = 10;
+    for (let di = 0; di < 10; di++) tableHtml += `<th>D${di}</th>`;
+    tableHtml += '<th>Margin</th></tr></thead><tbody>';
+
+    for (const p of (d.positions || [])) {
+      const pos = p.position;
+      const chosenDig = p.chosen ? p.chosen.digit : '?';
+      const chosenConf = p.chosen ? p.chosen.confidence : 0;
+
+      tableHtml += `<tr><td class="left"><strong style="color:${['#3fb950','#f85149','#d29922','#db61a2','#58a6ff','#ffa657'][pos]||'#c9d1d9'}">pos${pos}</strong></td>`;
+      tableHtml += `<td class="left">${chosenDig} <span style="font-size:10px;color:#8b949e">(${chosenConf.toFixed(3)})</span></td>`;
+
+      // Process candidates
+      let scoresByDigit = {};
+      if (pos === 5) {
+        // pos5: candidates is array of {digit, npos, score}
+        for (const c of (p.candidates || [])) {
+          const key = c.digit;
+          if (!scoresByDigit[key] || c.score > scoresByDigit[key]) {
+            scoresByDigit[key] = c.score;
+          }
+        }
+      } else {
+        // Static: candidates is dict of digit_str -> {scores: {...}}
+        const cands = p.candidates || {};
+        for (const [dStr, cdata] of Object.entries(cands)) {
+          scoresByDigit[parseInt(dStr)] = cdata.scores?.ensemble || 0;
+        }
+      }
+
+      // Find top 2 for margin
+      const sortedScores = Object.entries(scoresByDigit)
+        .map(([d, s]) => ({digit: parseInt(d), score: s}))
+        .sort((a, b) => b.score - a.score);
+      const margin = sortedScores.length >= 2 ? (sortedScores[0].score - sortedScores[1].score) : null;
+
+      for (let di = 0; di < 10; di++) {
+        const score = scoresByDigit[di];
+        if (score !== undefined) {
+          const isChosen = di === chosenDig;
+          const color = score >= 0.55 ? '#3fb950' : score >= 0.40 ? '#d29922' : '#f85149';
+          let cellStyle = `color:${color}`;
+          if (isChosen) cellStyle += ';font-weight:bold;background:#1c3133';
+          tableHtml += `<td style="${cellStyle}">${score.toFixed(3)}${isChosen?' ✓':''}</td>`;
+        } else {
+          tableHtml += '<td style="color:#30363d">—</td>';
+        }
+      }
+
+      // Margin column
+      if (margin !== null) {
+        const marginColor = margin < 0.05 ? '#f85149' : margin < 0.10 ? '#d29922' : '#3fb950';
+        tableHtml += `<td style="color:${marginColor}">${margin.toFixed(3)}</td>`;
+      } else {
+        tableHtml += '<td style="color:#30363d">—</td>';
+      }
+      tableHtml += '</tr>';
+    }
+    tableHtml += '</tbody></table>';
+    document.getElementById('decode-debug-table').innerHTML = tableHtml;
+    section.style.display = '';
+  } catch(e) {
+    statusEl.textContent = 'Error: ' + e.message;
+  }
+}
+
+async function generatePos5BwDebug() {
+  if (!detailData?.reading?.image_name) return;
+  const statusEl = document.getElementById('odo-debug-status');
+  statusEl.textContent = 'Generating B&W comparison...';
+  try {
+    const resp = await fetch(`/api/pos5_bw_debug/${encodeURIComponent(detailData.reading.image_name)}`, {method:'POST'});
+    if (!resp.ok) { statusEl.textContent = 'Failed: ' + resp.status; return; }
+    const d = await resp.json();
+    if (d.debug_image) {
+      let html = `<img src="/images/debug/${encodeURIComponent(d.debug_image)}" style="max-width:100%;margin-top:8px">`;
+      html += '<table style="font-size:11px;margin-top:8px"><tr><th class="left">Digit</th><th>npos</th><th>B&W NCC</th><th>XOR Score</th><th>XOR Px</th></tr>';
+      for (const c of (d.candidates || [])) {
+        const bestNcc = Math.max(c.bw_ncc, c.bw_ncc_inv);
+        html += `<tr><td class="left"><strong>${c.digit}</strong></td><td>${c.npos}</td><td style="color:${bestNcc>=0.9?'#3fb950':bestNcc>=0.8?'#d29922':'#f85149'}">${c.bw_ncc}</td><td>${c.xor_score.toFixed(4)}</td><td>${c.xor_px}</td></tr>`;
+      }
+      html += '</table>';
+      html += `<p class="text-sm mt">npos=${d.npos}, DB digits=${d.db_digits}, slot=[${d.slot[0]},${d.slot[1]}], total=${d.total_pixels}px</p>`;
+      document.getElementById('odo-debug-card').innerHTML = html;
+      document.getElementById('odo-debug-card').style.display = '';
+      statusEl.textContent = '✓ Generated';
+    }
+  } catch(e) { statusEl.textContent = 'Error: ' + e.message; }
+}
+
+async function navigateBy(dir, by) {
+  if (!detailData?.reading?.image_name) return;
+  const img = detailData.reading.image_name;
+  const resp = await fetch(`/api/navigate/${encodeURIComponent(img)}?dir=${dir}&by=${by}`);
+  if (resp.ok) {
+    const d = await resp.json();
+    showDetail(d.image_name);
+  } else {
+    document.getElementById('corr-msg').textContent = `No more ${by} images`;
+  }
+}
+
+async function navigateByValue(mode) {
+  const valEl = document.getElementById('nav-reading-value');
+  const msgEl = document.getElementById('nav-value-msg');
+  const val = (valEl.value || '').trim();
+  if (!val) { msgEl.textContent = 'Enter a value first'; return; }
+  msgEl.textContent = 'Searching...';
+  try {
+    const resp = await fetch(`/api/navigate_by_reading?value=${encodeURIComponent(val)}&mode=${mode}`);
+    if (!resp.ok) {
+      const d = await resp.json().catch(() => null);
+      msgEl.textContent = (d && d.detail) ? d.detail : 'Not found (' + resp.status + ')';
+      return;
+    }
+    const d = await resp.json();
+    msgEl.textContent = `→ ${d.image_name} (${d.reading != null ? d.reading.toFixed(3) : '?'})`;
+    showDetail(d.image_name);
+  } catch (e) { msgEl.textContent = 'Error: ' + e.message; }
+}
+
+async function recalcForward() {
+  const msgEl = document.getElementById('recalc-msg');
+  if (!detailData?.reading?.image_name) { msgEl.textContent = 'Open a reading first'; return; }
+  const ts = detailData.reading.capture_ts;
+  const fromDate = ts ? ts.slice(0, 10).replace(/-/g, '') : '20260719';
+  msgEl.textContent = 'Starting recalc from ' + fromDate + '...';
+  try {
+    const resp = await fetch('/api/recalc?from_date=' + fromDate, {method: 'POST'});
+    const d = await resp.json();
+    if (resp.ok) {
+      msgEl.textContent = 'Recalculating from ' + fromDate + '... this can take ~1 min';
+      const interval = setInterval(async () => {
+        try {
+          const s = await (await fetch('/api/recalc/status')).json();
+          if (s.done) {
+            clearInterval(interval);
+            if (s.error) msgEl.textContent = 'Recalc failed: ' + s.error;
+            else if (s.result) msgEl.textContent = `✓ Recalc done — ${s.result.total} rows, ${s.result.updated_needle} updated`;
+            else msgEl.textContent = '✓ Recalc done';
+            if (detailData?.reading?.image_name) showDetail(detailData.reading.image_name);
+          }
+        } catch (e) { clearInterval(interval); msgEl.textContent = 'Error: ' + e.message; }
+      }, 3000);
+    } else {
+      msgEl.textContent = (d && d.message) || 'Recalc could not start (' + resp.status + ')';
+    }
+  } catch (e) { msgEl.textContent = 'Error: ' + e.message; }
+}
+
+async function confirmReading() {
+  if (!detailData?.reading?.image_name) return;
+  const resp = await fetch(`/api/reading/${encodeURIComponent(detailData.reading.image_name)}/confirm`, {method: "POST"});
+  if (resp.ok) { document.getElementById("corr-msg").textContent = "✓ Confirmed"; showDetail(detailData.reading.image_name); }
+  else { document.getElementById("corr-msg").textContent = "✗ Failed"; }
+}
+
+let usageState = {
+  daily: [],          // daily_30 with usage (bars shown)
+  hourly: [],         // hourly buckets for the currently displayed date
+  hourlyDate: null,   // 'YYYY-MM-DD' or null for today
+  dayFirst: null,
+  dayLast: null,
+};
+
+function rangeImageCard(label, name) {
+  if (!name) {
+    return `<div class="card stat" style="margin:0;min-width:170px"><div class="value" style="font-size:14px">—</div><div class="label">${label}</div></div>`;
+  }
+  return `<div class="card" style="margin:0;min-width:190px;padding:10px">
+    <div class="text-sm" style="color:#8b949e;margin-bottom:6px">${label}</div>
+    <a href="javascript:void(0)" onclick="showDetail('${name}')">
+      <img src="/image_file/${encodeURIComponent(name)}" style="height:110px;width:170px;object-fit:cover;border-radius:6px;cursor:pointer">
+    </a>
+    <div class="text-sm" style="word-break:break-all;margin-top:4px">${name}</div>
+  </div>`;
+}
+
+function renderHourlyRange(title, firstImg, lastImg) {
+  document.getElementById('hourly-range').innerHTML =
+    `<div class="text-sm" style="color:#8b949e;align-self:center;text-transform:uppercase;min-width:120px">${title}</div>`
+    + rangeImageCard('First Image', firstImg)
+    + rangeImageCard('Last Image', lastImg);
+}
+
+async function loadUsage() {
+  const resp = await fetch('/api/usage');
+  const d = await resp.json();
+  const fmtL = v => v != null ? v.toLocaleString() + ' L' : 'N/A';
+  const todayReading = [...d.hourly_today].reverse().find(h => h.reading_m3 != null);
+  document.getElementById('usage-averages').innerHTML = [
+    ['Last Month Total', fmtL(d.last_month_usage_l)],
+    ['This Month Total', fmtL(d.this_month_usage_l)],
+    ['Today Reading', todayReading ? todayReading.reading_m3.toFixed(3) + ' m³' : 'N/A']
+  ].map(([l,v]) => `<div class="card stat"><div class="value">${v}</div><div class="label">${l}</div></div>`).join('');
+
+  usageState.daily = d.daily_30.filter(x => x.usage_l != null);
+  drawBarChart('daily-chart', usageState.daily, {
+    labelFn: x => x.date.slice(5), valueFn: x => x.usage_l, color: '#58a6ff', title: 'Litres per Day',
+    onClick: (item, i) => selectDay(item.date, i),
+  });
+
+  usageState.hourly = d.hourly_today;
+  usageState.hourlyDate = null;
+  usageState.dayFirst = d.first_image;
+  usageState.dayLast = d.last_image;
+  document.getElementById('hourly-chart-title').textContent = "Today's Hourly Usage";
+  drawBarChart('hourly-chart', d.hourly_today, {
+    labelFn: x => x.hour + ':00', valueFn: x => x.usage_l || 0, color: '#3fb950', title: 'Litres per Hour',
+    onClick: (item, i) => selectHour(i),
+  });
+  renderHourlyRange('Today', d.first_image, d.last_image);
+}
+
+async function selectDay(dateStr, index) {
+  const resp = await fetch('/api/usage/hourly?date=' + dateStr);
+  const d = await resp.json();
+  usageState.hourly = d.hourly;
+  usageState.hourlyDate = dateStr;
+  usageState.dayFirst = d.first_image;
+  usageState.dayLast = d.last_image;
+  document.getElementById('hourly-chart-title').textContent = 'Hourly Usage — ' + dateStr;
+  drawBarChart('hourly-chart', d.hourly, {
+    labelFn: x => x.hour + ':00', valueFn: x => x.usage_l || 0, color: '#3fb950', title: 'Litres per Hour',
+    onClick: (item, i) => selectHour(i),
+  });
+  // Highlight the selected day bar
+  drawBarChart('daily-chart', usageState.daily, {
+    labelFn: x => x.date.slice(5), valueFn: x => x.usage_l, color: '#58a6ff', title: 'Litres per Day',
+    onClick: (item, i) => selectDay(item.date, i),
+    highlightIndex: index,
+  });
+  renderHourlyRange('Day ' + dateStr, d.first_image, d.last_image);
+}
+
+function selectHour(index) {
+  const h = usageState.hourly[index];
+  if (!h) return;
+  const day = usageState.hourlyDate || 'today';
+  renderHourlyRange(day + ' ' + h.hour + ':00', h.first_image, h.last_image);
+}
+
+function drawBarChart(canvasId, data, opts) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const W = rect.width - 32;
+  const H = 300;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (!data.length) {
+    ctx.fillStyle = '#8b949e'; ctx.font = '14px sans-serif'; ctx.fillText('No data', 10, 30); return;
+  }
+  const pad = { top: 20, right: 20, bottom: 50, left: 60 };
+  const pw = W - pad.left - pad.right;
+  const ph = H - pad.top - pad.bottom;
+  const vals = data.map(opts.valueFn);
+  const maxV = Math.max(...vals) || 1;
+  const barW = Math.max(4, (pw / data.length) - 3);
+  const stepX = pw / data.length;
+  ctx.fillStyle = '#0d1117';
+  ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = '#21262d';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.top + (ph / 4) * i;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+    const val = maxV * (1 - i / 4);
+    ctx.fillStyle = '#8b949e'; ctx.font = '11px sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(val.toFixed(0), pad.left - 6, y + 4);
+  }
+  data.forEach((item, i) => {
+    const v = opts.valueFn(item);
+    const x = pad.left + i * stepX + 1;
+    const bh = (v / maxV) * ph;
+    const y = pad.top + ph - bh;
+    ctx.fillStyle = (opts.highlightIndex === i) ? '#f0883e' : opts.color;
+    ctx.fillRect(x, y, barW, bh);
+    if (opts.highlightIndex === i) {
+      ctx.strokeStyle = '#f0883e'; ctx.lineWidth = 2;
+      ctx.strokeRect(x - 1, y - 1, barW + 2, bh + 2);
+    }
+  });
+  ctx.fillStyle = '#8b949e'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+  const skip = Math.max(1, Math.floor(data.length / 15));
+  for (let i = 0; i < data.length; i += skip) {
+    const x = pad.left + i * stepX + stepX / 2;
+    ctx.fillText(opts.labelFn(data[i]), x, H - pad.bottom + 16);
+  }
+  if (opts.title) {
+    ctx.fillStyle = '#c9d1d9'; ctx.font = '12px sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText(opts.title, pad.left, 16);
+  }
+  // Click handling — map the click x position back to a bar index.
+  canvas.onclick = null;
+  if (opts.onClick) {
+    canvas.style.cursor = 'pointer';
+    canvas.onclick = (e) => {
+      const r = canvas.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      const idx = Math.floor((x - pad.left) / stepX);
+      if (idx >= 0 && idx < data.length) opts.onClick(data[idx], idx);
+    };
+  } else {
+    canvas.style.cursor = 'default';
+  }
+}
+
+loadDashboard();
+</script>
+</body>
+</html>

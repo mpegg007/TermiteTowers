@@ -1,0 +1,126 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/tensorflow-dev1.yml:121 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: e82160effc5125f12979bfebe7c538b81bda3110 %
+#  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
+#  %ccm_git_commit_count: 121 %
+#  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: cleanup %
+#  %ccm_git_modify_date: 2025-11-30 12:27:05 %
+#  %ccm_git_file_last_modified: 2025-11-30 12:27:05 %
+#  %ccm_git_file_name: tensorflow-dev1.yml %
+#  %ccm_git_path: infra/docker/tensorflow-dev1.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 3289 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: docker updates % 
+
+# TensorFlow Jupyter Notebook Server with GPU Support
+# Purpose: Machine learning development environment with Jupyter notebook interface
+# Access: https://tensorflow.termitetowers.ca
+# Port: 3810 (host) -> 8888 (container)
+# Category: AI & Machine Learning (3800-3899 range per wiki/ports.md)
+
+name: tensorflow-dev1
+
+services:
+  tensorflow:
+    image: tensorflow/tensorflow:latest-gpu-jupyter
+    container_name: tensorflow-dev1
+    restart: unless-stopped
+    
+    ports:
+      - "0.0.0.0:3810:8888"
+    
+    environment:
+      - TZ=America/New_York
+      - JUPYTER_ENABLE_LAB=yes
+      - GRANT_SUDO=yes
+    
+    env_file:
+      - ./env/tensorflow.env
+    
+    volumes:
+      - /mnt/ai_storage/tensorflow/notebooks:/tf/notebooks
+      - /mnt/ai_storage/tensorflow/data:/tf/data
+      - /mnt/ai_storage/tensorflow/models:/tf/models
+    
+    user: "2001:1006"
+    
+    # Enable GPU support (requires nvidia-docker2)
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    
+    networks:
+      - ai-services-net-dev1
+
+# Docker external network definition
+networks:
+  ai-services-net-dev1:
+    external: true
+
+# Setup Instructions:
+# 1. Create data directories:
+#   sudo mkdir -p /mnt/ai_storage/tensorflow/{notebooks,data,models}
+#   sudo chown -R 2001:1006 /mnt/ai_storage/tensorflow
+#   sudo chmod -R u+rwX,g+rwX /mnt/ai_storage/tensorflow
+#
+# 2. Generate Jupyter token/password and create env file:
+#   TOKEN=$(openssl rand -hex 32)
+#   cat > /home/mpegg-adm/source/TermiteTowers/infra/docker/env/tensorflow.env << EOF
+#   JUPYTER_TOKEN=${TOKEN}
+#   EOF
+#   sudo chown 2001:1006 /home/mpegg-adm/source/TermiteTowers/infra/docker/env/tensorflow.env
+#   sudo chmod 640 /home/mpegg-adm/source/TermiteTowers/infra/docker/env/tensorflow.env
+#   echo "Your Jupyter token: ${TOKEN}"
+#
+# 3. Create example env file:
+#   cat > /home/mpegg-adm/source/TermiteTowers/infra/docker/env/tensorflow.env.example << 'EOF'
+#   # TensorFlow Jupyter Configuration
+#   JUPYTER_TOKEN=your-secure-token-here
+#   EOF
+#
+# 4. Start the container:
+#   docker compose -f /home/mpegg-adm/source/TermiteTowers/infra/docker/tensorflow-dev1.yml up -d
+#
+# 5. Setup Nginx reverse proxy (see wiki/how-to-add-docker-app.md section 6)
+#    Note: Jupyter requires WebSocket support in Nginx config
+#
+# 6. Create /srv/dev1 convenience symlink:
+#   sudo mkdir -p /srv/dev1/tensorflow/docker
+#   sudo ln -sf /home/mpegg-adm/source/TermiteTowers/infra/docker/tensorflow-dev1.yml /srv/dev1/tensorflow/docker/tensorflow-dev1.yml
+#
+# 7. Verify:
+#   docker logs --tail 100 tensorflow-dev1
+#   # Look for: "Jupyter Notebook is running at:"
+#   curl http://localhost:3810/
+#
+# GPU Support:
+# - Requires nvidia-docker2: sudo apt install nvidia-docker2
+# - For CPU-only version, change image to: tensorflow/tensorflow:latest-jupyter
+# - Remove the deploy.resources section for CPU-only
+#
+# Access Jupyter:
+# - URL: https://tensorflow.termitetowers.ca
+# - Token: Use the JUPYTER_TOKEN from tensorflow.env

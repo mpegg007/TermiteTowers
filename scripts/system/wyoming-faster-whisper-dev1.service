@@ -1,0 +1,46 @@
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: scripts/system/wyoming-faster-whisper-dev1.service:111 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 0753408aaf50cb7647905cbdef0c6ff5af8cf491 %
+#  %ccm_git_commit_id: c95decaaa02c45bee627cd315be8d2b7aefd7fc5 %
+#  %ccm_git_commit_count: 111 %
+#  %ccm_git_commit_date: 2025-10-29 19:12:44 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: docker updates %
+#  %ccm_git_modify_date: 2025-10-29 19:12:45 %
+#  %ccm_git_file_last_modified: 2025-10-11 10:12:40 %
+#  %ccm_git_file_name: wyoming-faster-whisper-dev1.service %
+#  %ccm_git_path: scripts/system/wyoming-faster-whisper-dev1.service %
+#  %ccm_git_language_mode: service %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 806 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# Wyoming Faster Whisper (dev1)
+# Place into /etc/systemd/system/wyoming-faster-whisper-dev1.service
+# Then: systemctl daemon-reload && systemctl enable --now wyoming-faster-whisper-dev1
+[Unit]
+Description=Wyoming Faster Whisper (dev1)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mpegg-adm
+Group=mpegg-adm
+WorkingDirectory=/srv/dev1/whisper/script
+Environment=VIRTUAL_ENV=/srv/dev1/whisper/.venv
+Environment=PATH=/srv/dev1/whisper/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+Environment=HF_HOME=/mnt/ai_storage/models/huggingface
+ExecStart=/srv/dev1/whisper/script/run --model base --uri tcp://0.0.0.0:10300 --data-dir /srv/dev1/whisper/data --download-dir /srv/dev1/whisper/data
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

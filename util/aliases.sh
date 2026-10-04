@@ -1,7 +1,18 @@
+# =============================================================================
+# DEPRECATED: This file is NOT in use. Do NOT modify.
+# The active aliases file is: setup/unix/util/initAliases.sh
+# This file (util/aliases.sh) is a stale legacy copy kept for reference only.
+# The active initialization chain is:
+#   setup/unix/profile.tt -> setup/unix/util/initAliases.sh
+# =============================================================================
 # shellcheck shell=bash
-# Aliases and helper functions for TermiteTowers
+# Aliases and helper functions for TermiteTowers (DEPRECATED - NOT ACTIVE)
 
 # Use tt_scmID directly for environment-specific paths (e.g., /srv/$tt_scmID/<app>).
+
+# ============================================================================
+# SECTION 1: App Navigation (cdapp / goapp)
+# ============================================================================
 
 # Safely cd to an app under /srv/<region>/<app>
 cdapp() {
@@ -88,6 +99,10 @@ goapp() {
   export APPID_DOCKER="$docker_file_candidate"
 }
 
+# ============================================================================
+# SECTION 2: App-Specific Wrappers & Generic Docker Compose
+# ============================================================================
+
 # Convenience wrappers for specific apps you mentioned
 alias cdlobe='cdapp lobechat'
 
@@ -124,7 +139,154 @@ alias dcu='docker compose up -d'
 alias dcd='docker compose down'
 alias dcl='docker compose logs -f'
 
-# Quality-of-life
+# ============================================================================
+# SECTION 3: App-Aware Docker Compose (uses APPID_DOCKER from goapp)
+# ============================================================================
+
+# Generic docker compose up/down/logs that work from any app dir after goapp
+dcup() {
+  if [ "${APPID_DOCKER:-none}" = "none" ]; then
+    echo "No docker compose file found for current app. Did you run 'goapp <app>'?" >&2
+    return 1
+  fi
+  docker compose -f "docker/${APPID_DOCKER}" up -d
+}
+
+dcdown() {
+  if [ "${APPID_DOCKER:-none}" = "none" ]; then
+    echo "No docker compose file found for current app. Did you run 'goapp <app>'?" >&2
+    return 1
+  fi
+  docker compose -f "docker/${APPID_DOCKER}" down
+}
+
+dclogs() {
+  if [ "${APPID_DOCKER:-none}" = "none" ]; then
+    echo "No docker compose file found for current app. Did you run 'goapp <app>'?" >&2
+    return 1
+  fi
+  docker compose -f "docker/${APPID_DOCKER}" logs -f
+}
+
+# ============================================================================
+# SECTION 4: General Docker Shortcuts
+# ============================================================================
+
+alias dps='docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"'
+alias dpsa='docker ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"'
+alias dimg='docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}"'
+alias dprune='docker system prune -a --volumes'
+
+# ============================================================================
+# SECTION 5: Systemd Service Helpers
+# ============================================================================
+
+# Generic systemctl shortcut (sctl <action> <service>)
+sctl() {
+  local action="$1" svc="$2"
+  if [ -z "$action" ] || [ -z "$svc" ]; then
+    echo "Usage: sctl <action> <service>" >&2
+    echo "Examples: sctl status ollama-dev1, sctl restart comfyui-dev1" >&2
+    return 2
+  fi
+  sudo systemctl "$action" "$svc"
+}
+
+# Shortcuts for checking service status and logs
+alias scs='sudo systemctl status'
+alias jc='sudo journalctl -u'
+
+# ============================================================================
+# SECTION 6: Navigation & Workspace Shortcuts
+# ============================================================================
+
+# TermiteTowers project directories
+alias cdtt='cd ~/source/TermiteTowers'
+alias cdsc='cd ~/source/TermiteTowers/scripts'
+alias cdwi='cd ~/source/TermiteTowers/wiki'
+alias cdin='cd ~/source/TermiteTowers/infra'
+alias cddc='cd ~/source/TermiteTowers/infra/docker'
+
+# Directory traversal shortcuts
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+
+# ============================================================================
+# SECTION 7: Saner Defaults for Common Commands
+# ============================================================================
+
+alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias df='df -h'
+alias du='du -h'
+alias free='free -h'
+alias mkdir='mkdir -p'
+alias diff='diff --color=auto'
+
+# ============================================================================
+# SECTION 8: Network & System Quick-Checks
+# ============================================================================
+
+alias myip='hostname -I'
+alias ports='ss -tlnp'
+alias mypubip='curl -s ifconfig.me && echo'
+
+# ============================================================================
+# SECTION 9: History Improvements
+# ============================================================================
+
+alias hg='history | grep'
+export HISTSIZE=10000
+export HISTFILESIZE=20000
+export HISTCONTROL=ignoreboth:erasedups
+shopt -s histappend 2>/dev/null
+
+# ============================================================================
+# SECTION 10: Quality-of-Life (existing)
+# ============================================================================
+
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
+
+alias codeaa='code ~/source/AnalAcres.code-workspace'
+alias codemr='code ~/source/Multi-root.code-workspace'
+alias codett='code ~/source/TermiteTowers.code-workspace'
+
+# ============================================================================
+# SECTION 11: Reload & Environment
+# ============================================================================
+
+# Resolve TT_UTIL_DIR if not already set by init.sh
+if [ -z "${TT_UTIL_DIR:-}" ]; then
+  TT_UTIL_DIR="$(CDPATH= cd -- "${BASH_SOURCE[0]%/*}" 2>/dev/null && pwd)"
+fi
+
+# Reload all TermiteTowers shell init without opening a new shell
+alias reload='. "$TT_UTIL_DIR/init.sh"'
+
+# ============================================================================
+# SECTION 12: Utility Functions
+# ============================================================================
+
+# List all apps in the current region under /srv/<region>/
+lsapps() {
+  local region="${tt_scmID:-$TT_DEFAULT_REGION}"
+  echo "Apps under /srv/${region}/:"
+  ls -1 "/srv/${region}/" 2>/dev/null || echo "  (no apps found or region missing)"
+}
+
+# Search all runbook markdown files for a keyword
+rbgrep() {
+  if [ -z "$1" ]; then
+    echo "Usage: rbgrep <keyword>" >&2
+    return 2
+  fi
+  grep -rin --color=auto "$1" ~/source/TermiteTowers/wiki/runbook-*.md
+}
+
+# Quick disk usage check for AI storage mount
+alias dfai='df -h /mnt/ai_storage'

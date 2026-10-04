@@ -1,3 +1,355 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: .gitignore:167 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: d70dcd38820d8bc51f9bfa2cb8995223d2a67a69 %
+#  %ccm_git_commit_id: af3b4e614eaf7f1e2342aedb19c1c31089a044fd %
+#  %ccm_git_commit_count: 167 %
+#  %ccm_git_commit_date: 2026-10-03 17:41:25 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: backup scripts %
+#  %ccm_git_modify_date: 2026-10-03 17:41:25 %
+#  %ccm_git_file_last_modified: 2026-10-03 17:40:37 %
+#  %ccm_git_file_name: .gitignore %
+#  %ccm_git_path: .gitignore %
+#  %ccm_git_language_mode: git %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 9281 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2026-09-25 mpegg  chore(gitignore): block credential-bearing local captures from being staged  % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: 2026-09-25 mpegg  chore(gitignore): block credential-bearing local captures from being staged  % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: 2026-09-25 mpegg  chore(gitignore): block credential-bearing local captures from being staged  % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: 2026-09-25 mpegg  chore(gitignore): block credential-bearing local captures from being staged  % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: 2026-09-25 mpegg  chore(gitignore): block credential-bearing local captures from being staged  % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: 2026-09-25 mpegg  chore(gitignore): block credential-bearing local captures from being staged  % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: 2026-09-25 mpegg  chore(gitignore): block credential-bearing local captures from being staged  % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: 2026-09-25 mpegg  chore(gitignore): block credential-bearing local captures from being staged  % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
+# %git_commit_history: updates % 
+# %git_commit_history: update to gitignore % 
+# %git_commit_history: adding secret-service % 
+# %git_commit_history: big update % 
+# %git_commit_history: service updates % 
 # Python
 __pycache__/
 *.pyc
@@ -28,3 +380,32 @@ build/
 .env
 .env.*.local
 secrets/*.json
+env/*.env
+
+infra/docker/env/*.env
+.cache_ggshield
+infra/docker/env/*_password.txt
+hams/esphome/.esphome
+# Test artifacts
+tests/**/results.xml
+
+# Local inventories and captures that carry credentials, device keys or tokens
+# (e.g. Tuya localKey values, DHCP syslogs, MCP config tokens). The .example /
+# template equivalents stay trackable; the live files must never be committed.
+hams/inventory/tuyacloud_devices.json
+hams/inventory/network_devices-*.csv
+hams/inventory/dhcp.syslog*
+infra/mcp/home-assistant/mcp-config.json
+trigger-test.env
+/config.json
+/client_secret.json
+
+# tt-backup: age private identities must never be committed. The live identity
+# lives outside the repo (~/.config/age/) and is also deliberately kept OFF
+# /mnt/ai_storage so jottad cannot upload it next to the backups it protects.
+# These patterns are defence-in-depth against an accidental copy into the tree.
+*.age-identity
+age-identity*.txt
+age-key*.txt
+tthealth-backup.txt
+

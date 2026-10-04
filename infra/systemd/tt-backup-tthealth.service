@@ -1,0 +1,71 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/systemd/tt-backup-tthealth.service:167 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 2790ee9455d2d248021ccf776e265bca02ebf49e %
+#  %ccm_git_commit_id: af3b4e614eaf7f1e2342aedb19c1c31089a044fd %
+#  %ccm_git_commit_count: 167 %
+#  %ccm_git_commit_date: 2026-10-03 17:41:25 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: backup scripts %
+#  %ccm_git_modify_date: 2026-10-03 17:41:26 %
+#  %ccm_git_file_last_modified: 2026-10-03 17:00:50 %
+#  %ccm_git_file_name: tt-backup-tthealth.service %
+#  %ccm_git_path: infra/systemd/tt-backup-tthealth.service %
+#  %ccm_git_language_mode: service %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 1349 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+[Unit]
+Description=Encrypted PostgreSQL backup of tthealth_dev1 (tt-backup)
+Documentation=file:/usr/local/lib/tt-backup/README.md
+Wants=network-online.target
+After=network-online.target postgresql.service
+
+[Service]
+Type=oneshot
+User=tt-backup
+Group=tt-backup
+SupplementaryGroups=tt-ai-storage
+ExecStart=/usr/local/lib/tt-backup/backup-tthealth.sh
+TimeoutStartSec=30min
+Nice=10
+IOSchedulingClass=idle
+
+# --- Writable surfaces (everything else is read-only under ProtectSystem=strict) ---
+# LogsDirectory/ creates /var/log/tt-backup owned by the unit user, and stays
+# writable even under ProtectSystem=strict. See infra/logrotate/logrotate.d/tt-backup.conf.
+LogsDirectory=tt-backup
+LogsDirectoryMode=0750
+ReadWritePaths=/mnt/ai_storage/backups/tthealth
+
+# --- Hardening: backup-only account, no privileges of any kind ---
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectProc=invisible
+ProcSubset=pid
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+UMask=0027

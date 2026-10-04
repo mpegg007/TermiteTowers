@@ -1,0 +1,12 @@
+# # %git_commit_history: 2025-09-06 mpegg  hook final alpha v0.1  %  
+[Unit]
+Description=DNS Health Check Timer (dev1)
+Requires=tt-dns-health-check-dev1.service
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

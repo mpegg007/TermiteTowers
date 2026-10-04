@@ -1,0 +1,75 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/tortoise-dev1.yml:121 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 5c4ad6dc055ea760a7699fe40bd066922017054f %
+#  %ccm_git_commit_id: 4a1cbe1072eb42723822f202e3fcd45247e1aa03 %
+#  %ccm_git_commit_count: 121 %
+#  %ccm_git_commit_date: 2025-11-30 12:26:01 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: cleanup %
+#  %ccm_git_modify_date: 2025-11-30 12:27:06 %
+#  %ccm_git_file_last_modified: 2025-11-30 12:27:06 %
+#  %ccm_git_file_name: tortoise-dev1.yml %
+#  %ccm_git_path: infra/docker/tortoise-dev1.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 1855 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: docker updates % 
+
+services:
+  tortoise-tts-dev1:
+    image: pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
+    container_name: tortoise-tts-dev1
+    working_dir: /app
+    user: "${UID_SVC:-2001}:${GID_TT_AI:-1006}"
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    volumes:
+      - ../source:/app
+      - ../models:/app/models
+      - ../config:/app/config
+      - ../logs:/app/logs
+      - /mnt/ai_storage/models/huggingface:/cache/huggingface
+      - /mnt/ai_storage/models/pip:/cache/pip
+      - /mnt/ai_storage/models/torch:/cache/torch
+      - /mnt/ai_storage/tortoise/voices:/app/voices
+      - /mnt/ai_storage/tortoise/outputs:/app/outputs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - HF_HOME=/cache/huggingface
+      - HF_HUB_ENABLE_PROGRESS_BARS=1
+      - PIP_INDEX_URL=https://packages.termitetowers.ca/tt-devpi/cuda-stack/+simple
+      - PIP_EXTRA_INDEX_URL=https://download.pytorch.org/whl/cu118
+    command: >
+      bash -lc "
+        umask 002 &&
+        export DEBIAN_FRONTEND=noninteractive &&
+        chmod 1777 /tmp &&
+        apt-get update &&
+        apt-get install -y ffmpeg libsndfile1 git &&
+        python3 -m pip install --upgrade pip &&
+        python3 -m pip install --prefer-binary --verbose torch==2.1.0+cu118 torchvision==0.16.0+cu118 torchaudio==2.1.0 &&
+        python3 -m pip install --prefer-binary --verbose -r requirements.txt &&
+        python3 /app/tortoise-tts/do_tts.py --text \"${TEXT:-Hello world}\" --voice \"${VOICE:-hal}\"
+      "
+    networks:
+      - ai-services-net-dev1
+# Docker external network definition
+networks:
+  ai-services-net-dev1:
+    external: true

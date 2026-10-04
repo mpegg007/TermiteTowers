@@ -1,0 +1,20 @@
+# LLM Home Assistant Handler (dev1)
+# Place into /etc/systemd/system/llm-ha-handler-dev1.service
+# Then: systemctl daemon-reload && systemctl enable --now llm-ha-handler-dev1
+[Unit]
+Description=LLM Home Assistant Handler (dev1)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mpegg-adm
+Group=mpegg-adm
+WorkingDirectory=/home/mpegg-adm/source/llm-server
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/usr/bin/python3 /home/mpegg-adm/source/llm-server/llm_server/handlers/home_assistant.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+# =============================================================================
+# DEPRECATED: This installer is NOT in use. Do NOT modify.
+# The active initialization chain is:
+#   setup/unix/profile.tt -> setup/unix/util/init*.sh
+# This file (util/install.sh) installs the stale util/init.sh into ~/.bashrc.
+# For the active installation mechanism, see: setup/unix/profile.tt
+# =============================================================================
 set -euo pipefail
 
 UTIL_DIR="$(CDPATH= cd -- "${BASH_SOURCE[0]%/*}" 2>/dev/null && pwd)"

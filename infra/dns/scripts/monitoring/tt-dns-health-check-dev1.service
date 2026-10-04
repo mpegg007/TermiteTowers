@@ -1,0 +1,12 @@
+# # %git_commit_history: 2025-09-06 mpegg  hook final alpha v0.1  %  
+[Unit]
+Description=DNS Health Check (dev1)
+After=network.target docker.service
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/home/mpegg-adm/source/TermiteTowers/infra/dns/scripts/monitoring/tt-dns-health-check-dev1.sh
+
+[Install]
+WantedBy=multi-user.target

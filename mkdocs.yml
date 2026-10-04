@@ -1,0 +1,116 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: mkdocs.yml:156 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 7fecdae7c2c656e5339b94bfff0582c68692256f %
+#  %ccm_git_commit_id: 7297d224e38a7887c494edb01cda0f8167185bf0 %
+#  %ccm_git_commit_count: 156 %
+#  %ccm_git_commit_date: 2026-09-25 20:27:36 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: cleanup %
+#  %ccm_git_modify_date: 2026-09-25 20:27:37 %
+#  %ccm_git_file_last_modified: 2026-09-19 11:39:49 %
+#  %ccm_git_file_name: mkdocs.yml %
+#  %ccm_git_path: mkdocs.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 3394 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+site_name: TermiteTowers Documentation
+site_url: https://docs.termitetowers.ca
+site_description: Technical documentation for TermiteTowers infrastructure
+site_author: mpegg
+
+repo_url: https://github.com/mpegg/TermiteTowers
+repo_name: TermiteTowers
+edit_uri: edit/dev1/
+
+theme:
+  name: material
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+plugins:
+  - search
+  - tags
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - attr_list
+  - md_in_html
+  - tables
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - toc:
+      permalink: true
+
+extra_css:
+  - stylesheets/extra.css
+
+docs_dir: wiki
+
+# Render only Markdown docs (plus the stylesheet). The `infra`, `hams`, and
+# `git-automation` symlinks pull in their entire source trees, which include
+# live secrets (infra/docker/env/*.env, hams/esphome/secrets.yaml, MCP
+# config.json tokens) and non-doc files (scripts, *.py, *.json, *.csv,
+# systemd units, cross-repo symlinks). Publishing only `*.md` keeps the site
+# to documentation and guarantees no secret leaks.
+exclude_docs: |
+  *
+  !*.md
+  !**/*.md
+  !stylesheets/**
+
+# Auto-discovery enabled - nav will be built from all .md files
+# Symlinks from other folders (hams/, infra/, etc.) allow organizing docs
+# in their proper locations while MkDocs can find them in wiki/

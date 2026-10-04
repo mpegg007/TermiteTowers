@@ -1,0 +1,176 @@
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: hams/esphome/esp32-node07.yaml:102 %
+#  %ccm_git_author: Matthew Pegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: ce50d29a91cc8fe750e4de0a9b2d82a10fe51c40 %
+#  %ccm_git_commit_id: 0fe5f85b2d82fa548d0ef593b302bf3f28915940 %
+#  %ccm_git_commit_count: 102 %
+#  %ccm_git_commit_date: 2025-10-18 16:33:31 -0400 %
+#  %ccm_git_commit_author: Matthew Pegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: esphome %
+#  %ccm_git_modify_date: 2025-10-18 16:33:54 %
+#  %ccm_git_file_last_modified: 2025-09-22 15:57:48 %
+#  %ccm_git_file_name: esp32-node07.yaml %
+#  %ccm_git_path: hams/esphome/esp32-node07.yaml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: utf-8 %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 5391 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+## For Node07 - Basic ESP32 (No Sensors Yet)
+# esphome upload esp32-node07.yaml --device 192.168.1.XXX
+# esphome logs esp32-node07.yaml --device 192.168.1.XXX
+##esptool v5.0.2
+##Connected to ESP32 on COM3:
+##Chip type:          ESP32-D0WD-V3 (revision v3.1)
+##Features:           Wi-Fi, BT, Dual Core + LP Core, 240MHz, Vref calibration in eFuse, Coding Scheme None
+##Crystal frequency:  40MHz
+##MAC:                14:08:08:a6:97:14
+
+substitutions:
+  friendly_name: "ESP32 Node07"
+
+esphome:
+  name: esp32-node07
+  friendly_name: "${friendly_name}"
+  on_boot:
+    priority: -100  # Run after all components are initialized
+    then:
+      - logger.log: "ESP32 Node07 boot complete - KY-037 Audio Sensor Test Mode"
+      - delay: 3s
+      - logger.log: "Starting GPIO34 voltage monitoring..."
+  on_loop:
+    then:
+      - delay: 1s
+      - lambda: |-
+          ESP_LOGI("gpio34", "GPIO34 Voltage: %.4f V", id(gpio34_test).state);
+
+# Import common TermiteTowers ESP32 base configuration
+<<: !include tt-esp-base.yaml
+
+# Override logger to show sensor readings for diagnostic
+logger:
+  level: INFO
+  logs:
+    sensor: INFO  # Show sensor readings for diagnostic
+    text_sensor: WARN  # Suppress text sensor debug messages
+    adc: INFO  # Show ADC readings for diagnostic
+
+# Override only the fallback AP name (keep base WiFi config)
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "Esp32-Node07"
+    password: !secret fallback_ap_password
+
+# ==============================================================================
+# DEVICE-SPECIFIC INTERFACES
+# ==============================================================================
+
+# I2S interface for INMP441 digital microphone (DISABLED - Framework issue)
+# i2s_audio:
+#   - id: i2s_audio_bus
+#     i2s_lrclk_pin: GPIO25   # WS (Word Select) - INMP441 WS pin
+#     i2s_bclk_pin: GPIO26    # SCK (Serial Clock) - INMP441 SCK pin
+
+# KY-037 Analog Audio Sensor - Fixed GPIO34 Connection
+# Connections: VCC->3.3V, GND->GND, AO->GPIO34 (ADC1_CH6), DO->GPIO33 (digital, optional)
+
+# ==============================================================================
+# AUDIO COMPONENTS - KY-037 ANALOG SENSOR
+# ==============================================================================
+
+# KY-037 Analog Audio Sensor - Troubleshooting Mode
+# Connections: VCC->3.3V, GND->GND, AO->GPIO32 (ADC1), DO->GPIO33 (digital, optional)
+
+# ==============================================================================
+# AUDIO COMPONENTS - KY-037 ANALOG SENSOR
+# ==============================================================================
+
+# DISABLED I2S Components - Framework issues identified
+# microphone:
+#   - platform: i2s_audio
+#     id: mic
+#     i2s_audio_id: i2s_audio_bus
+#     i2s_din_pin: GPIO27     # SD (Serial Data) - INMP441 SD pin
+#     adc_type: external
+#     pdm: false
+#     sample_rate: 16000
+#     bits_per_sample: 32bit  # INMP441 outputs 24-bit in 32-bit format
+#     channel: left           # INMP441 L/R pin to GND = left channel
+
+# voice_assistant:
+#   microphone: mic
+#   on_listening:
+#     - logger.log: "Voice assistant is listening - I2S should be active"
+
+# ==============================================================================
+# DEVICE-SPECIFIC CONFIGURATION
+# ==============================================================================
+
+sensor:
+  # DIAGNOSTIC TEST - GPIO34 floating pin test
+  # Disconnect ALL wires from GPIO34 to see if ADC reads varying values
+  - platform: adc
+    pin: GPIO34  # ADC1_CH6 - Should read random voltages when floating
+    name: "${friendly_name} GPIO34 Floating Test"
+    id: gpio34_test
+    update_interval: 1s  # Fast updates for monitoring
+    accuracy_decimals: 4
+    attenuation: auto
+
+  # ALL OTHER SENSORS DISABLED FOR DIAGNOSTIC
+
+# Binary sensor for audio detection (ALL DISABLED FOR DIAGNOSTIC)
+# binary_sensor:
+#   # KY-037 Digital Audio Detection (if DO pin connected)
+#   - platform: gpio
+#     pin: 
+#       number: GPIO33  # Connect to KY-037 DO (Digital Output)
+#       mode: INPUT_PULLUP
+#     name: "${friendly_name} KY-037 Digital Audio"
+#     id: ky037_digital
+#     device_class: sound
+#     filters:
+#       - invert:  # KY-037 DO is active LOW
+#     on_press:
+#       - logger.log: "KY-037 DIGITAL: Sound detected (DO pin active)"
+#     on_release:
+#       - logger.log: "KY-037 DIGITAL: Sound ended (DO pin inactive)"
+#
+#   # KY-037 Analog-based Audio Detection  
+#   - platform: template
+#     name: "${friendly_name} KY-037 Audio Detected"
+#     id: ky037_audio_detected
+#     device_class: sound
+#     lambda: |-
+#       return id(ky037_audio_level).state > 10.0;  // Lower threshold for more sensitivity
+#     on_press:
+#       - logger.log:
+#           format: "🔊 LOUD SOUND: %.1f%% (threshold exceeded!)"
+#           args: ['id(ky037_audio_level).state']
+#     on_release:
+#       - logger.log:
+#           format: "🔇 Quiet: %.1f%% (below threshold)"
+#           args: ['id(ky037_audio_level).state']
+
+  # DISABLED other audio detection to reduce logs
+  # Audio detection
+  # - platform: template
+  #   name: "${friendly_name} Audio Detected"
+  #   id: audio_detected
+  #   device_class: sound
+  #   lambda: |-
+  #     return id(sound_activity).state > 10.0;
+
+# Base system sensors provided by tt-esp-base.yaml:
+# - WiFi Signal Strength
+# - Uptime
+# - IP Address, SSID, MAC Address
+# - ESPHome Version

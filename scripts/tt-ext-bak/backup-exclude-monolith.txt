@@ -1,0 +1,51 @@
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: scripts/tt-ext-bak/backup-exclude-monolith.txt:132 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 3a37b5157395f93fb73c09130e93718990a3111a %
+#  %ccm_git_commit_id: 6e67c9cb056223d2c5e30fd43ff735f0e43b37fb %
+#  %ccm_git_commit_count: 132 %
+#  %ccm_git_commit_date: 2026-02-07 16:19:47 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: comment cleanup %
+#  %ccm_git_modify_date: 2026-02-07 16:19:48 %
+#  %ccm_git_file_last_modified: 2026-02-07 16:19:48 %
+#  %ccm_git_file_name: backup-exclude-monolith.txt %
+#  %ccm_git_path: scripts/tt-ext-bak/backup-exclude-monolith.txt %
+#  %ccm_git_language_mode: txt %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 338 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: 2026-02-07 mpegg  feb2026  % 
+# Exclude patterns for monolith_root backup
+# Add one pattern per line
+/proc
+/sys
+/dev
+/run
+/tmp
+/mnt
+/media
+/lost+found
+/swapfile
+/var/tmp
+/var/run
+/var/lock
+/var/cache
+/var/log
+/var/lib/docker
+/var/lib/containerd
+/var/lib/snapd
+/var/snap
+/var/spool
+/var/backups
+/var/crash
+/home/*/.cache
+/home/*/.local/share/Trash
+# Add more as needed
