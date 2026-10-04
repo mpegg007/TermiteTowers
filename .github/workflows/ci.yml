@@ -1,77 +1,51 @@
-# % ccm_modify_date: 2025-08-29 13:07:54 %
-# % ccm_author: CI Scaffolder %
-# % ccm_author_email: ci@test %
-# % ccm_repo: https://github.com/mpegg007/TermiteTowers.git %
-# % ccm_branch: main %
-# % ccm_object_id: .github/workflows/ci.yml:0 %
-# % ccm_commit_id: unknown %
-# % ccm_commit_count: 0 %
-# % ccm_commit_message: unknown %
-# % ccm_commit_author: unknown %
-# % ccm_commit_email: unknown %
-# % ccm_commit_date: 1970-01-01 00:00:00 +0000 %
-# % ccm_file_last_modified: 2025-08-29 13:07:54 %
-# % ccm_file_name: ci.yml %
-# % ccm_file_type: text/plain %
-# % ccm_file_encoding: us-ascii %
-# % ccm_file_eol: CRLF %
-# % ccm_path: .github/workflows/ci.yml %
-# % ccm_blob_sha: 0a6d6bc63df71bfdb989bbefcb67e0c3713eb584 %
-# % ccm_exec: no %
-# % ccm_size: 2229 %
-# % ccm_tag:  %
-
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: .github/workflows/ci.yml:171 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 74bb961f84fecb787c47dc2a4ef3ab46e7c1aba1 %
+#  %ccm_git_commit_id: ee3eae8346d8982d0467de7e5b42579865765a24 %
+#  %ccm_git_commit_count: 171 %
+#  %ccm_git_commit_date: 2026-10-04 16:25:37 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: cleanup %
+#  %ccm_git_modify_date: 2026-10-04 16:25:37 %
+#  %ccm_git_file_last_modified: 2026-10-04 11:35:01 %
+#  %ccm_git_file_name: ci.yml %
+#  %ccm_git_path: .github/workflows/ci.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 492 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 name: CI
 
 on:
-  pull_request:
   push:
-    branches: [ main ]
+    branches:
+      - dev1
+  pull_request:
+    branches:
+      - dev1
+      - prd
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  lint-validate:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
-
-      - name: Install tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y shellcheck
-          python -m pip install --upgrade pip
-          pip install yamllint
-
-      - name: Lint shell scripts
-        run: |
-          find . -type f \( -name "*.sh" -o -name "*.bash" -o -name "*.ksh" \) -print0 | xargs -0 -r shellcheck -S warning
-
-      - name: Lint YAML
-        run: |
-          yamllint -c .yamllint.yml .
-
-      - name: Docker Compose validate
-        run: |
-          if command -v docker >/dev/null; then
-            shopt -s nullglob
-            for f in docker/*.yml docker/*.yaml; do
-              echo "Validating $f"
-              docker compose -f "$f" config >/dev/null
-            done
-          else
-            echo "Docker not available; skipping compose validation"
-          fi
-
-      - name: CCM header consistency
-        run: |
-          if [ -x git-automation/ccm_migrate_repo.sh ]; then
-            ./git-automation/ccm_migrate_repo.sh || true
-            git diff --cached --quiet || (echo "CCM headers not normalized. Run the migration locally." && exit 1)
-          else
-            echo "No CCM migration script found; skipping"
-          fi
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -e ".[dev]"
+      - run: python -m ruff check .
+      - run: python -m pytest -q

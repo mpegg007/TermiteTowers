@@ -1,0 +1,59 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/vdirsyncer/outlook/config:171 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 8354f44705f09c34db70b7abb7f65419973eff2a %
+#  %ccm_git_commit_id: ee3eae8346d8982d0467de7e5b42579865765a24 %
+#  %ccm_git_commit_count: 171 %
+#  %ccm_git_commit_date: 2026-10-04 16:25:37 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: cleanup %
+#  %ccm_git_modify_date: 2026-10-04 16:25:37 %
+#  %ccm_git_file_last_modified: 2026-01-24 20:05:21 %
+#  %ccm_git_file_name: config %
+#  %ccm_git_path: infra/docker/vdirsyncer/outlook/config %
+#  %ccm_git_language_mode: infra/docker/vdirsyncer/outlook/config %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: yes %
+#  %ccm_git_size: 797 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+[general]
+status_path = /cache/status/
+
+[pair outlook_local]
+a_sync = outlook_calendar
+b_sync = local_calendar_outlook
+twoway = true
+
+[storage outlook_calendar]
+type = outlook
+client_id = ${OUTLOOK_CLIENT_ID}
+client_secret = ${OUTLOOK_CLIENT_SECRET}
+token_file = /config/outlook_token.json
+
+[storage local_calendar_outlook]
+type = caldav
+url = http://radicale-dev1:5232/${OUTLOOK_USER}/calendar/
+username = ${OUTLOOK_USER}
+password = ${OUTLOOK_PASSWORD}
+
+# Shared family calendar (hosted locally)
+[pair family_shared]
+a_sync = local_family
+b_sync = local_family_backup
+twoway = true
+
+[storage local_family]
+type = caldav
+url = http://radicale-dev1:5232/family/calendar/
+username = family
+password = ${FAMILY_PASSWORD}
+
+[storage local_family_backup]
+type = filesystem
+path = /config/family_backup/
