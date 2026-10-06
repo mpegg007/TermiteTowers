@@ -1,18 +1,18 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: hams/docs/house-layout.md:172 % -->
+<!-- %ccm_git_object_id: hams/docs/house-layout.md:173 % -->
 <!-- %ccm_git_author: mpegg % -->
 <!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: a43c9280d0c8b06b37e053edec2f5d629827a529 % -->
-<!-- %ccm_git_commit_id: 7ca87689c10da1e8ecebbe33bc2b42897f22b48c % -->
-<!-- %ccm_git_commit_count: 172 % -->
-<!-- %ccm_git_commit_date: 2026-10-05 20:46:08 -0400 % -->
+<!-- %ccm_git_blob_sha: 416b050f2b684deff6f4e196945354e850b70792 % -->
+<!-- %ccm_git_commit_id: b9037b2f22011a7d6ddf0ce8b4e1ac0701bf8cb7 % -->
+<!-- %ccm_git_commit_count: 173 % -->
+<!-- %ccm_git_commit_date: 2026-10-06 17:27:55 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
 <!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: house layout + routines docs % -->
-<!-- %ccm_git_modify_date: 2026-10-05 20:46:09 % -->
-<!-- %ccm_git_file_last_modified: 2026-10-05 20:42:12 % -->
+<!-- %ccm_git_commit_message: vacuum maps doc + house-layout vertical structure % -->
+<!-- %ccm_git_modify_date: 2026-10-06 17:27:55 % -->
+<!-- %ccm_git_file_last_modified: 2026-10-06 17:27:48 % -->
 <!-- %ccm_git_file_name: house-layout.md % -->
 <!-- %ccm_git_path: hams/docs/house-layout.md % -->
 <!-- %ccm_git_language_mode: markdown % -->
@@ -20,8 +20,9 @@
 <!-- %ccm_git_file_encoding: utf-8 % -->
 <!-- %ccm_git_file_eol: CRLF % -->
 <!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 25622 % -->
+<!-- %ccm_git_size: 30174 % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+ <!-- %git_commit_history: 2026-10-05 mpegg  house layout + routines docs  --> 
 # House Layout — rooms, floors, sensors, and blind spots
 
 > **What this is:** the physical model of the house — which rooms exist, which
@@ -35,7 +36,8 @@
 >
 > **Companion files:** [routines.md](routines.md) (who does what, when) ·
 > [hal-context.md](hal-context.md) (instance snapshot) ·
-> [zigbee-door-sensor-rollout.md](zigbee-door-sensor-rollout.md) (contact plan).
+> [zigbee-door-sensor-rollout.md](zigbee-door-sensor-rollout.md) (contact plan) ·
+> [vacuum-maps.md](vacuum-maps.md) (the robot vacuums' own floor plans vs this model).
 
 - **Created:** 2026-10-04, from a user interview + live registry reads.
 - **Sources:** `ha_list_floors_areas`, `ha_search` (entity registries), `ha_get_device`.
@@ -107,6 +109,14 @@ Every floor change is therefore **invisible** to the sensor set: it must be
 *inferred* from the pair of room sensors either side of the transition, and that
 inference is unreliable (§4.2). The Zigbee coordinator lives in the **Office**.
 
+**Stair share *(user-provided)*:** the Ground ⇄ Second flight is **split
+80 % / 20 %** between the two floors — the **Second floor holds the 80 %** share and
+the **Ground floor the 20 %** — so neither robot vacuum's map holds the whole
+staircase ([vacuum-maps.md](vacuum-maps.md) §3.3, §5, §6). Here **"the Second floor"**
+is its **main part** — `bedroom`, `office`, `library`, `2nd_hallway` — i.e. everything
+**except** the `master_bath`, which is the storey's lower part over the Green Room
+(§2.4, §2.9).
+
 ### 2.3 Ground floor (level 1)
 
 Confirmed physical connections:
@@ -148,6 +158,12 @@ Hallway / Green Room end** (§2.5).
 sides")* — the household's word for the Kitchen run. It is a synonym, not a
 separate space: use `kitchen` / "Kitchen" in automations and prose.
 
+> **Robot side (L40).** The **DreameBot L40** maps this Ground floor and segments it
+> into 11 rooms that mostly agree with the above — but it splits the open
+> Kitchen/Living Room into two, adds `Stairs`, and does **not** segment `entry` or
+> `laundry`. Room-by-room reconciliation, saved map PNGs, and the two placeholder
+> fragments (`Room 5` / `Room 11`) are in [vacuum-maps.md](vacuum-maps.md) (§3–§4).
+
 ### 2.4 Second floor (level 2)
 
 Confirmed physical connections:
@@ -161,6 +177,12 @@ Confirmed physical connections:
 The Bedroom has **two** openings — the interior door and the upper-deck door. The
 sleep model keys on the **interior** door only; winter cooling keeps the deck door
 open *by design*.
+
+The Second floor is **not a uniform storey**: its **lower part is the Master
+Bath**, which sits directly over the Ground-floor **Green Room** (§2.9). Its **main
+part** — `bedroom`, `office`, `library`, `2nd_hallway`, i.e. everything *except* the
+Master Bath — is what **"the Second floor"** means in the **stair-share** note (§2.2),
+and it holds the **80 %** share of the Ground ⇄ Second flight.
 
 ### 2.5 Basement, sauna, and the non-room spaces
 
@@ -287,19 +309,48 @@ Two cat spaces, two very different models:
 - **Cattic = the entire walkable attic.** HA models it as the single `cattic` area
   (`level: 3`) — one open top-floor cat play room. It has **no sensor**, and the
   only approach the system can see is **through the Office**, so an attic trip
-  presents as an **Office** event (§4.2, §8).
+  presents as an **Office** event (§4.2, §8). It spans **only the main part with
+  the 10 ft ceilings** (Kitchen / Living Room) — there is **no attic over the
+  Master Bath** — and its **front ~8 ft is too short to use** (§2.9).
 - **Catio = a separate outdoor two-level deck** at the back of the house:
   - **Lower deck** — off the **Laundry**, through the **main Catio door**
     (`binary_sensor.catio_door`). The cats can nudge this door open if it is not
     latched; a **shelf beside it opens the cat door**, so in winter the main door
     can stay shut.
   - **Upper deck** — off the **Bedroom**, through the deck door. It is **open by
-    design in winter** with the **screen leaf closed**.
+    design in winter** with the **screen leaf closed**. Physically it is the
+    **flat roof over the Sauna / 1st Bath / Backroom / Laundry strip** (a plastic
+    light panel over the Laundry) — see §2.9.
 
 > **Registry wrinkle:** HA holds **one** `catio` area at `level: 1`, so the upper
 > deck has **no area of its own**. "Cattic" only ever means the house attic;
 > "Catio" only ever the outdoor deck. Full device + contact plan:
 > [zigbee-door-sensor-rollout.md](zigbee-door-sensor-rollout.md).
+
+### 2.9 Vertical structure — what sits over what
+
+*(user-provided)* The house stacks **asymmetrically**, so the Second floor is not
+a copy of the Ground floor and the roofline is not flat. This is the section to
+read before reasoning about "above"/"below" between storeys.
+
+- **Master Bath sits directly above the Green Room.** The `master_bath` footprint
+  **is** the Green Room's (`hobby_room`) footprint, one storey up. Because the
+  Green Room has an **8 ft ceiling** where the Kitchen / Living Room — the *main
+  part* — have **10 ft**, the Master Bath lands ~2 ft lower: it is the **lower
+  part of the Second floor** (§2.4).
+- **Flat roof over the back-eastern strip.** Above the **Sauna**, the **1st Bath**
+  and the **Backroom** is a **flat roof**; above the **Laundry** that flat roof is
+  **plastic — a light panel**. **All of that flat roof *is* the Catio's upper
+  deck** (§2.8): the "upper deck" is literally the roof of the Sauna / 1st Bath /
+  Backroom / Laundry strip.
+- **The attic (Cattic) does not extend over the Master Bath.** It spans **only the
+  main 10 ft-ceiling part** (Kitchen / Living Room), and its **front ~8 ft is too
+  short to use** — a sloped-roof taper. The registry's `cattic` area (`level: 3`)
+  therefore covers **less than the full footprint**: **no attic above the Master
+  Bath**, and the rear roof strip belongs to the **Catio**, not the attic.
+
+Reading this with §2.1 (the flat registry): "above"/"below" between areas is *not*
+recoverable from HA — it is only in this table.
 
 ---
 
