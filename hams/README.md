@@ -1,27 +1,28 @@
-<!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-  %ccm_git_repo: TermiteTowers %
-  %ccm_git_branch: dev1 %
-  %ccm_git_object_id: hams/README.md:102 %
-  %ccm_git_author: Matthew Pegg %
-  %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: dc2c578ac6151c4ad495fa211963fd31b61c7a24 %
-  %ccm_git_commit_id: 0fe5f85b2d82fa548d0ef593b302bf3f28915940 %
-  %ccm_git_commit_count: 102 %
-  %ccm_git_commit_date: 2025-10-18 16:33:31 -0400 %
-  %ccm_git_commit_author: Matthew Pegg %
-  %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: esphome %
-  %ccm_git_modify_date: 2025-10-18 16:33:33 %
-  %ccm_git_file_last_modified: 2025-10-18 16:33:33 %
-  %ccm_git_file_name: README.md %
-  %ccm_git_path: hams/README.md %
-  %ccm_git_language_mode: markdown %
-  %ccm_git_file_type: text/plain %
-  %ccm_git_file_encoding: utf-8 %
-  %ccm_git_file_eol: CRLF %
-  %ccm_git_exec: no %
-  %ccm_git_size: 1783 %
-  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
+<!-- %ccm_git_repo: TermiteTowers % -->
+<!-- %ccm_git_branch: dev1 % -->
+<!-- %ccm_git_object_id: hams/README.md:172 % -->
+<!-- %ccm_git_author: mpegg % -->
+<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
+<!-- %ccm_git_blob_sha: b2bfcb652de8929668c62f59a8cf1bd546851b6b % -->
+<!-- %ccm_git_commit_id: 7ca87689c10da1e8ecebbe33bc2b42897f22b48c % -->
+<!-- %ccm_git_commit_count: 172 % -->
+<!-- %ccm_git_commit_date: 2026-10-05 20:46:08 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
+<!-- %ccm_git_commit_message: house layout + routines docs % -->
+<!-- %ccm_git_modify_date: 2026-10-05 20:46:09 % -->
+<!-- %ccm_git_file_last_modified: 2026-10-04 17:21:19 % -->
+<!-- %ccm_git_file_name: README.md % -->
+<!-- %ccm_git_path: hams/README.md % -->
+<!-- %ccm_git_language_mode: markdown % -->
+<!-- %ccm_git_file_type: text/plain % -->
+<!-- %ccm_git_file_encoding: utf-8 % -->
+<!-- %ccm_git_file_eol: CRLF % -->
+<!-- %ccm_git_exec: no % -->
+<!-- %ccm_git_size: 5037 % -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+ <!-- %git_commit_history: 2025-10-18 Matthew Pegg  esphome  --> 
 # Home Assistant Miscellaneous (HAMS)
 
 This directory contains various Home Assistant related configurations, scripts, and documentation.
@@ -31,6 +32,8 @@ This directory contains various Home Assistant related configurations, scripts, 
 Start here:
 
 - **[hal-context.md](docs/hal-context.md)** — the HAL (Home Assistant) instance snapshot: topology, sensor families & naming, add-on/integration stack, automation inventory, gotchas. **Read first for any HAL question.**
+- **[house-layout.md](docs/house-layout.md)** — physical model of the house: floors/areas, which sensor watches each room, the **blind spots**, door contacts, entity-naming traps, and a worked "who was where" timeline. Read before writing any location-aware automation.
+- **[routines.md](docs/routines.md)** — who does what, when (Matt/Steve day + night), plus the sensor-observed morning timeline and known gate risks.
 - **[SKILL.md](docs/SKILL.md)** — the HA development skill (triggers on "HAL").
 - **[sensors.md](docs/sensors.md)** · **[dashboards.md](docs/dashboards.md)** · **[integrations.md](docs/integrations.md)** — generic HA references.
 - **[zigbee-door-sensor-rollout.md](docs/zigbee-door-sensor-rollout.md)** — Zigbee door/contact + PIR + button rollout: naming contract, automation slate, live status.
@@ -44,6 +47,8 @@ hams/
 ├── docs/                 # Documentation (see "Documentation" above)
 │   ├── SKILL.md          # HA development skill (triggers on "HAL")
 │   ├── hal-context.md    # HAL instance snapshot — read first for HAL questions
+│   ├── house-layout.md   # Physical model: rooms, sensors, blind spots, naming traps
+│   ├── routines.md       # Who does what, when (Matt/Steve, day + night)
 │   ├── zigbee-door-sensor-rollout.md  # Zigbee contact/PIR/button rollout plan
 │   ├── sensors.md        # Sensor reference
 │   ├── dashboards.md     # Lovelace dashboard reference

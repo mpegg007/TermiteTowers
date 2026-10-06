@@ -1,27 +1,29 @@
-<!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-  %ccm_git_repo: TermiteTowers %
-  %ccm_git_branch: dev1 %
-  %ccm_git_object_id: hams/docs/hal-context.md:162 %
-  %ccm_git_author: Matthew Pegg %
-  %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: de116e38fbc1a45c7147a361d1b3c3f90ff259a2 %
-  %ccm_git_commit_id: 5de6cce347f7c43314492b5bab8f6ccd4a0cf8e7 %
-  %ccm_git_commit_count: 162 %
-  %ccm_git_commit_date: 2026-10-01 16:51:07 -0400 %
-  %ccm_git_commit_author: Matthew Pegg %
-  %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: hal.1001.bosman %
-  %ccm_git_modify_date: 2026-10-01 16:51:09 %
-  %ccm_git_file_last_modified: 2026-10-01 16:51:09 %
-  %ccm_git_file_name: hal-context.md %
-  %ccm_git_path: hams/docs/hal-context.md %
-  %ccm_git_language_mode: markdown %
-  %ccm_git_file_type: text/plain %
-  %ccm_git_file_encoding: utf-8 %
-  %ccm_git_file_eol: CRLF %
-  %ccm_git_exec: no %
-  %ccm_git_size: 17037 %
-  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
+<!-- %ccm_git_repo: TermiteTowers % -->
+<!-- %ccm_git_branch: dev1 % -->
+<!-- %ccm_git_object_id: hams/docs/hal-context.md:172 % -->
+<!-- %ccm_git_author: mpegg % -->
+<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
+<!-- %ccm_git_blob_sha: c62d0ef3bce968e7b3cf896e0045423791418380 % -->
+<!-- %ccm_git_commit_id: 7ca87689c10da1e8ecebbe33bc2b42897f22b48c % -->
+<!-- %ccm_git_commit_count: 172 % -->
+<!-- %ccm_git_commit_date: 2026-10-05 20:46:08 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
+<!-- %ccm_git_commit_message: house layout + routines docs % -->
+<!-- %ccm_git_modify_date: 2026-10-05 20:46:09 % -->
+<!-- %ccm_git_file_last_modified: 2026-10-05 20:20:28 % -->
+<!-- %ccm_git_file_name: hal-context.md % -->
+<!-- %ccm_git_path: hams/docs/hal-context.md % -->
+<!-- %ccm_git_language_mode: markdown % -->
+<!-- %ccm_git_file_type: text/plain % -->
+<!-- %ccm_git_file_encoding: utf-8 % -->
+<!-- %ccm_git_file_eol: CRLF % -->
+<!-- %ccm_git_exec: no % -->
+<!-- %ccm_git_size: 18305 % -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+ <!-- %git_commit_history: 2026-10-01 Matthew Pegg  hal.1001.bosman  --> 
+<!-- %git_commit_history: 2026-09-25 mpegg  cleanup  % -->
 <!-- %git_commit_history: 2026-09-25 mpegg  cleanup  % -->
 # HAL Context — Home Assistant instance snapshot
 
@@ -83,7 +85,7 @@ Join HAL ↔ `ttdb` on **MAC / IP / hostname** (e.g. `ha_get_device` `identifier
 Physical notes:
 - **Basement is L-shaped ~18×40 ft with a 6×12 ft corner missing, heavily obstructed.** The boiler lives down here (`esp32_boiler`). One PIR/one mmWave is not enough; planned for 3 mmWave zones + PIR at entry.
 - Front door is a **Ring** (motion/ding events + camera) with **no open/closed contact sensor**.
-- Cat spaces: **Catio** (ground balcony) and **Cattic** (attic).
+- Cat spaces: **Catio** (outdoor two-level cat deck — lower off the Laundry, upper off the Bedroom) and **Cattic** (the walkable attic; detail in [house-layout.md](house-layout.md) §2.8).
 
 ---
 
