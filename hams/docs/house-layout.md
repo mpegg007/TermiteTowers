@@ -1,18 +1,18 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: hams/docs/house-layout.md:173 % -->
+<!-- %ccm_git_object_id: hams/docs/house-layout.md:174 % -->
 <!-- %ccm_git_author: mpegg % -->
 <!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: 416b050f2b684deff6f4e196945354e850b70792 % -->
-<!-- %ccm_git_commit_id: b9037b2f22011a7d6ddf0ce8b4e1ac0701bf8cb7 % -->
-<!-- %ccm_git_commit_count: 173 % -->
-<!-- %ccm_git_commit_date: 2026-10-06 17:27:55 -0400 % -->
+<!-- %ccm_git_blob_sha: 11d076154d012021b44cdf6bef1728b8b2ed96b5 % -->
+<!-- %ccm_git_commit_id: da4a17aa441e345b23a66ad8ed67773c5edcd740 % -->
+<!-- %ccm_git_commit_count: 174 % -->
+<!-- %ccm_git_commit_date: 2026-10-06 19:11:37 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
 <!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: vacuum maps doc + house-layout vertical structure % -->
-<!-- %ccm_git_modify_date: 2026-10-06 17:27:55 % -->
-<!-- %ccm_git_file_last_modified: 2026-10-06 17:27:48 % -->
+<!-- %ccm_git_commit_message: vacuum maps + house layout: stair geometry refined (two-run switchback, 2 ft second-floor offset) % -->
+<!-- %ccm_git_modify_date: 2026-10-06 19:11:37 % -->
+<!-- %ccm_git_file_last_modified: 2026-10-06 19:11:05 % -->
 <!-- %ccm_git_file_name: house-layout.md % -->
 <!-- %ccm_git_path: hams/docs/house-layout.md % -->
 <!-- %ccm_git_language_mode: markdown % -->
@@ -20,8 +20,10 @@
 <!-- %ccm_git_file_encoding: utf-8 % -->
 <!-- %ccm_git_file_eol: CRLF % -->
 <!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 30174 % -->
+<!-- %ccm_git_size: 31322 % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+ <!-- %git_commit_history: 2026-10-06 mpegg  vacuum maps doc + house-layout vertical structure  --> 
+ <!-- %git_commit_history: 2026-10-05 mpegg  house layout + routines docs  --> 
  <!-- %git_commit_history: 2026-10-05 mpegg  house layout + routines docs  --> 
 # House Layout — rooms, floors, sensors, and blind spots
 
@@ -101,7 +103,7 @@ location-aware automation:
 
 | Transition | Route | Sensor-visible? |
 |---|---|---|
-| Ground ⇄ Second | staircase | **no** — no sensor on the stairs or in either Hallway |
+| Ground ⇄ Second | **switchback staircase** (~8 ft, U-turn, ~2 ft — see note) | **no** — no sensor on the stairs or in either Hallway |
 | Second ⇄ Attic (Cattic) | **through the Office** | only at the Office end |
 | Ground ⇄ Basement | internal stair — opens off the **Hallway / Green Room** end; **hinged door, normally open** (§2.5) | **no** |
 
@@ -109,13 +111,19 @@ Every floor change is therefore **invisible** to the sensor set: it must be
 *inferred* from the pair of room sensors either side of the transition, and that
 inference is unreliable (§4.2). The Zigbee coordinator lives in the **Office**.
 
-**Stair share *(user-provided)*:** the Ground ⇄ Second flight is **split
-80 % / 20 %** between the two floors — the **Second floor holds the 80 %** share and
-the **Ground floor the 20 %** — so neither robot vacuum's map holds the whole
-staircase ([vacuum-maps.md](vacuum-maps.md) §3.3, §5, §6). Here **"the Second floor"**
-is its **main part** — `bedroom`, `office`, `library`, `2nd_hallway` — i.e. everything
-**except** the `master_bath`, which is the storey's lower part over the Green Room
-(§2.4, §2.9).
+**Stair share *(user-provided, geometry refined 2026-10-06)*:** the Ground ⇄ Second
+staircase is a **switchback (U-turn) stair in two runs** — it rises **~8 ft, turns,
+then climbs a final ~2 ft (~10 ft total)**. The **~80 % / 20 %** figure is that split
+of the **rise** — the **long lower (~8 ft) run is the ~80 %**, the **short top
+(~2 ft) run the ~20 %** — and because the **main Second floor sits ~2 ft above the
+part over the Green Room** (§2.9), the same 80 / 20 also reads as the **Second
+floor's own area split** (main part ≈ 80 %, over-Green-Room part ≈ 20 %). By the
+owner's framing the **Second floor (its *main part*) holds the ~80 %** share of the
+flight and the **Ground floor the ~20 %**, so **neither** robot vacuum's map holds the
+whole staircase ([vacuum-maps.md](vacuum-maps.md) §3.3, §5, §6). Here **"the Second
+floor"** is its **main part** — `bedroom`, `office`, `library`, `2nd_hallway` — i.e.
+everything **except** the `master_bath`, which is the storey's lower part over the
+Green Room (§2.4, §2.9).
 
 ### 2.3 Ground floor (level 1)
 
@@ -179,10 +187,13 @@ sleep model keys on the **interior** door only; winter cooling keeps the deck do
 open *by design*.
 
 The Second floor is **not a uniform storey**: its **lower part is the Master
-Bath**, which sits directly over the Ground-floor **Green Room** (§2.9). Its **main
-part** — `bedroom`, `office`, `library`, `2nd_hallway`, i.e. everything *except* the
-Master Bath — is what **"the Second floor"** means in the **stair-share** note (§2.2),
-and it holds the **80 %** share of the Ground ⇄ Second flight.
+Bath**, which sits directly over the Ground-floor **Green Room** (§2.9) — the **same
+size, stacked exactly**, so the Master Bath floor lands **~2 ft below** the rest of the
+storey. Its **main part** — `bedroom`, `office`, `library`, `2nd_hallway`, i.e.
+everything *except* the Master Bath — is the **~2 ft-higher level** the switchback
+stair's short top run climbs onto (§2.2), is what **"the Second floor"** means in the
+**stair-share** note, and holds the **~80 %** share of the storey's area and of the
+Ground ⇄ Second flight.
 
 ### 2.5 Basement, sauna, and the non-room spaces
 
@@ -333,11 +344,13 @@ Two cat spaces, two very different models:
 a copy of the Ground floor and the roofline is not flat. This is the section to
 read before reasoning about "above"/"below" between storeys.
 
-- **Master Bath sits directly above the Green Room.** The `master_bath` footprint
-  **is** the Green Room's (`hobby_room`) footprint, one storey up. Because the
-  Green Room has an **8 ft ceiling** where the Kitchen / Living Room — the *main
-  part* — have **10 ft**, the Master Bath lands ~2 ft lower: it is the **lower
-  part of the Second floor** (§2.4).
+- **Master Bath sits directly above the Green Room — *same size, stacked exactly*.** The
+  `master_bath` footprint **is** the Green Room's (`hobby_room`) footprint, one storey
+  up. Because the Green Room has an **8 ft ceiling** where the Kitchen / Living Room —
+  the *main part* — have **10 ft**, the Master Bath lands **~2 ft lower** than the rest
+  of the Second floor: it is the storey's **lower part** (§2.4). That ~2 ft step is
+  exactly the **short top run of the Ground ⇄ Second switchback stair** (§2.2) — the
+  stair rises **~8 ft, U-turns, then climbs the final ~2 ft** onto the main Second floor.
 - **Flat roof over the back-eastern strip.** Above the **Sauna**, the **1st Bath**
   and the **Backroom** is a **flat roof**; above the **Laundry** that flat roof is
   **plastic — a light panel**. **All of that flat roof *is* the Catio's upper

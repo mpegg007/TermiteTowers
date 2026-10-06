@@ -1,18 +1,18 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: hams/docs/vacuum-maps.md:173 % -->
+<!-- %ccm_git_object_id: hams/docs/vacuum-maps.md:174 % -->
 <!-- %ccm_git_author: mpegg % -->
 <!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: 54fc5da4d399c77bc36331f19ec1802b494ace2a % -->
-<!-- %ccm_git_commit_id: b9037b2f22011a7d6ddf0ce8b4e1ac0701bf8cb7 % -->
-<!-- %ccm_git_commit_count: 173 % -->
-<!-- %ccm_git_commit_date: 2026-10-06 17:27:55 -0400 % -->
+<!-- %ccm_git_blob_sha: 28aa306f55dc90c4986a575949896b7c027286aa % -->
+<!-- %ccm_git_commit_id: da4a17aa441e345b23a66ad8ed67773c5edcd740 % -->
+<!-- %ccm_git_commit_count: 174 % -->
+<!-- %ccm_git_commit_date: 2026-10-06 19:11:37 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
 <!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: vacuum maps doc + house-layout vertical structure % -->
-<!-- %ccm_git_modify_date: 2026-10-06 17:27:55 % -->
-<!-- %ccm_git_file_last_modified: 2026-10-06 17:27:32 % -->
+<!-- %ccm_git_commit_message: vacuum maps + house layout: stair geometry refined (two-run switchback, 2 ft second-floor offset) % -->
+<!-- %ccm_git_modify_date: 2026-10-06 19:11:37 % -->
+<!-- %ccm_git_file_last_modified: 2026-10-06 19:11:20 % -->
 <!-- %ccm_git_file_name: vacuum-maps.md % -->
 <!-- %ccm_git_path: hams/docs/vacuum-maps.md % -->
 <!-- %ccm_git_language_mode: markdown % -->
@@ -20,8 +20,9 @@
 <!-- %ccm_git_file_encoding: utf-8 % -->
 <!-- %ccm_git_file_eol: CRLF % -->
 <!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 14207 % -->
+<!-- %ccm_git_size: 16529 % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+ <!-- %git_commit_history: 2026-10-06 mpegg  vacuum maps doc + house-layout vertical structure  --> 
 # Vacuum maps — robots, floors, and how their maps line up with the house model
 
 > **What this is:** the two robot vacuums' current floor plans, saved as PNGs, plus
@@ -48,8 +49,9 @@
   Room**); **Cat box** = a Green Room sub-segment; **Room 5 / Room 11** are unused
   fractions; the L40 has **no access** to the Sauna, 1st Bath, Laundry, Catio or
   Entry (the Green Room's barn doors are its boundary); the Ground ⇄ Second flight
-  is split **80 % / 20 %** between the floors — the **Second floor holds the 80 %**
-  and the **Ground floor the 20 %** (see §6).
+  is a **switchback (U-turn) stair in two runs (~8 ft, U-turn, ~2 ft)** whose rise
+  splits **~80 % / ~20 %** — the **Second floor (its main part) holds the ~80 %** and
+  the **Ground floor the ~20 %** (see §6).
 
 ---
 
@@ -144,7 +146,7 @@ and the owner confirms they are **unused segmentation fractions**, not rooms (§
 | Fitness Area | `workout` | **Backroom** (exercise room) | **High** (dumbbell icon) |
 | Recreation Area | `hobby_room` | **Green Room** | **Confirmed** (owner) |
 | Cat box | `hobby_room` | **Green Room** — a sub-segment | **Confirmed** (owner) — cut out for spot-cleaning after the litter box cycles |
-| Stairs | *(no area)* | — | n/a — the Ground⇄Second staircase ([§2.2](house-layout.md)) has no HA area; the flight is **80 % Second-floor / 20 % Ground-floor** (§6) |
+| Stairs | *(no area)* | — | n/a — the Ground⇄Second staircase ([§2.2](house-layout.md)) has no HA area; it is a **switchback stair (~8 ft / U-turn / ~2 ft)** split **~80 % Second-floor / ~20 % Ground-floor** (§6) |
 | Sauna | `sauna` | Sauna | **Mapped, but no vac access** (owner) — reached only through the 1st Bath |
 | Bathroom | `bathroom` | **1st Bath** | **Mapped, but no vac access** (owner) |
 | Room 5 | *(unused)* | — | **Not a room** — an unused segmentation fraction (owner) |
@@ -200,8 +202,9 @@ treat those as **no-go**, not as cleaned floor.
    out for spot-cleaning after the litter box cycles. None is a separate room.
 3. **`Stairs` is a mappable segment but not an HA area.** HA has no `stairs` area
    ([§2.2](house-layout.md)); the L40 tracks the staircase as a cleanable room, but
-   that segment covers only the L40's **20 %** share of the flight — the **Second
-   floor holds the 80 %** (owner — see §6).
+   the Ground ⇄ Second flight is a **switchback stair (~8 ft / U-turn / ~2 ft)** split
+   **~80 % / ~20 %** — the **Second floor (its main part) holds the ~80 %**, the L40's
+   Ground floor the **~20 %** (owner — see §6).
 4. **The unmapped rooms are the *inaccessible* ones.** `entry` and `laundry` never
    appear as L40 rooms because the vac has **no access** to them — the Entry is an
    airlock and the Laundry sits behind a Green Room barn door. By contrast the
@@ -237,14 +240,18 @@ L40 — the two maps are not in a shared frame.
 **Second-floor structure (owner — [house-layout §2.9](house-layout.md)):**
 
 - The Second floor is **not a uniform storey** — its **lower part is `master_bath`,
-  which sits directly over the Green Room** (the Green Room's ceiling is 8 ft where
-  the Kitchen / Living Room are 10 ft).
-- The **Ground ⇄ Second staircase** is **split 80 % / 20 %** across the two floors
-  (§3.3, §6): this map's floor — the **Second floor** — holds the **80 %** share and
-  the L40's Ground floor the **20 %**, so a stair-cleaning routine gives the L10 Pro
-  the majority of the flight. (Note the L10 Pro's *current* map carries **no** separate
-  `Stairs` segment — only the L40's does (§3.2) — so the 80 % is an ownership split,
-  not a room this robot draws.)
+  the same size as the Green Room and stacked exactly over it** (the Green Room's
+  ceiling is 8 ft where the Kitchen / Living Room are 10 ft), so it sits **~2 ft below**
+  the storey's main part.
+- The **Ground ⇄ Second staircase** is a **switchback (U-turn) stair in two runs —
+  ~8 ft, U-turn, ~2 ft (~10 ft total rise)** (§3.3, §6). The **~80 % / 20 %** split is
+  that split of the **rise** (~8 ft run ≈ 80 %, ~2 ft run ≈ 20 %), and it mirrors the
+  Second floor's area split (main part ≈ 80 %, over-Green-Room part ≈ 20 %). By the
+  owner's framing this map's floor — the **Second floor** — holds the **~80 %** share
+  and the L40's Ground floor the **~20 %**, so a stair-cleaning routine gives the L10
+  Pro the majority of the flight. (Note the L10 Pro's *current* map carries **no**
+  separate `Stairs` segment — only the L40's does (§3.2) — so the ~80 % is an ownership
+  split, not a room this robot draws.)
 
 ---
 
@@ -254,13 +261,18 @@ L40 — the two maps are not in a shared frame.
   rename each robot room to the HA `area_id` (`living_room`, `workout`, …) so both
   sides speak one vocabulary. *(Recreation Area = `hobby_room` is now owner-confirmed,
   so the reconciliation is complete either way.)*
-- **Stair split (resolved, 2026-10-06):** the Ground ⇄ Second flight is **80 % / 20 %**
-  across the two floors, and the **Second floor holds the 80 %** (owner) — so the
-  **L10 Pro owns the majority** of the staircase and the **L40 the remaining 20 %**.
-  ("The Second floor" here is its **main part** — `bedroom`, `office`, `library`,
-  `2nd_hallway` — i.e. everything **except** the `master_bath`.) Because the L10 Pro's
-  *current* map has no `Stairs` segment (§3.2, §5), this is an ownership split, not a
-  room either map draws end-to-end.
+- **Stair split (resolved, 2026-10-06; geometry refined from the owner):** the Ground
+  ⇄ Second flight is a **switchback (U-turn) stair in two runs — ~8 ft up, U-turn,
+  ~2 ft more (~10 ft total)** — so the **main Second floor sits ~2 ft above the part
+  over the Green Room** (`master_bath`, the same size as the Green Room and stacked
+  exactly on top of it). The **~80 % / 20 %** is therefore that split of the **rise**
+  (~8 ft run ≈ 80 %, ~2 ft run ≈ 20 %), and it lines up with the **Second floor's own
+  area split** (main part ≈ 80 %; over-Green-Room part ≈ 20 %). By the owner's framing
+  the **Second floor holds the ~80 %** — so the **L10 Pro owns the majority** of the
+  staircase and the **L40 the remaining ~20 %**. ("The Second floor" here is its **main
+  part** — `bedroom`, `office`, `library`, `2nd_hallway` — i.e. everything **except**
+  the `master_bath`.) Because the L10 Pro's *current* map has no `Stairs` segment
+  (§3.2, §5), this is an ownership split, not a room either map draws end-to-end.
 - **Optional:** a snapshot-on-finish automation that saves the map PNG to
   `hams/docs/maps/` when a job completes, so history is versioned in-repo.
 
