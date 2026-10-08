@@ -80,10 +80,14 @@ Bypass markers, if you need them:
   `infra/logrotate/logrotate.d/git-hooks.conf` rotates on the
   `*-enhanced-hooks.log` glob, so renaming the log requires updating that
   pattern in the same change.
-- **`remove_ccm_header` refuses to strip more than 30 lines.** Generated headers
-  are 24 (default), 26 (markdown) and 27 (JSON) lines, so headroom is thin. If
-  the templates grow by ~7 lines, stripping starts failing and — because
+- **`remove_ccm_header` strips the header, template markers and every
+  `%git_commit_history` row, then asserts the deletion set is a subset of those
+  CCM artifacts.** A fixed line cap was wrong: the history trail is unbounded,
+  so any cap smaller than the trail aborts the strip and — because
   `ccm-apply.sh` calls it with `|| true` — a second header is silently appended.
+  The subset assertion instead catches a genuinely too-broad `sed` pattern,
+  whatever the file length. The trail itself is bounded separately by
+  `CCM_HISTORY_MAX` (see `v2/README.md`).
 
 ## See also
 

@@ -73,6 +73,19 @@ All 25 CCM tags from v1 are preserved:
 ##COMMIT_HISTORY: format  History line format with $DATE, $AUTHOR, $MESSAGE
 ```
 
+## Commit History Trail
+
+`%git_commit_history` rows are deduplicated and capped so the trail cannot
+compound across runs:
+
+- `extract_preserved_history` normalises (strips a trailing CR/whitespace) and
+  de-duplicates collected rows, keeping at most `CCM_HISTORY_MAX` (default 50,
+  override via the environment).
+- `remove_ccm_header` strips every `%git_commit_history` row together with the
+  header, so `format_ccm_header` is the single writer of the trail.
+- `format_ccm_header` re-emits the deduplicated trail and skips the new entry
+  when an identical one is already present.
+
 ## Usage
 
 ### Normal Operation
