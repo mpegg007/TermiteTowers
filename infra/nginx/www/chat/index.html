@@ -2,100 +2,313 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
   %ccm_git_repo: TermiteTowers %
   %ccm_git_branch: dev1 %
-  %ccm_git_object_id: infra/nginx/www/chat/index.html:158 %
+  %ccm_git_object_id: infra/nginx/www/chat/index.html:178 %
   %ccm_git_author: mpegg %
   %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: a641088e58094abba12182c5373fda68567a0d81 %
-  %ccm_git_commit_id: d7e19382f49384e00dc61fb86a10a9255583a0c8 %
-  %ccm_git_commit_count: 158 %
-  %ccm_git_commit_date: 2026-09-25 21:05:38 -0400 %
+  %ccm_git_blob_sha: d9327a0ae139fdeb50357f0eb8fc3d86a62e1e75 %
+  %ccm_git_commit_id: 9644d8ea8ef3babadd720cb39d4a069d94fe813c %
+  %ccm_git_commit_count: 178 %
+  %ccm_git_commit_date: 2026-10-07 21:19:45 -0400 %
   %ccm_git_commit_author: mpegg %
   %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: chore(homarr): retire Homarr - configured but never used day to day %
-  %ccm_git_modify_date: 2026-09-25 21:05:38 %
-  %ccm_git_file_last_modified: 2026-09-25 21:05:30 %
+  %ccm_git_commit_message: chat: wow service-console landing page + classic view; drop dead calendars tile %
+  %ccm_git_modify_date: 2026-10-07 21:19:45 %
+  %ccm_git_file_last_modified: 2026-10-07 21:19:13 %
   %ccm_git_file_name: index.html %
   %ccm_git_path: infra/nginx/www/chat/index.html %
   %ccm_git_language_mode: html %
   %ccm_git_file_type: text/html %
-  %ccm_git_file_encoding: us-ascii %
+  %ccm_git_file_encoding: utf-8 %
   %ccm_git_file_eol: CRLF %
   %ccm_git_exec: no %
-  %ccm_git_size: 7364 %
+  %ccm_git_size: 22925 %
   TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
-<!-- %git_commit_history: 2026-03-22 mpegg  march updates  % -->
-<!-- %git_commit_history: unknown  unknown  unknown  % -->
-<!-- %git_commit_history: 2026-02-07 mpegg  comment cleanup  % -->
-<!-- %git_commit_history: 2026-02-07 mpegg  feb2026  % -->
-<!-- %git_commit_history: 2025-12-15 mpegg  monday drop  % -->
-<!-- %git_commit_history: cleanup % -->
-<!-- %git_commit_history: november changes % -->
-<!-- %git_commit_history: index page, comments % -->
-<!-- %git_commit_history: adding mealie % -->
-<!-- %git_commit_history: docker updates % -->
-<!-- %git_commit_history: big update % -->
-<!-- %git_commit_history: service updates % -->
-<!-- %git_commit_history: 2026-03-22 mpegg  march updates  % -->
-<!-- %git_commit_history: unknown  unknown  unknown  % -->
-<!-- %git_commit_history: 2026-02-07 mpegg  comment cleanup  % -->
-<!-- %git_commit_history: 2026-02-07 mpegg  feb2026  % -->
-<!-- %git_commit_history: 2025-12-15 mpegg  monday drop  % -->
-<!-- %git_commit_history: cleanup % -->
-<!-- %git_commit_history: november changes % -->
-<!-- %git_commit_history: index page, comments % -->
-<!-- %git_commit_history: adding mealie % -->
-<!-- %git_commit_history: docker updates % -->
-<!-- %git_commit_history: big update % -->
-<!-- %git_commit_history: service updates % -->
-
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TermiteTowers Chat</title>
+  <meta name="color-scheme" content="dark light" />
+  <meta name="theme-color" content="#070a12" />
+  <title>TermiteTowers</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E%F0%9F%90%9C%3C/text%3E%3C/svg%3E" />
   <style>
-    :root { color-scheme: light dark; }
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; margin: 0; }
-    .hero { display:flex; min-height: 100vh; align-items:center; justify-content:center; background: radial-gradient(1000px 600px at 10% 0%, #a855f7 0, transparent 70%), radial-gradient(1000px 600px at 90% 100%, #3b82f6 0, transparent 70%); }
-    .card { background: color-mix(in oklab, canvas 85%, black 5%); border: 1px solid color-mix(in oklab, canvastext 20%, canvas 80%); border-radius: 16px; padding: 28px 28px 16px; max-width: 720px; width: calc(100% - 32px); box-shadow: 0 10px 30px rgba(0,0,0,.15); }
-    h1 { margin: 0 0 8px; font-size: clamp(24px, 4vw, 36px); letter-spacing: .5px; }
-    p { margin: 0 0 18px; color: color-mix(in oklab, canvastext 80%, canvas 20%); }
-    ul { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; list-style: none; padding: 0; margin: 0; }
-    a.tile { display:block; border-radius: 12px; padding: 14px 16px; border: 1px solid color-mix(in oklab, canvastext 15%, canvas 85%); text-decoration: none; color: inherit; background: color-mix(in oklab, canvas 92%, black 8%); }
-    a.tile:hover { border-color: color-mix(in oklab, canvastext 35%, canvas 65%); transform: translateY(-1px); transition: .2s ease; }
-    .subtitle { font-size: 12px; opacity: .75; margin-top: 2px; }
+    *, *::before, *::after { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+
+    :root {
+      --shell: rgba(15, 18, 28, 0.62);
+      --tile: rgba(255, 255, 255, 0.045);
+      --tile-hover: rgba(255, 255, 255, 0.09);
+      --line: rgba(255, 255, 255, 0.10);
+      --line-strong: rgba(255, 255, 255, 0.22);
+      --ink: #e9edf6;
+      --muted: #9aa6bd;
+      --accent: #a855f7;
+      --accent-2: #3b82f6;
+      --radius: 16px;
+    }
+
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--ink);
+      background: #070a12;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── Animated aurora backdrop ─────────────────────────────── */
+    .aurora { position: fixed; inset: -20vmax; z-index: -1; filter: blur(60px); opacity: .55; pointer-events: none; }
+    .aurora span { position: absolute; width: 46vmax; height: 46vmax; border-radius: 50%; mix-blend-mode: screen; }
+    .aurora .a1 { background: radial-gradient(circle at 30% 30%, #a855f7, transparent 62%); top: 6%; left: 4%; animation: drift1 26s ease-in-out infinite alternate; }
+    .aurora .a2 { background: radial-gradient(circle at 60% 40%, #3b82f6, transparent 62%); top: 24%; right: 2%; animation: drift2 32s ease-in-out infinite alternate; }
+    .aurora .a3 { background: radial-gradient(circle at 50% 50%, #22d3ee, transparent 62%); bottom: 2%; left: 22%; animation: drift3 30s ease-in-out infinite alternate; }
+    .aurora .a4 { background: radial-gradient(circle at 50% 50%, #22c55e, transparent 62%); bottom: 12%; right: 16%; animation: drift1 36s ease-in-out infinite alternate-reverse; }
+    @keyframes drift1 { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(6vmax, 4vmax, 0) scale(1.18); } }
+    @keyframes drift2 { from { transform: translate3d(0, 0, 0) scale(1.1); } to { transform: translate3d(-5vmax, 5vmax, 0) scale(0.95); } }
+    @keyframes drift3 { from { transform: translate3d(0, 0, 0) scale(0.95); } to { transform: translate3d(4vmax, -5vmax, 0) scale(1.2); } }
+
+    /* ── Layout shell ─────────────────────────────────────────── */
+    .wrap { max-width: 1160px; margin: 0 auto; padding: clamp(14px, 3vw, 32px); }
+    .shell {
+      background: var(--shell);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: clamp(16px, 2.6vw, 30px);
+      backdrop-filter: blur(16px) saturate(140%);
+      -webkit-backdrop-filter: blur(16px) saturate(140%);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .45);
+    }
+
+    /* ── Header ───────────────────────────────────────────────── */
+    .top { display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: center; justify-content: space-between; }
+    .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+    .logo {
+      display: grid; place-items: center; width: 52px; height: 52px; flex: 0 0 auto;
+      border-radius: 14px; font-size: 26px;
+      background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 55%, transparent), color-mix(in oklab, var(--accent-2) 55%, transparent));
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18), 0 8px 24px rgba(168, 85, 247, .28);
+    }
+    h1 { margin: 0; font-size: clamp(20px, 3.4vw, 30px); letter-spacing: .3px; line-height: 1.1; }
+    .tag { margin: 3px 0 0; color: var(--muted); font-size: 13px; }
+    .top-right { display: flex; align-items: center; gap: 12px; }
+    .clock { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 14px; letter-spacing: .5px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px; text-decoration: none; color: var(--ink);
+      padding: 9px 15px; border-radius: 999px; font-size: 14px; font-weight: 600;
+      border: 1px solid var(--line-strong); background: rgba(255, 255, 255, .05);
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: var(--accent); background: color-mix(in oklab, var(--accent) 18%, transparent); }
+
+    /* ── Search ───────────────────────────────────────────────── */
+    .searchbar { display: flex; align-items: center; gap: 10px; margin: 20px 0 6px; padding: 11px 14px; border-radius: 14px; border: 1px solid var(--line); background: rgba(0, 0, 0, .22); }
+    .searchbar:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 24%, transparent); }
+    .sicon { opacity: .7; }
+    #q { flex: 1 1 auto; min-width: 0; border: 0; background: transparent; color: var(--ink); font-size: 15px; outline: none; }
+    #q::placeholder { color: var(--muted); }
+    .clr { border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 13px; padding: 4px 6px; border-radius: 8px; }
+    .clr:hover { color: var(--ink); background: rgba(255, 255, 255, .07); }
+
+    /* ── Groups + tiles ───────────────────────────────────────── */
+    main { margin-top: 14px; }
+    .grp { margin: 22px 0 4px; }
+    .grp h2 { display: flex; align-items: center; gap: 9px; margin: 0 0 12px; font-size: 13px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--muted); }
+    .grp h2 .gicon { font-size: 16px; letter-spacing: 0; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(196px, 1fr)); gap: 12px; }
+    .tile {
+      display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit;
+      padding: 13px 14px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--tile);
+      transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+    .tile:hover, .tile:focus-visible {
+      transform: translateY(-2px); border-color: var(--accent-2); background: var(--tile-hover);
+      box-shadow: 0 10px 26px rgba(59, 130, 246, .20); outline: none;
+    }
+    .tile .ic {
+      display: grid; place-items: center; width: 40px; height: 40px; flex: 0 0 auto; font-size: 20px;
+      border-radius: 11px; background: rgba(255, 255, 255, .06); border: 1px solid var(--line);
+    }
+    .meta { min-width: 0; }
+    .nm { display: block; font-weight: 650; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ds { display: block; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .empty { text-align: center; color: var(--muted); padding: 34px 10px; }
+
+    .foot { margin-top: 26px; padding-top: 14px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; justify-content: space-between; color: var(--muted); font-size: 12.5px; }
+    .foot a { color: var(--muted); text-decoration: none; border-bottom: 1px dotted var(--line-strong); }
+    .foot a:hover { color: var(--ink); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .aurora span { animation: none !important; }
+      .tile, .btn { transition: none !important; }
+    }
   </style>
 </head>
 <body>
-  <div class="hero">
-    <div class="card">
-      <h1>Chat and AI</h1>
-      <p>Pick a chat interface.</p>
-      <ul>
-    <li><a class="tile" href="https://lobe.termitetowers.ca" target="lobe" rel="noopener"><strong>LobeChat</strong><div class="subtitle">Modern chat UI</div></a></li>
-    <li><a class="tile" href="https://webai.termitetowers.ca" target="webai" rel="noopener"><strong>WebAI</strong><div class="subtitle">Your web chat UI</div></a></li>
-  <li><a class="tile" href="https://mealie.termitetowers.ca" target="mealie" rel="noopener"><strong>Mealie</strong><div class="subtitle">Groceries & recipes</div></a></li>
-    <li><a class="tile" href="https://news.termitetowers.ca" target="news" rel="noopener"><strong>News</strong><div class="subtitle">Latest updates</div></a></li>
-  <li><a class="tile" href="https://calendars.termitetowers.ca" target="calendars" rel="noopener"><strong>Calendars</strong><div class="subtitle">CalDAV sync</div></a></li>
-    <li><a class="tile" href="https://search.termitetowers.ca" target="search" rel="noopener"><strong>Search</strong><div class="subtitle">Privacy-focused metasearch</div></a></li>
-    <li><a class="tile" href="https://pihole.termitetowers.ca/admin/" target="pihole" rel="noopener"><strong>Pi-hole</strong><div class="subtitle">DNS & ad-blocking</div></a></li>
-    <li><a class="tile" href="https://hal.termitetowers.ca" target="hal" rel="noopener"><strong>HAL</strong><div class="subtitle">Assistant</div></a></li>
-    <li><a class="tile" href="https://wiki.termitetowers.ca" target="wiki" rel="noopener"><strong>Wiki</strong><div class="subtitle">Docs and notes</div></a></li>
-    <li><a class="tile" href="https://docs.termitetowers.ca" target="docs" rel="noopener"><strong>Docs</strong><div class="subtitle">Technical documentation</div></a></li>
-  <li><a class="tile" href="https://nextcloud.termitetowers.ca" target="nextcloud" rel="noopener"><strong>Nextcloud</strong><div class="subtitle">File sync & share</div></a></li>
-  <li><a class="tile" href="https://kuma.termitetowers.ca" target="kuma" rel="noopener"><strong>Uptime Kuma</strong><div class="subtitle">Status & monitoring</div></a></li>
-  <li><a class="tile" href="https://dozzle.termitetowers.ca" target="dozzle" rel="noopener"><strong>Dozzle</strong><div class="subtitle">Container logs</div></a></li>
-  <li><a class="tile" href="https://netalertx.termitetowers.ca" target="netalertx" rel="noopener"><strong>NetAlertX</strong><div class="subtitle">Network device scanner</div></a></li>
-  <li><a class="tile" href="https://watchyourlan.termitetowers.ca" target="watchyourlan" rel="noopener"><strong>watchYourLan</strong><div class="subtitle">Network device scanner</div></a></li>
-  <li><a class="tile" href="https://dns.termitetowers.ca" target="dns" rel="noopener"><strong>DNS Manager</strong><div class="subtitle">PowerDNS</div></a></li>
-  <li><a class="tile" href="https://asset.termitetowers.ca" target="asset" rel="noopener"><strong>Snipe-IT</strong><div class="subtitle">Asset management</div></a></li>
-  <li><a class="tile" href="https://dba.termitetowers.ca" target="dba" rel="noopener"><strong>Database</strong><div class="subtitle">Database management</div></a></li>
-  <li><a class="tile" href="https://prometheus.termitetowers.ca" target="prometheus" rel="noopener"><strong>Prometheus</strong><div class="subtitle">Monitoring & metrics</div></a></li>
-    <li><a class="tile" href="https://tensorflow.termitetowers.ca" target="tensor" rel="noopener"><strong>TensorFlow</strong><div class="subtitle">Machine learning metrics</div></a></li>
-    <li><a class="tile" href="https://comfyui.termitetowers.ca" target="comfyui" rel="noopener"><strong>ComfyUI</strong><div class="subtitle">Stable Diffusion Node UI</div></a></li>
-    <li><a class="tile" href="https://esphome.termitetowers.ca" target="esphome" rel="noopener"><strong>ESPHome</strong><div class="subtitle">Home automation</div></a></li>
-      </ul>
+  <div class="aurora" aria-hidden="true"><span class="a1"></span><span class="a2"></span><span class="a3"></span><span class="a4"></span></div>
+
+  <div class="wrap">
+    <div class="shell">
+      <header class="top">
+        <div class="brand">
+          <span class="logo" aria-hidden="true">🐜</span>
+          <div>
+            <h1>TermiteTowers</h1>
+            <p class="tag">Service console · <span id="count">0</span> apps</p>
+          </div>
+        </div>
+        <div class="top-right">
+          <span class="clock" id="clock">--:--:--</span>
+          <a class="btn" href="classic.html">Classic view →</a>
+        </div>
+      </header>
+
+      <div class="searchbar">
+        <span class="sicon" aria-hidden="true">🔍</span>
+        <input id="q" type="search" placeholder="Filter services…  (press /)" autocomplete="off" spellcheck="false" aria-label="Filter services" />
+        <button id="clear" class="clr" type="button" hidden>Clear</button>
+      </div>
+
+      <main>
+        <section class="grp" data-group>
+          <h2><span class="gicon">🤖</span> AI &amp; Chat</h2>
+          <div class="grid">
+            <a class="tile" href="https://lobe.termitetowers.ca" target="lobe" rel="noopener" data-search="lobechat modern chat ui"><span class="ic" aria-hidden="true">💬</span><span class="meta"><span class="nm">LobeChat</span><span class="ds">Modern chat UI</span></span></a>
+            <a class="tile" href="https://webai.termitetowers.ca" target="webai" rel="noopener" data-search="webai web chat ui"><span class="ic" aria-hidden="true">🌐</span><span class="meta"><span class="nm">WebAI</span><span class="ds">Web chat UI</span></span></a>
+            <a class="tile" href="https://hal.termitetowers.ca" target="hal" rel="noopener" data-search="hal home assistant"><span class="ic" aria-hidden="true">🏠</span><span class="meta"><span class="nm">HAL</span><span class="ds">Home Assistant</span></span></a>
+            <a class="tile" href="https://llmapi.termitetowers.ca" target="llmapi" rel="noopener" data-search="llm api model gateway server"><span class="ic" aria-hidden="true">🧠</span><span class="meta"><span class="nm">LLM API</span><span class="ds">Model gateway</span></span></a>
+            <a class="tile" href="https://ollama.termitetowers.ca" target="ollama" rel="noopener" data-search="ollama local models llm"><span class="ic" aria-hidden="true">🦙</span><span class="meta"><span class="nm">Ollama</span><span class="ds">Local models</span></span></a>
+            <a class="tile" href="https://comfyui.termitetowers.ca" target="comfyui" rel="noopener" data-search="comfyui stable diffusion node ui image gen"><span class="ic" aria-hidden="true">🎨</span><span class="meta"><span class="nm">ComfyUI</span><span class="ds">Diffusion workflows</span></span></a>
+          </div>
+        </section>
+
+        <section class="grp" data-group>
+          <h2><span class="gicon">🎬</span> Media</h2>
+          <div class="grid">
+            <a class="tile" href="https://media.termitetowers.ca" target="media" rel="noopener" data-search="plex media movies tv"><span class="ic" aria-hidden="true">🎬</span><span class="meta"><span class="nm">Plex</span><span class="ds">Movies &amp; TV</span></span></a>
+            <a class="tile" href="https://sonarr.termitetowers.ca" target="sonarr" rel="noopener" data-search="sonarr tv series"><span class="ic" aria-hidden="true">📺</span><span class="meta"><span class="nm">Sonarr</span><span class="ds">TV series</span></span></a>
+            <a class="tile" href="https://radarr.termitetowers.ca" target="radarr" rel="noopener" data-search="radarr movies"><span class="ic" aria-hidden="true">🎥</span><span class="meta"><span class="nm">Radarr</span><span class="ds">Movies</span></span></a>
+            <a class="tile" href="https://prowlarr.termitetowers.ca" target="prowlarr" rel="noopener" data-search="prowlarr indexers"><span class="ic" aria-hidden="true">🧭</span><span class="meta"><span class="nm">Prowlarr</span><span class="ds">Indexers</span></span></a>
+            <a class="tile" href="https://lidarr.termitetowers.ca" target="lidarr" rel="noopener" data-search="lidarr music"><span class="ic" aria-hidden="true">🎵</span><span class="meta"><span class="nm">Lidarr</span><span class="ds">Music</span></span></a>
+            <a class="tile" href="https://readarr.termitetowers.ca" target="readarr" rel="noopener" data-search="readarr books"><span class="ic" aria-hidden="true">📚</span><span class="meta"><span class="nm">Readarr</span><span class="ds">Books</span></span></a>
+            <a class="tile" href="https://qbit.termitetowers.ca" target="qbit" rel="noopener" data-search="qbittorrent torrent downloads"><span class="ic" aria-hidden="true">⬇️</span><span class="meta"><span class="nm">qBittorrent</span><span class="ds">Downloads</span></span></a>
+            <a class="tile" href="https://music.termitetowers.ca" target="music" rel="noopener" data-search="music streaming audio"><span class="ic" aria-hidden="true">🎧</span><span class="meta"><span class="nm">Music</span><span class="ds">Streaming</span></span></a>
+            <a class="tile" href="https://pics.justanotherhuman.ca" target="immich" rel="noopener" data-search="immich photos pictures library"><span class="ic" aria-hidden="true">🖼️</span><span class="meta"><span class="nm">Photos</span><span class="ds">Immich library</span></span></a>
+          </div>
+        </section>
+        <section class="grp" data-group>
+          <h2><span class="gicon">🏡</span> Home &amp; Daily</h2>
+          <div class="grid">
+            <a class="tile" href="https://mealie.termitetowers.ca" target="mealie" rel="noopener" data-search="mealie recipes groceries food"><span class="ic" aria-hidden="true">🍽️</span><span class="meta"><span class="nm">Mealie</span><span class="ds">Recipes &amp; groceries</span></span></a>
+            <a class="tile" href="https://esphome.termitetowers.ca" target="esphome" rel="noopener" data-search="esphome iot home automation firmware"><span class="ic" aria-hidden="true">🔌</span><span class="meta"><span class="nm">ESPHome</span><span class="ds">Home automation</span></span></a>
+            <a class="tile" href="https://news.termitetowers.ca" target="news" rel="noopener" data-search="news feed reader rss"><span class="ic" aria-hidden="true">📰</span><span class="meta"><span class="nm">News</span><span class="ds">Feed reader</span></span></a>
+            <a class="tile" href="https://search.termitetowers.ca" target="search" rel="noopener" data-search="search searxng private metasearch"><span class="ic" aria-hidden="true">🔍</span><span class="meta"><span class="nm">Search</span><span class="ds">Private metasearch</span></span></a>
+          </div>
+        </section>
+
+        <section class="grp" data-group>
+          <h2><span class="gicon">📚</span> Knowledge</h2>
+          <div class="grid">
+            <a class="tile" href="https://wiki.termitetowers.ca" target="wiki" rel="noopener" data-search="wiki notes knowledge"><span class="ic" aria-hidden="true">📖</span><span class="meta"><span class="nm">Wiki</span><span class="ds">Notes &amp; knowledge</span></span></a>
+            <a class="tile" href="https://docs.termitetowers.ca" target="docs" rel="noopener" data-search="docs technical documentation"><span class="ic" aria-hidden="true">📘</span><span class="meta"><span class="nm">Docs</span><span class="ds">Technical documentation</span></span></a>
+            <a class="tile" href="https://library.termitetowers.ca" target="library" rel="noopener" data-search="library books collection"><span class="ic" aria-hidden="true">📕</span><span class="meta"><span class="nm">Library</span><span class="ds">Books &amp; collection</span></span></a>
+            <a class="tile" href="https://nextcloud.termitetowers.ca" target="nextcloud" rel="noopener" data-search="nextcloud files sync share cloud"><span class="ic" aria-hidden="true">☁️</span><span class="meta"><span class="nm">Nextcloud</span><span class="ds">Files &amp; sync</span></span></a>
+          </div>
+        </section>
+
+        <section class="grp" data-group>
+          <h2><span class="gicon">📈</span> Monitoring</h2>
+          <div class="grid">
+            <a class="tile" href="https://kuma.termitetowers.ca" target="kuma" rel="noopener" data-search="uptime kuma status monitoring"><span class="ic" aria-hidden="true">📈</span><span class="meta"><span class="nm">Uptime Kuma</span><span class="ds">Status &amp; alerts</span></span></a>
+            <a class="tile" href="https://prometheus.termitetowers.ca" target="prometheus" rel="noopener" data-search="prometheus metrics monitoring"><span class="ic" aria-hidden="true">🔥</span><span class="meta"><span class="nm">Prometheus</span><span class="ds">Metrics</span></span></a>
+            <a class="tile" href="https://tensorflow.termitetowers.ca" target="tensor" rel="noopener" data-search="tensorflow machine learning metrics"><span class="ic" aria-hidden="true">🤖</span><span class="meta"><span class="nm">TensorFlow</span><span class="ds">ML metrics</span></span></a>
+            <a class="tile" href="https://dozzle.termitetowers.ca" target="dozzle" rel="noopener" data-search="dozzle docker container logs"><span class="ic" aria-hidden="true">🪵</span><span class="meta"><span class="nm">Dozzle</span><span class="ds">Container logs</span></span></a>
+          </div>
+        </section>
+        <section class="grp" data-group>
+          <h2><span class="gicon">🧰</span> DevOps</h2>
+          <div class="grid">
+            <a class="tile" href="https://packages.termitetowers.ca" target="packages" rel="noopener" data-search="packages apt repository mirror"><span class="ic" aria-hidden="true">📦</span><span class="meta"><span class="nm">Packages</span><span class="ds">Apt mirror</span></span></a>
+            <a class="tile" href="https://pypi.termitetowers.ca" target="pypi" rel="noopener" data-search="pypi python package index proxy"><span class="ic" aria-hidden="true">🐍</span><span class="meta"><span class="nm">PyPI Proxy</span><span class="ds">Python index</span></span></a>
+            <a class="tile" href="https://dba.termitetowers.ca" target="dba" rel="noopener" data-search="database postgres admin dba"><span class="ic" aria-hidden="true">🗄️</span><span class="meta"><span class="nm">Database</span><span class="ds">Postgres admin</span></span></a>
+          </div>
+        </section>
+
+        <section class="grp" data-group>
+          <h2><span class="gicon">🛡️</span> Network &amp; Security</h2>
+          <div class="grid">
+            <a class="tile" href="https://pihole.termitetowers.ca/admin/" target="pihole" rel="noopener" data-search="pi-hole pihole dns adblock ad blocking"><span class="ic" aria-hidden="true">🕳️</span><span class="meta"><span class="nm">Pi-hole</span><span class="ds">DNS &amp; ad-block</span></span></a>
+            <a class="tile" href="https://dns.termitetowers.ca" target="dns" rel="noopener" data-search="dns manager powerdns zones"><span class="ic" aria-hidden="true">🌍</span><span class="meta"><span class="nm">DNS Manager</span><span class="ds">PowerDNS</span></span></a>
+            <a class="tile" href="https://netalertx.termitetowers.ca" target="netalertx" rel="noopener" data-search="netalertx network device scanner"><span class="ic" aria-hidden="true">📡</span><span class="meta"><span class="nm">NetAlertX</span><span class="ds">Device scanner</span></span></a>
+            <a class="tile" href="https://watchyourlan.termitetowers.ca" target="watchyourlan" rel="noopener" data-search="watchyourlan network scanner lan"><span class="ic" aria-hidden="true">👀</span><span class="meta"><span class="nm">watchYourLan</span><span class="ds">Network scanner</span></span></a>
+            <a class="tile" href="https://asset.termitetowers.ca" target="asset" rel="noopener" data-search="snipe-it assets inventory management"><span class="ic" aria-hidden="true">🏷️</span><span class="meta"><span class="nm">Snipe-IT</span><span class="ds">Asset management</span></span></a>
+          </div>
+        </section>
+
+        <section class="grp" data-group>
+          <h2><span class="gicon">🌱</span> Personal</h2>
+          <div class="grid">
+            <a class="tile" href="https://justanotherhuman.ca" target="jah" rel="noopener" data-search="justanotherhuman personal site"><span class="ic" aria-hidden="true">🌱</span><span class="meta"><span class="nm">justanotherhuman</span><span class="ds">Personal site</span></span></a>
+          </div>
+        </section>
+
+        <p class="empty" id="empty" hidden>No services match your filter.</p>
+      </main>
+
+      <footer class="foot">
+        <span>TermiteTowers service console</span>
+        <span><a href="classic.html">Classic view</a> · <span id="year"></span></span>
+      </footer>
     </div>
   </div>
+
+  <script>
+    (function () {
+      "use strict";
+      var tiles = Array.prototype.slice.call(document.querySelectorAll(".tile"));
+      var groups = Array.prototype.slice.call(document.querySelectorAll("[data-group]"));
+      var q = document.getElementById("q");
+      var clearBtn = document.getElementById("clear");
+      var emptyMsg = document.getElementById("empty");
+      var countEl = document.getElementById("count");
+
+      countEl.textContent = String(tiles.length);
+
+      function applyFilter() {
+        var term = (q.value || "").trim().toLowerCase();
+        var shown = 0;
+        tiles.forEach(function (a) {
+          var hay = (a.getAttribute("data-search") || "") + " " + a.textContent.toLowerCase();
+          var match = !term || hay.indexOf(term) !== -1;
+          a.hidden = !match;
+          if (match) { shown++; }
+        });
+        groups.forEach(function (g) {
+          var visible = Array.prototype.some.call(g.querySelectorAll(".tile"), function (a) { return !a.hidden; });
+          g.hidden = !visible;
+        });
+        emptyMsg.hidden = shown > 0;
+        clearBtn.hidden = term.length === 0;
+      }
+
+      q.addEventListener("input", applyFilter);
+      clearBtn.addEventListener("click", function () { q.value = ""; applyFilter(); q.focus(); });
+
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "/" && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+        if (e.key === "Escape" && document.activeElement === q) { q.value = ""; applyFilter(); }
+      });
+
+      var clock = document.getElementById("clock");
+      function tick() { clock.textContent = new Date().toLocaleTimeString(); }
+      tick(); setInterval(tick, 1000);
+
+      document.getElementById("year").textContent = String(new Date().getFullYear());
+
+      applyFilter();
+    })();
+  </script>
 </body>
 </html>
