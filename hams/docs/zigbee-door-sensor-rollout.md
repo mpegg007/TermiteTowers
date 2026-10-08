@@ -1,18 +1,18 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: hams/docs/zigbee-door-sensor-rollout.md:156 % -->
+<!-- %ccm_git_object_id: hams/docs/zigbee-door-sensor-rollout.md:172 % -->
 <!-- %ccm_git_author: mpegg % -->
 <!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: 729c06384eb9b2604f960ab514bd09e24d665aeb % -->
-<!-- %ccm_git_commit_id: 7297d224e38a7887c494edb01cda0f8167185bf0 % -->
-<!-- %ccm_git_commit_count: 156 % -->
-<!-- %ccm_git_commit_date: 2026-09-25 20:27:36 -0400 % -->
+<!-- %ccm_git_blob_sha: 9df0aa6a1be0b146f88789816a9548d1ea61b5be % -->
+<!-- %ccm_git_commit_id: 7ca87689c10da1e8ecebbe33bc2b42897f22b48c % -->
+<!-- %ccm_git_commit_count: 172 % -->
+<!-- %ccm_git_commit_date: 2026-10-05 20:46:08 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
 <!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: cleanup % -->
-<!-- %ccm_git_modify_date: 2026-09-25 20:27:36 % -->
-<!-- %ccm_git_file_last_modified: 2026-09-25 17:19:57 % -->
+<!-- %ccm_git_commit_message: house layout + routines docs % -->
+<!-- %ccm_git_modify_date: 2026-10-05 20:46:09 % -->
+<!-- %ccm_git_file_last_modified: 2026-10-05 20:42:32 % -->
 <!-- %ccm_git_file_name: zigbee-door-sensor-rollout.md % -->
 <!-- %ccm_git_path: hams/docs/zigbee-door-sensor-rollout.md % -->
 <!-- %ccm_git_language_mode: markdown % -->
@@ -20,8 +20,9 @@
 <!-- %ccm_git_file_encoding: utf-8 % -->
 <!-- %ccm_git_file_eol: CRLF % -->
 <!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 26090 % -->
+<!-- %ccm_git_size: 28068 % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+ <!-- %git_commit_history: 2026-09-25 mpegg  cleanup  --> 
 # Zigbee door/contact sensor rollout
 
 > **What this is:** the working plan *and* live status for deploying the spare
@@ -110,7 +111,7 @@ alarm panel** (`alarm_control_panel` is empty), so door contacts are the only
 |---|---|---|---|
 | `binary_sensor.bedroom_door` | `Bedroom.door` (SONOFF, `0xa4c13881970be516`) | `bedroom` | renamed from `..._bedroom_door_contact` |
 | `binary_sensor.catio_door` | `Catio.door` (SONOFF, `0xa4c13849ae8c0a3a`) | `catio` | Laundry ↔ Catio lower deck |
-| `binary_sensor.sauna_door` | `Sauna.door` (SONOFF, `0xa4c138d17e20fd58`) | `sauna` | |
+| `binary_sensor.sauna_door` | `Sauna.door` (SONOFF, `0xa4c138d17e20fd58`) | `sauna` | swings into the narrow **1st bath** (Sauna ↔ Green Room is a **wall**, no opening) |
 | `binary_sensor.anyone_home` | template helper | — | `{{ is_state('person.matthew','home') or is_state('person.steve','home') }}` |
 | `binary_sensor.bedroom_asleep` | template helper | — | `{{ is_state('binary_sensor.bedroom_door','off') and (now().hour >= 21 or now().hour < 6) }}` |
 
@@ -356,7 +357,7 @@ white. Pre-existing behaviour; this rollout never touched it.
 
 - **Catio = fenced-in back yard** (the cat patio); **Cattic = the attic**, another cat play room.
 - The catio is **two floors**: lower deck off the **Laundry** (the "main catio door"), upper deck off the **master bedroom**. The cats can nudge the main door open if it is not latched. A **shelf beside it opens the cat door**, so in winter the main door can stay shut.
-- **Only the sauna door can block the cats.** Both Green Room sliding barn doors (to the sauna/1st bath and to the laundry) have **cat cutouts**; the master bath door is never closed. The barn doors are closed only when it is cold.
+- **Only the sauna door can block the cats.** Both Green Room sliding barn doors (to the 1st bath and to the laundry) have **cat cutouts**; the master bath door is never closed, and the basement door is hinged and left open for the cats and air circulation. The barn doors are closed only when it is cold. (The Sauna is separated from the Green Room by a **wall** — its own door swings into the narrow 1st bath.)
 - The **Catio door is from the Laundry**, and the Laundry has a working Echo (`media_player.laundry_mpegg_s_echo_pop`). `laundry_echo_input` is `unavailable`.
 - Bedroom has a **second opening** — the upper-deck door — which is **open by design in winter** with the screen door closed. Sleep logic therefore keys on the **interior** door only.
 - Sauna has **no light or switch**; the only signals are the door contact and `sauna-temp` (probe, `number.sauna_temp_sampling_interval` = 600 s), which is why the contact is the instant signal there.
@@ -385,6 +386,12 @@ ha_get_logs                source="logbook", entity_id="binary_sensor.catio_door
 
 ## Follow-ups / open items
 
+- **The two Entry airlock leaves are unsensed.** The **Hallway door** (double
+  hinged, two ~20 in leaves; `mwave_entry_*` sits on the Entry side) and the
+  **Kitchen pocket door** (slides into the wall) both rest **closed** by the
+  household airlock policy, so a contact on each would make the Entry a genuinely
+  observable airlock. Today neither the front door nor either interior leaf is
+  sensed ([house-layout.md](house-layout.md) §2.7).
 - **`sleep_temp` / `sleep_cool_off` are pure time+temp automations with no sleep
   input** (`sleep_temp`: every 10 min, bedroom temp above 15.5, 21:30–05:50 → cool;
   `sleep_cool_off`: every 15 min, below 14, 23:00–05:45 → heat).

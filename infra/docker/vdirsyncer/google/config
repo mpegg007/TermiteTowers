@@ -1,0 +1,59 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/vdirsyncer/google/config:171 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 8ba414ee7495042e4cecb6862582efb82c912e31 %
+#  %ccm_git_commit_id: ee3eae8346d8982d0467de7e5b42579865765a24 %
+#  %ccm_git_commit_count: 171 %
+#  %ccm_git_commit_date: 2026-10-04 16:25:37 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: cleanup %
+#  %ccm_git_modify_date: 2026-10-04 16:25:37 %
+#  %ccm_git_file_last_modified: 2026-01-24 20:05:16 %
+#  %ccm_git_file_name: config %
+#  %ccm_git_path: infra/docker/vdirsyncer/google/config %
+#  %ccm_git_language_mode: infra/docker/vdirsyncer/google/config %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_exec: yes %
+#  %ccm_git_size: 780 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+[general]
+status_path = /cache/status/
+
+[pair google_local]
+a_sync = google_calendar
+b_sync = local_calendar
+twoway = true
+
+[storage google_calendar]
+type = google_calendar
+client_id = ${GOOGLE_CLIENT_ID}
+client_secret = ${GOOGLE_CLIENT_SECRET}
+token_file = /config/google_token.json
+
+[storage local_calendar]
+type = caldav
+url = http://radicale-dev1:5232/${GOOGLE_USER}/calendar/
+username = ${GOOGLE_USER}
+password = ${GOOGLE_PASSWORD}
+
+# Shared family calendar (hosted locally)
+[pair family_shared]
+a_sync = local_family
+b_sync = local_family_backup
+twoway = true
+
+[storage local_family]
+type = caldav
+url = http://radicale-dev1:5232/family/calendar/
+username = family
+password = ${FAMILY_PASSWORD}
+
+[storage local_family_backup]
+type = filesystem
+path = /config/family_backup/

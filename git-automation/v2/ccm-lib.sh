@@ -4,6 +4,10 @@
 
 set -euo pipefail
 
+# Maximum number of %git_commit_history entries retained in a header.
+# Bounds the accumulated trail so it can never grow without limit.
+CCM_HISTORY_MAX="${CCM_HISTORY_MAX:-50}"
+
 # ─────────────────────────────────────────────────────────────────
 # capture_file_metadata "$file" "$rel_path"
 #
@@ -72,11 +76,20 @@ extract_preserved_history() {
         PRESERVED_COMMIT_AUTHOR="${BASH_REMATCH[1]}"
     fi
 
-    # Collect old history lines (survive header removal, float in file body)
+    # Collect old history lines (survive header removal, float in file body).
+    # Deduplicate by normalized content (ignoring a trailing CR / spaces) and
+    # cap to CCM_HISTORY_MAX so the trail can never compound or grow unbounded.
+    local hist_line hist_key
+    local -A seen_history=()
     while IFS= read -r line; do
-        if [[ "$line" =~ %git_commit_history ]]; then
-            OLD_HISTORY_LINES+=("$line")
-        fi
+        [[ "$line" =~ %git_commit_history ]] || continue
+        hist_line="${line%$'\r'}"
+        hist_line="${hist_line%"${hist_line##*[![:space:]]}"}"   # rstrip trailing spaces
+        hist_key="$hist_line"
+        [[ -n "${seen_history[$hist_key]:-}" ]] && continue
+        [ "${#OLD_HISTORY_LINES[@]}" -ge "$CCM_HISTORY_MAX" ] && break
+        seen_history["$hist_key"]=1
+        OLD_HISTORY_LINES+=("$hist_line")
     done < "$file"
 
     # Sanitize: blank "unknown" messages
@@ -91,8 +104,10 @@ extract_preserved_history() {
 # ─────────────────────────────────────────────────────────────────
 # remove_ccm_header "$file"
 #
-# Strips CCM header lines from the file. Does NOT remove
-# %git_commit_history lines — those survive as a history trail.
+# Strips CCM header lines AND accumulated %git_commit_history lines
+# from the file. History is re-emitted (deduplicated, capped) by
+# format_ccm_header, so removal and re-emission stay balanced and the
+# trail cannot compound across runs.
 # ─────────────────────────────────────────────────────────────────
 remove_ccm_header() {
     local file="$1"
@@ -101,20 +116,29 @@ remove_ccm_header() {
     local line_count_before
     line_count_before=$(wc -l < "$file")
 
-    # Remove CCM header lines and template markers
+    # Remove CCM header lines, template markers, and accumulated history
     sed -E \
         -e '/^.{0,9}%ccm_.*: .* %/d' \
         -e '/^.{0,9}% ccm_.*: .* %/d' \
         -e '/^.{0,9}TermiteTowers Continuous Code Management Header TEMPLATE/d' \
         -e '/^.{0,9}tt-ccm.header.end/d' \
+        -e '/^.{0,9}.*%git_commit_history/d' \
         "$file" > "$tmpfile"
 
     local line_count_after
     line_count_after=$(wc -l < "$tmpfile")
     local lines_removed=$((line_count_before - line_count_after))
 
-    if [ "$lines_removed" -gt 30 ]; then
-        echo "[ERROR] SAFETY: Would remove $lines_removed lines from $file (max 30). Aborting." >&2
+    # SAFETY: every line deleted above must be a recognisable CCM artifact.
+    # The header is bounded (24/26/27 lines) but the history trail is not, so
+    # a fixed line cap is wrong here — it would block the one-time cleanup of
+    # an already-bloated trail and, via `|| true`, silently append a second
+    # header. Instead assert the deletions are a subset of the CCM artifact
+    # family; a broader/buggy sed pattern is what this actually needs to catch.
+    local artifact_lines
+    artifact_lines=$(grep -cE '^.{0,9}(% ?ccm_|%git_commit_history|TermiteTowers Continuous Code Management Header TEMPLATE|tt-ccm\.header\.end)' "$file" || true)
+    if [ "$lines_removed" -gt "$artifact_lines" ]; then
+        echo "[ERROR] SAFETY: removed $lines_removed line(s) but only $artifact_lines CCM artifact line(s) present in $file. Aborting." >&2
         rm -f "$tmpfile"
         return 1
     fi
@@ -210,16 +234,29 @@ format_ccm_header() {
         done
     fi
 
-    # Append preserved commit history as a new line
+    # Append preserved commit history as a new line. Skipped when the identical
+    # entry is already present in the preserved trail, so re-running the hook on
+    # an unchanged commit does not duplicate it.
     if [ -n "$PRESERVED_COMMIT_MSG" ] && [ -n "$COMMIT_HISTORY_FORMAT" ]; then
         local hist="${COMMIT_HISTORY_FORMAT}"
         hist="${hist//\$MESSAGE/$PRESERVED_COMMIT_MSG}"
         hist="${hist//\$DATE/$PRESERVED_COMMIT_DATE}"
         hist="${hist//\$AUTHOR/$PRESERVED_COMMIT_AUTHOR}"
+        local hist_out
         if [ "$HISTORY_ASIS" = "yes" ]; then
-            echo "$hist"
+            hist_out="$hist"
         else
-            echo "${block_start}${line_comment} $hist $block_end"
+            hist_out="${block_start}${line_comment} $hist $block_end"
+        fi
+        local existing duplicate=""
+        for existing in "${OLD_HISTORY_LINES[@]}"; do
+            if [ "$existing" = "$hist_out" ]; then
+                duplicate="yes"
+                break
+            fi
+        done
+        if [ -z "$duplicate" ]; then
+            echo "$hist_out"
         fi
     fi
 
