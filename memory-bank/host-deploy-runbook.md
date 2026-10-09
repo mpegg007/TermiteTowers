@@ -1,18 +1,18 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: memory-bank/host-deploy-runbook.md:171 % -->
+<!-- %ccm_git_object_id: memory-bank/host-deploy-runbook.md:179 % -->
 <!-- %ccm_git_author: mpegg % -->
 <!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: 387354368bd57be9da363d312103820a14bfc8e0 % -->
-<!-- %ccm_git_commit_id: ee3eae8346d8982d0467de7e5b42579865765a24 % -->
-<!-- %ccm_git_commit_count: 171 % -->
-<!-- %ccm_git_commit_date: 2026-10-04 16:25:37 -0400 % -->
+<!-- %ccm_git_blob_sha: afdc02ac24cfb0e00f580dda0cbc739db9e43974 % -->
+<!-- %ccm_git_commit_id: 5374d00e1d9cc50947a2b000c73308e0263dce3c % -->
+<!-- %ccm_git_commit_count: 179 % -->
+<!-- %ccm_git_commit_date: 2026-10-08 20:03:29 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
 <!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: cleanup % -->
-<!-- %ccm_git_modify_date: 2026-10-04 16:25:37 % -->
-<!-- %ccm_git_file_last_modified: 2026-10-04 12:36:40 % -->
+<!-- %ccm_git_commit_message: impl www from prd branch % -->
+<!-- %ccm_git_modify_date: 2026-10-08 20:03:29 % -->
+<!-- %ccm_git_file_last_modified: 2026-10-08 19:56:25 % -->
 <!-- %ccm_git_file_name: host-deploy-runbook.md % -->
 <!-- %ccm_git_path: memory-bank/host-deploy-runbook.md % -->
 <!-- %ccm_git_language_mode: markdown % -->
@@ -20,8 +20,9 @@
 <!-- %ccm_git_file_encoding: utf-8 % -->
 <!-- %ccm_git_file_eol: CRLF % -->
 <!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 19598 % -->
+<!-- %ccm_git_size: 22139 % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+ <!-- %git_commit_history: 2026-10-04 mpegg  cleanup  --> 
 # Host deploy runbook — bootstrapping a `<svc>-deploy` runner + `/srv/<env>/<svc>` prod dir
 
 > How to stand up a **new** GitHub Actions self-hosted runner and its production
@@ -391,6 +392,26 @@ line — point pip at the sub-package (or add root packaging):
   run: /srv/prd/tt/.venv/bin/python -m pip install -e /srv/prd/tt/water-meter
 ```
 
+**Decision 2026-10-07 — defer the fix, the red X is *tolerated*, not ignored.**
+
+TT prod does not currently use `water-meter`, so the failing step is left
+as-is on purpose. The safety argument is structural: `Synchronize approved
+revision` (rsync) is **step 1** of the job, so a repo → `/srv/prd/tt/` sync
+completes *before* this trailing step ever runs — the deployment lands even
+though the job as a whole reports `Failed`. Practical rule: **watch step 1
+for green; treat this step's failure as expected.**
+
+When a real Python-dependency need appears, choose **Option B** (repo-wide),
+not Option A — TT is not only `water-meter`:
+
+- **B1** — add a root `pyproject.toml` describing TT's actual packages (or a
+  minimal `setup.py`); the workflow line stays `pip install -e /srv/prd/tt`.
+- **B2** — add a root `requirements.txt` and change the step to
+  `pip install -r /srv/prd/tt/requirements.txt`.
+
+Option A (repoint at `/srv/prd/tt/water-meter`) is **rejected**: it hard-couples
+prod deploys to one sub-project that prod may never run.
+
 ### 8.9 `concurrency.group` is copy-pasted from JAH
 
 TT's and AA's deploy workflows both still say `group: jah-prd-deploy`. Concurrency
@@ -430,7 +451,10 @@ Runner labels: `jah-prd`, `tt-prd`, `aa-prd` (each + the built-in three).
 - Commit `40282aa` ("deploy-prd fix") did **not** touch the pip line — it only
   **removed the `test` job** from the workflow. The pip line is unchanged on both
   `dev1` and `origin/prd`.
-- Fix: repoint pip at `/srv/prd/tt/water-meter` (§8.8).
+- **Tolerated for now (decision 2026-10-07):** file deployment is unaffected
+  (rsync is step 1 and succeeds); the pip fix is **deferred** until a Python
+  dep is actually needed — then Option B (root packaging), see §8.8. A red run
+  is the expected state; check step 1, not the job conclusion.
 
 ## 10. Re-verify this snapshot
 

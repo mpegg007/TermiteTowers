@@ -1,18 +1,18 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: infra/nginx/RELOCATION-PLAN.md:177 % -->
+<!-- %ccm_git_object_id: infra/nginx/RELOCATION-PLAN.md:179 % -->
 <!-- %ccm_git_author: mpegg % -->
 <!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: 266bab6ec23f33349572c17f4606dbb921a0fbf1 % -->
-<!-- %ccm_git_commit_id: cb13d8f4b660ac68d925e62910e996ead5fe260d % -->
-<!-- %ccm_git_commit_count: 177 % -->
-<!-- %ccm_git_commit_date: 2026-10-07 21:15:42 -0400 % -->
+<!-- %ccm_git_blob_sha: 675709bd1b3e8e8b85f2cf5d5d05f73ca34b74f4 % -->
+<!-- %ccm_git_commit_id: 5374d00e1d9cc50947a2b000c73308e0263dce3c % -->
+<!-- %ccm_git_commit_count: 179 % -->
+<!-- %ccm_git_commit_date: 2026-10-08 20:03:29 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
 <!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: migration scripts % -->
-<!-- %ccm_git_modify_date: 2026-10-07 21:15:42 % -->
-<!-- %ccm_git_file_last_modified: 2026-10-07 21:14:38 % -->
+<!-- %ccm_git_commit_message: impl www from prd branch % -->
+<!-- %ccm_git_modify_date: 2026-10-08 20:03:29 % -->
+<!-- %ccm_git_file_last_modified: 2026-10-08 19:46:35 % -->
 <!-- %ccm_git_file_name: RELOCATION-PLAN.md % -->
 <!-- %ccm_git_path: infra/nginx/RELOCATION-PLAN.md % -->
 <!-- %ccm_git_language_mode: markdown % -->
@@ -20,8 +20,9 @@
 <!-- %ccm_git_file_encoding: utf-8 % -->
 <!-- %ccm_git_file_eol: CRLF % -->
 <!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 5811 % -->
+<!-- %ccm_git_size: 9009 % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+ <!-- %git_commit_history: 2026-10-07 mpegg  migration scripts  --> 
 # Nginx Site Config Relocation — `/etc/nginx` → `/srv/prd/tt`
 
 **Status:** ✅ APPLIED & VERIFIED (2026-10-07 21:13). `sites-available` symlinks
@@ -43,6 +44,40 @@ web roots, no physical move of config files.
 - Backup: `/var/backups/nginx-symlinks-20261007-211336.tgz`
   (+ `.manifest` of the pre-change `link -> target` layout).
 - `/srv/prd/tt/infra/nginx/sites-available` holds all **42** `.conf` (matches authoring repo).
+
+---
+
+## Run record - web roots `/var/www/*` -> mirror symlinks
+
+**Status:** SCRIPT READY, APPLY PENDING. `scripts/www-relocate-to-srv.sh` is
+authored, dry-run-validated, and self-escalates **once** via sudo. The swap has
+**not** been applied yet - the mirror must first carry the published page (the
+ordering guard below blocks an early link).
+
+- **Goal:** end perms/ownership drift between hand-copied `/var/www/chat` and the
+  CI tree by making the docroot a symlink into the mirror:
+  `/var/www/chat` -> `/srv/prd/tt/infra/nginx/www/chat`.
+- **No conf change:** `chat.conf` keeps `root /var/www/chat`; nginx resolves the
+  path *through* the symlink. `media.conf` and `immich.conf`'s
+  `alias /var/www/tag-viewer/` are untouched (`tag-viewer` is owned by its own
+  service and is refused by the script).
+- **Ordering guard (default on):** the script `diff -rq`'s the mirror against the
+  repo source `infra/nginx/www/<name>` and **aborts** when they differ, so an
+  un-published page can never be linked live early. Bypass: `--no-sync-check`.
+- **Publish path shifts:** after the swap, live content updates only via
+  `dev1 -> prd` merge -> push -> `deploy-prd.yml` rsync (no longer the dev1
+  working tree).
+- **`scripts/deploy-www.sh` is now fail-closed:** it refuses to run when a
+  destination is a symlink (it would otherwise `cp -a`/`chown -R` through the link
+  into the mirror, desyncing it from git until the next `rsync --delete`).
+- **Run (exactly one sudo password prompt):**
+  ```bash
+  bash scripts/www-relocate-to-srv.sh --dry-run          # preview, no sudo
+  bash scripts/www-relocate-to-srv.sh                    # apply chat
+  bash scripts/www-relocate-to-srv.sh --include-media    # apply chat + media
+  ```
+- **Rollback:** `sudo tar -xzf /var/backups/www-relocate-<ts>.tgz -C /var/www &&
+  sudo systemctl reload nginx`.
 
 ---
 
@@ -135,8 +170,9 @@ sudo systemctl reload nginx
    - new page becomes `www/chat/index.html`; classic moves to
      `www/chat/classic.html` (served by `chat.conf`, `root /var/www/chat`).
    - remove the dead **`calendars`** tile (conf exists but is not enabled).
-   - deploy with `bash scripts/deploy-www.sh` (copies to `/var/www/chat`,
-     `/var/www/media`).
+   - publish via a `dev1 -> prd` merge (CI rsync), then
+     `bash scripts/www-relocate-to-srv.sh` to (re)point `/var/www/chat` at the
+     mirror. `scripts/deploy-www.sh` is retired to a fail-closed guard.
 2. **CI auto-enable** — consider having `deploy-prd.yml` re-assert the
    `sites-enabled` links after the rsync so a fresh `/srv/prd/tt` can never
    leave a site unlinked.
