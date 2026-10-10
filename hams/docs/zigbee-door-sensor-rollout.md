@@ -1,18 +1,18 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: hams/docs/zigbee-door-sensor-rollout.md:172 % -->
+<!-- %ccm_git_object_id: hams/docs/zigbee-door-sensor-rollout.md:180 % -->
 <!-- %ccm_git_author: mpegg % -->
 <!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: 9df0aa6a1be0b146f88789816a9548d1ea61b5be % -->
-<!-- %ccm_git_commit_id: 7ca87689c10da1e8ecebbe33bc2b42897f22b48c % -->
-<!-- %ccm_git_commit_count: 172 % -->
-<!-- %ccm_git_commit_date: 2026-10-05 20:46:08 -0400 % -->
+<!-- %ccm_git_blob_sha: e909a11b8f0decb776adb1a98d1be7de1c520900 % -->
+<!-- %ccm_git_commit_id: 651174b57b6dfae26ac61a80bd881def1c06c971 % -->
+<!-- %ccm_git_commit_count: 180 % -->
+<!-- %ccm_git_commit_date: 2026-10-10 18:08:21 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
 <!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: house layout + routines docs % -->
-<!-- %ccm_git_modify_date: 2026-10-05 20:46:09 % -->
-<!-- %ccm_git_file_last_modified: 2026-10-05 20:42:32 % -->
+<!-- %ccm_git_commit_message: docs(hal): correct stale audit facts against live HA % -->
+<!-- %ccm_git_modify_date: 2026-10-10 18:08:22 % -->
+<!-- %ccm_git_file_last_modified: 2026-10-10 18:07:43 % -->
 <!-- %ccm_git_file_name: zigbee-door-sensor-rollout.md % -->
 <!-- %ccm_git_path: hams/docs/zigbee-door-sensor-rollout.md % -->
 <!-- %ccm_git_language_mode: markdown % -->
@@ -20,9 +20,12 @@
 <!-- %ccm_git_file_encoding: utf-8 % -->
 <!-- %ccm_git_file_eol: CRLF % -->
 <!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 28068 % -->
+<!-- %ccm_git_size: 38049 % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
- <!-- %git_commit_history: 2026-09-25 mpegg  cleanup  --> 
+ <!-- %git_commit_history: 2026-10-08 mpegg  impl www from prd branch  --> 
+ <!-- %git_commit_history: 2026-10-08 mpegg  impl www from prd branch  -->
+ <!-- %git_commit_history: 2026-10-05 mpegg  house layout + routines docs  -->
+ <!-- %git_commit_history: 2026-09-25 mpegg  cleanup  -->
 # Zigbee door/contact sensor rollout
 
 > **What this is:** the working plan *and* live status for deploying the spare
@@ -257,6 +260,34 @@ action is the design flaw in item 4), `bedroom-door-closed-arms-sleep` (duplicat
 `matt-leaves-bathroom`'s arming and moved the timing earlier) and `bedroom-wake-release` (folded
 into `bedroom-door-opened-morning`).
 
+`bedroom-sleep-now` belongs in that list too, and for a sharper reason than the other three: it
+shared a **byte-identical trigger** with `headboard-kill-all` — `device_id:
+13679e4c48ddb27fb80f0fecb9a6af0f`, `subtype: single`, `conditions: []` — so the two could never both
+be enabled. One press of the bed gesture would have fired both.
+
+**Corrected 2026-10-10 (live-verified): `bedroom-sleep-now` was *deleted*, not left disabled.** It
+is absent from the live automation roster (50 automations; `ha_search("bedroom_sleep_now")` → 0
+entity + 0 config matches; `ha_get_entity` → `Entity not found`), so the shared-trigger hazard is
+gone rather than merely suppressed. The "never re-enable it" advice below is therefore moot — there
+is nothing left to re-enable.
+
+The two are not twins, they are successive versions. `bedroom-sleep-now` carried id
+`1775354224079` (≈ 2026-04-04) and `headboard-kill-all` id `1789083976341` (≈ 2026-09-10) — about
+159 days apart — and `headboard-kill-all` is a **functional superset that absorbed it**: every light
+and area `bedroom-sleep-now` turned off, `headboard-kill-all` also turns off (plus the Green Room
+table light, `light.smart_light_23061297829567590a0148e1e9ca187f`, the office/library cluster, the
+other powerbar outlets and `switch.tl_simple_switch`). The live `headboard-kill-all` `description`
+confirms the absorption: *"Merged from bedroom.sleep.now: adds the Green Room table light
+(`light.plug_green_tablelight`) and turns the TV off via `media_player.turn_off`."*
+
+**Corrected 2026-10-10 (live-verified): the claim that `light.plug_green_tablelight` is "the one
+thing `headboard-kill-all` does not cover" is wrong.** The live `headboard-kill-all` config lists
+`light.plug_green_tablelight` ("Glass Table Light") in its `light.turn_off` target list, and a
+repo-wide `ha_search("plug_green_tablelight")` returns exactly **one** config match — `headboard_kill_all`
+itself (0 entities, 0 scripts, 0 scenes, 0 helpers, 0 dashboards). So the Glass Table Light is
+already in the bedtime kill list and the open question this section used to flag is **closed**:
+nothing needs adding anywhere.
+
 ### First-night review — 2026-09-25 (passed)
 
 The magnet fix held. The door shows genuine sustained closed states overnight — **3 h 15 m**
@@ -292,7 +323,7 @@ bathroom lights off manually, so no fault — but the exposure is real.) The mas
 | `tv-off-lights-out`, `headboard-kill-all` | turn off all five powerbar entries |
 | `scene.mpegg_bedtime_tv` | both light wrappers → off |
 | `scene.daytime` | `light.tl_usb_4way_powerstrip_outlet_1_2` → off (observed live: `Daytime` activated 07:01:17, `switch...outlet_1` off at 07:01:18) |
-| `bedroom-sleep-now` (disabled) | off |
+| `bedroom-sleep-now` (deleted 2026-10-10) | n/a — absorbed into `headboard-kill-all`, which turns these outlets off |
 
 So anything the morning macro switches on there can be killed by a TV-off or by the Daytime scene.
 The naming on that device is also crossed — switches `outlet_1`/`outlet_2` are "sink light"/"main
@@ -350,7 +381,7 @@ white. Pre-existing behaviour; this rollout never touched it.
 - **Front door (Entry)** → `binary_sensor.front_door`. The quiet set: *ajar while `lock.termite_towers` reports `locked`* (a U-Bolt has **no door-position sensor** and is a **SmartThings cloud** device, so "locked but not latched" is invisible today) → notify + `camera.front_door_live_view` snapshot; *opens 23:00–06:00 with `anyone_home` off* → notify + Ring snapshot; *same window with someone home* → **`logbook.log` only, zero notifications**; plus patching `door_layer_cross_check` to use a local sensor instead of two cloud ones.
 - **Deck door (upper deck, off the bedroom)** → quiet announce after 30 min open with the bedroom empty. A single contact cannot distinguish "winter cooling by design" from "left open" — that needs the **main + screen pair**.
 - **PIR #1 → 2nd Hallway**, **PIR #2 → Master Bath**.
-- **`button-bedhead-steve`** → added as an extra trigger to the existing `bedroom.sleep.now`, `badtime.tv` and `headboard-kill-all` (today the entire bed-gesture system is `button-bedhead-matt` only).
+- **`button-bedhead-steve`** → added as an extra trigger to the existing `badtime.tv` and `headboard-kill-all` (today the entire bed-gesture system is `button-bedhead-matt` only). `bedroom.sleep.now` is deliberately **not** in that list: it is superseded by `headboard-kill-all` (which absorbed its config, including the Glass Table Light), shared its exact single-press trigger, and **has since been deleted** — there is nothing left to add (see "Superseded" above).
 - **A generic `doors-open-while-away`** across all contacts, `for: 2 min`.
 
 ## House facts that shaped the plan
@@ -407,3 +438,116 @@ ha_get_logs                source="logbook", entity_id="binary_sensor.catio_door
 - `hams/inventory/` still holds a placeholder device file (example MACs), and the
   `snipeit` schema referenced by `hal-context.md` / `wiki/agent-index.md` **does
   not exist** in `ttdb`, so nothing machine-readable tracks spare hardware.
+
+## Verification note — 2026-10-08 (read-only pass)
+
+A read-only pass over the three deployed contacts and every automation that consumes them.
+**Nothing was changed.** States, timestamps, traces and automation configs below were all
+queried live through `hal-mcp` on 2026-10-08 (HA timezone `America/Toronto`). The file's CCM
+header was refreshed at the end of the pass so its metadata matches the new content.
+
+### The contacts are alive and reporting
+
+| Entity | State | Last state change | Behaviour |
+|---|---|---|---|
+| `binary_sensor.bedroom_door` | `on` | 2026-10-08 07:58:21 | ~80 state changes in the 8-day window read here; normal open/close cycling plus long night-time `off` holds (6 h 19 m, 3 h 52 m, 3 h 41 m …) |
+| `binary_sensor.catio_door` | `on` | 2026-10-08 19:36:30 | 99 transitions in the 10-day window |
+| `binary_sensor.sauna_door` | `on` | 2026-10-07 08:21:12 | **zero** genuine transitions — expected, see below |
+
+The `sauna_door` row is not a fault. The sauna contact is normally **open** (`on`), so the cat's
+water-bowl access reads as "open" continuously; `sauna-door-cat-water-guard` has
+`last_triggered: null` because it exists for the opposite event (door **closed** on the bowl).
+Its `2026-10-07 08:21:12` timestamp is the Zigbee2MQTT/HA restart (`unavailable` 08:05:01 →
+`unknown` 08:21:12 → `on`), not a door movement.
+
+The automations that consume the contacts all ran today, which proves the chain end-to-end
+(radio → contact → entity → automation):
+
+| Automation | Last successful run |
+|---|---|
+| `bedroom-door-verified-shut` (arms the gate) | 2026-10-08 07:13:06 |
+| `bedroom-door-opened-night` | 2026-10-08 00:07:02 |
+| `bedroom-night-settled-reset` | 2026-10-08 12:00:00 |
+| `catio-door-indicator` | 2026-10-08 19:36:30 |
+
+### Open finding — `bedroom-door-closed-settle-in` has been blocked since 2026-09-30
+
+The settle-in is the only automation that latches `input_boolean.bedroom_night_settled`, and the
+morning step-up is gated on that latch. Its last successful run was **2026-09-30 21:55:43**; the
+last successful `bedroom-door-opened-morning` was **2026-10-01 08:38:05**.
+
+- **The trigger is healthy.** Every trace begins exactly 5 s after the door reports `off`
+  (22:34:32, 00:07:13, 06:27:09, 07:11:11 …), and every one ends `failed_conditions` — so the
+  door edge is arriving and something downstream is rejecting it.
+- **The blocker is the room-lit condition.** In the detailed trace of the in-window run at
+  **2026-10-07 22:34:32** (door `off` at 22:34:27, latch clear, `mwave_bedroom_presence` `on`),
+  conditions 0–2 pass and **condition 3 fails**, resolved against the first entity in its list:
+
+  | # | Condition | Entities | Result |
+  |---|---|---|---|
+  | 0 | time 21:00–05:30 | — | ✔ |
+  | 1 | `input_boolean.bedroom_night_settled` is `off` | — | ✔ |
+  | 2 | someone in the room | `binary_sensor.mwave_bedroom_presence` | ✔ |
+  | 3 | room is lit | `light.panel_light`, `light.tl_bedroom_rgbcw_lightbulb2`, `light.bulb_bedroom_pole_lower`, `light.smart_light_23061297829567590a0148e1e9ca187f` | ✖ |
+
+- **Three of the four listed lights were `on` at that moment** — `tl_bedroom_rgbcw_lightbulb2`,
+  `bulb_bedroom_pole_lower` and the Tuya panel all switched on together at 22:32:39. The only
+  dark one was **`light.panel_light`**, `off` continuously since 2026-10-07 14:37:06 with no
+  transitions in the 30-hour window. HA's multi-entity `state` condition is a conjunction
+  (demonstrated by exactly this trace: three of four matched and it still failed), so a single
+  permanently-off lamp in that list vetoes the whole settle-in.
+- **Knock-on.** With no latch set since 09-30, `bedroom-door-opened-morning` fails on
+  **condition 1 (the latch)** — confirmed in its 2026-10-08 07:58:21 trace — so the dim-orange
+  wake step has been dark since 2026-10-01. The bedtime scene/TV re-assert, the very-dim-red
+  night path and the library-pole-off have likewise not been applied by this automation since
+  2026-09-30.
+
+Not fixed here, by design (read-only pass). Options for whoever picks it up: drop
+`light.panel_light` from that condition, relax it to an any-of match (`match: any`, or an `or`
+block), or fix whatever used to switch `panel_light` on. Worth deciding separately whether "room
+lit" should be an illuminance or scene test rather than a hard-coded lamp list — note that the
+night path this automation applies only ever turns on `bulb_secondfloor_stair_hallway`,
+`bulb_masterbath_ceiling_light` and `tl_bedroom_rgbcw_lightbulb1`, **none** of which appear in
+the condition's list.
+
+### The windows printed in the choreography table above are stale
+
+The 05:30 split was implemented, but the table under *"The gate and the reworked bedtime
+choreography"* still prints the pre-split values. Live configs read during this pass:
+
+| Automation | Window (live config) | Table says |
+|---|---|---|
+| `bedroom-door-opened-night` | 21:00 → **05:30** | 21:00 → 06:00 |
+| `bedroom-door-closed-settle-in` | 21:00 → **05:30** | 21:00 → 06:00 |
+| `bedroom-door-opened-morning` | **05:30** → 12:00 | 05:00 → 12:00 |
+
+`bedroom_asleep` is a third, separate entity (`hour >= 21 or hour < 6`) — three entities, three
+purposes, no conflict.
+
+### Threads closed in this pass
+
+- **"Nothing has fired since 2026-09-24."** The three automations retired in the rework are still
+  present and switched **off** (`state: off`; registry `enabled: true`, re-verified 2026-10-10):
+  `bedroom-night-exit-nightlight`, `bedroom-door-closed-arms-sleep`, `bedroom-wake-release`.
+  Quietness there is the intended outcome.
+- **No `linkquality` data.** All three entities exist but are registry-disabled by the
+  integration: `sensor.0xa4c13881970be516_linkquality`,
+  `sensor.0xa4c13849ae8c0a3a_linkquality` and `sensor.0xa4c138d17e20fd58_linkquality` each read
+  `disabled_by: integration`, `enabled: false`. They therefore have no state and never appear in
+  entity searches. Enable them if signal quality is wanted while commissioning the remaining
+  devices.
+- **Search caveat — RESOLVED 2026-10-10.** The one automation that was unreadable through
+  `/config/automation/config` (404) was `automation.llm_hooktest_1`, and it was **not** a
+  YAML-defined automation: it was a config-less *registry* orphan (the REST 404 came from having no
+  body anywhere — there is no `automations.yaml` in the repo). It has been removed with
+  `ha_remove_entity`, so the 404 is gone and automation-config searches no longer have a blind
+  spot. See [hal-context.md](hal-context.md) §7.
+- **This file's CCM header** says `%ccm_git_file_eol: CRLF` while the file is LF-only (zero CR
+  bytes) — and refreshing the header does **not** correct it. The CCM EOL probe
+  (`git-automation/v2/ccm-lib.sh`, and the same line in `update-ccm-header.sh`) tests
+  `grep -q $'\r\n' "$file"`, whose pattern splits into CR plus an empty alternative; the empty
+  alternative matches every line, so the probe reports **CRLF for any text file** — verified by
+  running it against a file containing no CR byte at all, which still returned CRLF. Trust the
+  bytes (`grep -c $'\r' <file>`), not the field. Left as-is here: shared hook tooling, not this
+  document's business.
+

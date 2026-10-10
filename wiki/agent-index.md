@@ -1,18 +1,18 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: wiki/agent-index.md:159 % -->
+<!-- %ccm_git_object_id: wiki/agent-index.md:180 % -->
 <!-- %ccm_git_author: mpegg % -->
 <!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: a9ce9caff257acd203d10fa9bcff9f2e22dc976c % -->
-<!-- %ccm_git_commit_id: a435f33611dd9ddaac99463aaf9e6f6ec0d40c66 % -->
-<!-- %ccm_git_commit_count: 159 % -->
-<!-- %ccm_git_commit_date: 2026-09-25 21:16:05 -0400 % -->
+<!-- %ccm_git_blob_sha: fbfb5af12789a93c1f6b05a7aec83af2bfb69cc4 % -->
+<!-- %ccm_git_commit_id: 651174b57b6dfae26ac61a80bd881def1c06c971 % -->
+<!-- %ccm_git_commit_count: 180 % -->
+<!-- %ccm_git_commit_date: 2026-10-10 18:08:21 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
 <!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: docs: mark Homarr retired in the network map and agent index % -->
-<!-- %ccm_git_modify_date: 2026-09-25 21:16:05 % -->
-<!-- %ccm_git_file_last_modified: 2026-09-25 21:15:58 % -->
+<!-- %ccm_git_commit_message: docs(hal): correct stale audit facts against live HA % -->
+<!-- %ccm_git_modify_date: 2026-10-10 18:08:22 % -->
+<!-- %ccm_git_file_last_modified: 2026-10-10 16:07:09 % -->
 <!-- %ccm_git_file_name: agent-index.md % -->
 <!-- %ccm_git_path: wiki/agent-index.md % -->
 <!-- %ccm_git_language_mode: markdown % -->
@@ -20,8 +20,9 @@
 <!-- %ccm_git_file_encoding: utf-8 % -->
 <!-- %ccm_git_file_eol: CRLF % -->
 <!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 3020 % -->
+<!-- %ccm_git_size: 4519 % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+ <!-- %git_commit_history: 2026-09-25 mpegg  docs: mark Homarr retired in the network map and agent index  --> 
 # Agent Index — TermiteTowers
 
 > The single entry point for AI-agent sessions (and any human who wants the same
@@ -80,8 +81,11 @@ dozzle, ha-hal-bridge, ha-handler, water-meter, vault, ollama, …).
 - **Wiki.js is deprecated and on hold** — do not decommission it yet. MkDocs is the live wiki.
 - **Homarr is retired (2026-09-26)** - container removed, the `home` vhost disabled, compose + env files deleted. `wiki/runbook-homarr.md` carries the revival path.
 - Node-RED add-on is stopped and a candidate for removal — back up its flows first.
-- One YAML-defined automation (`automation.llm_hooktest_1`) is invisible to the REST
-  config API — account for it in any "scan all automations".
+- The phantom "YAML-defined automation" (`automation.llm_hooktest_1`) is **gone**
+  (deleted 2026-10-10). It was a config-less *registry* orphan — no YAML body ever
+  existed and the repo has **no `automations.yaml`**; the stale registry entry
+  (`unique_id: office_light_webhook`) was removed with `ha_remove_entity`. There is
+  no longer a blind spot in any "scan all automations".
 - MkDocs publishes only `*.md` (plus stylesheets); every other repo file (env files,
   secrets, scripts) is excluded by `mkdocs.yml`.
 

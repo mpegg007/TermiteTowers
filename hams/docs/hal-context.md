@@ -1,18 +1,18 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: hams/docs/hal-context.md:172 % -->
+<!-- %ccm_git_object_id: hams/docs/hal-context.md:180 % -->
 <!-- %ccm_git_author: mpegg % -->
 <!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: c62d0ef3bce968e7b3cf896e0045423791418380 % -->
-<!-- %ccm_git_commit_id: 7ca87689c10da1e8ecebbe33bc2b42897f22b48c % -->
-<!-- %ccm_git_commit_count: 172 % -->
-<!-- %ccm_git_commit_date: 2026-10-05 20:46:08 -0400 % -->
+<!-- %ccm_git_blob_sha: 53da6e7a917166ee0d4efd2c2676888cac9d3d65 % -->
+<!-- %ccm_git_commit_id: 651174b57b6dfae26ac61a80bd881def1c06c971 % -->
+<!-- %ccm_git_commit_count: 180 % -->
+<!-- %ccm_git_commit_date: 2026-10-10 18:08:21 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
 <!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: house layout + routines docs % -->
-<!-- %ccm_git_modify_date: 2026-10-05 20:46:09 % -->
-<!-- %ccm_git_file_last_modified: 2026-10-05 20:20:28 % -->
+<!-- %ccm_git_commit_message: docs(hal): correct stale audit facts against live HA % -->
+<!-- %ccm_git_modify_date: 2026-10-10 18:08:22 % -->
+<!-- %ccm_git_file_last_modified: 2026-10-10 18:07:19 % -->
 <!-- %ccm_git_file_name: hal-context.md % -->
 <!-- %ccm_git_path: hams/docs/hal-context.md % -->
 <!-- %ccm_git_language_mode: markdown % -->
@@ -20,10 +20,10 @@
 <!-- %ccm_git_file_encoding: utf-8 % -->
 <!-- %ccm_git_file_eol: CRLF % -->
 <!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 18305 % -->
+<!-- %ccm_git_size: 19790 % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
- <!-- %git_commit_history: 2026-10-01 Matthew Pegg  hal.1001.bosman  --> 
-<!-- %git_commit_history: 2026-09-25 mpegg  cleanup  % -->
+ <!-- %git_commit_history: 2026-10-05 mpegg  house layout + routines docs  --> 
+ <!-- %git_commit_history: 2026-10-01 Matthew Pegg  hal.1001.bosman  -->
 <!-- %git_commit_history: 2026-09-25 mpegg  cleanup  % -->
 # HAL Context — Home Assistant instance snapshot
 
@@ -36,7 +36,7 @@
 > **always be queried live** (see "Do not trust here" at the bottom). A context
 > doc shortens discovery; it never authorizes an action.
 
-- **Last refreshed:** 2026-10-01 (automation inventory + bedroom-door latch chain; remaining sections as-of 2026-09-15)
+- **Last refreshed:** 2026-10-10 (automation inventory + bedroom-door latch chain; remaining sections as-of 2026-09-15)
 - **Maintained by:** regenerated from the `hal-mcp` MCP tools (see "How to refresh")
 - **Related docs (one leads to another):**
   - [SKILL.md](SKILL.md) — HA development skill (triggers on "HAL")
@@ -135,7 +135,7 @@ Each exposes `binary_sensor.mwave_<room>_presence` (the occupancy signal).
 
 ## 5. Automation inventory (SLOW — partial detail, regenerate for full)
 
-**52** automations exist (`42 on` / `9 off` / `1 unavailable` as of 2026-10-01; query returned `partial:false`).
+**50** automations exist (`42 on` / `8 off` as of 2026-10-10; query returned `partial:false`).
 Fully-inspected ones are described below; the rest are name-only.
 
 > A name-only list of **40** was recorded here through 2026-09-15. It silently omitted **12** automations —
@@ -178,8 +178,8 @@ Verified in detail:
   per automation (`has_more:false`), so the absence of a post-reload run is on its own weak evidence; it is the
   un-moved `last_triggered` that makes the case.
 
-Full entity list (**52**, complete as of 2026-10-01):
-`badtime_tv`, `bedroom_dark`, `bedroom_door_closed_arms_sleep`, `bedroom_door_closed_settle_in`, `bedroom_door_opened_morning`, `bedroom_door_opened_night`, `bedroom_door_verified_shut`, `bedroom_night_exit_nightlight`, `bedroom_night_settled_reset`, `bedroom_sleep_now`, `bedroom_wake_release`, `boiler_off`, `catio_at_dawn`, `catio_at_dusk`, `catio_door_indicator`, `catio_door_open_when_away`, `cattic_off`, `door_layer_alert`, `door_layer_cross_check`, `door_unlocked_too_long`, `glucose_over_7`, `headboard_kill_all`, `kitchen_motion`, `l40_clean_cat_box_on_litter_robot_cycle`, `library_pole_bedtime_fade`, `lights_on_basement`, `llm_hooktest_1` (YAML-defined, see gotchas), `matt_bedtime_armed_reset`, `matt_bedtime_prep`, `matt_falls_asleep`, `matt_leaves_bathroom`, `matt_lights_bathroom`, `matt_morning_macro_auto`, `matt_morning_macro_reset`, `matt_office_daytime_after_shower`, `matt_shower_detected`, `matt_shower_done_reset`, `morning_boiler`, `office_light_status`, `omp_bedtime`, `sauna_door_cat_water_guard`, `sleep_cool_off`, `sleep_temp`, `sleep_trigger`, `steve_enters_home`, `steve_morning_greeting`, `turn_off_office_lights`, `turn_on_cattic_lights`, `turn_on_office_lights`, `tv_off_lights_out`, `water_meter`, `witness_watchdog_alert`.
+Full entity list (**50**, complete as of 2026-10-10):
+`badtime_tv`, `bedroom_dark`, `bedroom_door_closed_arms_sleep`, `bedroom_door_closed_settle_in`, `bedroom_door_opened_morning`, `bedroom_door_opened_night`, `bedroom_door_verified_shut`, `bedroom_night_exit_nightlight`, `bedroom_night_settled_reset`, `bedroom_wake_release`, `boiler_off`, `catio_at_dawn`, `catio_at_dusk`, `catio_door_indicator`, `catio_door_open_when_away`, `cattic_off`, `door_layer_alert`, `door_layer_cross_check`, `door_unlocked_too_long`, `glucose_over_7`, `headboard_kill_all`, `kitchen_motion`, `l40_clean_cat_box_on_litter_robot_cycle`, `library_pole_bedtime_fade`, `lights_on_basement`, `matt_bedtime_armed_reset`, `matt_bedtime_prep`, `matt_falls_asleep`, `matt_leaves_bathroom`, `matt_lights_bathroom`, `matt_morning_macro_auto`, `matt_morning_macro_reset`, `matt_office_daytime_after_shower`, `matt_shower_detected`, `matt_shower_done_reset`, `morning_boiler`, `office_light_status`, `omp_bedtime`, `sauna_door_cat_water_guard`, `sleep_cool_off`, `sleep_temp`, `sleep_trigger`, `steve_enters_home`, `steve_morning_greeting`, `turn_off_office_lights`, `turn_on_cattic_lights`, `turn_on_office_lights`, `tv_off_lights_out`, `water_meter`, `witness_watchdog_alert`.
 
 The **12** names added on 2026-10-01 (absent from the earlier 40-name list) are the eight door-chain members
 detailed above — `bedroom_door_closed_arms_sleep`, `bedroom_door_closed_settle_in`,
@@ -200,8 +200,8 @@ detailed above — `bedroom_door_closed_arms_sleep`, `bedroom_door_closed_settle
 
 ## 7. Known gotchas (STATIC)
 
-- **One YAML-defined automation** — `automation.llm_hooktest_1` — is **not** readable via the REST config endpoint (returns 404). Its body lives in `automations.yaml`, not HA storage. Any "scan all automations" must account for this blind spot.
-- **`binary_sensor.bedroom_door` — magnet gap (fixed 2026-09-24; the physical mounting fix is permanent — a sensor-mount fix, not a software gate).** The contact only detected the magnet as it **swept past**, so a shut door read `on` and an `off → on` ("door opened") trigger fired on *closing* — switching off the bedroom night lights at 22:17:46 on 2026-09-23. After moving the magnet the door held `off` continuously for 2 min 51 s. **Guard claim corrected 2026-10-01:** `input_boolean.bedroom_door_verified_shut` is a **latch, not an enforced gate**. The `bedroom-door-verified-shut` automation *sets* it after the door reads `off` for 2 minutes; the door-open automations merely *test* it (`verified_shut = on` AND `night_settled = on` AND a time window). The earlier wording here — that it "requires the door to read `off` for 2 minutes before any 'door opened' automation will run" — described the *intent* and was never verified against runtime behaviour. Under the config loaded at 2026-10-01 08:52:35.866 that latch condition has **zero executions** (no post-reload door-triggered trace; `last_triggered` 08:38:05 predates the reload), and the latch is **consumed by the very door events it guards** then re-armed by the door's own 2-minute debounce. Full mechanic + trace evidence in §5. A plain duration debounce on `on` does **not** work here — after a glitch the state stays `on`. Bedroom logic (`bedroom-door-…` are the automations' **aliases**; the live `entity_id`s use underscores): `automation.bedroom_door_verified_shut`, `automation.bedroom_door_opened_night`, `automation.bedroom_door_opened_morning`, `automation.bedroom_door_closed_settle_in`, `automation.bedroom_night_settled_reset`; the three earlier attempts are disabled (`automation.bedroom_door_closed_arms_sleep`, `automation.bedroom_night_exit_nightlight`, `automation.bedroom_wake_release`, all `off` since 2026-09-24 17:14). Details: [zigbee-door-sensor-rollout.md](zigbee-door-sensor-rollout.md) § Incident log.
+- **`automation.llm_hooktest_1` — RESOLVED & DELETED 2026-10-10 (was a config-less registry orphan, not a YAML automation).** This was a "restored automation" *registry* entry (`unique_id: office_light_webhook`, `config_entry_id: null`, `device_id: null`) with **no body anywhere**: the REST config read returned 404 and `ha_config_remove_automation` returned `400 Resource not found` (HTTP `VALIDATION_FAILED`) because nothing existed at the config layer. **The earlier claim in this section — that its body "lives in `automations.yaml`" — was wrong:** the repo contains **no `automations.yaml`** at all (verified: `find . -name 'automations.yaml'` → no results, and `office_light_webhook` appears in only **2** of the **477** tracked files, both of them audit prose describing this now-deleted orphan — this doc and `wiki/agent-index.md` — never an automation body). **Correct cleanup path for this shape is the registry delete `ha_remove_entity("<entity_id>")`**, which succeeded; the config-remove API is a no-op/400 for a body-less orphan and must not be read as "already deleted". Post-fix verification: `ha_get_entity` → `Entity not found`; `ha_search("llm_hooktest_1")` → 0 entity matches + 0 config matches repo-wide (`partial: false`, `warnings: []`). **No blind spot remains in "scan all automations".**
+- **`binary_sensor.bedroom_door` — magnet gap (fixed 2026-09-24; the physical mounting fix is permanent — a sensor-mount fix, not a software gate).** The contact only detected the magnet as it **swept past**, so a shut door read `on` and an `off → on` ("door opened") trigger fired on *closing* — switching off the bedroom night lights at 22:17:46 on 2026-09-23. After moving the magnet the door held `off` continuously for 2 min 51 s. **Guard claim corrected 2026-10-01:** `input_boolean.bedroom_door_verified_shut` is a **latch, not an enforced gate**. The `bedroom-door-verified-shut` automation *sets* it after the door reads `off` for 2 minutes; the door-open automations merely *test* it (`verified_shut = on` AND `night_settled = on` AND a time window). The earlier wording here — that it "requires the door to read `off` for 2 minutes before any 'door opened' automation will run" — described the *intent* and was never verified against runtime behaviour. Under the config loaded at 2026-10-01 08:52:35.866 that latch condition has **zero executions** (no post-reload door-triggered trace; `last_triggered` 08:38:05 predates the reload), and the latch is **consumed by the very door events it guards** then re-armed by the door's own 2-minute debounce. Full mechanic + trace evidence in §5. A plain duration debounce on `on` does **not** work here — after a glitch the state stays `on`. Bedroom logic (`bedroom-door-…` are the automations' **aliases**; the live `entity_id`s use underscores): `automation.bedroom_door_verified_shut`, `automation.bedroom_door_opened_night`, `automation.bedroom_door_opened_morning`, `automation.bedroom_door_closed_settle_in`, `automation.bedroom_night_settled_reset`; the three earlier attempts are present but switched **off** at runtime — registry `enabled: true`, `disabled_by: null`, i.e. **not** registry-disabled (re-verified 2026-10-10) — `automation.bedroom_door_closed_arms_sleep` and `automation.bedroom_night_exit_nightlight` (`last_triggered` 2026-09-24 04:58 local) and `automation.bedroom_wake_release` (`last_triggered` 2026-09-24 11:55 local). Details: [zigbee-door-sensor-rollout.md](zigbee-door-sensor-rollout.md) § Incident log.
 - **`scene.daytime` whitens the 2nd-floor lights.** It sets `light.bulb_secondfloor_stair_hallway` (5000 K @199) and `light.bulb_masterbath_ceiling_light` (5000 K @184), applied by `automation.matt_office_daytime_after_shower` — so a night-time red night path can jump to bright white when that chain fires.
 - **`mwave-basement` is battery-powered** — battery mmWave can be slow to trigger/clear; prefer mains for "hold the lights" duty.
 - **mmWave false-positives** from heat/fans: keep basement mmWave pointed away from the boiler and vents, mount high and angled down.
