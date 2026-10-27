@@ -68,7 +68,7 @@ file_last_modified=$(stat -c %y "$FILE" 2>/dev/null | cut -d'.' -f1 || echo unkn
 file_name=$(basename "$FILE")
 file_type=$(file --brief --mime-type "$FILE" 2>/dev/null || echo unknown)
 file_encoding=$(file --brief --mime-encoding "$FILE" 2>/dev/null || echo unknown)
-file_eol="$(grep -q $'\r\n' "$FILE" && echo "CRLF" || echo "LF")"
+file_eol="$(bash "$REPO_ROOT/git-automation/detect-eol.sh" "$FILE")"
 file_path=$(git ls-files --full-name -- "$FILE" 2>/dev/null || echo "$FILE")
 
 # --- Language Mode ---

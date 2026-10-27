@@ -220,7 +220,7 @@ insert_ccm_header() {
     file_name=$(basename "$file")
     file_type=$(file --brief --mime-type "$file" 2>/dev/null || echo unknown)
     file_encoding=$(file --brief --mime-encoding "$file" 2>/dev/null || echo unknown)
-    file_eol="$(grep -q $'\r\n' "$file" && echo "CRLF" || echo "LF")"
+    file_eol="$(bash "$REPO_ROOT/git-automation/detect-eol.sh" "$file")"
     file_path="$rel_path"
 
     # Format header with block and line comments
@@ -302,6 +302,13 @@ insert_ccm_header() {
         fi
     } > "$formatted_header"
 
+    # %ccm_git_object_id is <path>@<repo-depth ordinal>. Pre-commit predicts
+    # depth+1 so the field is already correct if post-commit's amend is skipped.
+    local object_depth
+    object_depth=$(git rev-list --count HEAD 2>/dev/null || echo 0)
+    object_depth=$((object_depth + 1))
+    local object_id="${rel_path}@${object_depth}"
+
     # Now update all static and commit-bound fields using a single sed block
     sed -i \
         -e "s|%ccm_git_modify_date: .* %|%ccm_git_modify_date: $modify_date %|g" \
@@ -309,7 +316,7 @@ insert_ccm_header() {
         -e "s|%ccm_git_author_email: .* %|%ccm_git_author_email: $author_email %|g" \
         -e "s|%ccm_git_repo: .* %|%ccm_git_repo: $repo %|g" \
         -e "s|%ccm_git_branch: .* %|%ccm_git_branch: $branch %|g" \
-        -e "s|%ccm_git_object_id: .* %|%ccm_git_object_id: unknown %|g" \
+        -e "s|%ccm_git_object_id: .* %|%ccm_git_object_id: $object_id %|g" \
         -e "s|%ccm_git_commit_id: .* %|%ccm_git_commit_id: unknown %|g" \
         -e "s|%ccm_git_commit_count: .* %|%ccm_git_commit_count: unknown %|g" \
         -e "s|%ccm_git_commit_message: .* %|%ccm_git_commit_message: unknown %|g" \
@@ -450,6 +457,14 @@ for FILE in "${FILES_TO_PROCESS[@]}"; do
     fi
     if ! echo "$MIME_INFO" | grep -qiE '^text/|charset='; then
         echo "[INFO] Skipping $FILE (not a text file)" >> "$LOG_FILE"
+        continue
+    fi
+
+    # NUL-byte check: `file` labels UTF-16LE payloads text/plain, so a charset
+    # test alone lets byte-oriented rewriting corrupt them. NUL means the file
+    # is not line-oriented text and must not receive a header.
+    if [ "$(bash "$REPO_ROOT/git-automation/detect-eol.sh" "$FILE")" = "BINARY" ]; then
+        echo "[INFO] Skipping $FILE (contains NUL bytes; not line-oriented text)" >> "$LOG_FILE"
         continue
     fi
 

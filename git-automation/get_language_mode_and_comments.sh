@@ -24,6 +24,8 @@
 #  %ccm_git_size: 7991 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
+
 file="$1"
 VSCODE_LANGUAGE_MODE="$2"
 
@@ -158,7 +160,7 @@ case "$mode" in
     shellscript|bash|zsh|ksh) line_comment="#" ;;
     python) line_comment="#" ;;
     javascript|typescript|javascriptreact|typescriptreact) line_comment="//"; block_start="/*"; block_end="*/" ;;
-    markdown) block_start="<!--"; block_end="-->" ;;
+    markdown) block_start="<!--"; block_end="-->"; template_file="v2/CCM_MARKDOWN_HEADER_TEMPLATE.txt" ;;
     yaml|yml) line_comment="#" ;;
     xml|html|htm|svg) block_start="<!--"; block_end="-->" ;;
     css|scss|less) block_start="/*"; block_end="*/"; line_comment="//" ;;
@@ -189,6 +191,14 @@ case "$mode" in
     plaintext) line_comment="#" ;;
     json) template_file="CCM_JSON_HEADER_TEMPLATE.txt" ;;
     *) line_comment="#" ;;
+esac
+
+# Line-ending preservation: CRLF / classic-Mac CR files get a CR appended to
+# every header line so the injected block matches the body. Shares its
+# classification with the %ccm_git_file_eol metadata capture path.
+case "$(bash "$SCRIPT_DIR/detect-eol.sh" "$file" 2>/dev/null || echo LF)" in
+    CRLF|CR) line_end=$'\r' ;;
+    *)       line_end="" ;;
 esac
 
 echo "$mode|$block_start|$block_end|$line_comment|$line_end|$template_file"

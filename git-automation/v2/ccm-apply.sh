@@ -43,7 +43,11 @@ extract_preserved_history "$FILE"
 IFS='|' read -r lang_mode block_start block_end line_comment line_end template_file \
     <<< "$(bash "$SCRIPT_DIR/detect-language.sh" "$FILE")"
 
-echo "[INFO] $FILE: lang=$lang_mode block=($block_start,$block_end) comment=$line_comment line_end=$line_end template=$template_file" >&2
+_line_end_label="none"
+if [ -n "$line_end" ]; then
+    _line_end_label="CR"
+fi
+echo "[INFO] $FILE: lang=$lang_mode block=($block_start,$block_end) comment=$line_comment line_terminator=$_line_end_label template=${template_file:-default}" >&2
 
 # ─────────────────────────────────────────────────────────────
 # Step 4: Remove old CCM header (if any)

@@ -14,6 +14,8 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
+
 file="$1"
 VSCODE_LANGUAGE_MODE="${2-}"
 
@@ -182,6 +184,20 @@ case "$mode" in
     plaintext)   line_comment="#" ;;
     json)        template_file="CCM_JSON_HEADER_TEMPLATE.txt" ;;
     *)           line_comment="#" ;;
+esac
+
+# ─────────────────────────────────────────────────────────────────
+# Line-ending preservation.
+#
+# CRLF (and classic-Mac CR) files get a CR appended to every header
+# line by format_ccm_header, so the injected block matches the body
+# instead of introducing mixed endings. LF and BINARY files get
+# nothing. detect-eol.sh is the single source of truth shared with
+# the %ccm_git_file_eol metadata capture path.
+# ─────────────────────────────────────────────────────────────────
+case "$(bash "$SCRIPT_DIR/../detect-eol.sh" "$file" 2>/dev/null || echo LF)" in
+    CRLF|CR) line_end=$'\r' ;;
+    *)       line_end="" ;;
 esac
 
 echo "$mode|$block_start|$block_end|$line_comment|$line_end|$template_file"

@@ -113,7 +113,7 @@ for FILE in "${FILES_TO_PROCESS[@]}"; do
     sed -i \
         -e "s|%ccm_git_commit_id: .* %|%ccm_git_commit_id: $COMMIT_ID %|g" \
         -e "s|%ccm_git_commit_count: .* %|%ccm_git_commit_count: $COMMIT_COUNT %|g" \
-        -e "s|%ccm_git_object_id: .* %|%ccm_git_object_id: $FILE:$COMMIT_COUNT %|g" \
+        -e "s|%ccm_git_object_id: .* %|%ccm_git_object_id: $FILE@$COMMIT_COUNT %|g" \
         -e "s|%ccm_git_commit_message: .* %|%ccm_git_commit_message: $COMMIT_MSG_SAFE %|g" \
         -e "s|%ccm_git_commit_author: .* %|%ccm_git_commit_author: $COMMIT_AUTHOR %|g" \
         -e "s|%ccm_git_commit_email: .* %|%ccm_git_commit_email: $COMMIT_EMAIL %|g" \

@@ -149,7 +149,7 @@ for FILE in "${FILES_TO_PROCESS[@]}"; do
   echo "[DEBUG] Updating CCM fields in $FILE" >> "$LOG_FILE"
   echo "[DEBUG] %ccm_git_commit_id: $ID" >> "$LOG_FILE"
   echo "[DEBUG] %ccm_git_commit_count: $REVISION" >> "$LOG_FILE"
-  echo "[DEBUG] %ccm_git_object_id: $FILE:$REVISION" >> "$LOG_FILE"
+  echo "[DEBUG] %ccm_git_object_id: $FILE@$REVISION" >> "$LOG_FILE"
   echo "[DEBUG] %ccm_git_commit_message (-> %ccm_git_commit_message): $COMMIT_MESSAGE_SAFE" >> "$LOG_FILE"
   echo "[DEBUG] %ccm_git_commit_author: $AUTHOR" >> "$LOG_FILE"
   echo "[DEBUG] %ccm_git_commit_email: $AUTHOR_EMAIL" >> "$LOG_FILE"
@@ -159,7 +159,7 @@ for FILE in "${FILES_TO_PROCESS[@]}"; do
   sed -i \
     -e "s|%ccm_git_commit_id: .* %|%ccm_git_commit_id: $ID %|g" \
     -e "s|%ccm_git_commit_count: .* %|%ccm_git_commit_count: $REVISION %|g" \
-    -e "s|%ccm_git_object_id: .* %|%ccm_git_object_id: $FILE:$REVISION %|g" \
+    -e "s|%ccm_git_object_id: .* %|%ccm_git_object_id: $FILE@$REVISION %|g" \
     -e "s|%ccm_git_commit_message: .* %|%ccm_git_commit_message: $COMMIT_MESSAGE_SAFE %|g" \
     -e "s|%ccm_git_commit_author: .* %|%ccm_git_commit_author: $AUTHOR %|g" \
     -e "s|%ccm_git_commit_email: .* %|%ccm_git_commit_email: $AUTHOR_EMAIL %|g" \

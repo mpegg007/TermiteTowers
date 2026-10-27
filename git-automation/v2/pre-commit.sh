@@ -118,6 +118,15 @@ for FILE in "${FILES_TO_PROCESS[@]}"; do
         continue
     fi
 
+    # NUL-byte check. `file` reports UTF-16LE payloads as text/plain, so a
+    # charset test alone lets byte-oriented header rewriting corrupt them --
+    # that is how the old README.md ended up with an ASCII comment block
+    # spliced into UTF-16LE content. NUL means "not line-oriented", full stop.
+    if [ "$(bash "$SCRIPT_DIR/../detect-eol.sh" "$FILE")" = "BINARY" ]; then
+        echo "[INFO] Skipping $FILE (contains NUL bytes; not line-oriented text)" >> "$LOG_FILE"
+        continue
+    fi
+
     REL_PATH=$(git ls-files --full-name -- "$FILE" 2>/dev/null || echo "$FILE")
     echo "[INFO] Processing $FILE ($REL_PATH)" >> "$LOG_FILE"
 

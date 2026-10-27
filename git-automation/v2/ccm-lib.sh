@@ -8,6 +8,10 @@ set -euo pipefail
 # Bounds the accumulated trail so it can never grow without limit.
 CCM_HISTORY_MAX="${CCM_HISTORY_MAX:-50}"
 
+# Directory this library lives in, resolved from the library itself rather than
+# from the caller's SCRIPT_DIR, so sourcing works from any entry point.
+_CCM_LIB_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
+
 # ─────────────────────────────────────────────────────────────────
 # capture_file_metadata "$file" "$rel_path"
 #
@@ -27,7 +31,7 @@ capture_file_metadata() {
     FILE_NAME=$(basename "$file")
     FILE_TYPE=$(file --brief --mime-type "$file" 2>/dev/null || echo unknown)
     FILE_ENCODING=$(file --brief --mime-encoding "$file" 2>/dev/null || echo unknown)
-    FILE_EOL=$(grep -q $'\r\n' "$file" && echo "CRLF" || echo "LF")
+    FILE_EOL=$(bash "$_CCM_LIB_DIR/../detect-eol.sh" "$file")
     FILE_PATH="$rel_path"
     FILE_BLOB_SHA=$(git hash-object "$file" 2>/dev/null || echo unknown)
 }
@@ -290,13 +294,25 @@ apply_ccm_field_updates() {
     local commit_email="${11:-unknown}"
     local commit_date="${12:-unknown}"
 
+    # %ccm_git_object_id is <path>@<repo-depth ordinal>. post-commit is
+    # authoritative once the commit lands, but pre-commit must still write a
+    # correct value: the post-commit amend is skipped when the branch is behind
+    # upstream, and "unknown" would then leave the field permanently empty.
+    # The pending commit becomes depth+1, so predict that here.
+    local object_depth="$commit_count"
+    if [ -z "$object_depth" ] || [ "$object_depth" = "unknown" ]; then
+        object_depth=$(git rev-list --count HEAD 2>/dev/null || echo 0)
+        object_depth=$((object_depth + 1))
+    fi
+    local object_id="${FILE_PATH}@${object_depth}"
+
     sed -i \
         -e "s|%ccm_git_modify_date: .* %|%ccm_git_modify_date: $FILE_MODIFY_DATE %|g" \
         -e "s|%ccm_git_author: .* %|%ccm_git_author: ${author:-unknown} %|g" \
         -e "s|%ccm_git_author_email: .* %|%ccm_git_author_email: ${author_email:-unknown} %|g" \
         -e "s|%ccm_git_repo: .* %|%ccm_git_repo: ${repo:-unknown} %|g" \
         -e "s|%ccm_git_branch: .* %|%ccm_git_branch: ${branch:-unknown} %|g" \
-        -e "s|%ccm_git_object_id: .* %|%ccm_git_object_id: unknown %|g" \
+        -e "s|%ccm_git_object_id: .* %|%ccm_git_object_id: ${object_id} %|g" \
         -e "s|%ccm_git_commit_id: .* %|%ccm_git_commit_id: ${commit_id} %|g" \
         -e "s|%ccm_git_commit_count: .* %|%ccm_git_commit_count: ${commit_count} %|g" \
         -e "s|%ccm_git_commit_message: .* %|%ccm_git_commit_message: ${commit_message} %|g" \
