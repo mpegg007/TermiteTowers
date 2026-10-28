@@ -2,18 +2,18 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/backups/scripts/tt-keys.sh@188 %
+#  %ccm_git_object_id: infra/backups/scripts/tt-keys.sh@189 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 6d70024c57678b2d4c519774f1e33c99dcd729a9 %
-#  %ccm_git_commit_id: 311e8d32faa5df27eca3c67f5837a007bc611e6f %
-#  %ccm_git_commit_count: 188 %
-#  %ccm_git_commit_date: 2026-10-28 11:38:38 -0400 %
+#  %ccm_git_blob_sha: 63848ef3cc3c4db19de8fdb6b47cf4bf10a86d5f %
+#  %ccm_git_commit_id: e4f75cef3cd2cd1877f825652b221973b909b6a1 %
+#  %ccm_git_commit_count: 189 %
+#  %ccm_git_commit_date: 2026-10-28 12:07:18 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: fix(backups): unlock used an undefined jq variable, and polluted stdout %
-#  %ccm_git_modify_date: 2026-10-28 11:38:39 %
-#  %ccm_git_file_last_modified: 2026-10-28 11:38:28 %
+#  %ccm_git_commit_message: feat(backups): phase 5 - rotate, rewrap, audit, prune, restore wrapper %
+#  %ccm_git_modify_date: 2026-10-28 12:07:19 %
+#  %ccm_git_file_last_modified: 2026-10-28 12:06:28 %
 #  %ccm_git_file_name: tt-keys.sh %
 #  %ccm_git_path: infra/backups/scripts/tt-keys.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,7 +21,7 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 26723 %
+#  %ccm_git_size: 42592 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 # --- usage:begin
 # tt-keys :: per-tier age DEKs, wrapped by a master identity kept OFF this host.
@@ -43,9 +43,14 @@
 #   tt-keys.sh verify [tier...]            # master -> DEK -> ciphertext round-trip
 #   tt-keys.sh unlock <tier>[:<gen>] [--out PATH]
 #   tt-keys.sh import-legacy <path>        # add health/legacy after init
+#   tt-keys.sh audit                       # generations vs artifacts on disk (no secret)
+#   tt-keys.sh rotate <tier> [--gen L] [--yes]      # new generation, same tier
+#   tt-keys.sh rewrap --new-recipient age1... [--yes]   # new MASTER, same DEKs
+#   tt-keys.sh prune [--retire <tier>:<gen> --yes]  # report, or drop one dead DEK
 #
-# NOT YET (phase 5): rotate, rewrap, audit, prune, restore wiring. Phases 2-3
-# wire the tiers into backup-tthealth.sh / backup-mail.py.
+# init/rotate/rewrap/prune modify key state and therefore refuse to run outside a
+# git checkout (a deploy target like /srv/prd/tt is rsynced with --delete, which
+# would silently revert the registry). --allow-non-git overrides for rehearsals.
 #
 # ENVIRONMENT
 #   TT_MASTER_FILE        master identity file (default: interactive paste)
@@ -80,6 +85,11 @@ OPT_IMPORT_LEGACY=""
 OPT_MASTER_RECIPIENT=""
 OPT_SPEC=""
 OPT_OUT=""
+OPT_NEW_RECIPIENT=""
+OPT_RETIRE=""
+OPT_YES=0
+OPT_ALLOW_NON_GIT=0
+BACKUP_ROOT="${TT_BACKUP_ROOT:-/mnt/ai_storage/backups}"
 
 if [ -d /dev/shm ] && [ -w /dev/shm ]; then
     TMPBASE=/dev/shm
@@ -312,6 +322,7 @@ cmd_init() {
     if ! [[ "$gen" =~ ^[0-9]{4}Q[1-4]$ ]] && ! [[ "$gen" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
         die "bad generation label: '$gen' (want 2026Q4 or 2026-10-28)" 3
     fi
+    require_git_checkout
     if [ -e "$KEYRING" ]; then
         die "keyring already exists: $KEYRING - refusing to re-init (see 'list' / 'status')" 6
     fi
@@ -598,6 +609,7 @@ cmd_unlock() {
 cmd_import_legacy() {
     local path="${1:-}"
     [ -n "$path" ] || die "import-legacy needs the identity file path" 3
+    require_git_checkout
 
     local d="$WORK/unwrapped"
     unwrap_keyring "$d"
@@ -625,11 +637,351 @@ cmd_import_legacy() {
     log INFO "health/legacy added (public $(printf '%s' "$pub" | cut -c1-16)...)"
 }
 
+# --- phase 5: safety rails and inventory -------------------------------------
+# Key state (registry + recipients) must live in a checkout: a deploy target is
+# rsynced with --delete and would silently revert it, leaving the keyring ahead
+# of the registry that is supposed to describe it.
+require_git_checkout() {
+    if [ "$OPT_ALLOW_NON_GIT" -eq 1 ]; then
+        log WARNING "--allow-non-git: writing key state outside a git checkout (rehearsal only)"
+        return 0
+    fi
+    local top
+    top="$(git -C "$AGE_DIR" rev-parse --show-toplevel 2>/dev/null || true)"
+    if [ -z "$top" ]; then
+        die "refusing to modify key state outside a git checkout: $AGE_DIR
+       A deploy target (e.g. /srv/prd/tt) is rsynced with --delete, which would
+       silently revert the registry and leave the keyring ahead of it.
+       Rotate in the checkout, commit, deploy, then re-run the installer.
+       (--allow-non-git overrides this for sandboxes and rehearsals.)" 6
+    fi
+    log INFO "git checkout: $top"
+}
+
+require_yes() {  # $1 = what is about to happen
+    if [ "$OPT_YES" -ne 1 ]; then
+        die "$1 is irreversible - re-run with --yes if you mean it" 6
+    fi
+}
+
+# Inventory of artifacts on disk: "<tier>\t<gen>\t<count>\t<newest-date>".
+# Two sources, because the two jobs record the generation differently:
+#   * filenames  ...__<tier>-<gen>.dump.age   (pg dumps; unsuffixed = pre-cutover)
+#   * thunderbird/state.json entries          (mail chunks; tier/generation keys)
+scan_artifacts() {
+    python3 - "$@" <<'PY'
+import json
+import os
+import re
+import sys
+from datetime import datetime
+
+dirs = sys.argv[1:]
+refs = {}
+name_re = re.compile(r"__(?P<tier>[a-z][a-z0-9_-]*)-(?P<gen>[0-9A-Za-z._-]+)\.dump\.age$")
+
+
+def bump(tier, gen, mtime):
+    slot = refs.setdefault((tier, gen), [0, 0.0])
+    slot[0] += 1
+    slot[1] = max(slot[1], mtime)
+
+
+for d in dirs:
+    if not os.path.isdir(d):
+        continue
+    for fn in os.listdir(d):
+        path = os.path.join(d, fn)
+        if fn.endswith(".dump.age"):
+            m = name_re.search(fn)
+            if m:
+                bump(m.group("tier"), m.group("gen"), os.path.getmtime(path))
+            else:
+                # Every pre-cutover dump was encrypted to the legacy identity.
+                bump("health", "legacy", os.path.getmtime(path))
+    state = os.path.join(d, "state.json")
+    if os.path.isfile(state):
+        try:
+            with open(state, encoding="utf-8") as fh:
+                data = json.load(fh)
+        except (OSError, json.JSONDecodeError):
+            continue
+        for entry in (data.get("periods") or {}).values():
+            # Pre-cutover chunks carry no tier: they were all sealed with the one
+            # legacy keypair, which the registry records once (health/legacy).
+            # Inventing a "mail/legacy" generation would report an orphan key
+            # that never existed.
+            bump(entry.get("tier") or "health",
+                 entry.get("generation") or "legacy", 0.0)
+
+for (tier, gen), (count, newest) in sorted(refs.items()):
+    when = datetime.fromtimestamp(newest).strftime("%Y-%m-%d") if newest else "-"
+    print(f"{tier}\t{gen}\t{count}\t{when}")
+PY
+}
+
+# Join the inventory against the registry. Exit 1 when something needs a human.
+audit_report() {  # $1 = registry, $2 = scan.tsv
+    python3 - "$1" "$2" <<'PY'
+import json
+import sys
+from datetime import date
+
+with open(sys.argv[1], encoding="utf-8") as fh:
+    registry = json.load(fh)
+rows = {}
+with open(sys.argv[2], encoding="utf-8") as fh:
+    for line in fh:
+        tier, gen, count, newest = line.rstrip("\n").split("\t")
+        rows[(tier, gen)] = (int(count), newest)
+
+today = date.today().isoformat()
+bad = 0
+print(f"  {'TIER':<8} {'GENERATION':<11} {'FILES':>5}  {'NEWEST':<12} "
+      f"{'RETIRE_AFTER':<13} VERDICT")
+for tier, tdata in sorted(registry.get("tiers", {}).items()):
+    current = tdata.get("current")
+    for gen, meta in sorted(tdata.get("generations", {}).items()):
+        count, newest = rows.pop((tier, gen), (0, "-"))
+        retire = meta.get("retire_after", "?")
+        retired = meta.get("retired")
+        if retired:
+            verdict = f"retired {retired}"
+            if count:
+                verdict += " BUT STILL REFERENCED"
+                bad = 1
+        elif gen == current:
+            verdict = "current"
+        elif count and gen == "legacy":
+            verdict = f"pre-cutover key, referenced by {count}"
+        elif count:
+            verdict = f"referenced by {count} artifact(s)"
+        elif retire == "hold":
+            verdict = "hold - never auto-retire"
+        else:
+            verdict = "unreferenced"
+            if retire != "?" and retire < today:
+                verdict += " (retire_after passed)"
+        print(f"  {tier:<8} {gen:<11} {count:>5}  {newest:<12} {retire:<13} {verdict}")
+for (tier, gen), (count, newest) in sorted(rows.items()):
+    print(f"  {tier:<8} {gen:<11} {count:>5}  {newest:<12} {'-':<13} "
+          f"ORPHAN: {count} artifact(s) with no such generation in the registry")
+    bad = 1
+sys.exit(bad)
+PY
+}
+
+# Directories scanned by audit/prune. TT_AUDIT_DIRS (colon-separated) overrides,
+# which is also how the rehearsals keep themselves hermetic.
+AUDIT_DIRS=()
+audit_dir_list() {
+    AUDIT_DIRS=()
+    if [ -n "${TT_AUDIT_DIRS:-}" ]; then
+        IFS=':' read -r -a AUDIT_DIRS <<< "$TT_AUDIT_DIRS"
+    else
+        AUDIT_DIRS=("$BACKUP_ROOT/tthealth" "$HOME/backups/tthealth" "$BACKUP_ROOT/thunderbird")
+    fi
+    printf '%s\n' "${AUDIT_DIRS[@]}"
+}
+
+cmd_audit() {
+    [ -r "$REGISTRY" ] || die "no registry: $REGISTRY" 3
+    jq -e . "$REGISTRY" >/dev/null 2>&1 || die "registry is not valid JSON: $REGISTRY" 4
+
+    local scan="$WORK/inventory.tsv"
+    step "inventory"
+    # Not a pipeline: a pipeline would run audit_dir_list in a subshell and throw
+    # away the AUDIT_DIRS it populates.
+    audit_dir_list >/dev/null
+    printf '   %s\n' "${AUDIT_DIRS[@]}"
+    scan_artifacts "${AUDIT_DIRS[@]}" > "$scan"
+
+    step "generations"
+    local rc=0
+    audit_report "$REGISTRY" "$scan" || rc=$?
+
+    printf '\n'
+    if [ "$rc" -eq 0 ]; then
+        log INFO "audit: every generation is accounted for"
+    else
+        log WARNING "audit: something above needs a human (orphan artifact, or a retired key still in use)"
+    fi
+    exit "$rc"
+}
+
+cmd_rotate() {
+    local tier="${1:-}" gen="$OPT_GEN"
+    [ -n "$tier" ] || die "rotate needs a tier (health|mail|general)" 3
+    [ -n "$gen" ] || gen="$(default_gen)"
+    [[ "$gen" =~ ^[0-9]{4}Q[1-4]$ ]] || die "bad generation label: '$gen' (want 2027Q1)" 3
+    require_git_checkout
+    [ -r "$REGISTRY" ] || die "no registry: $REGISTRY" 3
+
+    jq -er --arg t "$tier" '.tiers[$t].current' "$REGISTRY" >/dev/null 2>&1 \
+        || die "tier '$tier' is not in the registry" 3
+    if jq -e --arg t "$tier" --arg g "$gen" '.tiers[$t].generations[$g]' "$REGISTRY" >/dev/null 2>&1; then
+        die "generation $tier/$gen already exists - pick another label" 6
+    fi
+
+    local d="$WORK/rotate"
+    unwrap_keyring "$d"
+
+    step "new generation"
+    mkdir -p "$d/keys/$tier"; chmod 700 "$d/keys/$tier"
+    local key="$d/keys/$tier/$gen.key" pub created probe out
+    age-keygen -o "$key" 2>/dev/null || die "age-keygen failed" 4
+    chmod 600 "$key"
+    pub="$(age-keygen -y "$key")" || die "cannot derive the new public key" 4
+    printf '   %-8s %-9s %s\n' "$tier" "$gen" "$pub"
+
+    # Prove the pair works BEFORE anything live changes.
+    probe="rotate probe $(date --iso-8601=seconds)"
+    printf '%s' "$probe" | age -r "$pub" -o "$WORK/p.age" || die "new recipient cannot encrypt" 5
+    out="$(age -d -i "$key" "$WORK/p.age")" || die "new key cannot decrypt" 5
+    [ "$out" = "$probe" ] || die "round-trip mismatch for the new key" 5
+    rm -f "$WORK/p.age"
+    log INFO "new DEK round-trips"
+
+    created="$(date +%F)"
+    jq --arg t "$tier" --arg g "$gen" --arg pub "$pub" --arg cd "$created" \
+       --arg ra "$(date -d "+${RETIRE_GRACE_DAYS} days" +%F)" \
+       '.tiers[$t].generations[$g] = {created: $cd, public: $pub, retire_after: $ra}
+        | .tiers[$t].current = $g | .rotated = $cd' \
+       "$d/registry.json" > "$d/registry.json.new"
+    mv -f "$d/registry.json.new" "$d/registry.json"
+
+    step "keyring"
+    # Keyring first: an extra DEK in it is harmless, a published generation whose
+    # DEK is missing is not.
+    wrap_keyring "$d"
+
+    step "published files"
+    install -m 0644 "$d/registry.json" "$REGISTRY"
+    mkdir -p "$AGE_DIR/history"
+    write_recipient_file "$AGE_DIR/$tier.recipient" "$tier" "$gen" "$pub" "$created" "rotated"
+    write_recipient_file "$AGE_DIR/history/$tier-$gen.recipient" "$tier" "$gen" "$pub" "$created" "rotated"
+    log INFO "registry and recipients now point at $tier/$gen"
+
+    cat <<NEXT
+
+-----------------------------------------------------------------------------
+ROTATED ${tier} -> ${gen}. New artifacts are named *__${tier}-${gen}.* and are
+the only ones using the new DEK; everything older keeps its own generation.
+
+Still to do, in order:
+  1. review and commit the key-state change - it is the audit trail:
+       git -C $(git -C "$AGE_DIR" rev-parse --show-toplevel 2>/dev/null || echo "$AGE_DIR") status --short infra/backups/age
+  2. if the service job reads /etc/tt-backup/age, re-run its installer so the
+     deployed recipient matches:  sudo infra/backups/scripts/install-tt-backup-tthealth.sh
+  3. prove the new key end to end:  $0 verify ${tier}
+  4. see what is still encrypted under the previous generation:  $0 audit
+  5. the MASTER is unchanged, so nothing needs re-escrowing today.
+-----------------------------------------------------------------------------
+NEXT
+}
+
+
+cmd_rewrap() {
+    require_git_checkout
+    require_yes "rewrapping the keyring under a new master"
+
+    [ -r "$REGISTRY" ] || die "no registry: $REGISTRY" 3
+    local old new
+    old="$(jq -r '.master.recipient // empty' "$REGISTRY")"
+    new="$OPT_NEW_RECIPIENT"
+    if [ -z "$new" ] && [ -r "$MASTER_RECIPIENT_FILE" ]; then
+        new="$(grep -Ev '^[[:space:]]*(#|$)' "$MASTER_RECIPIENT_FILE" | head -1)"
+    fi
+    [ -n "$new" ] || die "no new recipient: pass --new-recipient age1... or edit $MASTER_RECIPIENT_FILE" 3
+    [[ "$new" =~ ^age1[0-9a-z]{50,}$ ]] || die "not a valid age recipient: $new" 3
+    [ "$new" != "$old" ] || die "new recipient equals the current master ($old) - nothing to do" 6
+
+    step "rewrap"
+    printf '   from %s\n   to   %s\n' "$old" "$new"
+    local d="$WORK/rewrap"
+    unwrap_keyring "$d"          # with the OLD master
+    jq --arg r "$new" --arg cd "$(date +%F)" \
+       '.master.recipient = $r | .master.rewrapped = $cd' \
+       "$d/registry.json" > "$d/registry.json.new"
+    mv -f "$d/registry.json.new" "$d/registry.json"
+
+    # The arg wins over the file inside resolve_master_recipient, so this wrap
+    # targets the NEW recipient even before the file is rewritten.
+    OPT_MASTER_RECIPIENT="$new"
+    wrap_keyring "$d"
+    install -m 0644 "$d/registry.json" "$REGISTRY"
+    printf '%s\n' "$new" > "$MASTER_RECIPIENT_FILE"
+    chmod 0644 "$MASTER_RECIPIENT_FILE"
+    log INFO "master recipient repointed; registry and $MASTER_RECIPIENT_FILE updated"
+
+    cat <<NEXT
+
+-----------------------------------------------------------------------------
+!! VERIFY BEFORE YOU WALK AWAY - the keyring is now wrapped to a key that this
+   host cannot test on its own:
+
+     TT_MASTER_FILE=<the NEW master identity> $0 verify
+
+   Do not delete, rotate or overwrite the OLD master until that passes. If it
+   fails, the keyring is wrapped to a key you cannot use and the DEKs are lost.
+-----------------------------------------------------------------------------
+NEXT
+}
+
+cmd_prune() {
+    [ -r "$REGISTRY" ] || die "no registry: $REGISTRY" 3
+    local scan="$WORK/inventory.tsv"
+    audit_dir_list >/dev/null
+    scan_artifacts "${AUDIT_DIRS[@]}" > "$scan"
+
+    if [ -z "$OPT_RETIRE" ]; then
+        step "generations"
+        local rc=0
+        audit_report "$REGISTRY" "$scan" || rc=$?
+        printf '\n'
+        log INFO "advisory only - nothing was changed. A generation may be retired when it is"
+        log INFO "not current, not 'hold', and referenced by no artifact. To destroy one:"
+        printf '     %s prune --retire <tier>:<generation> --yes\n' "$0"
+        exit "$rc"
+    fi
+
+    local tier="${OPT_RETIRE%%:*}" gen="${OPT_RETIRE#*:}"
+    if [ "$gen" = "$OPT_RETIRE" ] || [ -z "$tier" ] || [ -z "$gen" ]; then
+        die "--retire wants <tier>:<generation>, e.g. health:2026Q4" 3
+    fi
+    require_git_checkout
+    require_yes "destroying the private half of $tier/$gen"
+
+    [ "$(jq -r --arg t "$tier" '.tiers[$t].current // empty' "$REGISTRY")" != "$gen" ] \
+        || die "$tier/$gen is the CURRENT generation - rotate first" 6
+    [ "$(jq -r --arg t "$tier" --arg g "$gen" '.tiers[$t].generations[$g].retire_after // empty' "$REGISTRY")" != "hold" ] \
+        || die "$tier/$gen is 'hold': pre-cutover backups depend on it, never retire it" 6
+    if awk -F'\t' -v t="$tier" -v g="$gen" '$1 == t && $2 == g && $3 > 0 { found = 1 } END { exit !found }' "$scan"; then
+        die "$tier/$gen is still referenced by artifacts on disk - see '$0 audit'" 6
+    fi
+
+    local d="$WORK/prune"
+    unwrap_keyring "$d"
+    local key="$d/keys/$tier/$gen.key"
+    [ -f "$key" ] || die "no key material for $tier/$gen in the keyring" 4
+    shred -u "$key"
+    jq --arg t "$tier" --arg g "$gen" --arg cd "$(date +%F)" \
+       '.tiers[$t].generations[$g].retired = $cd' "$d/registry.json" > "$d/registry.json.new"
+    mv -f "$d/registry.json.new" "$d/registry.json"
+
+    wrap_keyring "$d"
+    install -m 0644 "$d/registry.json" "$REGISTRY"
+    log INFO "retired $tier/$gen: key material destroyed, registry entry kept for provenance"
+    log WARNING "any copy of an artifact still in Jotta or on a rotation disk for this generation is now unreadable"
+}
+
+
 parse_init_opts() {
     while [ $# -gt 0 ]; do
         case "$1" in
             --tiers)              OPT_TIERS="${2:?--tiers needs a value}"; shift 2 ;;
             --tiers=*)            OPT_TIERS="${1#*=}"; shift ;;
+            --allow-non-git)      OPT_ALLOW_NON_GIT=1; shift ;;
             --gen)                OPT_GEN="${2:?--gen needs a value}"; shift 2 ;;
             --gen=*)              OPT_GEN="${1#*=}"; shift ;;
             --import-legacy)      OPT_IMPORT_LEGACY="${2:?--import-legacy needs a path}"; shift 2 ;;
@@ -658,6 +1010,29 @@ parse_unlock_opts() {
     done
 }
 
+# Shared flags for audit / rotate / rewrap / prune.
+parse_verb_opts() {
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --yes)             OPT_YES=1; shift ;;
+            --allow-non-git)   OPT_ALLOW_NON_GIT=1; shift ;;
+            --gen)             OPT_GEN="${2:?--gen needs a value}"; shift 2 ;;
+            --gen=*)           OPT_GEN="${1#*=}"; shift ;;
+            --new-recipient)   OPT_NEW_RECIPIENT="${2:?--new-recipient needs a value}"; shift 2 ;;
+            --new-recipient=*) OPT_NEW_RECIPIENT="${1#*=}"; shift ;;
+            --retire)          OPT_RETIRE="${2:?--retire needs <tier>:<gen>}"; shift 2 ;;
+            --retire=*)        OPT_RETIRE="${1#*=}"; shift ;;
+            -h|--help)         usage; exit 0 ;;
+            -*)                usage >&2; die "unknown option: $1" 3 ;;
+            *)
+                [ -z "$OPT_SPEC" ] || die "unexpected extra argument: $1" 3
+                OPT_SPEC="$1"
+                shift
+                ;;
+        esac
+    done
+}
+
 main() {
     local cmd="${1:-}"
     if [ $# -gt 0 ]; then
@@ -669,7 +1044,11 @@ main() {
         status)        require_tools; cmd_status ;;
         verify)        require_tools; cmd_verify "$@" ;;
         unlock)        parse_unlock_opts "$@"; require_tools; cmd_unlock ;;
-        import-legacy) require_tools; cmd_import_legacy "${1:-}" ;;
+        import-legacy) parse_verb_opts "$@"; require_tools; cmd_import_legacy "$OPT_SPEC" ;;
+        audit)         require_tools; cmd_audit ;;
+        rotate)        parse_verb_opts "$@"; require_tools; cmd_rotate "$OPT_SPEC" ;;
+        rewrap)        parse_verb_opts "$@"; require_tools; cmd_rewrap ;;
+        prune)         parse_verb_opts "$@"; require_tools; cmd_prune ;;
         ""|-h|--help|help) usage; exit 0 ;;
         *)             usage >&2; die "unknown command: $cmd" 3 ;;
     esac

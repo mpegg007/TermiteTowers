@@ -1,0 +1,46 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/systemd/tt-keys-audit.service@189 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: a285d2ac4df8fc1afa66753ec9b11688008c8f9f %
+#  %ccm_git_commit_id: e4f75cef3cd2cd1877f825652b221973b909b6a1 %
+#  %ccm_git_commit_count: 189 %
+#  %ccm_git_commit_date: 2026-10-28 12:07:18 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: feat(backups): phase 5 - rotate, rewrap, audit, prune, restore wrapper %
+#  %ccm_git_modify_date: 2026-10-28 12:07:19 %
+#  %ccm_git_file_last_modified: 2026-10-28 12:06:02 %
+#  %ccm_git_file_name: tt-keys-audit.service %
+#  %ccm_git_path: infra/systemd/tt-keys-audit.service %
+#  %ccm_git_language_mode: service %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 663 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+[Unit]
+Description=tt-keys audit: key generations vs artifacts on disk
+Documentation=file:/home/mpegg-adm/source/TermiteTowers/infra/backups/README.md
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=mpegg-adm
+Group=mpegg-adm
+ExecStart=/home/mpegg-adm/source/TermiteTowers/infra/backups/scripts/tt-keys.sh audit
+TimeoutStartSec=5min
+Nice=10
+IOSchedulingClass=idle
+
+# Read-only by construction: audit needs the registry and the artifact trees and
+# nothing else. No secrets are involved (the master identity is never used here).
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ReadOnlyPaths=/mnt/ai_storage/backups
+UMask=0027

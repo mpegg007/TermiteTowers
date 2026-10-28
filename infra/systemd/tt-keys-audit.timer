@@ -1,0 +1,35 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/systemd/tt-keys-audit.timer@189 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: a2369528f96a9b56e590c80ee8c348c71c19e4fa %
+#  %ccm_git_commit_id: e4f75cef3cd2cd1877f825652b221973b909b6a1 %
+#  %ccm_git_commit_count: 189 %
+#  %ccm_git_commit_date: 2026-10-28 12:07:18 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: feat(backups): phase 5 - rotate, rewrap, audit, prune, restore wrapper %
+#  %ccm_git_modify_date: 2026-10-28 12:07:19 %
+#  %ccm_git_file_last_modified: 2026-10-28 12:06:07 %
+#  %ccm_git_file_name: tt-keys-audit.timer %
+#  %ccm_git_path: infra/systemd/tt-keys-audit.timer %
+#  %ccm_git_language_mode: timer %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 202 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+[Unit]
+Description=Weekly tt-keys audit (generation vs artifact inventory)
+
+[Timer]
+OnCalendar=Mon *-*-* 07:17:00
+RandomizedDelaySec=10m
+AccuracySec=1m
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -2,18 +2,18 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/backups/scripts/install-tt-keys.sh@184 %
+#  %ccm_git_object_id: infra/backups/scripts/install-tt-keys.sh@189 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 009977624869aba9fc6f60ff0cad5b2aad70d95a %
-#  %ccm_git_commit_id: 4e24ff8c9c0501071478e0bdb7ede6578918ec57 %
-#  %ccm_git_commit_count: 184 %
-#  %ccm_git_commit_date: 2026-10-28 11:13:51 -0400 %
+#  %ccm_git_blob_sha: a674e1055af9f93437bc0cfe1c92439ad7a5cd40 %
+#  %ccm_git_commit_id: e4f75cef3cd2cd1877f825652b221973b909b6a1 %
+#  %ccm_git_commit_count: 189 %
+#  %ccm_git_commit_date: 2026-10-28 12:07:18 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: feat(backups): phase 2 - keyring deploy/audit installer, harden tt-backup unit %
-#  %ccm_git_modify_date: 2026-10-28 11:13:51 %
-#  %ccm_git_file_last_modified: 2026-10-28 11:13:40 %
+#  %ccm_git_commit_message: feat(backups): phase 5 - rotate, rewrap, audit, prune, restore wrapper %
+#  %ccm_git_modify_date: 2026-10-28 12:07:19 %
+#  %ccm_git_file_last_modified: 2026-10-28 12:07:07 %
 #  %ccm_git_file_name: install-tt-keys.sh %
 #  %ccm_git_path: infra/backups/scripts/install-tt-keys.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,7 +21,7 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 8664 %
+#  %ccm_git_size: 10438 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 # --- usage:begin
 # install-tt-keys :: deploy + verify the wrapped-DEK keyring (phase 2).
@@ -200,6 +200,11 @@ check_unit() {
     else
         fail "$link missing"
     fi
+    if systemctl is-enabled --quiet tt-keys-audit.timer 2>/dev/null; then
+        pass "tt-keys-audit.timer is enabled (weekly audit)"
+    else
+        warn "tt-keys-audit.timer is not enabled - the weekly audit will not run"
+    fi
 }
 
 check_jotta() {
@@ -232,12 +237,22 @@ repair() {
     fi
     log INFO "owner/mode asserted on $KEYRING_DIR"
 
-    local src="/srv/dev1/systemd/$UNIT"
-    [ -f "$src" ] || src="$REPO_DIR/infra/systemd/$UNIT"
-    [ -f "$src" ] || die "unit file not found: $REPO_DIR/infra/systemd/$UNIT" 3
-    ln -sfn "$src" "/etc/systemd/system/$UNIT"
+    local src
+    local -a units=("$UNIT" "tt-keys-audit.service" "tt-keys-audit.timer")
+    for u in "${units[@]}"; do
+        src="/srv/dev1/systemd/$u"
+        [ -f "$src" ] || src="$REPO_DIR/infra/systemd/$u"
+        if [ -f "$src" ]; then
+            ln -sfn "$src" "/etc/systemd/system/$u"
+            log INFO "linked $u -> $src"
+        else
+            warn "unit file not found, skipped: $u"
+        fi
+    done
     systemctl daemon-reload
-    log INFO "systemd reloaded ($UNIT -> $src)"
+    systemctl enable --now tt-keys-audit.timer 2>/dev/null \
+        && log INFO "tt-keys-audit.timer enabled (weekly, no secrets needed)" \
+        || warn "could not enable tt-keys-audit.timer"
 
     if command -v systemd-analyze >/dev/null 2>&1; then
         if systemd-analyze verify "/etc/systemd/system/$UNIT" >/dev/null 2>&1; then

@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: infra/backups/README.md % -->
-<!-- %ccm_git_object_id: infra/backups/README.md@186 % -->
-<!-- %ccm_git_commit_date: 2026-10-28 11:35:25 -0400 % -->
+<!-- %ccm_git_object_id: infra/backups/README.md@189 % -->
+<!-- %ccm_git_commit_date: 2026-10-28 12:07:18 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: feat(backups): phase 3 - encrypt to per-tier keys % -->
+<!-- %ccm_git_commit_message: feat(backups): phase 5 - rotate, rewrap, audit, prune, restore wrapper % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-10-28 mpegg  feat(backups): phase 3 - encrypt to per-tier keys  -->
 <!-- %git_commit_history: 2026-10-03 mpegg  backup scripts  -->
  <!-- %git_commit_history: unknown  unknown  unknown  -->
  <!-- %git_commit_history: 2026-02-07 mpegg  feb2026.1  -->
@@ -294,6 +295,85 @@ others.
   `<tier>.recipient`; **old generations are never deleted while an artifact
   still needs them** (`retire_after` in the registry, `hold` for `legacy`).
   `rotate` / `rewrap` / `audit` / `prune` are not implemented yet (phase 5).
+
+### Rotating a tier (the quarterly job)
+
+Rotation adds a generation to one tier. Nothing is re-encrypted and nothing gets
+orphaned: existing artifacts keep the generation recorded in their name (dumps) or
+in `state.json` (mail chunks), so they stay restorable with the DEK they were
+written under.
+
+```bash
+infra/backups/scripts/tt-keys.sh rotate health            # or mail / general
+infra/backups/scripts/tt-keys.sh audit                   # what still uses the old gen
+git add infra/backups/age && git commit -m "rotate health -> <gen>"   # the audit trail
+sudo infra/backups/scripts/install-tt-backup-tthealth.sh # redeploy /etc recipient
+infra/backups/scripts/tt-keys.sh verify health           # needs the master
+```
+
+Rules that the tooling enforces rather than documents:
+
+* **Rotation only runs in a git checkout.** Inside a deploy target (`/srv/prd/tt`
+  is rsynced with `--delete`) the registry would be silently reverted on the next
+  deploy while the keyring kept the new DEK. `rotate`/`init`/`rewrap`/`prune`
+  refuse, exit 6. `--allow-non-git` exists only for rehearsals.
+* **The keyring is written before the registry is published.** An extra DEK in the
+  keyring is harmless; a published generation whose DEK is missing is not.
+* **A generation is never deleted while an artifact needs it** (see below).
+
+Cadence: one sitting per quarter, generation label `YYYYQn`. `rotate` sets
+`retire_after` to created + `TT_RETIRE_GRACE_DAYS` (default 120 = 90-day rotation
++ 30-day grace).
+
+### Audit and prune
+
+`audit` needs no secret (it reads the public registry and the artifact trees) and
+is what a weekly systemd timer runs:
+
+```
+  TIER     GENERATION  FILES  NEWEST       RETIRE_AFTER  VERDICT
+  health   2026Q4          1  2026-10-28   2027-02-25    current
+  health   legacy         40  2026-10-28   hold          pre-cutover key, referenced by 40
+```
+
+* `legacy` is `hold`: every dump and mail chunk made before the per-tier cutover
+  needs it, so it must never be retired (retiring it is refused, exit 6).
+* An `ORPHAN` line means artifacts exist for a generation the registry does not
+  know about - usually a rotation that was reverted by a deploy. Treat it as a
+  broken state, not a warning.
+* `prune` with no arguments is **advisory** and changes nothing. It only lists
+  candidates; destroying a DEK requires
+  `tt-keys.sh prune --retire health:2026Q4 --yes`, and it refuses if the
+  generation is current, `hold`, or referenced by any artifact on disk.
+
+Retiring removes the private half from the keyring and keeps the registry entry
+(marked `retired`) for provenance. Any copy of an artifact still sitting in Jotta
+or on a rotation disk becomes unreadable at that moment.
+
+### Rotating the master (rewrap)
+
+Changing the master identity re-wraps the same DEKs - no data is re-encrypted, and
+it costs a few KB:
+
+```bash
+infra/backups/scripts/tt-keys.sh rewrap --new-recipient age1... --yes
+TT_MASTER_FILE=<the new identity> infra/backups/scripts/tt-keys.sh verify
+```
+
+The keyring is only accessible with the **new** master afterwards. Do not delete
+the old master until that `verify` passes; if it fails, the DEKs are lost.
+
+### Restoring a dump
+
+`restore-tthealth.sh` wraps the two steps (unwrap the DEK, stream into
+`pg_restore`), takes the generation from the filename, keeps the DEK in tmpfs and
+shreds it on exit:
+
+```bash
+infra/backups/scripts/restore-tthealth.sh --list /mnt/ai_storage/backups/tthealth/<file>.dump.age
+infra/backups/scripts/restore-tthealth.sh --to tthealth_dev1 <file>.dump.age
+infra/backups/scripts/restore-tthealth.sh --gen legacy <pre-cutover-file>.dump.age
+```
 
 ### Validation performed (2026-10-03)
 
