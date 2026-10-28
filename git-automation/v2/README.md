@@ -107,7 +107,7 @@ Who writes what:
 | Phase | Writes |
 |---|---|
 | `ccm-apply.sh` (pre-commit) | `path=`, `branch=`; **preserves** an existing `committed=`/`sha=` so a manual run never destroys them |
-| `post-commit.sh` | overwrites `committed=` (ISO 8601 from `%cI`, no spaces) and `sha=` (7 chars) with HEAD's real values |
+| `post-commit.sh` | overwrites `committed=` (ISO 8601 from `%cI`, no spaces) and `sha=` (7 chars) from the commit being created |
 
 | Aspect | Full header | Compact |
 |---|---|---|
@@ -125,6 +125,12 @@ Design notes:
 - **`post-commit.sh` needs its own branch**, placed *before* the full-header gate
   (`grep -qE '%ccm_git_.*: .* %'`), which a compact line deliberately does not
   satisfy.
+- **`sha=` is the pre-amend id.** `post-commit` fills the fields from HEAD and
+  then runs `git commit --amend`, which mints a new sha — so the recorded value
+  names the commit whose tree produced this content, not the surviving commit.
+  Full headers have the same property (`%ccm_git_commit_id`). Treat the line as a
+  human hint; the authoritative freshness check is
+  `git log -1 --format=%cI -- <path>`.
 - **Safe from the full-header machinery.** The line is not in the
   `%ccm_field: value %` dialect, so `remove_ccm_header`'s delete patterns and the
   sed field rewrites can never partially rewrite it.
