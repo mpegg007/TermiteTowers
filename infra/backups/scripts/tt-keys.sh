@@ -2,18 +2,18 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/backups/scripts/tt-keys.sh@183 %
+#  %ccm_git_object_id: infra/backups/scripts/tt-keys.sh@185 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: db3e95ebf6bac0e393248e3bf37fd62354969f4e %
-#  %ccm_git_commit_id: af68a79fa222daaa89d22196f42ffc91fbf9d73a %
-#  %ccm_git_commit_count: 183 %
-#  %ccm_git_commit_date: 2026-10-28 11:09:09 -0400 %
+#  %ccm_git_blob_sha: 4598dcb15815d0b6a2c3a5be81282d5b6c11a14b %
+#  %ccm_git_commit_id: b0464e42ec8194f8cb540c319fd4b1e3965aefc0 %
+#  %ccm_git_commit_count: 185 %
+#  %ccm_git_commit_date: 2026-10-28 11:25:31 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: fix(backups): compare registry content, not bytes, in 'tt-keys verify' %
-#  %ccm_git_modify_date: 2026-10-28 11:09:10 %
-#  %ccm_git_file_last_modified: 2026-10-28 11:08:58 %
+#  %ccm_git_commit_message: fix(backups): name both recipients when the master identity doesn't match %
+#  %ccm_git_modify_date: 2026-10-28 11:25:32 %
+#  %ccm_git_file_last_modified: 2026-10-28 11:22:06 %
 #  %ccm_git_file_name: tt-keys.sh %
 #  %ccm_git_path: infra/backups/scripts/tt-keys.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,7 +21,7 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 25986 %
+#  %ccm_git_size: 26629 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 # --- usage:begin
 # tt-keys :: per-tier age DEKs, wrapped by a master identity kept OFF this host.
@@ -162,6 +162,16 @@ unwrap_keyring() {  # $1 = destination directory
     [ -r "$KEYRING" ] || die "keyring not found: $KEYRING" 4
     ident="$(master_identity)"
     if ! age -d -i "$ident" "$KEYRING" 2>"$WORK/age.err" | tar -xf - -C "$dest"; then
+        # Distinguish "wrong key" from "corrupt keyring": derive the recipient of
+        # the supplied identity (public data) and compare with the intended one.
+        local got expected
+        got="$(age-keygen -y "$ident" 2>/dev/null || true)"
+        expected="$(jq -r '.master.recipient // empty' "$REGISTRY" 2>/dev/null || true)"
+        if [ -n "$got" ] && [ -n "$expected" ] && [ "$got" != "$expected" ]; then
+            log ERROR "the identity you supplied belongs to ${got}"
+            log ERROR "the keyring is wrapped to            ${expected}"
+            die "wrong master identity - the keyring was not touched" 4
+        fi
         sed 's/^/    /' "$WORK/age.err" >&2 || true
         die "cannot open $KEYRING - wrong master identity?" 4
     fi
