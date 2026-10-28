@@ -1,41 +1,15 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: infra/backups/README.md:167 % -->
-<!-- %ccm_git_author: mpegg % -->
-<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: 3148f1cac5c6309191c07d9f2b3b6f4a1cf3d723 % -->
-<!-- %ccm_git_commit_id: af3b4e614eaf7f1e2342aedb19c1c31089a044fd % -->
-<!-- %ccm_git_commit_count: 167 % -->
-<!-- %ccm_git_commit_date: 2026-10-03 17:41:25 -0400 % -->
-<!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: backup scripts % -->
-<!-- %ccm_git_modify_date: 2026-10-03 17:41:25 % -->
-<!-- %ccm_git_file_last_modified: 2026-10-03 17:40:37 % -->
-<!-- %ccm_git_file_name: README.md % -->
 <!-- %ccm_git_path: infra/backups/README.md % -->
-<!-- %ccm_git_language_mode: markdown % -->
-<!-- %ccm_git_file_type: text/plain % -->
-<!-- %ccm_git_file_encoding: utf-8 % -->
-<!-- %ccm_git_file_eol: CRLF % -->
-<!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 12819 % -->
+<!-- %ccm_git_object_id: infra/backups/README.md@186 % -->
+<!-- %ccm_git_commit_date: 2026-10-28 11:35:25 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_message: feat(backups): phase 3 - encrypt to per-tier keys % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
- <!-- %git_commit_history: unknown  unknown  unknown  --> 
- <!-- %git_commit_history: unknown  unknown  unknown  --> 
- <!-- %git_commit_history: 2026-02-07 mpegg  feb2026.1  --> 
-<!-- %git_commit_history: 2026-02-07 mpegg  feb2026  % -->
-<!-- %git_commit_history: 2026-02-07 mpegg  feb2026  % -->
- <!-- %git_commit_history: 2026-02-07 mpegg  feb2026.1  --> 
-<!-- %git_commit_history: 2026-02-07 mpegg  feb2026  % -->
-<!-- %git_commit_history: 2026-02-07 mpegg  feb2026  % -->
- <!-- %git_commit_history: unknown  unknown  unknown  --> 
- <!-- %git_commit_history: 2026-02-07 mpegg  feb2026.1  --> 
-<!-- %git_commit_history: 2026-02-07 mpegg  feb2026  % -->
-<!-- %git_commit_history: 2026-02-07 mpegg  feb2026  % -->
- <!-- %git_commit_history: 2026-02-07 mpegg  feb2026.1  --> 
-<!-- %git_commit_history: 2026-02-07 mpegg  feb2026  % -->
+<!-- %git_commit_history: 2026-10-03 mpegg  backup scripts  -->
+ <!-- %git_commit_history: unknown  unknown  unknown  -->
+ <!-- %git_commit_history: 2026-02-07 mpegg  feb2026.1  -->
 <!-- %git_commit_history: 2026-02-07 mpegg  feb2026  % -->
 # Backup Strategy
 
@@ -113,9 +87,12 @@ encrypted blobs", nothing more:
 | Path (repo) | Purpose |
 | --- | --- |
 | `infra/backups/scripts/backup-tthealth.sh` | the backup itself (`pg_dump -Fc \| age -R`) |
+| `infra/backups/scripts/backup-tthealth-user.sh` | on-demand export + upload as a normal user (no sudo, no service account) |
 | `infra/backups/scripts/install-tt-backup-tthealth.sh` | one-time root installer, also the deploy path |
 | `infra/backups/sql/tt_backup-role.sql` | PostgreSQL role provisioning |
-| `infra/backups/age/tthealth-recipient.txt` | age public key (public - safe to commit) |
+| `infra/backups/age/registry.json` | public registry: tiers, generations, public keys |
+| `infra/backups/age/<tier>.recipient` | current age public key per tier (public - safe to commit) |
+| `infra/backups/scripts/tt-keys.sh` | keyring tooling: init / list / status / verify / unlock |
 | `infra/systemd/tt-backup-tthealth.{service,timer}` | schedule (daily 03:30 + up to 10m jitter) |
 | `infra/logrotate/logrotate.d/tt-backup.conf` | rotation for `/var/log/tt-backup/` |
 
@@ -163,13 +140,65 @@ sudo journalctl -u tt-backup-tthealth.service -n 40
 sudo cat /var/log/tt-backup/tthealth.log
 ```
 
-Restore (requires the age identity, i.e. an administrator - never `tt-backup`):
+Restore is two steps: the dump is encrypted to a per-tier DEK, and that DEK is
+itself wrapped by the master identity. Never `tt-backup` - it can do neither.
 
 ```bash
-age --decrypt -i ~/.config/age/tthealth-backup.txt \
-    /mnt/ai_storage/backups/tthealth/tthealth_dev1_YYYYmmdd_HHMMSS.dump.age \
+# the generation comes from the filename: ...__health-2026Q4.dump.age
+infra/backups/scripts/tt-keys.sh unlock health:2026Q4 --out /dev/shm/health.key
+age --decrypt -i /dev/shm/health.key \
+    /mnt/ai_storage/backups/tthealth/tthealth_dev1_YYYYmmdd_HHMMSS__health-2026Q4.dump.age \
   | pg_restore --clean --if-exists -h monolith -U tthealth_dev1_owner -d tthealth_dev1
+shred -u /dev/shm/health.key
 ```
+
+Dumps taken before the per-tier cutover carry no `__health-<gen>` suffix and are
+generation `health/legacy` - unlock `health:legacy`, or use the old identity
+file directly.
+
+### On-demand export as a normal user (no sudo)
+
+`backup-tthealth.sh` is root-installed and writes into a `tt-backup`-owned
+directory, so a human cannot run it or extend it without privilege. For
+"export this database right now" - before a migration, a restore rehearsal or a
+risky schema change - use `scripts/backup-tthealth-user.sh`. It needs no sudo,
+no systemd, no service account, no password and no change to `jottad`.
+
+```bash
+scripts/backup-tthealth-user.sh              # pg_dump | age -> local, then upload
+scripts/backup-tthealth-user.sh --dry-run    # everything except the upload
+scripts/backup-tthealth-user.sh --no-upload  # keep it local only
+scripts/backup-tthealth-user.sh --keep 30 --remote tthealth-dev1
+```
+
+How it differs from the scheduled job:
+
+| | `backup-tthealth.sh` (timer) | `backup-tthealth-user.sh` (on demand) |
+| --- | --- | --- |
+| Runs as | `tt-backup` service account | the invoking admin (`mpegg-adm`) |
+| Scheduled | daily 03:30 + jitter | never - you run it |
+| Auth | `tt_backup` role, password from pgpass | local socket + peer auth, no password |
+| Local path | `/mnt/ai_storage/backups/tthealth` | `~/backups/tthealth` (`0700`, files `0600`) |
+| Reaches Jotta via | `jottad` continuous backup | `jotta-cli archive` (one-shot put) |
+| Cloud location | Jotta **Backups** area | Jotta **Archive** area |
+
+* **Encryption is not optional.** It uses the `health` tier recipient
+  (`age/health.recipient`), the same key as the scheduled job, so the restore
+  procedure is identical - see above. `pg_dump` streams straight into `age`;
+  plaintext never touches the disk. The filename carries `__health-<gen>`.
+* **Peer auth.** The script defaults to `DB_HOST=/var/run/postgresql` and
+  `DB_USER=$(id -un)`. `mpegg-adm` is a member of `tthealth_dev1_owner` and
+  `pg_hba` trusts the local socket, so no credential is handled. Override with
+  `DB_HOST=monolith DB_USER=tt_backup PGPASSFILE=~/.pgpass` for TCP.
+* **`--remote` is a folder.** `jotta-cli archive`'s `--remote` is the *full*
+  destination including the filename (`--remote=folder/file`); passing only a
+  folder name would upload a file called `folder`. The script appends the
+  basename for you and verifies the result via `jotta-cli ls --json archive/<folder>`.
+* Local retention is `--keep` days (default 7). Jotta's Archive has no rotation,
+  so delete old exports in the web UI if you want the cloud copy pruned too.
+* Exports land in Jotta's **Archive**, not the continuous-backup folder, so they
+  do **not** appear in `jotta-cli status` - that output stays focused on the
+  scheduled job.
 
 ### Upload verification (Jotta)
 
@@ -236,16 +265,35 @@ jotta-cli scan tthealth
 Re-running the installer as root does the directory part and repairs existing
 files, so it is an equally good fix.
 
-### age keys - read before touching the keys
+### age keys - per tier, master-wrapped
 
-* Identity: `/home/mpegg-adm/.config/age/tthealth-backup.txt` (0600, not in git,
-  never readable by `tt-backup`).
-* **Escrow the identity offline now.** Without it every encrypted backup is
-  permanently unreadable. It must also never enter `/mnt/ai_storage`: `jottad`
-  would upload it alongside the backups it protects, defeating the encryption.
-* Rotating the key means changing two things - the identity and
-  `age/tthealth-recipient.txt`. Backups made before the rotation still require
-  the previous identity.
+Three classification tiers, one DEK each: **health** (the PHI database),
+**mail** (the Thunderbird archive) and **general** (everything else). They are
+deliberately separate so a compromise or a rotation of one cannot touch the
+others.
+
+| Object | Where | Secret? |
+| --- | --- | --- |
+| `<tier>.recipient` (public half) | `infra/backups/age/`, committed | no |
+| `registry.json` (tier -> generation -> public key) | `infra/backups/age/`, committed | no |
+| `keyring.tar.age` (every DEK, wrapped) | `/mnt/ai_storage/backups/tt-keys/` 0600, dir 0700 `mpegg-adm` | no - ciphertext |
+| master identity | **off this host** (1Password) | **yes** |
+
+* The keyring is ciphertext on purpose: `jottad` uploading it is required for
+  disaster recovery, and it is useless without the master.
+* Unwrapping needs the master identity, which is why `tt-backup` (and any
+  service account) can never decrypt a backup. `scripts/install-tt-keys.sh
+  --check` asserts both the DAC isolation and the Jotta coverage.
+* `~/.config/age/tthealth-backup.txt` still matters: it is generation
+  **`health/legacy`** and reads every dump and mail chunk made before the
+  per-tier cutover. Keep it; it is not used for new backups.
+* Inspect without any secret: `scripts/tt-keys.sh status` / `list`.
+  Prove the whole chain (needs the master): `scripts/tt-keys.sh verify`.
+  Unwrap one DEK for a restore: `scripts/tt-keys.sh unlock health:2026Q4`.
+* Generation labels are `YYYYQn`. A rotation adds a generation and repoints
+  `<tier>.recipient`; **old generations are never deleted while an artifact
+  still needs them** (`retire_after` in the registry, `hold` for `legacy`).
+  `rotate` / `rewrap` / `audit` / `prune` are not implemented yet (phase 5).
 
 ### Validation performed (2026-10-03)
 
@@ -294,3 +342,124 @@ Run against the live database, writing to a throwaway directory:
    until `systemctl --user restart jottad`. Schedule it for when someone can
    watch `jotta-cli status` recover.
 
+
+## Thunderbird mail archive (encrypted, per-year chunks, no sudo)
+
+The Thunderbird profile holds a local copy of every IMAP mailbox. Once a message
+is deleted from the server that copy is the *only* copy, so a dead disk loses
+the history. `scripts/backup-mail.py` exports the mbox folders into compressed,
+age-encrypted chunks grouped by year.
+
+Mail is append-mostly, so the shape is the opposite of the DB job: instead of one
+fresh dump per night, a **completed year is written once and never rewritten**.
+The steady state uploads one new file per year - it does not re-upload every old
+email on every run.
+
+```bash
+scripts/backup-mail.py --dry-run            # scan + show the plan, write nothing
+scripts/backup-mail.py                      # seal every completed period
+scripts/backup-mail.py --include-current    # also refresh the year in progress
+scripts/backup-mail.py --only 2018          # (re)build one period
+scripts/backup-mail.py --granularity month  # finer chunks (smaller risk window)
+scripts/backup-mail.py --list               # what is archived
+```
+
+### Files
+
+| Path (repo) | Purpose |
+| --- | --- |
+| `scripts/backup-mail.py` | the archive tool (stdlib Python; streams tar -> zstd -> age) |
+| `scripts/install-tt-backup-mail-user.sh` | installs the **user** timer + archive dir; no sudo |
+| `systemd/user/tt-backup-mail.{service,timer}` | daily 04:30 user units (`@REPO_DIR@` substituted on install) |
+
+### What lands where
+
+```
+/mnt/ai_storage/backups/thunderbird/
+  mail-2018.tar.zst.age        sealed year
+  mail-2026.partial.tar.zst.age only with --include-current, rewritten as mail arrives
+  state.json                   counts + sha256 per chunk, 0600
+```
+
+* **Excluded by default:** `Trash`, `Junk`, `Junk E-mail`, `Deleted Items`,
+  `Spam` (`--exclude` overrides). Non-mail artefacts (`.msf`, `.sqlite*`, `.dat`)
+  and anything that is not an mbox are always skipped.
+* **Inside the chunk:** one tar member per folder-period, named after the
+  original path and prefixed with the period, so extracting never overwrites a
+  live profile folder. Each member is a real mbox fragment (starts with a `From `
+  line) and opens in Thunderbird or any mbox reader:
+
+  ```
+  2018/ImapMail/outlook.office365.com/Sent
+  2018/ImapMail/127.0.0.1/Labels.sbd/mpegg007@gmail.com
+  2018/ImapMail/127.0.0.1/Labels.sbd/mpegg007@gmail.com.part2
+  ```
+
+  A fragment larger than `--fragment-cap` MB (default 64) is split into numbered
+  `partN` members rather than buffered in memory; concatenate them in order when
+  restoring by hand.
+* **Rebuild rule:** a sealed chunk is rewritten only when its message count
+  actually changes (late-arriving mail carrying an old `Date:` header). New mail
+  in the current year never touches an older year.
+* **No plaintext spool:** messages stream straight into `tar | zstd | age`. The
+  source mboxes are already plaintext on the same disk; the tool never writes a
+  second plaintext copy.
+* **Encryption:** the `mail` tier (`age/mail.recipient`), deliberately separate
+  from the PHI database's key. Each chunk records the generation it was sealed
+  with in `state.json`, so a rotation never leaves a chunk unattributable.
+  Override with `--tier` / `--recipient`.
+
+### Restore
+
+```bash
+infra/backups/scripts/tt-keys.sh unlock mail:2026Q4 --out /dev/shm/mail.key
+age -d -i /dev/shm/mail.key \
+    /mnt/ai_storage/backups/thunderbird/mail-2018.tar.zst.age \
+  | zstd -d | tar -tvf -              # inspect
+age -d -i /dev/shm/mail.key \
+    /mnt/ai_storage/backups/thunderbird/mail-2018.tar.zst.age \
+  | zstd -d | tar -xf - -C /tmp/mail-restore
+shred -u /dev/shm/mail.key
+```
+
+`--list` shows the tier/generation recorded for each chunk. Chunks sealed before
+the cutover show `pre-tier/legacy` and need `~/.config/age/tthealth-backup.txt`.
+
+Each extracted file is an mbox for that folder/year. To bring one back into a
+live profile, copy the messages into the corresponding local folder rather than
+overwriting the live mbox.
+
+### Schedule + Jotta (both without root)
+
+```bash
+scripts/install-tt-backup-mail-user.sh          # dir + user units + timer
+scripts/backup-mail.py                          # first full archive
+jotta-cli add /mnt/ai_storage/backups/thunderbird
+jotta-cli scan
+```
+
+`jottad` already runs as `mpegg-adm` (a user unit), so a **user** timer and a
+folder added to the continuous backup is all that is needed - no system unit, no
+sudo, no service account.
+
+### Gotchas
+
+* **Snap revisions.** Thunderbird here is the snap build, so the profile lives
+  under `~/snap/thunderbird/<revision>/.config/thunderbird/<profile>/` and
+  `current/` follows the active revision. An older revision's tree can hold mail
+  the current one no longer has; archive it too:
+
+  ```bash
+  scripts/backup-mail.py --extra-root ~/snap/thunderbird/1274/.config/thunderbird/<profile>/ImapMail
+  ```
+
+  Members then land under `extra-ImapMail-<hash>/`. That old tree is also ~7.8 GB
+  of duplicate profile and is worth pruning once archived.
+* **Gmail views.** `[Gmail]/All Mail`, `All Mail` and `Labels/...` are different
+  views of the same messages, so the archive is deliberately larger than the sum
+  of distinct messages. No de-duplication is done - dropping a copy could look
+  like losing mail.
+* **1969/1970 chunks** exist because some messages carry a bogus epoch `Date:`.
+  They are tiny; the `undated` chunk holds mail with no usable date at all.
+* `jotta-cli status` reports the folder like any other continuous backup; a chunk
+  appears once `jottad` scans and uploads it.

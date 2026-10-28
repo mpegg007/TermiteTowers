@@ -2,26 +2,26 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/backups/scripts/install-tt-backup-tthealth.sh:168 %
+#  %ccm_git_object_id: infra/backups/scripts/install-tt-backup-tthealth.sh@186 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: c06fed9b05468e24ac157cc0fb3e7fd60eab307c %
-#  %ccm_git_commit_id: 20459b8b5721abe5147d1bde58911ce436c14619 %
-#  %ccm_git_commit_count: 168 %
-#  %ccm_git_commit_date: 2026-10-03 17:43:26 -0400 %
+#  %ccm_git_blob_sha: 673bc0186bc2e38d21ceccac1ae651b15dc6adc0 %
+#  %ccm_git_commit_id: 39d8262239b8cbb295886dbe654023e96f65ada9 %
+#  %ccm_git_commit_count: 186 %
+#  %ccm_git_commit_date: 2026-10-28 11:35:25 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: install %
-#  %ccm_git_modify_date: 2026-10-03 17:43:26 %
-#  %ccm_git_file_last_modified: 2026-10-03 17:43:18 %
+#  %ccm_git_commit_message: feat(backups): phase 3 - encrypt to per-tier keys %
+#  %ccm_git_modify_date: 2026-10-28 11:35:26 %
+#  %ccm_git_file_last_modified: 2026-10-28 11:31:34 %
 #  %ccm_git_file_name: install-tt-backup-tthealth.sh %
 #  %ccm_git_path: infra/backups/scripts/install-tt-backup-tthealth.sh %
 #  %ccm_git_language_mode: shellscript %
 #  %ccm_git_file_type: text/x-shellscript %
 #  %ccm_git_file_encoding: us-ascii %
-#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 8211 %
+#  %ccm_git_size: 10897 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 # ---------------------------------------------------------------------------
 # tt-backup :: one-time installer for the encrypted tthealth_dev1 backup job.
@@ -37,9 +37,9 @@
 #
 # What it does:
 #   1. creates the no-login tt-backup service account (member of tt-ai-storage)
-#   2. /etc/tt-backup/{tthealth.pgpass(0600),age-recipient.txt(0644)}
+#   2. /etc/tt-backup/{tthealth.pgpass(0600),age/health.recipient(0644)}
 #   3. /mnt/ai_storage/backups/tthealth  (tt-backup:tt-ai-storage 2750, setgid)
-#   4. installs the script to /usr/local/lib/tt-backup/ and copies the README
+#   4. installs script + lib/tt-age.sh to /usr/local/lib/tt-backup/ + README
 #   5. installs+verifies /etc/logrotate.d/tt-backup.conf
 #   6. links the systemd units through /srv/dev1/systemd and enables the timer
 #
@@ -63,8 +63,10 @@ DB_NAME="tthealth_dev1"
 DB_USER="tt_backup"
 
 ETC_DIR="/etc/tt-backup"
+AGE_ETC_DIR="$ETC_DIR/age"
 PGPASS_FILE="$ETC_DIR/tthealth.pgpass"
-RECIPIENT_FILE="$ETC_DIR/age-recipient.txt"
+AGE_TIER="health"
+RECIPIENT_FILE="$AGE_ETC_DIR/${AGE_TIER}.recipient"
 LIB_DIR="/usr/local/lib/tt-backup"
 BACKUP_DIR="/mnt/ai_storage/backups/tthealth"
 LOGROTATE_FILE="/etc/logrotate.d/tt-backup.conf"
@@ -110,7 +112,9 @@ run usermod -aG "$STORAGE_GROUP" "$SERVICE_USER"
 
 step "2. Directories"
 run install -d -o root        -g "$SERVICE_GROUP" -m 0750 "$ETC_DIR"
+run install -d -o root        -g root             -m 0755 "$AGE_ETC_DIR"
 run install -d -o root        -g root             -m 0755 "$LIB_DIR"
+run install -d -o root        -g root             -m 0755 "$LIB_DIR/lib"
 # 2750 = 0750 + setgid. The setgid bit is load-bearing, not cosmetic: jottad
 # replicates this folder as mpegg-adm (in tt-ai-storage, NOT in tt-backup), and
 # only the file's *group* grants that read. Without setgid a new backup inherits
@@ -127,18 +131,28 @@ if [ -n "$(find "$BACKUP_DIR" -maxdepth 1 -type f -print -quit 2>/dev/null)" ]; 
     find "$BACKUP_DIR" -maxdepth 1 -type f -exec chmod 0640 {} +            2>/dev/null || true
 fi
 
-step "3. Backup script + documentation"
+step "3. Backup script + library + documentation"
 run install -o root -g root -m 0755 \
     "$REPO_DIR/infra/backups/scripts/backup-tthealth.sh" "$LIB_DIR/backup-tthealth.sh"
 run install -o root -g root -m 0644 \
+    "$REPO_DIR/infra/backups/scripts/lib/tt-age.sh" "$LIB_DIR/lib/tt-age.sh"
+run install -o root -g root -m 0644 \
     "$REPO_DIR/infra/backups/README.md" "$LIB_DIR/README.md"
 
-step "4. age recipient (public key)"
-SRC_RECIPIENT="$REPO_DIR/infra/backups/age/tthealth-recipient.txt"
-[ -f "$SRC_RECIPIENT" ] || die "missing $SRC_RECIPIENT"
+step "4. age recipient for the ${AGE_TIER} tier (public key only)"
+SRC_RECIPIENT="$REPO_DIR/infra/backups/age/${AGE_TIER}.recipient"
+[ -f "$SRC_RECIPIENT" ] || die "missing $SRC_RECIPIENT - run infra/backups/scripts/tt-keys.sh init"
 run install -o root -g root -m 0644 "$SRC_RECIPIENT" "$RECIPIENT_FILE"
 grep -Eqs '^age1[0-9a-z]{50,}$' "$RECIPIENT_FILE" || \
     echo "   WARNING: no valid 'age1...' recipient line in $RECIPIENT_FILE"
+# The generation label in the header is what names the artifacts; without it the
+# script refuses to run rather than writing a dump nobody can attribute to a key.
+grep -Eqs 'generation: [^ |]+' "$RECIPIENT_FILE" || \
+    echo "   WARNING: $RECIPIENT_FILE has no 'generation:' header - the job will refuse to run"
+if [ -e "$ETC_DIR/age-recipient.txt" ]; then
+    echo "   NOTE: $ETC_DIR/age-recipient.txt is no longer read (superseded by $RECIPIENT_FILE)"
+    echo "         remove it when convenient: sudo rm $ETC_DIR/age-recipient.txt"
+fi
 
 step "5. Database secret (pgpass 0600 - libpq ignores group/other-readable files)"
 if [ -n "$PG_PASSWORD" ]; then
@@ -189,12 +203,20 @@ INSTALL COMPLETE. Three things still require a human:
      jotta-cli add /mnt/ai_storage/backups/tthealth
      jotta-cli scan tthealth
 
-3) age identity escrow - CRITICAL:
-     The private identity is /home/mpegg-adm/.config/age/tthealth-backup.txt
-     (0600). Without it the encrypted backups CANNOT be restored. Escrow it
-     offline (password manager / paper) now. Never copy it into
-     /mnt/ai_storage: jottad would upload it right next to the backups it
-     protects, defeating the encryption.
+3) key material - CRITICAL, and different from the old single-key design:
+     * This job encrypts to the "health" tier DEK. Only its PUBLIC half is
+       installed here (/etc/tt-backup/age/health.recipient).
+     * The DEKs live in the master-wrapped keyring
+       /mnt/ai_storage/backups/tt-keys/keyring.tar.age (0600, mpegg-adm only).
+       That file is ciphertext: jottad uploading it is intended and necessary.
+     * Unwrapping it needs the MASTER identity, which is escrowed OFF this host
+       (currently 1Password). Lose the master and nothing can be unwrapped;
+       lose the keyring and the older generations go with it.
+     * Keep ~/.config/age/tthealth-backup.txt as well: it is generation
+       "health/legacy" and reads every dump and mail chunk made before the
+       per-tier cutover. Do not rely on it for new backups.
+     Audit both layers any time (no root, no secrets):
+       infra/backups/scripts/install-tt-keys.sh --check
 
 Verify (as root):
      sudo -u tt-backup /usr/local/lib/tt-backup/backup-tthealth.sh

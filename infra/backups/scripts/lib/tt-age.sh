@@ -2,18 +2,18 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/backups/scripts/lib/tt-age.sh@182 %
+#  %ccm_git_object_id: infra/backups/scripts/lib/tt-age.sh@186 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: b602aa0034f69a9d37a200b9aaec50a2e6556130 %
-#  %ccm_git_commit_id: 31bcb4a343122a83e17b11cff96a518079bbc65e %
-#  %ccm_git_commit_count: 182 %
-#  %ccm_git_commit_date: 2026-10-28 11:08:36 -0400 %
+#  %ccm_git_blob_sha: 31afd06d81022d4a0a96134d1ebcc8104a8f4152 %
+#  %ccm_git_commit_id: 39d8262239b8cbb295886dbe654023e96f65ada9 %
+#  %ccm_git_commit_count: 186 %
+#  %ccm_git_commit_date: 2026-10-28 11:35:25 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: feat(backups): per-tier age DEKs with a master-wrapped keyring (phase 1) %
-#  %ccm_git_modify_date: 2026-10-28 11:08:37 %
-#  %ccm_git_file_last_modified: 2026-10-28 10:58:17 %
+#  %ccm_git_commit_message: feat(backups): phase 3 - encrypt to per-tier keys %
+#  %ccm_git_modify_date: 2026-10-28 11:35:26 %
+#  %ccm_git_file_last_modified: 2026-10-28 11:27:13 %
 #  %ccm_git_file_name: tt-age.sh %
 #  %ccm_git_path: infra/backups/scripts/lib/tt-age.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,7 +21,7 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 2104 %
+#  %ccm_git_size: 4538 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 # ---------------------------------------------------------------------------
 # lib/tt-age.sh :: tier -> age recipient resolution for the backup scripts.
@@ -38,7 +38,20 @@
 # Return codes follow the tt-backup convention: 3 = configuration error.
 # ---------------------------------------------------------------------------
 
-TT_AGE_DIR="${TT_AGE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../age" 2>/dev/null && pwd)}"
+# Layout-aware default: <repo>/infra/backups/age when running from a checkout,
+# /etc/tt-backup/age for the installed copy (the installed lib lives at
+# /usr/local/lib/tt-backup/lib/, which has no ../../age, so it falls through).
+if [ -z "${TT_AGE_DIR:-}" ]; then
+    _tt_age_repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../age" 2>/dev/null && pwd || true)"
+    if [ -n "$_tt_age_repo" ] && [ -d "$_tt_age_repo" ]; then
+        TT_AGE_DIR="$_tt_age_repo"
+    elif [ -d /etc/tt-backup/age ]; then
+        TT_AGE_DIR=/etc/tt-backup/age
+    else
+        TT_AGE_DIR="${_tt_age_repo:-/etc/tt-backup/age}"
+    fi
+    unset _tt_age_repo
+fi
 
 # Path of the current recipient file for a tier (public key, safe to read).
 tt_age_recipient_file() {
@@ -55,13 +68,31 @@ tt_age_require_recipient() {
     printf '%s\n' "$file"
 }
 
-# Current generation label for a tier, e.g. 2026Q4 (from the public registry).
+# Generation label carried in a recipient file's comment header, e.g.
+#   "# tier: health | generation: 2026Q4 | created: 2026-10-28"
+# This is what lets the *installed* service script name its artifacts without a
+# registry.json (it only gets the recipient file).
+tt_age_gen_from_file() {
+    local file="$1" gen
+    [ -r "$file" ] || return 3
+    gen="$(sed -n 's/.*| *generation: *\([^ |]*\) *|.*/\1/p' "$file" | head -1)"
+    [ -n "$gen" ] || return 3
+    printf '%s\n' "$gen"
+}
+
+# Current generation label for a tier: the public registry when present,
+# otherwise the recipient file's header (installed layout).
 tt_age_current_gen() {
-    local tier="$1" reg="$TT_AGE_DIR/registry.json"
+    local tier="$1" reg="$TT_AGE_DIR/registry.json" gen=""
     [ -n "$tier" ] || return 3
-    [ -r "$reg" ] || return 3
-    command -v jq >/dev/null 2>&1 || return 3
-    jq -er --arg t "$tier" '.tiers[$t].current' "$reg" 2>/dev/null
+    if [ -r "$reg" ] && command -v jq >/dev/null 2>&1; then
+        gen="$(jq -er --arg t "$tier" '.tiers[$t].current' "$reg" 2>/dev/null || true)"
+    fi
+    if [ -z "$gen" ]; then
+        gen="$(tt_age_gen_from_file "$(tt_age_recipient_file "$tier")" || true)"
+    fi
+    [ -n "$gen" ] || return 3
+    printf '%s\n' "$gen"
 }
 
 # Artifact base name carrying its tier+generation, e.g.

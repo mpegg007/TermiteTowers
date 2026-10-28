@@ -2,26 +2,26 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/backups/scripts/backup-tthealth.sh:167 %
+#  %ccm_git_object_id: infra/backups/scripts/backup-tthealth.sh@186 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 39f6a3aed9e0f7aacb41cf3df328a0aa38ec4356 %
-#  %ccm_git_commit_id: af3b4e614eaf7f1e2342aedb19c1c31089a044fd %
-#  %ccm_git_commit_count: 167 %
-#  %ccm_git_commit_date: 2026-10-03 17:41:25 -0400 %
+#  %ccm_git_blob_sha: 15766f5cddad9fc69e58c8463551c30ca20a2956 %
+#  %ccm_git_commit_id: 39d8262239b8cbb295886dbe654023e96f65ada9 %
+#  %ccm_git_commit_count: 186 %
+#  %ccm_git_commit_date: 2026-10-28 11:35:25 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: backup scripts %
-#  %ccm_git_modify_date: 2026-10-03 17:41:25 %
-#  %ccm_git_file_last_modified: 2026-10-03 17:40:37 %
+#  %ccm_git_commit_message: feat(backups): phase 3 - encrypt to per-tier keys %
+#  %ccm_git_modify_date: 2026-10-28 11:35:26 %
+#  %ccm_git_file_last_modified: 2026-10-28 11:27:44 %
 #  %ccm_git_file_name: backup-tthealth.sh %
 #  %ccm_git_path: infra/backups/scripts/backup-tthealth.sh %
 #  %ccm_git_language_mode: shellscript %
 #  %ccm_git_file_type: text/x-shellscript %
 #  %ccm_git_file_encoding: us-ascii %
-#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 7586 %
+#  %ccm_git_size: 9714 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 # ---------------------------------------------------------------------------
 # tt-backup :: encrypted PostgreSQL backup  (database: tthealth_dev1)
@@ -33,6 +33,13 @@
 #
 # pg_dump streams straight into age: encrypted output is the only thing that
 # ever reaches the disk, so plaintext PHI is never written to a file.
+#
+# Encryption is per data classification - this job uses the "health" tier, and
+# only that tier's PUBLIC recipient is visible from this account. The private
+# half lives in the master-wrapped keyring (mpegg-adm, 0700), which tt-backup
+# cannot read or even traverse; install-tt-keys.sh --check asserts that. The
+# tier and generation are part of the filename, so restore knows which key a
+# given dump needs even after a rotation.
 #
 # Deployed by scripts/install-tt-backup-tthealth.sh to
 #   /usr/local/lib/tt-backup/backup-tthealth.sh
@@ -67,10 +74,34 @@ LOG_DIR="${LOG_DIR:-/var/log/tt-backup}"
 LOG_FILE="${LOG_DIR}/${APP_NAME}.log"
 
 PGPASS_FILE="${PGPASSFILE:-/etc/tt-backup/tthealth.pgpass}"
-AGE_RECIPIENTS="${AGE_RECIPIENTS:-/etc/tt-backup/age-recipient.txt}"
+
+# --- encryption: one DEK per data classification, never a shared key ---------
+AGE_TIER="${AGE_TIER:-health}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# lib/ sits next to the script in both layouts: the repo (scripts/lib/) and the
+# deployed copy (/usr/local/lib/tt-backup/lib/, installed with the script).
+# shellcheck source=lib/tt-age.sh
+. "$SCRIPT_DIR/lib/tt-age.sh"
+
+AGE_RECIPIENTS="${AGE_RECIPIENTS:-$(tt_age_require_recipient "$AGE_TIER" 2>/dev/null || true)}"
+if [ -z "$AGE_RECIPIENTS" ] || [ ! -r "$AGE_RECIPIENTS" ]; then
+    printf 'ERROR: no readable age recipient for tier %s under %s\n' \
+        "$AGE_TIER" "${TT_AGE_DIR:-?}" >&2
+    exit 3
+fi
+# No default generation: a dump that cannot name its key is not restorable.
+AGE_GEN="$(tt_age_current_gen "$AGE_TIER" 2>/dev/null || true)"
+if [ -z "$AGE_GEN" ]; then
+    printf 'ERROR: cannot determine the %s generation from %s\n' \
+        "$AGE_TIER" "$AGE_RECIPIENTS" >&2
+    exit 3
+fi
 
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
-OUT_FILE="${BACKUP_DIR}/${DB_NAME}_${TIMESTAMP}.dump.age"
+# tier+generation travel in the NAME: restore selects the key from it and a
+# later rotation cannot orphan this file. Retention globs match the
+# ".dump.age" suffix only, so they are unaffected.
+OUT_FILE="${BACKUP_DIR}/${DB_NAME}_${TIMESTAMP}__${AGE_TIER}-${AGE_GEN}.dump.age"
 
 # Backup files must stay group-readable by tt-ai-storage (jottad replicates the
 # folder as mpegg-adm) and never world-readable. 0027 plus the setgid bit on
@@ -117,7 +148,7 @@ mkdir -p "$BACKUP_DIR" || { log ERROR "cannot create backup dir: $BACKUP_DIR"; e
 export PGPASSFILE="$PGPASS_FILE"
 export PGCONNECT_TIMEOUT="${PGCONNECT_TIMEOUT:-15}"
 
-log INFO "Dumping ${DB_NAME}@${DB_HOST}:${DB_PORT} as ${DB_USER} -> $(basename "$OUT_FILE")"
+log INFO "Dumping ${DB_NAME}@${DB_HOST}:${DB_PORT} as ${DB_USER} -> $(basename "$OUT_FILE") [tier ${AGE_TIER}/${AGE_GEN}]"
 
 # --no-password guarantees a fast, non-interactive failure instead of a prompt
 # hanging until TimeoutStartSec. pipefail makes a mid-stream pg_dump failure
@@ -169,3 +200,11 @@ log INFO "Retention: pruned ${PRUNED} local backup(s) older than ${RETENTION_DAY
 # credentials. jottad (running as mpegg-adm) scans BACKUP_DIR and uploads.
 log INFO "Cloud replication handled out-of-band by jottad scanning ${BACKUP_DIR}"
 log INFO "=== ${APP_NAME} backup finished ==="
+
+# Restore (two steps - the DEK must be unwrapped by the master identity first,
+# and neither of those is reachable from tt-backup):
+#   ./tt-keys.sh unlock health:2026Q4 --out /dev/shm/health.key
+#   age -d -i /dev/shm/health.key <file>.dump.age \
+#     | pg_restore --clean --if-exists -h monolith -U tthealth_dev1_owner -d tthealth_dev1
+#   shred -u /dev/shm/health.key
+# The generation to unlock is the "__health-<gen>" part of the filename.
