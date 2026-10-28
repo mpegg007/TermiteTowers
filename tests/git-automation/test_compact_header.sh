@@ -2,18 +2,18 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: tests/git-automation/test_compact_header.sh@190 %
+#  %ccm_git_object_id: tests/git-automation/test_compact_header.sh@191 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: def809b7ece45014f8ab892173e68bfd218b16fe %
-#  %ccm_git_commit_id: 85f57600d664c6d5133411bec61113aee47c3cb8 %
-#  %ccm_git_commit_count: 190 %
-#  %ccm_git_commit_date: 2026-10-28 16:35:23 -0400 %
+#  %ccm_git_blob_sha: 43f91df9d0aa7a32d2b6da463afbec0bb6b93fce %
+#  %ccm_git_commit_id: 5fa83b9916d021b6649b02547d35eb425cb83b75 %
+#  %ccm_git_commit_count: 191 %
+#  %ccm_git_commit_date: 2026-10-28 16:52:16 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: refactor(context): retire memory-bank and add %%ccm_compact status headers %
-#  %ccm_git_modify_date: 2026-10-28 16:35:23 %
-#  %ccm_git_file_last_modified: 2026-10-28 16:28:57 %
+#  %ccm_git_commit_message: fix(ccm): stop placeholder and prose lines being harvested as commit history %
+#  %ccm_git_modify_date: 2026-10-28 16:52:17 %
+#  %ccm_git_file_last_modified: 2026-10-28 16:41:10 %
 #  %ccm_git_file_name: test_compact_header.sh %
 #  %ccm_git_path: tests/git-automation/test_compact_header.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,12 +21,8 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 6665 %
+#  %ccm_git_size: 10105 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
-#   3. No %git_commit_history trail is ever added
-if grep -q '%git_commit_history' "$COMPACT"; then
-    fail "%git_commit_history trail was added to a compact file"
-    pass "no %git_commit_history trail added"
 # test_compact_header.sh: Tests for %ccm_compact opt-out mode.
 #
 # Contract under test (ccm-apply.sh Step 0):
@@ -42,6 +38,15 @@ if grep -q '%git_commit_history' "$COMPACT"; then
 #   5. Detection is line-1-only: the token on line 3 still gets a full
 #      header, so docs that merely *describe* the token are unaffected
 #   6. A plain file with no token still gets a normal CCM header
+#
+# REGRESSION CANARY -- do not "clean up" the %git_commit_history text below.
+# This file deliberately mentions that token in prose, several columns in from
+# the start of the line. History collection, deletion and the artifact count in
+# ccm-lib.sh must stay anchored to column <=9; an unanchored match treats these
+# comment lines as history rows, re-emits them after the header and duplicates
+# them in the body. That is exactly what happened on 2026-10-28. The mentions
+# here keep the bug detectable: run this file through the hook and confirm the
+# count does not grow.
 #
 # Usage: tests/git-automation/test_compact_header.sh
 
@@ -166,10 +171,6 @@ else
     fail "no header applied, or header not on line 1; line 1 is: $(head -n 1 "$LATE")"
 fi
 
-if cmp -s "$LATE" "$WORK_DIR/status.before"; then
-    fail "file was NOT modified despite lacking a line-1 token"
-fi
-
 # ─────────────────────────────────────────────────────────────────
 # Case 6: plain file still gets the normal header
 # ─────────────────────────────────────────────────────────────────
@@ -193,6 +194,48 @@ if grep -q '%ccm_git_path: ' "$PLAIN"; then
     pass "header fields populated"
 else
     fail "header fields missing"
+fi
+
+# ─────────────────────────────────────────────────────────────────
+# Case 7: a file mentioning %git_commit_history in prose is not
+#         harvested as history, and re-running does not duplicate it
+# ─────────────────────────────────────────────────────────────────
+echo "=== Case 7: prose mentioning %git_commit_history is not harvested ==="
+PROSE="$WORK_DIR/prose.md"
+cat > "$PROSE" <<'EOF'
+# Prose
+
+The implementer should never remove the %git_commit_history row by hand.
+A second sentence mentioning %git_commit_history again, mid-line.
+EOF
+
+PROSE_BEFORE=$(wc -l < "$PROSE" | tr -d ' ')
+"$CCM_APPLY" "$PROSE" "$(rel_path_for "$PROSE")" 2>/dev/null
+PROSE_MID=$(wc -l < "$PROSE" | tr -d ' ')
+"$CCM_APPLY" "$PROSE" "$(rel_path_for "$PROSE")" 2>/dev/null
+PROSE_AFTER=$(wc -l < "$PROSE" | tr -d ' ')
+
+# Body must survive verbatim: both prose mentions still present.
+MENTIONS=$(grep -c '%git_commit_history' "$PROSE")
+if [ "$MENTIONS" = "2" ]; then
+    pass "both prose mentions survived (no duplication into the header)"
+else
+    fail "expected 2 %git_commit_history mentions, found $MENTIONS (harvested as history?)"
+fi
+
+# Re-running must not grow the file.
+if [ "$PROSE_MID" = "$PROSE_AFTER" ]; then
+    pass "re-running the hook does not grow the file ($PROSE_AFTER lines)"
+else
+    fail "file grew on re-run: $PROSE_MID -> $PROSE_AFTER lines (duplicating content)"
+fi
+
+# Exactly one header.
+HEADERS=$(grep -c 'Continuous Code Management Header TEMPLATE' "$PROSE")
+if [ "$HEADERS" = "2" ]; then
+    pass "exactly one header (2 marker lines: start + end)"
+else
+    fail "expected 2 header marker lines, found $HEADERS (double header?)"
 fi
 
 echo

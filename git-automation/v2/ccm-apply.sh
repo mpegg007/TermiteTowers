@@ -77,7 +77,24 @@ echo "[INFO] $FILE: lang=$lang_mode block=($block_start,$block_end) comment=$lin
 if [ "$FORCE" = "--force" ]; then
     echo "[INFO] --force: skipping header removal for $FILE" >&2
 else
-    remove_ccm_header "$FILE" || true
+    if ! remove_ccm_header "$FILE"; then
+        # Two very different causes, and they must not be conflated:
+        #   1. the file simply has no header yet (normal for a new file), or
+        #   2. a header exists but the strip tripped the safety assertion (a bug).
+        # In case 2, continuing would insert a second header above the first and
+        # silently corrupt the file. Refuse instead, so the bug surfaces here
+        # rather than as duplicated content in a commit.
+        #
+        # The test inspects the TOP of the file only. A whole-file grep for a
+        # %ccm_ token matches body text -- a heredoc in a test fixture, or a doc
+        # showing the marker -- and would declare "header present" for files that
+        # have none, blocking them forever. The start marker is the only reliable
+        # signal that an unstripped header is still sitting at the top.
+        if head -n 40 "$FILE" | grep -q 'ccm_git_header_start'; then
+            echo "[ERROR] $FILE: CCM header still present after strip; refusing to append a second header" >&2
+            exit 1
+        fi
+    fi
 fi
 
 # ─────────────────────────────────────────────────────────────

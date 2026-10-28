@@ -8,6 +8,27 @@ set -euo pipefail
 # Bounds the accumulated trail so it can never grow without limit.
 CCM_HISTORY_MAX="${CCM_HISTORY_MAX:-50}"
 
+# ─────────────────────────────────────────────────────────────────
+# _ccm_trim "$value"
+#
+# Strip leading and trailing whitespace from a captured header value.
+#
+# The extraction regexes in extract_preserved_history capture `([^%]*)`
+# between ": " and " %". That group is greedy, so it swallows the padding
+# space: `%ccm_git_commit_message: unknown %` yields "unknown ", not
+# "unknown". Every placeholder check comparing against "unknown" therefore
+# failed, the first-pass header (whose commit-bound fields are legitimately
+# unknown) looked like it carried a real message, and a junk
+# "%git_commit_history: unknown  unknown  unknown" row was emitted on the
+# NEXT run -- growing the file on every pass. Trim at the point of capture.
+# ─────────────────────────────────────────────────────────────────
+_ccm_trim() {
+    local s="${1-}"
+    s="${s#"${s%%[![:space:]]*}"}"   # strip leading
+    s="${s%"${s##*[![:space:]]}"}"   # strip trailing
+    printf '%s' "$s"
+}
+
 # Directory this library lives in, resolved from the library itself rather than
 # from the caller's SCRIPT_DIR, so sourcing works from any entry point.
 _CCM_LIB_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
@@ -83,10 +104,18 @@ extract_preserved_history() {
     # Collect old history lines (survive header removal, float in file body).
     # Deduplicate by normalized content (ignoring a trailing CR / spaces) and
     # cap to CCM_HISTORY_MAX so the trail can never compound or grow unbounded.
+    #
+    # ANCHORED to column <=9 deliberately. An unanchored match harvests any line
+    # that merely *mentions* the token -- e.g. documentation describing this
+    # mechanism -- and format_ccm_header then re-emits those body lines verbatim
+    # after the header, duplicating them. Real history rows always sit at the
+    # start of a comment line (markdown "<!-- " = column 5, shell "# " = column 2),
+    # so the anchor is what makes collection, deletion and the artifact count in
+    # remove_ccm_header agree.
     local hist_line hist_key
     local -A seen_history=()
     while IFS= read -r line; do
-        [[ "$line" =~ %git_commit_history ]] || continue
+        [[ "$line" =~ ^.{0,9}%git_commit_history ]] || continue
         hist_line="${line%$'\r'}"
         hist_line="${hist_line%"${hist_line##*[![:space:]]}"}"   # rstrip trailing spaces
         hist_key="$hist_line"
@@ -96,8 +125,32 @@ extract_preserved_history() {
         OLD_HISTORY_LINES+=("$hist_line")
     done < "$file"
 
-    # Sanitize: blank "unknown" messages
-    [ "$PRESERVED_COMMIT_MSG" = "unknown" ] && PRESERVED_COMMIT_MSG=""
+    # Sanitize placeholders.
+    #
+    # "unknown" means the field was never filled in -- on ccm-apply's first pass
+    # the commit-bound fields are unknown by design. Blanking only the message
+    # left date and author holding the literal "unknown", so the guard in
+    # format_ccm_header saw a non-empty message and emitted a junk row
+    # ("%git_commit_history: unknown  unknown  unknown") on the NEXT run, growing
+    # the file on every pass. Blank all three.
+    #
+    # Written as `if` blocks deliberately: a bare `[ ... ] && x` returns non-zero
+    # when the test is false, which under `set -e` aborts the caller.
+    # Trim the capture padding FIRST -- otherwise the "unknown" comparisons
+    # below never match (see _ccm_trim).
+    PRESERVED_COMMIT_MSG=$(_ccm_trim "$PRESERVED_COMMIT_MSG")
+    PRESERVED_COMMIT_DATE=$(_ccm_trim "$PRESERVED_COMMIT_DATE")
+    PRESERVED_COMMIT_AUTHOR=$(_ccm_trim "$PRESERVED_COMMIT_AUTHOR")
+
+    if [ "$PRESERVED_COMMIT_MSG" = "unknown" ]; then
+        PRESERVED_COMMIT_MSG=""
+    fi
+    if [ "$PRESERVED_COMMIT_DATE" = "unknown" ]; then
+        PRESERVED_COMMIT_DATE=""
+    fi
+    if [ "$PRESERVED_COMMIT_AUTHOR" = "unknown" ]; then
+        PRESERVED_COMMIT_AUTHOR=""
+    fi
 
     # Sanitize: blank if no alphanumeric content (placeholders)
     if [ -n "$PRESERVED_COMMIT_MSG" ] && ! [[ "$PRESERVED_COMMIT_MSG" =~ [A-Za-z0-9] ]]; then
@@ -121,12 +174,18 @@ remove_ccm_header() {
     line_count_before=$(wc -l < "$file")
 
     # Remove CCM header lines, template markers, and accumulated history
+    # Every pattern here MUST stay anchored to the same column threshold as the
+    # artifact_lines count below. The former `/^.{0,9}.*%git_commit_history/d`
+    # matched the token anywhere in a line, so deleting body prose that mentioned
+    # it and counting only column-<=9 occurrences disagreed -- tripping the
+    # subset assertion, aborting the strip, and (via ccm-apply's `|| true`)
+    # appending a second header.
     sed -E \
         -e '/^.{0,9}%ccm_.*: .* %/d' \
         -e '/^.{0,9}% ccm_.*: .* %/d' \
         -e '/^.{0,9}TermiteTowers Continuous Code Management Header TEMPLATE/d' \
         -e '/^.{0,9}tt-ccm.header.end/d' \
-        -e '/^.{0,9}.*%git_commit_history/d' \
+        -e '/^.{0,9}%git_commit_history/d' \
         "$file" > "$tmpfile"
 
     local line_count_after
