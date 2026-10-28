@@ -2,18 +2,18 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/backups/scripts/tt-keys.sh@185 %
+#  %ccm_git_object_id: infra/backups/scripts/tt-keys.sh@188 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 4598dcb15815d0b6a2c3a5be81282d5b6c11a14b %
-#  %ccm_git_commit_id: b0464e42ec8194f8cb540c319fd4b1e3965aefc0 %
-#  %ccm_git_commit_count: 185 %
-#  %ccm_git_commit_date: 2026-10-28 11:25:31 -0400 %
+#  %ccm_git_blob_sha: 6d70024c57678b2d4c519774f1e33c99dcd729a9 %
+#  %ccm_git_commit_id: 311e8d32faa5df27eca3c67f5837a007bc611e6f %
+#  %ccm_git_commit_count: 188 %
+#  %ccm_git_commit_date: 2026-10-28 11:38:38 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: fix(backups): name both recipients when the master identity doesn't match %
-#  %ccm_git_modify_date: 2026-10-28 11:25:32 %
-#  %ccm_git_file_last_modified: 2026-10-28 11:22:06 %
+#  %ccm_git_commit_message: fix(backups): unlock used an undefined jq variable, and polluted stdout %
+#  %ccm_git_modify_date: 2026-10-28 11:38:39 %
+#  %ccm_git_file_last_modified: 2026-10-28 11:38:28 %
 #  %ccm_git_file_name: tt-keys.sh %
 #  %ccm_git_path: infra/backups/scripts/tt-keys.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,7 +21,7 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 26629 %
+#  %ccm_git_size: 26723 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 # --- usage:begin
 # tt-keys :: per-tier age DEKs, wrapped by a master identity kept OFF this host.
@@ -575,7 +575,7 @@ cmd_unlock() {
     unwrap_keyring "$d"
 
     if [ -z "$gen" ]; then
-        gen="$(jq -r --arg t "$tier" '.tiers[$tier].current // empty' "$d/registry.json")"
+        gen="$(jq -r --arg t "$tier" '.tiers[$t].current // empty' "$d/registry.json")"
         [ -n "$gen" ] || die "tier '$tier' is not in the keyring registry" 3
     fi
     local src="$d/keys/$tier/$gen.key"
@@ -589,9 +589,10 @@ cmd_unlock() {
         out="$keep/$tier-$gen.key"
     fi
     install -m 0600 "$src" "$out"
-    log INFO "unwrapped $tier/$gen ($(age-keygen -y "$out" | cut -c1-16)...)"
+    # stdout must be EXACTLY the path, so callers can do KEY=$(tt-keys.sh unlock ...)
+    log INFO "unwrapped $tier/$gen ($(age-keygen -y "$out" | cut -c1-16)...)" >&2
     printf '%s\n' "$out"
-    log WARNING "plaintext DEK at $out - run 'shred -u $out' when you are done"
+    log WARNING "plaintext DEK at $out - run 'shred -u $out' when you are done" >&2
 }
 
 cmd_import_legacy() {
