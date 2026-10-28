@@ -26,24 +26,37 @@ if [ ! -f "$FILE" ]; then
 fi
 
 # ─────────────────────────────────────────────────────────────
-# Step 0: Compact-mode short circuit (opt-in, self-declared)
+# Step 0: Compact mode (opt-in, self-declared)
 #
-# A file whose FIRST line carries the %ccm_compact: token is left
-# completely untouched. The token IS the header: no strip, no
-# reformatting, no field rewrite, no %git_commit_history trail.
-# Idempotent by construction — re-running the hook is a no-op
-# because the file is never written.
+# A file whose FIRST line carries %ccm_compact is one-line-header mode:
+# no 9/24-line block, no %git_commit_history trail. The single line still
+# carries real provenance -- path, branch, commit date, short SHA -- so the
+# reader learns something without a 50-line trail behind it.
 #
-# Why this lives here and not in pre-commit.sh: ccm-apply.sh is the
-# single choke point every caller goes through (pre-commit.sh today,
-# any bulk reheader tool later), so one guard covers them all.
+# Who writes what:
+#   ccm-apply (here, pre-commit)  refreshes path and branch, preserving the
+#                                 previously recorded commit fields so a
+#                                 manual run never destroys them.
+#   post-commit                   overwrites committed= and sha= with HEAD.
 #
-# The test is deliberately HEAD-FIRST-LINE-ONLY. This mode is
-# documented in git-automation/v2/README.md and in .clinerules/, so a
-# whole-file grep would silently opt those documents out of CCM.
+# Why the guard lives here and not in pre-commit.sh: ccm-apply.sh is the
+# single choke point every caller goes through, so one guard covers them all.
+#
+# The test is deliberately HEAD-FIRST-LINE-ONLY. This mode is documented in
+# git-automation/v2/README.md and in .clinerules/, so a whole-file grep would
+# silently convert those documents too.
 # ─────────────────────────────────────────────────────────────
 if head -n 1 "$FILE" 2>/dev/null | grep -q '%ccm_compact'; then
-    echo "[INFO] $FILE: %ccm_compact on line 1 — leaving file untouched (compact mode)" >&2
+    _existing="$(head -n 1 "$FILE")"
+    _prev_committed="$(parse_ccm_compact_field "$_existing" committed)"
+    _prev_sha="$(parse_ccm_compact_field "$_existing" sha)"
+    [ -n "$_prev_committed" ] || _prev_committed="pending"
+    [ -n "$_prev_sha" ] || _prev_sha="pending"
+    _branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
+
+    # apply_ccm_compact_header returns 1 when it actually changed the file.
+    apply_ccm_compact_header "$FILE" "$REL_PATH" "$_branch" "$_prev_committed" "$_prev_sha" || true
+    echo "[INFO] $FILE: compact header refreshed (1 line, no history)" >&2
     exit 0
 fi
 

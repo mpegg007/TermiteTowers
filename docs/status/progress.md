@@ -1,4 +1,4 @@
-<!-- %ccm_compact: -->
+<!-- %ccm_compact: path=docs/status/progress.md branch=dev1 committed=2026-10-28T17:04:18-04:00 sha=474193c -->
 # Progress
 
 What works, what is broken, what will bite. Freshness comes from git, not a hand-written

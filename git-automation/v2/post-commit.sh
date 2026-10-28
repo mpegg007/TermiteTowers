@@ -39,6 +39,9 @@ COMMIT_MSG_SAFE=$(echo "$COMMIT_MSG_RAW" | tr -d '\r\n' | cut -c1-100 | sed 's/%
 COMMIT_AUTHOR=$(git log -1 --pretty=format:'%an')
 COMMIT_EMAIL=$(git log -1 --pretty=format:'%ae')
 COMMIT_DATE=$(git log -1 --pretty=format:'%ci')
+# ISO 8601 form (no spaces) - required for the compact header's key=value
+# line, where a space would terminate the value.
+COMMIT_DATE_ISO=$(git log -1 --pretty=format:'%cI')
 
 # ─────────────────────────────────────────────────────────────
 # File list
@@ -92,6 +95,26 @@ for FILE in "${FILES_TO_PROCESS[@]}"; do
                 echo "[INFO] Skipping $FILE (git-automation)" >> "$LOG_FILE"
                 continue ;;
         esac
+    fi
+
+    # ── Compact mode: refresh the single line with HEAD's real values ──
+    # Must come BEFORE the full-header gate below, which a compact line
+    # deliberately does not satisfy.
+    if head -n 1 "$FILE" 2>/dev/null | grep -q '%ccm_compact'; then
+        # git ls-files exits 0 with EMPTY output for an untracked path, so a
+        # `|| echo` fallback does not fire and the path would be recorded as
+        # "unknown" on a file's very first commit. Test for emptiness instead.
+        _rel="$(git ls-files --full-name -- "$FILE" 2>/dev/null || true)"
+        # Untracked path (a file's first commit): fall back to the path relative
+        # to the repo root. Using the raw argument would record an absolute path
+        # when the hook is invoked with one.
+        [ -n "$_rel" ] || _rel="${FILE#"$REPO_ROOT"/}"
+        apply_ccm_compact_header "$FILE" "$_rel" \
+            "$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)" \
+            "$COMMIT_DATE_ISO" \
+            "${COMMIT_ID:0:7}" || true
+        echo "[INFO] Compact header updated in $FILE" >> "$LOG_FILE"
+        continue
     fi
 
     # Only process files with CCM header

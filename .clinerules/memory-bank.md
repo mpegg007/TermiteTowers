@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: .clinerules/memory-bank.md % -->
-<!-- %ccm_git_object_id: .clinerules/memory-bank.md@190 % -->
-<!-- %ccm_git_commit_date: 2026-10-28 16:35:23 -0400 % -->
+<!-- %ccm_git_object_id: .clinerules/memory-bank.md@192 % -->
+<!-- %ccm_git_commit_date: 2026-10-28 17:04:18 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: refactor(context): retire memory-bank and add %%ccm_compact status headers % -->
+<!-- %ccm_git_commit_message: feat(ccm): make the compact header carry provenance, not just a flag % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-10-28 mpegg refactor(context): retire memory-bank and add -->
 # Cline's Memory Bank
 
 I am Cline, an expert software engineer with a unique characteristic: my memory resets
@@ -43,9 +44,12 @@ Any remaining reference to `memory-bank/<file>.md` is stale — follow the new p
 
 ## Freshness
 
-Status files under `docs/status/` begin with `%ccm_compact:` and deliberately carry **no**
-header or in-file date. Never hand-write a "last updated" claim: a hand-maintained date
-drifts, and the old one was already nine commits stale. Get freshness from git:
+Status files under `docs/status/` begin with a `%ccm_compact` line carrying `committed=`
+and `sha=`, maintained by the hooks from the last commit that touched the file. **Never
+hand-edit those two values** — the hook overwrites them, and a hand-written date is exactly
+how the retired memory bank came to claim a date nine commits stale.
+
+Read that line to judge how current a page is, and confirm against git when it matters:
 
 ```bash
 git log -1 --format=%cI -- docs/status/active-context.md

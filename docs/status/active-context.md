@@ -1,4 +1,4 @@
-<!-- %ccm_compact: -->
+<!-- %ccm_compact: path=docs/status/active-context.md branch=dev1 committed=2026-10-28T17:04:18-04:00 sha=474193c -->
 # Active Context
 
 What the project is doing right now. Freshness is deliberately **not** hand-written —
@@ -11,7 +11,12 @@ git log -1 --format=%cI -- docs/status/active-context.md
 `docs/` is outside `docs_dir: wiki`, so this page is tracked and CCM-managed but never
 published.
 
-Anchored to commit `897329f`.
+Line 1 is a **compact CCM header**: the hook maintains `committed=` and `sha=` from the
+last commit that touched this file, so the file states its own provenance without the
+9-line block and the 50-entry history trail the full header carries. Everything after
+line 1 is content. Do not hand-edit the `committed=` or `sha=` values — the hook
+overwrites them, and a hand-written date is how the retired memory bank came to claim a
+date nine commits behind reality.
 
 ## Current work focus
 
@@ -25,9 +30,14 @@ Two threads are open:
    `wiki/tech-context.md`, volatile status lives here, and a `%ccm_compact` header mode was
    added so status files carry one line instead of nine plus a growing history trail.
 
-## Repository state at time of writing
+## Repository state
 
-Branch `dev1`, HEAD `897329f feat(backups): phase 5 - rotate, rewrap, audit, prune, restore wrapper`.
+A **snapshot**, not a live claim — it describes the working tree when this page was last
+rewritten. Re-derive before relying on it:
+
+```bash
+git log --oneline -1 && git status --short
+```
 
 Modified: `.clinerules/00-cline-behavioral-rules.md`, `.clinerules/memory-bank.md`,
 `git-automation/v2/ccm-apply.sh`, `git-automation/v2/README.md`, `hams/docs/*` (4 files),

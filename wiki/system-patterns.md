@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: wiki/system-patterns.md % -->
-<!-- %ccm_git_object_id: wiki/system-patterns.md@190 % -->
-<!-- %ccm_git_commit_date: 2026-10-28 16:35:23 -0400 % -->
+<!-- %ccm_git_object_id: wiki/system-patterns.md@192 % -->
+<!-- %ccm_git_commit_date: 2026-10-28 17:04:18 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: refactor(context): retire memory-bank and add %%ccm_compact status headers % -->
+<!-- %ccm_git_commit_message: feat(ccm): make the compact header carry provenance, not just a flag % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-10-28 mpegg refactor(context): retire memory-bank and add -->
 # System Patterns
 
 Cross-cutting invariants that hold across the estate. This page exists to state the
@@ -141,10 +142,11 @@ maintained by the hooks. It is machinery, not authorship. Detail:
 - Header sources are exempt: `git-automation/*.sh` and `git-automation/**/CCM_*_TEMPLATE.txt`.
 - Markdown uses a **9-line** template (`CCM_MARKDOWN_HEADER_TEMPLATE.txt`, introduced in
   `ba072db`). Older pages still carry 24-line legacy headers until they are next staged.
-- **Compact mode:** a file whose *first line* carries `%ccm_compact:` is left completely
-  untouched — one line, no history trail, no amend. Opt-in and self-declared, for volatile
-  status documents. Detection is first-line-only on purpose, so documents that merely
-  describe the token are unaffected.
+- **Compact mode:** a file whose *first line* carries `%ccm_compact` gets a one-line header
+  instead of the block — `path=` and `branch=` maintained by pre-commit, `committed=` and
+  `sha=` filled by post-commit from HEAD. No history trail. Opt-in and self-declared, for
+  volatile status documents. Detection is first-line-only on purpose, so documents that
+  merely describe the token are unaffected.
 
 ## 7. CI and production deployment
 

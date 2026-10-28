@@ -29,6 +29,71 @@ _ccm_trim() {
     printf '%s' "$s"
 }
 
+# ─────────────────────────────────────────────────────────────────
+# format_ccm_compact_line "$rel_path" "$branch" "$committed" "$sha"
+#
+# Renders the single-line compact header. Fields are key=value pairs so a
+# reader (or a grep) can pull one value without positional guessing, and so
+# the line stays unambiguous when a path contains spaces or slashes.
+#
+# Deliberately NOT in the "%ccm_field: value %" dialect: that dialect is what
+# remove_ccm_header deletes and what the full-header sed rewrite patterns
+# match. Keeping compact distinct means the full-header machinery can never
+# partially rewrite this line -- it either leaves it alone or is not run.
+# ─────────────────────────────────────────────────────────────────
+format_ccm_compact_line() {
+    local path="${1:-unknown}"
+    local branch="${2:-unknown}"
+    local committed="${3:-pending}"
+    local sha="${4:-pending}"
+    printf '<!-- %%ccm_compact: path=%s branch=%s committed=%s sha=%s -->' \
+        "$path" "$branch" "$committed" "$sha"
+}
+
+# ─────────────────────────────────────────────────────────────────
+# parse_ccm_compact_field "$line" "$field"
+#
+# Reads one key=value out of an existing compact line. Prints nothing when the
+# field is absent, so callers can fall back to a default.
+# ─────────────────────────────────────────────────────────────────
+parse_ccm_compact_field() {
+    local line="${1-}"
+    local field="${2-}"
+    local out=""
+    if [[ "$line" =~ (^|[[:space:]])"$field"=([^[:space:]]+) ]]; then
+        out="${BASH_REMATCH[2]}"
+    fi
+    printf '%s' "$out"
+}
+
+# ─────────────────────────────────────────────────────────────────
+# apply_ccm_compact_header "$file" "$rel_path" "$branch" "$committed" "$sha"
+#
+# Rewrites line 1 of a compact-mode file in place. Safe to re-run: line 1 is
+# always replaced, never appended, so repeated runs cannot accumulate lines.
+# ─────────────────────────────────────────────────────────────────
+apply_ccm_compact_header() {
+    local file="$1"
+    local rel_path="${2:-unknown}"
+    local branch="${3:-unknown}"
+    local committed="${4:-pending}"
+    local sha="${5:-pending}"
+
+    local line tmpfile
+    line=$(format_ccm_compact_line "$rel_path" "$branch" "$committed" "$sha")
+    tmpfile="${file}.tmp.compact"
+
+    { printf '%s\n' "$line"; tail -n +2 "$file"; } > "$tmpfile"
+
+    if cmp -s "$file" "$tmpfile"; then
+        rm -f "$tmpfile"
+        return 0
+    fi
+
+    mv "$tmpfile" "$file"
+    return 1
+}
+
 # Directory this library lives in, resolved from the library itself rather than
 # from the caller's SCRIPT_DIR, so sourcing works from any entry point.
 _CCM_LIB_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
