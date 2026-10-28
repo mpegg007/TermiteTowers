@@ -2,18 +2,18 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/backups/scripts/backup-tthealth.sh@186 %
+#  %ccm_git_object_id: infra/backups/scripts/backup-tthealth.sh@187 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 15766f5cddad9fc69e58c8463551c30ca20a2956 %
-#  %ccm_git_commit_id: 39d8262239b8cbb295886dbe654023e96f65ada9 %
-#  %ccm_git_commit_count: 186 %
-#  %ccm_git_commit_date: 2026-10-28 11:35:25 -0400 %
+#  %ccm_git_blob_sha: 55cd849f5f79a6ad8fa2fab8ffa81d9efcfdb554 %
+#  %ccm_git_commit_id: 7018a976837891f434e9ab0e56b714507e4259fa %
+#  %ccm_git_commit_count: 187 %
+#  %ccm_git_commit_date: 2026-10-28 11:35:49 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: feat(backups): phase 3 - encrypt to per-tier keys %
-#  %ccm_git_modify_date: 2026-10-28 11:35:26 %
-#  %ccm_git_file_last_modified: 2026-10-28 11:27:44 %
+#  %ccm_git_commit_message: fix(backups): fail loudly when lib/tt-age.sh is missing beside the script %
+#  %ccm_git_modify_date: 2026-10-28 11:35:50 %
+#  %ccm_git_file_last_modified: 2026-10-28 11:35:41 %
 #  %ccm_git_file_name: backup-tthealth.sh %
 #  %ccm_git_path: infra/backups/scripts/backup-tthealth.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,7 +21,7 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 9714 %
+#  %ccm_git_size: 9903 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 # ---------------------------------------------------------------------------
 # tt-backup :: encrypted PostgreSQL backup  (database: tthealth_dev1)
@@ -80,8 +80,13 @@ AGE_TIER="${AGE_TIER:-health}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # lib/ sits next to the script in both layouts: the repo (scripts/lib/) and the
 # deployed copy (/usr/local/lib/tt-backup/lib/, installed with the script).
+LIB_FILE="$SCRIPT_DIR/lib/tt-age.sh"
+if [ ! -r "$LIB_FILE" ]; then
+    printf 'ERROR: %s is missing - re-run install-tt-backup-tthealth.sh\n' "$LIB_FILE" >&2
+    exit 3
+fi
 # shellcheck source=lib/tt-age.sh
-. "$SCRIPT_DIR/lib/tt-age.sh"
+. "$LIB_FILE"
 
 AGE_RECIPIENTS="${AGE_RECIPIENTS:-$(tt_age_require_recipient "$AGE_TIER" 2>/dev/null || true)}"
 if [ -z "$AGE_RECIPIENTS" ] || [ ! -r "$AGE_RECIPIENTS" ]; then
