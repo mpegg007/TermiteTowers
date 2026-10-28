@@ -86,6 +86,56 @@ compound across runs:
 - `format_ccm_header` re-emits the deduplicated trail and skips the new entry
   when an identical one is already present.
 
+## Compact Mode (`%ccm_compact`)
+
+Volatile documents that are read for their content rather than their provenance
+can opt out of the header machinery entirely. This is **self-declared** — there
+is no config file and no path list. A file declares itself compact by carrying
+the token on its **first line**:
+
+```markdown
+<!-- %ccm_compact: -->
+# Active Context
+...
+```
+
+Behaviour: `ccm-apply.sh` sees the token and exits 0 **without writing
+anything**. The token *is* the header. No strip, no reformatting, no field
+rewrite, no `%git_commit_history` trail.
+
+| Aspect | Full header | Compact |
+|---|---|---|
+| Lines | 9 (markdown) / 24 (default) | 1 |
+| History trail | grows to `CCM_HISTORY_MAX` (50) | none, ever |
+| Rewritten by pre-commit | yes | no |
+| Amended by post-commit | yes | no |
+| Freshness source | `%ccm_git_commit_date` in the file | `git log -1 --format=%cI -- <path>` |
+
+Design notes:
+
+- **One choke point.** The guard is Step 0 of `ccm-apply.sh`, not of
+  `pre-commit.sh`, so every caller (the hook today, a bulk reheader tool later)
+  inherits it.
+- **No change needed in `post-commit.sh`.** Its processing gate is
+  `grep -qE '%ccm_git_.*: .* %'`; a compact file never matches, so it is
+  skipped there automatically and no amend churn is produced.
+- **Detection is first-line-only.** This README and `.clinerules/` both mention
+  the token by name; a whole-file grep would silently opt *them* out of CCM. Do
+  not weaken the `head -n 1` check.
+- **No shebang support.** The token must be on line 1, so compact mode does not
+  apply to scripts. That is deliberate — an escaping rule would complicate the
+  one property that makes this mode safe.
+- **Idempotent by construction.** The file is never written, so running the hook
+  twice cannot accumulate anything.
+
+Covered by `tests/git-automation/test_compact_header.sh`, which asserts
+byte-identity, idempotency, absence of a history trail, the post-commit gate,
+line-1-only detection, and that unmarked files still receive a full header.
+
+Trade-off: a compact file carries no in-file provenance. Diff history and
+`git log` are the only record. Use it for status documents that change often,
+not for code.
+
 ## Usage
 
 ### Normal Operation

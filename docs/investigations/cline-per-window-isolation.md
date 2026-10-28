@@ -1,26 +1,11 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: memory-bank/cline-per-window-isolation.md:167 % -->
-<!-- %ccm_git_author: mpegg % -->
-<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: e5c1144d9108eb200234ffa464cf753feb653940 % -->
-<!-- %ccm_git_commit_id: af3b4e614eaf7f1e2342aedb19c1c31089a044fd % -->
-<!-- %ccm_git_commit_count: 167 % -->
-<!-- %ccm_git_commit_date: 2026-10-03 17:41:25 -0400 % -->
+<!-- %ccm_git_path: docs/investigations/cline-per-window-isolation.md % -->
+<!-- %ccm_git_object_id: docs/investigations/cline-per-window-isolation.md@190 % -->
+<!-- %ccm_git_commit_date: 2026-10-28 16:35:23 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: backup scripts % -->
-<!-- %ccm_git_modify_date: 2026-10-03 17:41:26 % -->
-<!-- %ccm_git_file_last_modified: 2026-10-03 16:02:47 % -->
-<!-- %ccm_git_file_name: cline-per-window-isolation.md % -->
-<!-- %ccm_git_path: memory-bank/cline-per-window-isolation.md % -->
-<!-- %ccm_git_language_mode: markdown % -->
-<!-- %ccm_git_file_type: text/plain % -->
-<!-- %ccm_git_file_encoding: utf-8 % -->
-<!-- %ccm_git_file_eol: CRLF % -->
-<!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 11099 % -->
+<!-- %ccm_git_commit_message: refactor(context): retire memory-bank and add %%ccm_compact status headers % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
 # Cline per-window isolation on VS Code (snap, Linux) — investigation record
 

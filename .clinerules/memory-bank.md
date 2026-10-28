@@ -1,98 +1,72 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: .clinerules/memory-bank.md:167 % -->
-<!-- %ccm_git_author: mpegg % -->
-<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: 78bafda75b4d524badf6cefabb539291deae9725 % -->
-<!-- %ccm_git_commit_id: af3b4e614eaf7f1e2342aedb19c1c31089a044fd % -->
-<!-- %ccm_git_commit_count: 167 % -->
-<!-- %ccm_git_commit_date: 2026-10-03 17:41:25 -0400 % -->
-<!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: backup scripts % -->
-<!-- %ccm_git_modify_date: 2026-10-03 17:41:25 % -->
-<!-- %ccm_git_file_last_modified: 2026-10-03 17:40:36 % -->
-<!-- %ccm_git_file_name: memory-bank.md % -->
 <!-- %ccm_git_path: .clinerules/memory-bank.md % -->
-<!-- %ccm_git_language_mode: markdown % -->
-<!-- %ccm_git_file_type: text/plain % -->
-<!-- %ccm_git_file_encoding: us-ascii % -->
-<!-- %ccm_git_file_eol: CRLF % -->
-<!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 3512 % -->
+<!-- %ccm_git_object_id: .clinerules/memory-bank.md@190 % -->
+<!-- %ccm_git_commit_date: 2026-10-28 16:35:23 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_message: refactor(context): retire memory-bank and add %%ccm_compact status headers % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
- <!-- %git_commit_history: unknown  unknown  unknown  --> 
- <!-- %git_commit_history: unknown  unknown  unknown  --> 
- <!-- %git_commit_history: unknown  unknown  unknown  --> 
 # Cline's Memory Bank
 
-I am Cline, an expert software engineer with a unique characteristic: my memory resets completely between sessions. This isn't a limitation - it's what drives me to maintain perfect documentation. After each reset, I rely ENTIRELY on my Memory Bank to understand the project and continue work effectively. I MUST read ALL memory bank files at the start of EVERY task - this is not optional.
+I am Cline, an expert software engineer with a unique characteristic: my memory resets
+completely between sessions. This isn't a limitation — it drives me to maintain good
+documentation. After each reset I rely on this repo's context files to continue work
+effectively.
 
-## Memory Bank Structure
+## Reading scope
 
-The Memory Bank consists of core files and optional context files, all in Markdown format. Files build upon each other in a clear hierarchy:
+At the start of a task, read:
 
-### Core Files (Required)
+- `docs/status/active-context.md` **always** — current focus, live decisions, next steps.
+- `wiki/agent-index.md` **always** — the 60-second orientation.
 
-1. `projectbrief.md`
-    - Foundation document that shapes all other files
-    - Created at project start if it doesn't exist
-    - Defines core requirements and goals
-    - Source of truth for project scope
+Read on demand, only when the task depends on it:
 
-2. `productContext.md`
-    - Why this project exists
-    - Problems it solves
-    - How it should work
-    - User experience goals
+| Before... | Read |
+|---|---|
+| claiming what works or is broken | `docs/status/progress.md` |
+| an architectural change | `wiki/system-patterns.md` |
+| a dependency or tooling change | `wiki/tech-context.md` |
+| anything touching Home Assistant | `hams/docs/hal-context.md`, then `hams/docs/SKILL.md` |
 
-3. `activeContext.md`
-    - Current work focus
-    - Recent changes
-    - Next steps
-    - Active decisions and considerations
-    - Important patterns and preferences
-    - Learnings and project insights
+Do **not** bulk-read the wiki — it is 50+ pages. A self-contained change inside one
+package does not need the architecture page and the progress log pulled in ahead of it.
+That manufactures context without improving the change.
 
-4. `systemPatterns.md`
-    - System architecture
-    - Key technical decisions
-    - Design patterns in use
-    - Component relationships
-    - Critical implementation paths
+## There is no `memory-bank/` directory
 
-5. `techContext.md`
-    - Technologies used
-    - Development setup
-    - Technical constraints
-    - Dependencies
-    - Tool usage patterns
+It was retired on 2026-10-28. Durable architecture lives in `wiki/`
+(`system-patterns.md`, `tech-context.md`); volatile status lives in `docs/status/`;
+long-form runbooks and investigations live in `docs/runbooks/` and `docs/investigations/`.
+Any remaining reference to `memory-bank/<file>.md` is stale — follow the new path instead.
 
-6. `progress.md`
-    - What works
-    - What's left to build
-    - Current status
-    - Known issues
-    - Evolution of project decisions
+## Freshness
 
-### Additional Context
+Status files under `docs/status/` begin with `%ccm_compact:` and deliberately carry **no**
+header or in-file date. Never hand-write a "last updated" claim: a hand-maintained date
+drifts, and the old one was already nine commits stale. Get freshness from git:
 
-Create additional files/folders within memory-bank/ when they help organize:
+```bash
+git log -1 --format=%cI -- docs/status/active-context.md
+```
 
-- Complex feature documentation
-- Integration specifications
-- API documentation
-- Testing strategies
-- Deployment procedures
+If a status file is materially behind HEAD, say so before relying on it rather than
+silently trusting it.
 
-## Documentation Updates
+## When to update
 
-Memory Bank updates occur when:
+Update `docs/status/active-context.md` when:
 
-1. Discovering new project patterns
-2. After implementing significant changes
-3. When user requests with **update memory bank** (MUST review ALL files)
+1. Discovering a new project pattern
+2. After a significant change
+3. The user says **update memory bank** — then review `active-context.md` **and**
+   `progress.md`
 4. When context needs clarification
 
-REMEMBER: After every memory reset, I begin completely fresh. The Memory Bank is my only link to previous work. It must be maintained with precision and clarity, as my effectiveness depends entirely on its accuracy.
+Rules for what goes in: keep decisions **dated**, keep trade-offs explicit, and mark
+anything you could not verify as unverified instead of smoothing it over. Do not record
+session-scoped tooling glitches as project facts — they mislead the next session.
+
+REMEMBER: after every memory reset I begin completely fresh. These files are my only link
+to previous work, so they must stay accurate. A stale context file is worse than none.

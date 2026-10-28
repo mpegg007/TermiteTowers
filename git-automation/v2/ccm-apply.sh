@@ -26,6 +26,28 @@ if [ ! -f "$FILE" ]; then
 fi
 
 # ─────────────────────────────────────────────────────────────
+# Step 0: Compact-mode short circuit (opt-in, self-declared)
+#
+# A file whose FIRST line carries the %ccm_compact: token is left
+# completely untouched. The token IS the header: no strip, no
+# reformatting, no field rewrite, no %git_commit_history trail.
+# Idempotent by construction — re-running the hook is a no-op
+# because the file is never written.
+#
+# Why this lives here and not in pre-commit.sh: ccm-apply.sh is the
+# single choke point every caller goes through (pre-commit.sh today,
+# any bulk reheader tool later), so one guard covers them all.
+#
+# The test is deliberately HEAD-FIRST-LINE-ONLY. This mode is
+# documented in git-automation/v2/README.md and in .clinerules/, so a
+# whole-file grep would silently opt those documents out of CCM.
+# ─────────────────────────────────────────────────────────────
+if head -n 1 "$FILE" 2>/dev/null | grep -q '%ccm_compact'; then
+    echo "[INFO] $FILE: %ccm_compact on line 1 — leaving file untouched (compact mode)" >&2
+    exit 0
+fi
+
+# ─────────────────────────────────────────────────────────────
 # Step 1: Capture metadata BEFORE any modification
 #   This is the bug fix — v1 computed exec_flag AFTER
 #   remove_ccm_header had already stripped +x.

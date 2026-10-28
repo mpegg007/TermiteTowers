@@ -1,28 +1,14 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: wiki/agent-index.md:180 % -->
-<!-- %ccm_git_author: mpegg % -->
-<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: fbfb5af12789a93c1f6b05a7aec83af2bfb69cc4 % -->
-<!-- %ccm_git_commit_id: 651174b57b6dfae26ac61a80bd881def1c06c971 % -->
-<!-- %ccm_git_commit_count: 180 % -->
-<!-- %ccm_git_commit_date: 2026-10-10 18:08:21 -0400 % -->
-<!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: docs(hal): correct stale audit facts against live HA % -->
-<!-- %ccm_git_modify_date: 2026-10-10 18:08:22 % -->
-<!-- %ccm_git_file_last_modified: 2026-10-10 16:07:09 % -->
-<!-- %ccm_git_file_name: agent-index.md % -->
 <!-- %ccm_git_path: wiki/agent-index.md % -->
-<!-- %ccm_git_language_mode: markdown % -->
-<!-- %ccm_git_file_type: text/plain % -->
-<!-- %ccm_git_file_encoding: utf-8 % -->
-<!-- %ccm_git_file_eol: CRLF % -->
-<!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 4519 % -->
+<!-- %ccm_git_object_id: wiki/agent-index.md@190 % -->
+<!-- %ccm_git_commit_date: 2026-10-28 16:35:23 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_message: refactor(context): retire memory-bank and add %%ccm_compact status headers % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
- <!-- %git_commit_history: 2026-09-25 mpegg  docs: mark Homarr retired in the network map and agent index  --> 
+<!-- %git_commit_history: 2026-10-10 mpegg  docs(hal): correct stale audit facts against live HA  -->
+ <!-- %git_commit_history: 2026-09-25 mpegg  docs: mark Homarr retired in the network map and agent index  -->
 # Agent Index — TermiteTowers
 
 > The single entry point for AI-agent sessions (and any human who wants the same
@@ -40,9 +26,39 @@ served on host port **3210**. It is **not** Wiki.js (see "Status notes" below).
 ## First 60 seconds
 
 1. Read this file.
-2. Read `hams/docs/hal-context.md` — the HAL instance snapshot (topology, entity
+2. Read `docs/status/active-context.md` — what the project is doing **now**: current
+   focus, live decisions, next steps.
+3. Read `hams/docs/hal-context.md` — the HAL instance snapshot (topology, entity
    naming, integration/add-on stack, gotchas).
-3. If the task touches Home Assistant, also read `hams/docs/SKILL.md`.
+4. If the task touches Home Assistant, also read `hams/docs/SKILL.md`.
+5. Before an architectural change read `wiki/system-patterns.md`; before a dependency or
+   tooling change read `wiki/tech-context.md`.
+
+## Where things live
+
+| Kind of content | Where | Published? |
+|---|---|---|
+| Orientation, how-tos, service runbooks | `wiki/` | yes — `*.md` only |
+| Cross-cutting invariants and tech constraints | `wiki/system-patterns.md`, `wiki/tech-context.md` | yes |
+| Volatile status: focus, decisions, progress | `docs/status/` | **no** |
+| Long-form runbooks and investigations | `docs/runbooks/`, `docs/investigations/` | **no** |
+
+`docs/` is tracked and CCM-managed but sits outside `docs_dir: wiki`, so it never reaches
+the published site. That is deliberate — status documents name hosts, accounts and failure
+modes that are operationally useful and not useful to publish.
+
+**Never hand-write a "last updated" date.** Freshness comes from git:
+
+```bash
+git log -1 --format=%cI -- docs/status/active-context.md
+```
+
+## Out of scope for this repo
+
+- The photo-library database is a separate store; this repo only holds scripts that read
+  or export from it (`media/`).
+- Home Assistant *runtime* state is not stored here. Docs are snapshots, not truth — query
+  `hal-mcp__*`.
 
 ## Data sources (MCP → live stores)
 

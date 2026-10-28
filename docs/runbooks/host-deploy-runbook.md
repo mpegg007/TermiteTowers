@@ -1,28 +1,12 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: memory-bank/host-deploy-runbook.md:179 % -->
-<!-- %ccm_git_author: mpegg % -->
-<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: afdc02ac24cfb0e00f580dda0cbc739db9e43974 % -->
-<!-- %ccm_git_commit_id: 5374d00e1d9cc50947a2b000c73308e0263dce3c % -->
-<!-- %ccm_git_commit_count: 179 % -->
-<!-- %ccm_git_commit_date: 2026-10-08 20:03:29 -0400 % -->
+<!-- %ccm_git_path: docs/runbooks/host-deploy-runbook.md % -->
+<!-- %ccm_git_object_id: docs/runbooks/host-deploy-runbook.md@190 % -->
+<!-- %ccm_git_commit_date: 2026-10-28 16:35:23 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: impl www from prd branch % -->
-<!-- %ccm_git_modify_date: 2026-10-08 20:03:29 % -->
-<!-- %ccm_git_file_last_modified: 2026-10-08 19:56:25 % -->
-<!-- %ccm_git_file_name: host-deploy-runbook.md % -->
-<!-- %ccm_git_path: memory-bank/host-deploy-runbook.md % -->
-<!-- %ccm_git_language_mode: markdown % -->
-<!-- %ccm_git_file_type: text/plain % -->
-<!-- %ccm_git_file_encoding: utf-8 % -->
-<!-- %ccm_git_file_eol: CRLF % -->
-<!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 22139 % -->
+<!-- %ccm_git_commit_message: refactor(context): retire memory-bank and add %%ccm_compact status headers % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
- <!-- %git_commit_history: 2026-10-04 mpegg  cleanup  --> 
 # Host deploy runbook — bootstrapping a `<svc>-deploy` runner + `/srv/<env>/<svc>` prod dir
 
 > How to stand up a **new** GitHub Actions self-hosted runner and its production
