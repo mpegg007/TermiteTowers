@@ -2,18 +2,18 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/backups/scripts/tt-keys.sh@182 %
+#  %ccm_git_object_id: infra/backups/scripts/tt-keys.sh@183 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: abf43067c0d277be9dbedf5fd0b5823e781d7418 %
-#  %ccm_git_commit_id: 31bcb4a343122a83e17b11cff96a518079bbc65e %
-#  %ccm_git_commit_count: 182 %
-#  %ccm_git_commit_date: 2026-10-28 11:08:36 -0400 %
+#  %ccm_git_blob_sha: db3e95ebf6bac0e393248e3bf37fd62354969f4e %
+#  %ccm_git_commit_id: af68a79fa222daaa89d22196f42ffc91fbf9d73a %
+#  %ccm_git_commit_count: 183 %
+#  %ccm_git_commit_date: 2026-10-28 11:09:09 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: feat(backups): per-tier age DEKs with a master-wrapped keyring (phase 1) %
-#  %ccm_git_modify_date: 2026-10-28 11:08:37 %
-#  %ccm_git_file_last_modified: 2026-10-28 11:08:26 %
+#  %ccm_git_commit_message: fix(backups): compare registry content, not bytes, in 'tt-keys verify' %
+#  %ccm_git_modify_date: 2026-10-28 11:09:10 %
+#  %ccm_git_file_last_modified: 2026-10-28 11:08:58 %
 #  %ccm_git_file_name: tt-keys.sh %
 #  %ccm_git_path: infra/backups/scripts/tt-keys.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,7 +21,7 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 24511 %
+#  %ccm_git_size: 25986 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 # --- usage:begin
 # tt-keys :: per-tier age DEKs, wrapped by a master identity kept OFF this host.
@@ -263,6 +263,12 @@ with open(out, "w", encoding="utf-8") as fh:
 PY
 }
 
+# The pre-commit hook injects a JSON-safe CCM header under the key
+# "%ccm_git_header_start"; drop it so two registries compare on content alone.
+registry_semantic() {  # $1 = registry path
+    jq -S 'del(.["%ccm_git_header_start"])' "$1"
+}
+
 # Copy a legacy age identity's secret line into the staging tree.
 # Prints "<created>\t<public>" on success.
 stage_legacy_key() {  # $1 = identity path  $2 = destination .key
@@ -482,7 +488,8 @@ cmd_verify() {
     local d="$WORK/unwrapped"
     unwrap_keyring "$d"
 
-    if ! cmp -s "$d/registry.json" "$REGISTRY"; then
+    if ! diff <(registry_semantic "$d/registry.json") <(registry_semantic "$REGISTRY") \
+         >/dev/null 2>&1; then
         log WARNING "repo registry.json differs from the keyring copy - run 'status'"
     fi
 
