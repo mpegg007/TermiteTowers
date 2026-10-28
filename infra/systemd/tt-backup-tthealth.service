@@ -1,26 +1,26 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/systemd/tt-backup-tthealth.service:167 %
+#  %ccm_git_object_id: infra/systemd/tt-backup-tthealth.service@184 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 2790ee9455d2d248021ccf776e265bca02ebf49e %
-#  %ccm_git_commit_id: af3b4e614eaf7f1e2342aedb19c1c31089a044fd %
-#  %ccm_git_commit_count: 167 %
-#  %ccm_git_commit_date: 2026-10-03 17:41:25 -0400 %
+#  %ccm_git_blob_sha: 81fc077d94f36aa8d758c39328112f6758c630aa %
+#  %ccm_git_commit_id: 4e24ff8c9c0501071478e0bdb7ede6578918ec57 %
+#  %ccm_git_commit_count: 184 %
+#  %ccm_git_commit_date: 2026-10-28 11:13:51 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: backup scripts %
-#  %ccm_git_modify_date: 2026-10-03 17:41:26 %
-#  %ccm_git_file_last_modified: 2026-10-03 17:00:50 %
+#  %ccm_git_commit_message: feat(backups): phase 2 - keyring deploy/audit installer, harden tt-backup unit %
+#  %ccm_git_modify_date: 2026-10-28 11:13:51 %
+#  %ccm_git_file_last_modified: 2026-10-28 11:12:54 %
 #  %ccm_git_file_name: tt-backup-tthealth.service %
 #  %ccm_git_path: infra/systemd/tt-backup-tthealth.service %
 #  %ccm_git_language_mode: service %
 #  %ccm_git_file_type: text/plain %
 #  %ccm_git_file_encoding: us-ascii %
-#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 1349 %
+#  %ccm_git_size: 2850 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 [Unit]
 Description=Encrypted PostgreSQL backup of tthealth_dev1 (tt-backup)
@@ -44,6 +44,12 @@ IOSchedulingClass=idle
 LogsDirectory=tt-backup
 LogsDirectoryMode=0750
 ReadWritePaths=/mnt/ai_storage/backups/tthealth
+
+# The wrapped DEK keyring is a *sibling* of the dump directory. DAC already keeps
+# it out of reach (dir 0700, owned by mpegg-adm, and tt-backup is not that user),
+# but say it explicitly: the account that writes backups must never be able to
+# read the material that unlocks them. tt-keys.sh --check asserts both layers.
+InaccessiblePaths=/mnt/ai_storage/backups/tt-keys
 
 # --- Hardening: backup-only account, no privileges of any kind ---
 NoNewPrivileges=yes
