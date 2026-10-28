@@ -1,0 +1,25 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/backups/age/master-recipient.txt@182 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: c1bd1a7f1c5f3489bff067fd826c93635395888d %
+#  %ccm_git_commit_id: 31bcb4a343122a83e17b11cff96a518079bbc65e %
+#  %ccm_git_commit_count: 182 %
+#  %ccm_git_commit_date: 2026-10-28 11:08:36 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: feat(backups): per-tier age DEKs with a master-wrapped keyring (phase 1) %
+#  %ccm_git_modify_date: 2026-10-28 11:08:37 %
+#  %ccm_git_file_last_modified: 2026-10-28 10:55:48 %
+#  %ccm_git_file_name: master-recipient.txt %
+#  %ccm_git_path: infra/backups/age/master-recipient.txt %
+#  %ccm_git_language_mode: txt %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 63 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+age16ttnmmf7lgw4yw9whcn3wcr7yukajhyd42z3uvhyrrjaj5zssa3q9r25us

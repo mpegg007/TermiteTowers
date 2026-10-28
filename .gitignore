@@ -1,26 +1,26 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: .gitignore:176 %
+#  %ccm_git_object_id: .gitignore@182 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 25bfbe51c315f241c5c0c08a2990fe2af5b9ed44 %
-#  %ccm_git_commit_id: 46109af23c11ee97291c5598ebe1c50671cedfea %
-#  %ccm_git_commit_count: 176 %
-#  %ccm_git_commit_date: 2026-10-07 20:34:13 -0400 %
+#  %ccm_git_blob_sha: 12d2bf32bcb964d5da225bc758f9a1bacf94b388 %
+#  %ccm_git_commit_id: 31bcb4a343122a83e17b11cff96a518079bbc65e %
+#  %ccm_git_commit_count: 182 %
+#  %ccm_git_commit_date: 2026-10-28 11:08:36 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: cleanup commit %
-#  %ccm_git_modify_date: 2026-10-07 20:34:14 %
-#  %ccm_git_file_last_modified: 2026-10-06 21:45:41 %
+#  %ccm_git_commit_message: feat(backups): per-tier age DEKs with a master-wrapped keyring (phase 1) %
+#  %ccm_git_modify_date: 2026-10-28 11:08:37 %
+#  %ccm_git_file_last_modified: 2026-10-28 10:58:11 %
 #  %ccm_git_file_name: .gitignore %
 #  %ccm_git_path: .gitignore %
 #  %ccm_git_language_mode: git %
 #  %ccm_git_file_type: text/plain %
 #  %ccm_git_file_encoding: us-ascii %
-#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 2626 %
+#  %ccm_git_size: 2865 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 # %git_commit_history: 2026-09-25 mpegg  chore(gitignore): block credential-bearing local captures from being staged  %
 # %git_commit_history: updates %
@@ -86,4 +86,14 @@ trigger-test.env
 age-identity*.txt
 age-key*.txt
 tthealth-backup.txt
+
+# tt-keys: the master identity, its escrow copies and the wrapped keyring.
+# NOTE: master-recipient.txt (PUBLIC) must stay committed - the patterns below
+# are deliberately narrow enough not to match it.
+master.txt
+master-identity*.txt
+master.escrow.age
+*.escrow.age
+keyring.tar.age
+keyring.tar.age.tmp*
 

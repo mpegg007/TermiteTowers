@@ -1,0 +1,32 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/backups/age/history/general-2026Q4.recipient@182 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 0848af758a8fed6d489e3660b5e9cea6aa8005ea %
+#  %ccm_git_commit_id: 31bcb4a343122a83e17b11cff96a518079bbc65e %
+#  %ccm_git_commit_count: 182 %
+#  %ccm_git_commit_date: 2026-10-28 11:08:36 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: feat(backups): per-tier age DEKs with a master-wrapped keyring (phase 1) %
+#  %ccm_git_modify_date: 2026-10-28 11:08:37 %
+#  %ccm_git_file_last_modified: 2026-10-28 11:07:28 %
+#  %ccm_git_file_name: general-2026Q4.recipient %
+#  %ccm_git_path: infra/backups/age/history/general-2026Q4.recipient %
+#  %ccm_git_language_mode: recipient %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 448 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# tt-backup :: age recipient for the general tier (generation 2026Q4)
+#
+# PUBLIC KEY ONLY - safe to commit. The private half lives in the wrapped
+# keyring (/mnt/ai_storage/backups/tt-keys/keyring.tar.age), which needs the master identity to open.
+# Never put a private key, the keyring or the master identity in this repo.
+#
+# tier: general | generation: 2026Q4 | created: 2026-10-28
+age1wk3rrru5ahpuf8f77rmk6ft84eef0zwtyke0ttcflu45kutzryts8rpf4x

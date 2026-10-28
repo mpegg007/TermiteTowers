@@ -1,0 +1,72 @@
+{
+"%ccm_git_header_start": [
+ "TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %",
+ "%ccm_git_repo: TermiteTowers %",
+ "%ccm_git_branch: dev1 %",
+ "%ccm_git_object_id: infra/backups/age/registry.json@182 %",
+ "%ccm_git_author: mpegg %",
+ "%ccm_git_author_email: mpegg@hotmail.com %",
+ "%ccm_git_blob_sha: 1ae77e453aa78212bbb0364c23ded6549c2f1a5d %",
+ "%ccm_git_commit_id: 31bcb4a343122a83e17b11cff96a518079bbc65e %",
+ "%ccm_git_commit_count: 182 %",
+ "%ccm_git_commit_date: 2026-10-28 11:08:36 -0400 %",
+ "%ccm_git_commit_author: mpegg %",
+ "%ccm_git_commit_email: mpegg@hotmail.com %",
+ "%ccm_git_commit_message: feat(backups): per-tier age DEKs with a master-wrapped keyring (phase 1) %",
+ "%ccm_git_modify_date: 2026-10-28 11:08:37 %",
+ "%ccm_git_file_last_modified: 2026-10-28 11:07:28 %",
+ "%ccm_git_file_name: registry.json %",
+ "%ccm_git_path: infra/backups/age/registry.json %",
+ "%ccm_git_language_mode: json %",
+ "%ccm_git_file_type: application/json %",
+ "%ccm_git_file_encoding: us-ascii %",
+ "%ccm_git_file_eol: LF %",
+ "%ccm_git_exec: no %",
+ "%ccm_git_size: 1292 %",
+ "TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %" ],
+  "created": "2026-10-28T11:07:28-04:00",
+  "master": {
+    "escrow": "1password-plain",
+    "recipient": "age16ttnmmf7lgw4yw9whcn3wcr7yukajhyd42z3uvhyrrjaj5zssa3q9r25us"
+  },
+  "retire_grace_days": 120,
+  "tiers": {
+    "general": {
+      "current": "2026Q4",
+      "generations": {
+        "2026Q4": {
+          "created": "2026-10-28",
+          "public": "age1wk3rrru5ahpuf8f77rmk6ft84eef0zwtyke0ttcflu45kutzryts8rpf4x",
+          "retire_after": "2027-02-25"
+        }
+      }
+    },
+    "health": {
+      "current": "2026Q4",
+      "generations": {
+        "2026Q4": {
+          "created": "2026-10-28",
+          "public": "age1na2jxha5t2fcjv957npj7485x7de0vrzz8ymxj7x0rl2la5qrsvq4nwjm8",
+          "retire_after": "2027-02-25"
+        },
+        "legacy": {
+          "created": "2026-10-03",
+          "note": "imported from tthealth-backup.txt",
+          "public": "age1x9zqyvkp6l9xycvuk7uwh6pqpyhmmxmyh2t6s0v9zf6nuh8595rqc9ncjj",
+          "retire_after": "hold"
+        }
+      }
+    },
+    "mail": {
+      "current": "2026Q4",
+      "generations": {
+        "2026Q4": {
+          "created": "2026-10-28",
+          "public": "age14gfyvzpvzkhy3uvj92cqukllhn94yq76vt3hkv00nd4q8knkgfvsx9ydp4",
+          "retire_after": "2027-02-25"
+        }
+      }
+    }
+  },
+  "version": 1
+}
