@@ -1,27 +1,13 @@
-<!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-  %ccm_git_repo: https://github.com/mpegg007/TermiteTowers.git %
-  %ccm_git_branch: main %
-  %ccm_git_object_id: wiki/how-to-add-mcp-server.md:97 %
-  %ccm_git_author: CCM Maintainer %
-  %ccm_git_author_email: ccm@test %
-  %ccm_git_blob_sha: c6e37f823b5cd0fac36e29c3b4e5002867697277 %
-  %ccm_git_commit_id: f8d51ae7fe101541b1ccd2f91922878ece0bb306 %
-  %ccm_git_commit_count: 97 %
-  %ccm_git_commit_date: 2025-10-10 20:55:46 -0400 %
-  %ccm_git_commit_author: mpegg %
-  %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: big update %
-  %ccm_git_modify_date: 2025-08-29 07:37:53 %
-  %ccm_git_file_last_modified: 2025-08-29 07:37:52 %
-  %ccm_git_file_name: CCM_HEADER_TEMPLATE.txt %
-  %ccm_git_path: CCM_HEADER_TEMPLATE.txt %
-  %ccm_git_language_mode:  %
-  %ccm_git_file_type: text/plain %
-  %ccm_git_file_encoding: us-ascii %
-  %ccm_git_file_eol: CRLF %
-  %ccm_git_exec: no %
-  %ccm_git_size: 659 %
-  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
+<!-- %ccm_git_repo: TermiteTowers % -->
+<!-- %ccm_git_branch: dev1 % -->
+<!-- %ccm_git_path: wiki/how-to-add-mcp-server.md % -->
+<!-- %ccm_git_object_id: wiki/how-to-add-mcp-server.md@194 % -->
+<!-- %ccm_git_commit_date: 2026-10-28 20:22:38 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_message: misc updates % -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2025-10-10 mpegg big update -->
 <!--
 -->
 
@@ -373,8 +359,10 @@ sudo ln -sf /home/mpegg-adm/source/TermiteTowers/infra/mcp/$SERVICE/server.py \
 
 ### 8) Configure MCP client
 
-**Location depends on client:**
-- **VS Code**: Settings → Extensions → GitHub Copilot → MCP Servers
+**Location depends on client (paths on dev1):**
+- **Zoo Code**: `~/.config/Code/User/globalStorage/zoocodeorganization.zoo-code/settings/mcp_settings.json`
+- **Cline**: `~/.config/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json`
+- **VS Code native MCP**: `~/.config/Code/User/mcp.json` (global) or `~/.config/Code/User/profiles/<profile-id>/mcp.json` (per-profile)
 - **Claude Desktop**: `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
 - **Custom client**: Your application's config
 
@@ -392,6 +380,56 @@ sudo ln -sf /home/mpegg-adm/source/TermiteTowers/infra/mcp/$SERVICE/server.py \
   }
 }
 ```
+
+### 8.1) Remote HTTP servers (streamable-http)
+
+Beyond stdio there are two network transports: legacy SSE (`sse`) and Streamable HTTP (`streamable-http`). For a containerised server published on a host port, use Streamable HTTP.
+
+**The transport token is client-specific — this is the single most common failure mode.**
+
+| Client | Accepted `type` value | Config root key |
+|---|---|---|
+| Zoo Code / Roo Code | `streamable-http` | `mcpServers` |
+| Cline | `streamableHttp` | `mcpServers` |
+| VS Code native | `http` | `servers` |
+
+A token outside a client's accepted set does **not** produce a clean error. Zoo Code rejects the entry during schema validation and silently skips the server; the only symptom is `No connection found for server: <name>` surfaced later when a tool or resource is invoked. Zoo Code 3.92 accepts exactly `["stdio","sse","streamable-http"]` and enforces it with the message `Configuration with 'url' must explicitly specify 'type' as 'sse' or 'streamable-http'.`
+
+Working example (Zoo Code, server published on host port 3340):
+
+```json
+"hal-mcp": {
+  "url": "http://127.0.0.1:3340/private_<TOKEN>",
+  "type": "streamable-http",
+  "disabled": false,
+  "autoApprove": []
+}
+```
+
+Notes:
+- Prefer an explicit address over `localhost`. A container published as `0.0.0.0:PORT` binds IPv4 only, while `localhost` may resolve to `::1` first and fail.
+- streamable-http entries accept a `headers` record of string pairs — preferable to embedding a secret in the URL path when the client supports it.
+- Zoo Code watches the settings file and re-reads it on change, so no window reload is needed after editing.
+
+Verification without touching the UI:
+
+```bash
+# 1) Route + bind + token path are valid: expect HTTP 405 on GET (POST-only endpoint).
+#    404 = wrong token/path. 000 = nothing listening.
+curl -sS -o /dev/null -w '%{http_code}\n' http://127.0.0.1:3340/private_<TOKEN>
+
+# 2) Protocol handshake: expect 200, content-type text/event-stream, and a serverInfo payload.
+curl -sS -D- -X POST http://127.0.0.1:3340/private_<TOKEN> \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"probe","version":"1"}}}'
+```
+
+Distinguishing the two failure classes is what makes this diagnosable:
+- Schema/validation error → the `type` token is wrong for that client.
+- Connection refused or `000` → wrong host, port, or bind interface.
+
+A working reference implementation is documented in [`runbook-ha-mcp.md`](runbook-ha-mcp.md).
 
 ### 9) Test the integration
 

@@ -1,28 +1,13 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: hams/docs/zigbee-door-sensor-rollout.md:180 % -->
-<!-- %ccm_git_author: mpegg % -->
-<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: e909a11b8f0decb776adb1a98d1be7de1c520900 % -->
-<!-- %ccm_git_commit_id: 651174b57b6dfae26ac61a80bd881def1c06c971 % -->
-<!-- %ccm_git_commit_count: 180 % -->
-<!-- %ccm_git_commit_date: 2026-10-10 18:08:21 -0400 % -->
-<!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: docs(hal): correct stale audit facts against live HA % -->
-<!-- %ccm_git_modify_date: 2026-10-10 18:08:22 % -->
-<!-- %ccm_git_file_last_modified: 2026-10-10 18:07:43 % -->
-<!-- %ccm_git_file_name: zigbee-door-sensor-rollout.md % -->
 <!-- %ccm_git_path: hams/docs/zigbee-door-sensor-rollout.md % -->
-<!-- %ccm_git_language_mode: markdown % -->
-<!-- %ccm_git_file_type: text/plain % -->
-<!-- %ccm_git_file_encoding: utf-8 % -->
-<!-- %ccm_git_file_eol: CRLF % -->
-<!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 38049 % -->
+<!-- %ccm_git_object_id: hams/docs/zigbee-door-sensor-rollout.md@194 % -->
+<!-- %ccm_git_commit_date: 2026-10-28 20:22:38 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_message: misc updates % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
- <!-- %git_commit_history: 2026-10-08 mpegg  impl www from prd branch  --> 
+<!-- %git_commit_history: 2026-10-10 mpegg docs(hal): correct stale audit facts against live HA -->
  <!-- %git_commit_history: 2026-10-08 mpegg  impl www from prd branch  -->
  <!-- %git_commit_history: 2026-10-05 mpegg  house layout + routines docs  -->
  <!-- %git_commit_history: 2026-09-25 mpegg  cleanup  -->
@@ -38,7 +23,7 @@
 > This file records **intent and design rationale**; query HAL for truth.
 
 - **Created:** 2026-09-23
-- **Status:** in progress — 3 contacts deployed, 1 spare, 5 devices pending
+- **Status:** in progress — **4 contacts deployed** (cat door added 2026-10-13), **0 spares left**, 5 devices pending
 - **Related:** [hal-context.md](hal-context.md) (instance snapshot) · [SKILL.md](SKILL.md) · `hams/inventory/`
 
 ## Status at a glance
@@ -50,14 +35,15 @@
 | 3 | Contact — SONOFF | **Sauna** door | `binary_sensor.sauna_door` | ✅ deployed + automated |
 | 4 | Contact | **Front door** (Entry) | `binary_sensor.front_door` | ⬜ not paired |
 | 5 | Contact | Master bedroom → Catio **upper deck** | `binary_sensor.deck_door` | ⬜ not paired |
-| 6 | Contact | — | **spare, still in the box** | ⬜ unassigned |
+| 6 | Contact — SONOFF | **Cat door** behind the shelf (Laundry side of the Catio) | `binary_sensor.cat_door` | ✅ deployed 2026-10-13 — the ex-spare; **polarity unverified** (see below) |
 | 7 | PIR | **2nd Hallway** / stair landing | `binary_sensor.pir_2ndhall_occupancy` | ⬜ not paired |
 | 8 | PIR | **Master Bath** | `binary_sensor.pir_masterbath_occupancy` | ⬜ not paired |
 | 9 | Button | Second nightstand | `button-bedhead-steve` | ⬜ not paired |
 
-The spare's named future homes: the **winter cat door behind the shelf** (Laundry
-side of the Catio), or a **window**, or the deck door's **screen leaf** if the
-winter-cooling signal ever matters enough to spend two sensors on it.
+The ex-spare went to the **winter cat door behind the shelf** (Laundry side of the
+Catio) — the first of its three named candidate homes. A **window** and the deck
+door's **screen leaf** remain unassigned, and all four contacts are now spent, so
+any further contact work needs new hardware.
 
 ## Naming contract — pair in any order
 
@@ -90,8 +76,41 @@ class is **`on` = open, `off` = closed**. Verify by closing each door: if a
 physically-closed door reads `on`, the magnet is on the wrong side. Fix by
 rotating the magnet, or swap `to: "on"` / `to: "off"` in the triggers.
 
-As of this writing all three deployed contacts read `on` (open) — consistent with
+As of this writing all four deployed contacts read `on` (open) — consistent with
 the sauna door, which is normally open for the cat water bowl.
+
+**`binary_sensor.cat_door` is the exception to "verified".** It was paired on
+2026-10-13 and has **never recorded a door transition** — every state row in its
+history is `unavailable`/`unknown`/`on` availability churn around HA restarts,
+with the flap open throughout. Its **polarity is therefore unverified**: the
+`on` = open mapping is an assumption inherited from `device_class: door`, not an
+observed fact. This matters live: `automation.catio_door_indicator` drives its
+amber state off this contact reading `on`. Close that door once, watch the
+transition, and only then treat it as known. (An earlier draft of this section
+claimed the one reading was `on` at 17:11:11; the recorder shows 17:11:11 was
+`unavailable`→`unknown`, i.e. the pairing itself, and the first `on` was
+19:07:19. Corrected in the 2026-10-13 21:09 note below.)
+
+**The cat door is not a swing door — its resting state is "open".** Operator
+context 2026-10-13: it is a **drawbridge-style flap**, normally left **open** by
+day and closed only at night (or when someone forgets to lower it). Two
+consequences worth separating:
+
+1. **A static read cannot settle polarity.** With an open-by-default door, an `on`
+   reading is equally consistent with `on` = open and with `on` = closed — nothing
+   has observed it in the closed position since it was paired. The decisive
+   observation is the **transition on closing** it, not the open state: `off` on
+   close ⇒ `on` = open, leave the automations alone; still `on` while physically
+   shut ⇒ closed reads `on`, and the fix for *this* door is the magnet — **not** a
+   trigger swap (see item 2 below).
+2. **Amber-while-open is kept deliberately, not by oversight.** `catio_door` is a
+   human door that *should* be shut; the cat door is *supposed* to be open all day,
+   so the shared amber branch holds the lamp amber for most of the day and starves
+   the green "all clear" state. That consequence was put to the owner on 2026-10-13
+   and **accepted**: the amber logic stays exactly as written. Consequence for the
+   polarity test — an inverted sensor is fixed at the **sensor** (rotate the magnet),
+   **not** by swapping `state: "on"` for `state: "off"` in the automation, which
+   would silently invert the lamp's meaning rather than correct the reading.
 
 ## Design rule: no panic
 
@@ -115,6 +134,7 @@ alarm panel** (`alarm_control_panel` is empty), so door contacts are the only
 | `binary_sensor.bedroom_door` | `Bedroom.door` (SONOFF, `0xa4c13881970be516`) | `bedroom` | renamed from `..._bedroom_door_contact` |
 | `binary_sensor.catio_door` | `Catio.door` (SONOFF, `0xa4c13849ae8c0a3a`) | `catio` | Laundry ↔ Catio lower deck |
 | `binary_sensor.sauna_door` | `Sauna.door` (SONOFF, `0xa4c138d17e20fd58`) | `sauna` | swings into the narrow **1st bath** (Sauna ↔ Green Room is a **wall**, no opening) |
+| `binary_sensor.cat_door` | `lower.cat.door.sensor` (SONOFF, `0xa4c13890c8c6fe04`) | `catio` | cat door behind the shelf; paired 2026-10-13, renamed from `binary_sensor.lower_cat_door_sensor_contact`; **polarity unverified**; device name not yet conformed to the Z2M `X.door` convention |
 | `binary_sensor.anyone_home` | template helper | — | `{{ is_state('person.matthew','home') or is_state('person.steve','home') }}` |
 | `binary_sensor.bedroom_asleep` | template helper | — | `{{ is_state('binary_sensor.bedroom_door','off') and (now().hour >= 21 or now().hour < 6) }}` |
 
@@ -130,16 +150,19 @@ named zone (e.g. at work). The helper checks the home zone specifically.
 
 | Automation | Trigger | Behaviour |
 |---|---|---|
-| `automation.catio_door_indicator` | `binary_sensor.catio_door` on/off/restart | `light.bulb_living_tablelamp` → **amber** (`rgb 255,40,0` @40 %) while the door is open, **green** (`rgb 58,255,47` @36 %) when closed. Explicit colours — no scene snapshot (see incident log) |
+| `automation.catio_door_indicator` | `binary_sensor.catio_door` **and** `binary_sensor.cat_door` on/off, `lock.termite_towers` to/from `unlocked`, plus `homeassistant` start | **Single writer** for `light.bulb_living_tablelamp`. Precedence: **red** (`rgb 255,0,0` @100 %) = front door unlocked; **amber** (`rgb 255,40,0` @40 %) = either catio-access contact open; **green** (`rgb 58,255,47` @36 %) = all clear. Explicit colours — no scene snapshot (see incident log) |
 | `automation.catio_door_open_when_away` | door open `for: 5 min` | + `anyone_home` off → notify `notify.sm_s911w` with a Catio camera snapshot attached |
 | `automation.bedroom_door_closed_arms_sleep` | `binary_sensor.bedroom_door` → `off` | 21:00–06:00 → `input_boolean.matt_bedtime_armed` on |
 | `automation.bedroom_night_exit_nightlight` | bedroom door `off` → `on` | 21:00–06:00 → dim red path (`light.bulb_secondfloor_stair_hallway` @50 %, `light.bulb_masterbath_ceiling_light` @20 %) and bedroom night lights off |
 | `automation.bedroom_wake_release` | bedroom door `off` → `on`, or 11:55 sweep | 05:00–12:00 → clear `matt_bedtime_armed` + `matt_bedtime_prep` |
 | `automation.sauna_door_cat_water_guard` | `binary_sensor.sauna_door` → `off` `for: 20 min` | + `sensor.sauna_temp_probe_temperature` below 40 → notify. Heated = silent |
 
-Indicator colours: **amber** `rgb 255,40,0` @40 % = door open; **green**
-`rgb 58,255,47` @36 % = the lamp's normal look (used only by the restart-recovery
-branch). The lamp was chosen because nothing else in HAL referenced it.
+Indicator colours: **red** `rgb 255,0,0` @100 % = front door unlocked;
+**amber** `rgb 255,40,0` @40 % = either catio-access contact open; **green**
+`rgb 58,255,47` @36 % = the lamp's normal look, and the restart-recovery branch.
+The lamp was chosen because nothing else in HAL referenced it — and as of
+2026-10-13 `automation.catio_door_indicator` is its **only** writer (see the
+2026-10-13 note at the end of this file).
 
 ### Incident log — 2026-09-24 (first night)
 
@@ -374,7 +397,7 @@ white. Pre-existing behaviour; this rollout never touched it.
 | Catio door → patio lights | **dropped** | `catio_at_dawn` / `catio_at_dusk` already run `switch.energy_monitoring_smartplug` (patio lights) sunset → sunrise, so the door adds nothing |
 | Bedroom "closed but empty" overnight guard | **deferred** | Needs reliable presence. The bedroom mmWave logged **156 state changes in 24 h with overnight gaps up to ~18 min** (e.g. off 03:14:18 → on 03:31:58), so any "no presence for N minutes" guard would false-fire. Tune `number.mwave_bedroom_fading_time` (currently 30 s) / sensitivity first, or accept a much longer threshold |
 | Presence clause in `bedroom_asleep` | **removed** | HA's template-helper flow **rejected `delay_off`** ("keys not declared by the schema") at 2026.9.2, so a presence-based derivation cannot latch and would flicker with the mmWave. Door + time is stable and matches the "door is closed when we sleep" model |
-| Battery-low alerts for the 3 contacts | **not built** | The `*_battery_low` entities exist and are `off`; one quiet notifier is better than three. Pairs naturally with the front-door lock battery alert. Plan item, no urgency on fresh batteries |
+| Battery-low alerts for the contacts | **not built** | The `*_battery_low` entities exist and are `off`; one quiet notifier is better than four. Pairs naturally with the front-door lock battery alert. Plan item, no urgency on fresh batteries |
 
 ## Planned (not yet built)
 
@@ -433,7 +456,7 @@ ha_get_logs                source="logbook", entity_id="binary_sensor.catio_door
   bathroom switch. `bedroom-door-closed-arms-sleep` is **additive** — the old
   proxy was left in place deliberately. Once door-based arming is trusted, remove
   that action from `matt_leaves_bathroom` so the door is the single source of truth.
-- No battery-low alert exists for the three contacts or the U-Bolt lock.
+- No battery-low alert exists for the four contacts or the U-Bolt lock.
 - Windows remain HAL's largest blind spot: no alarm panel and no window contacts.
 - `hams/inventory/` still holds a placeholder device file (example MACs), and the
   `snipeit` schema referenced by `hal-context.md` / `wiki/agent-index.md` **does
@@ -550,4 +573,369 @@ purposes, no conflict.
   running it against a file containing no CR byte at all, which still returned CRLF. Trust the
   bytes (`grep -c $'\r' <file>`), not the field. Left as-is here: shared hook tooling, not this
   document's business.
+
+---
+
+## Verification note — 2026-10-13 (write pass: cat door merged, lamp made single-writer)
+
+This pass **changed** things (unlike the 2026-10-08 read-only pass above). All
+state, configs, traces and hashes below were queried live through `hal-mcp`.
+Timezone `America/Toronto`. Snapshot taken before the first write:
+`ha_manage_backup(scope="snapshot", action="create", name="Before_catio_indicator_merge")`
+→ backup id `e40b7273` (57.6 MB).
+
+### 1. The ex-spare is now a live, named entity
+
+| Was | Now |
+|---|---|
+| `binary_sensor.lower_cat_door_sensor_contact` (Z2M `lower.cat.door.sensor`, IEEE `0xa4c13890c8c6fe04`, `area_id: null`) | `binary_sensor.cat_door` (same device, area `catio`) |
+
+Renamed with `ha_set_entity(new_entity_id=...)`; area set with
+`ha_set_device(area_id="catio")`. The registry `unique_id`
+(`0xa4c13890c8c6fe04_contact_zigbee2mqtt`) is unchanged, so a later Z2M rename
+cannot break the entity id. **The name `binary_sensor.cat_door` was free**
+(`ha_get_entity` → `Entity not found`) and does not collide with the existing
+`binary_sensor.catio_door` — the two are deliberately distinct: **`catio_door` =
+the human door off the Laundry; `cat_door` = the cat door behind the shelf.**
+
+**Not done, deliberately:** the *device* name was left as `lower.cat.door.sensor`.
+`Catio.door`, `Sauna.door` and `Bedroom.door` all have `name_by_user: null` with
+`default_name` supplied by Z2M (`mqtt_topic_hint: zigbee2mqtt/Catio.door/...`),
+i.e. **the `X.door` convention lives in Zigbee2MQTT, not in the HA registry**.
+Setting an HA override would have been the wrong layer. Rename it in Z2M if
+wanted.
+
+### 2. `automation.catio_door_indicator` now carries the full precedence
+
+Config hash `9ada523bfc500539` → **`d739d65f15966195`** (rewritten via
+`python_transform`, so `id` `1790207238851` and `alias` were preserved).
+`mode: single` → **`restart`**.
+
+Triggers went 3 → **7**: both contacts (`catio_door`, `cat_door`) on **and** off,
+`lock.termite_towers` `to: "unlocked"` **and** `from: "unlocked"`, plus the
+`homeassistant` start recovery.
+
+Actions are a two-branch `choose` with `default`:
+
+| State | Colour | Brightness |
+|---|---|---|
+| front door **unlocked** | **red** `rgb 255,0,0` | **100 %** |
+| either catio contact **open** | amber `rgb 255,40,0` | 40 % |
+| all clear | green `rgb 58,255,47` | 36 % |
+
+**Branch order is load-bearing.** Red is tested first and wins outright; amber's
+`condition: or` covers the two contacts. The amber condition is written as an
+explicit `or` of two `condition: state` nodes rather than one state condition
+with `match: any` — with a bare entity list the state condition's `match`
+**defaults to `all`**, which would have silently required *both* doors to be open
+and left the single-open-door case green.
+
+**Why red is @100 % and not @40 %:** the existing amber `rgb 255,40,0` is hue
+9.4°, and pure red `rgb 255,0,0` is hue 0° — on an LED bulb those are practically
+the same colour, so red-at-40 % would have been indistinguishable from amber and
+the precedence would have been invisible. Differentiating by intensity (100 % vs
+40 %) keeps amber and green byte-identical to their previous values while making
+red unmistakable. If red at full brightness is too loud, the single number to
+change is the red branch's `brightness_pct`.
+
+**Fail-quiet by construction.** Every lock test is the literal `"unlocked"`;
+nothing keys on `unavailable` or `unknown`. A lock that blips to `unavailable`
+(the nightly ~0.3 s blip this lock logs) therefore degrades to amber/green rather
+than latching red. A security-purist might prefer the opposite; that is an open
+decision, not an oversight.
+
+**The write was a live no-op, as intended.** With `lock=locked`, `catio_door=on`
+and `cat_door=on` the new config resolves to amber — and the lamp was already
+amber. Post-write the lamp read `on` / brightness `102` / `rgb [255,44,2]` with
+`last_changed` still `19:20:00`, i.e. **no visible change and no spurious
+transition.**
+
+### 3. `automation.glucose_over_7` — deleted
+
+Deleted at owner direction (`ha_config_remove_automation` → `result: ok`,
+`unique_id 1775864309612`); `ha_get_state` now returns `Entity not found`. It was
+deleted rather than disabled because it was **already dead**: `state: off`,
+`last_triggered: 2026-04-10`, **zero** logbook entries in the preceding 168 h, and
+its trigger referenced **`sensor.matthew_pegg_glucose_level`, which does not
+exist** (the real entity is `sensor.matthew_pegg_glucose_level_2`). The high-
+glucose alert had therefore been silently broken for months, and the automation's
+only remaining live capability was a latent device-targeted write to the lamp.
+
+Verbatim config, for anyone rebuilding it as a notification instead:
+
+```json
+{"id": "1775864309612", "alias": "glucose over 7", "description": "",
+ "triggers": [{"trigger": "numeric_state", "entity_id": ["sensor.matthew_pegg_glucose_level"], "above": 7}],
+ "conditions": [],
+ "actions": [{"device_id": "1271c800e7c03abe59660ffcf3b81b1e", "domain": "light",
+              "entity_id": "6e9bf1b641e64203293fc0cb0cbe47d6", "type": "flash"}],
+ "mode": "single"}
+```
+
+Note the action was **device-targeted** (`device_id` plus the device's light
+entity), which is exactly why a plain entity-id grep cannot be trusted to find
+lamp writers — the audit below had to run twice, once by entity id and once by
+device UUID.
+
+### 4. Single-writer is now proven, not assumed
+
+| Probe | Result |
+|---|---|
+| `ha_search("light.bulb_living_tablelamp")` over automations/scripts/scenes/helpers | **exactly 1** — `automation.catio_door_indicator` (`match_in_config: true`); scripts/scenes/helpers empty |
+| `ha_search("1271c800e7c03abe59660ffcf3b81b1e")` (lamp **device** UUID) | **0** matches — glucose was the only device-targeted writer |
+| `automation.glucose_over_7` | `ENTITY_NOT_FOUND` |
+
+`light.bulb_living_tablelamp` now has **one** writer.
+
+### 5. A reload does not fire the `homeassistant` start trigger
+
+Counter-intuitive but worth recording: writing the automation config reloaded it
+(proved by the `mode: restart` attribute appearing on
+`automation.catio_door_indicator` and its `last_changed` moving to `20:33:41`),
+yet **`last_triggered` did not move** and no `Home Assistant starting` trace was
+created. The `start` trigger fires on a genuine HA start — the
+`23:19:59 UTC "Home Assistant starting"` trace from the Z2M/HA restart is the
+proof — but **not** on an automations reload. Consequence: between a reload and
+the next door/lock transition the lamp colour is not re-asserted. This is
+pre-existing behaviour (the old 3-trigger config had the same recovery trigger and
+the same property), not a regression.
+
+### 6. Open items from this pass
+
+- **Cat-door polarity is unverified** (see the polarity section above) — the
+  decisive test is **closing** the door and watching it flip. A static read while it
+  is open cannot discriminate, because the door is open by default. Until then the
+  cat door's amber state rests on an assumption. If it does test inverted, the fix
+  is **physical** (rotate the magnet) — `automation.catio_door_indicator` is not to be
+  edited, per the decision below.
+- **Amber semantics for the cat door — decided 2026-10-13: keep as written.** The
+  door is open by day by design, so `amber = cat_door open` holds the lamp amber
+  through most daytime hours and starves the green "all clear" state. Considered and
+  rejected: dropping `cat_door` from the amber `or`, ambering on the *anomalous*
+  state instead, and gating to night-time hours. The owner accepted amber-most-of-
+  the-day, so **no config change is planned** — including **no** swap to
+  `state: "off"` should the polarity test come back inverted; fix that at the magnet.
+- **`binary_sensor.catio_door` has `area_id: null`.** Its new sibling is now in
+  `catio`; the older contact was never assigned one. Left alone as out of scope.
+- **The cat-door contact has no `unavailable` handling** in the indicator: an
+  unreachable cat-door contact falls through to green, which is the *quiet*
+  direction for a cat-access signal. The catio door behaves the same way. If
+  either should fail *loud*, that is a design decision to make deliberately.
+- **`sensor.0xa4c13890c8c6fe04_linkquality` is registry-disabled by the
+  integration** (same shape as the three older contacts) — enable it if signal
+  quality is wanted while commissioning (step 5 of the procedure above).
+- **`automation.catio_door_open_when_away` still watches only
+  `binary_sensor.catio_door`**, not the new cat door. Deliberate for now: the cat
+  door is a cat route, and texting on it would trip the "no panic" rule.
+
+---
+
+## Verification note — 2026-10-13 21:09 (cat-door polarity re-check, HAL back up)
+
+Read-only: HAL was reachable again and **nothing was written to HA**. This pass
+**corrects a factual error** in *Polarity — verify, don't assume* above, records
+the cat-door history in full, and leaves the decisive test outstanding.
+
+### The cat door has still never been seen to close
+
+Full recorder history for `binary_sensor.cat_door` since it was paired — 11 rows,
+all 2026-10-13, `America/Toronto`:
+
+| Time (EDT) | State | Cause |
+|---|---|---|
+| 17:11:11 | `unavailable` → `unknown` | pairing — the entity appears |
+| **19:07:19** | **`on`** | **first real contact reading** |
+| 19:19:32 → 19:19:35 → 19:20:35 | `unavailable` → `unknown` → `on` | HA restart (`Home Assistant starting` trace 19:19:59) |
+| 20:32:58 | `on` (re-report) | no state change |
+| 20:41:52 → 21:02:09 | `unavailable` (twice) | HA down ~21 min, restarted 21:03:07 |
+| 21:03:20 → 21:03:21 | `unknown` → `on` | HA restart (`Home Assistant starting` trace 21:03:07) |
+
+**There is no `off` row anywhere in the history.** Every non-availability row is
+`on`. Two consequences:
+
+1. **The earlier note's "one real reading (`on`, at 17:11:11)" was wrong.**
+   17:11:11 is the *pairing* row (`unavailable`→`unknown`); the first `on` is
+   19:07:19. The error conflated the phantom availability rows with a contact
+   reading.
+2. **The churn is not door movement.** Every `unavailable`/`unknown` row tracks an
+   HA restart or the Z2M/HA outage, never the flap. The `unknown`→`on` restore is
+   the retained Zigbee state being republished: it looks like a transition and it
+   *does* fire the automation's `to: "on"` trigger, but it is not one.
+
+### What this settles, and what it does not
+
+- **The `off` = closed mapping is real and reachable on this install.** The sibling
+  `binary_sensor.catio_door` is the **same model, same Zigbee2MQTT flow, same
+  `device_class: door`**, and its history proves the mapping end-to-end: `off` held
+  from 2026-10-12 22:00:23 to 2026-10-13 06:54:55 (**8 h 54 m** overnight while the
+  human door was shut), then `on` at 06:54:55. So this contact family here does
+  report `off` = closed, and the Z2M→HA inversion layer is not a suspect. Caveat
+  worth stating plainly: that proves the *composite* is right for the catio door; it
+  cannot prove the cat door's own magnet is mounted the same way.
+- **Not settled — the cat-door polarity itself.** The flap has still never been shut
+  while the recorder was watching, so no `off` row exists. `on` = open remains
+  inherited from `device_class: door`, not observed. The remaining unknown is
+  narrowed to exactly one thing: **whether the cat-door magnet is positioned so the
+  flap's shut position brings it into the reed's range** — the same class of fault
+  the bedroom contact had before its 2026-09-24 magnet move.
+- **Availability churn is a blind spot for the test.** A close landing inside any of
+  the windows above would be swallowed. Do the test while the entity reads `on` and
+  Zigbee2MQTT is up.
+
+### The decisive step is unchanged
+
+**Close the flap and re-read.** `off` on close ⇒ `on` = open, leave everything
+alone. Still `on` while the flap is physically shut ⇒ closed reads `on`, and the fix
+is the **magnet**, not the automation — the amber decision below stands either way
+and `automation.catio_door_indicator` is not to be edited.
+
+### The automation is untouched, and the decision is intact
+
+- `ha_config_get_automation("automation.catio_door_indicator")` → `config_hash`
+  **`d739d65f15966195`**, byte-identical to the write pass. No edit has occurred
+  since, and none is planned.
+- `mode: restart`; `last_triggered` **2026-10-13 21:03:21.131**, fired by
+  *state of `binary_sensor.cat_door`* (trace `ce55c3f2…`) — the restore path fired
+  the `to: "on"` trigger, so a restart **does** re-assert the lamp.
+- Live lamp: `on`, brightness **102** (40 %), `rgb_color [255,44,2]` — the amber
+  branch, exactly as designed. The bulb reports `[255,44,2]` rather than the
+  configured `[255,40,0]` because it runs in `xy` colour mode (it read `[255,44,2]`
+  in the write pass too, so this is not drift).
+- The accepted tradeoff is therefore observable in production right now: with
+  `cat_door` `on`, the lamp sits amber and the green "all clear" state is suppressed.
+
+### Two genuine restarts confirm the §5 reload/restart split
+
+The write pass recorded that a *reload* does **not** fire the `homeassistant` start
+trigger. Two real restarts since confirm the other half — `Home Assistant starting`
+traces at **19:19:59** and **21:03:07**. Restarts re-assert; reloads do not.
+
+---
+
+## Update — 2026-10-14 19:14 (magnet adjusted; the contact finally reports `off`)
+
+Read-only. The 21:09 note above left the close-transition test outstanding. Overnight
+the magnet was **physically adjusted** — the fix the decision below prescribes — and
+the contact now behaves very differently.
+
+- **`binary_sensor.cat_door` now produces `off`**, which it had never once done
+  before this: **85 state rows in 30 h**, versus 11 rows in its entire prior life.
+- The adjustment session is legible in the data: **six `off`→`on` pairs between
+  21:10:15 and 21:12:40** on 2026-10-13 (2 min 25 s) — someone working the magnet,
+  not a cat.
+- **Best polarity correlation available.** After the working stopped, the contact
+  settled into a **9 h 25 m `on` hold** overnight (2026-10-13 21:12:40 →
+  2026-10-14 06:45:31) and later a **3 h 47 m `off` hold** (2026-10-14 08:11:00 →
+  11:58:09). That matches the flap being left **up** all night and **down** through
+  the morning — i.e. **`off` = closed, `on` = open**, the standard mapping. The
+  magnet fix appears to have worked.
+- **New physical finding — the gap looks marginal.** Most of the 85 rows are **rapid
+  off/on pairs** 0.2–4.5 s apart (08:05:57→08:06:02, 08:09:15→08:09:15,
+  08:09:32→08:09:34, 08:09:47→08:10:07, 08:10:08→08:10:10, 11:58:10→11:58:11 …).
+  That chattering is the same signature the **bedroom** contact showed *before* its
+  2026-09-24 magnet move: the reed sits at the edge of the magnet's range, so the
+  closed position does not hold cleanly. Worth confirming the flap's *resting* closed
+  position holds `off` for >60 s with no chatter — if not, the bedroom remedy
+  applies (a spacer behind the magnet).
+- **Behavioural, not electrical.** The flap is left in whatever position it was last
+  put: up all night here, down through the morning. The contact faithfully reports
+  that — which is precisely why a single read can never settle polarity for an
+  open-by-default door, and why the "closed ⇒ `off`" correlation above needed a
+  sustained hold to become visible at all.
+- **A chattering contact spams the indicator.** `automation.catio_door_indicator`
+  triggers on every edge, so 85 rows in 30 h is 85+ extra automation runs. Its
+  `mode: restart` absorbs that without interleaving, but the lamp is being re-asserted
+  far more than the door actually moves. Fixing the gap also quiets the automation.
+
+**No automation was edited.** `automation.catio_door_indicator` still reads
+`config_hash d739d65f15966195` — unchanged since the write pass, as the decision
+requires.
+
+---
+
+## Update — 2026-10-14 19:17 (second indicator lamp: Mister P, red / yellow / green)
+
+Owner request: a second lamp should render the catio-access state, with the
+door-open colour **time-boxed to darkness**. This pass **wrote** to HA (snapshot
+`7ff66b42`, 58.8 MB, taken first).
+
+### Why the lamp "did not change colour": nothing drove it
+
+`light.mister_p_rgbcw_lightbulb` (Tuya local, Living Room, `hs` + `color_temp`,
+device `14d460dd14819823b900eeede4c376ea`) had **zero writers**. Audited before
+writing: `mister_p` → **0** matches and the full entity id
+`light.mister_p_rgbcw_lightbulb` → **0** matches, across
+automations/scripts/scenes/helpers/dashboards. It was sitting `on`, blue, from a
+manual 21:42 change.
+
+### `automation.mister_p_door_indicator`
+
+`unique_id 1792019846390`, `config_hash 79cdd28785c4b0d6`, `mode: restart`.
+
+| State | Colour | Brightness |
+|---|---|---|
+| front door `lock.termite_towers` **unlocked** | **red** `rgb 255,0,0` | 100 % |
+| a catio-access contact open **and dark** | **yellow** `rgb 255,200,0` | 60 % |
+| otherwise | green `rgb 58,255,47` | 36 % |
+
+Nine triggers: four catio-contact edges (`catio_door`, `cat_door` × on/off), two
+lock edges, `sun` **`sunset`**, `sun` **`sunrise`**, and the `homeassistant` start
+recovery.
+
+### Deliberate decisions worth preserving
+
+- **Scope is the catio pair only** (`catio_door` + `cat_door`), chosen by the owner
+  over all four contacts. The bedroom and sauna doors are not part of this lamp.
+- **"Front door open" has no contact to key on.** The front door is **Ring-only**
+  (`event.front_door_ding`, `event.front_door_motion`,
+  `sensor.front_door_last_activity`, `camera.front_door_live_view`,
+  `sensor.front_door_battery` — and no `binary_sensor.front_door`). Red therefore
+  keys on `lock.termite_towers` ≠ `locked`, the same signal the table lamp's red
+  uses. If a real open/closed signal is ever wanted, it needs new hardware.
+- **Yellow is deliberately narrow: a catio door open during daylight reads GREEN.**
+  Those doors are open *by design* all day, so a daytime open door is not an alert
+  condition. Green here means "no action required", not literally "everything is
+  shut". **Do not "fix" this by un-gating yellow** — that recreates the
+  amber-all-day problem the table lamp accepted, and the time box was an explicit
+  owner request.
+- **The sun triggers are load-bearing, and the boundary is `sunset`/`sunrise`, not
+  `dusk`.** The owner said "after dusk … before sunrise", but **HA's sun trigger
+  accepts only `sunset` or `sunrise`** — submitting `event: dusk` is rejected with
+  *"expected 'sunset' or 'sunrise' at 'options.event'"*. There is no native `dusk`
+  trigger, so the `condition: sun` was aligned to `after: sunset` /
+  `before: sunrise`, keeping the trigger and the condition on **identical** edges.
+  Had the condition kept `after: dusk`, the lamp would stay green from sunset until
+  some *unrelated* event fired after dusk. Cost: yellow onset is ~30 min earlier than
+  true dusk (from `sun.sun`: `next_setting` 22:33:40Z vs `next_dusk` 23:03:06Z, i.e.
+  18:33 vs 19:03 EDT).
+- **The table lamp is untouched.** `automation.catio_door_indicator` keeps its
+  red/**amber**/green scheme at `config_hash d739d65f15966195`; the two lamps
+  intentionally use different middle colours (amber `255,40,0` vs yellow
+  `255,200,0`).
+
+### Verified live, not assumed
+
+The automation was fired with `automation.trigger` at **2026-10-14 19:17:32 EDT**
+(trace `0069b66ca967c9f9a33d1e222f88dbb3`). At that instant `lock.termite_towers`
+was `locked`, `catio_door` `off`, `cat_door` `on`, and the sun was inside the
+sunset→sunrise window — so the correct answer was **yellow**, and the lamp went to
+`on` / `rgb_color [255,200,0]` / `hs_color [47,100]` / brightness `153` (=60 %).
+That one observation proves the red branch was skipped **and** that both conditions
+of the yellow branch — the `sun` window *and* the contact `or` — evaluated true.
+
+Note the lamp's `last_changed` did **not** move (still `2026-10-13T21:02:07`) because
+only attributes changed; `last_reported` moved to 19:17:32. That is the same
+phenomenon recorded for the table lamp in the write pass — an attribute-only change
+does not move `last_changed`.
+
+### Still unverified
+
+- The **red** branch — would require unlocking the front door; not done remotely.
+- The **green** branch's daytime case — needs a daytime sun; the `sunrise` trigger
+  will exercise it. Both are literal-value / `default` paths with no templates, so
+  they fail loudly rather than silently.
+- Mister P is now a **second** lamp whose colour is claimed by an automation. If it
+  is ever wanted as a plain decorative lamp again, this automation is the thing to
+  disable — it will otherwise override any manual colour on the next door, lock or
+  sun event.
 

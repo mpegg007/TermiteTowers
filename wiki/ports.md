@@ -1,39 +1,14 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: wiki/ports.md:158 % -->
-<!-- %ccm_git_author: mpegg % -->
-<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: 3e39b63fa77302d1331b019f5ac45dc4fd44d9db % -->
-<!-- %ccm_git_commit_id: d7e19382f49384e00dc61fb86a10a9255583a0c8 % -->
-<!-- %ccm_git_commit_count: 158 % -->
-<!-- %ccm_git_commit_date: 2026-09-25 21:05:38 -0400 % -->
-<!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: chore(homarr): retire Homarr - configured but never used day to day % -->
-<!-- %ccm_git_modify_date: 2026-09-25 21:05:38 % -->
-<!-- %ccm_git_file_last_modified: 2026-09-25 21:05:30 % -->
-<!-- %ccm_git_file_name: ports.md % -->
 <!-- %ccm_git_path: wiki/ports.md % -->
-<!-- %ccm_git_language_mode: markdown % -->
-<!-- %ccm_git_file_type: text/plain % -->
-<!-- %ccm_git_file_encoding: utf-8 % -->
-<!-- %ccm_git_file_eol: CRLF % -->
-<!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 16196 % -->
+<!-- %ccm_git_object_id: wiki/ports.md@194 % -->
+<!-- %ccm_git_commit_date: 2026-10-28 20:22:38 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_message: misc updates % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
- <!-- %git_commit_history: 2026-06-10 mpegg  june bulk update  --> 
-<!-- %git_commit_history: 2026-03-22 mpegg  march updates  % -->
-<!-- %git_commit_history: 2026-02-07 mpegg  comment cleanup  % -->
-<!-- %git_commit_history: 2026-02-07 mpegg  feb2026  % -->
-<!-- %git_commit_history: 2025-12-15 mpegg  monday drop  % -->
-<!-- %git_commit_history: cleanup % -->
-<!-- %git_commit_history: november changes % -->
-<!-- %git_commit_history: commen block updates % -->
-<!-- %git_commit_history: adding secret-service % -->
-<!-- %git_commit_history: docker updates % -->
-<!-- %git_commit_history: big update % -->
-<!-- %git_commit_history: service updates % -->
+<!-- %git_commit_history: 2026-09-25 mpegg chore(homarr): retire Homarr - configured but never used day to day -->
+ <!-- %git_commit_history: 2026-06-10 mpegg  june bulk update  -->
 <!-- %git_commit_history: 2026-03-22 mpegg  march updates  % -->
 <!-- %git_commit_history: 2026-02-07 mpegg  comment cleanup  % -->
 <!-- %git_commit_history: 2026-02-07 mpegg  feb2026  % -->
@@ -117,7 +92,7 @@ This page tracks host and service ports used across TermiteTowers using a system
 | Homarr — RETIRED 2026-09-26       | —                                | 3310 free | —              | —         | ⛔ Retired — see `runbook-homarr.md` |
 | Radicale CalDAV                | calendars.termitetowers.ca       | 3320      | 5232           | Home      | ✅ **NEW**       |
 | Note-Taking Apps               | notes.termitetowers.ca           | 3330      | TBD            | Home      | 🕒 Planned       |
-| HA-MCP                         | (private LAN endpoint)           | 3340      | 8086           | Home      | 🕒 Planned       |
+| HA-MCP                         | (private LAN endpoint)           | 3340      | 8086           | Home      | ✅ app-services-net-dev1 |
 | LLM Server API                 | llmapi.termitetowers.ca          | 3350      | 8000           | Home      | ✅ **NEW**       |
 | Homepage                       | homepage.termitetowers.ca        | 3360      | 3000           | Home      | ✅ app-services-net-dev1 |
 | Immich                         | immich.justanotherhuman.ca       | 3400      | 2283           | Media     | ✅ **UPDATED**   |

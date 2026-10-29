@@ -1,28 +1,14 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: hams/docs/hal-context.md:180 % -->
-<!-- %ccm_git_author: mpegg % -->
-<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: 53da6e7a917166ee0d4efd2c2676888cac9d3d65 % -->
-<!-- %ccm_git_commit_id: 651174b57b6dfae26ac61a80bd881def1c06c971 % -->
-<!-- %ccm_git_commit_count: 180 % -->
-<!-- %ccm_git_commit_date: 2026-10-10 18:08:21 -0400 % -->
-<!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: docs(hal): correct stale audit facts against live HA % -->
-<!-- %ccm_git_modify_date: 2026-10-10 18:08:22 % -->
-<!-- %ccm_git_file_last_modified: 2026-10-10 18:07:19 % -->
-<!-- %ccm_git_file_name: hal-context.md % -->
 <!-- %ccm_git_path: hams/docs/hal-context.md % -->
-<!-- %ccm_git_language_mode: markdown % -->
-<!-- %ccm_git_file_type: text/plain % -->
-<!-- %ccm_git_file_encoding: utf-8 % -->
-<!-- %ccm_git_file_eol: CRLF % -->
-<!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 19790 % -->
+<!-- %ccm_git_object_id: hams/docs/hal-context.md@194 % -->
+<!-- %ccm_git_commit_date: 2026-10-28 20:22:38 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_message: misc updates % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
- <!-- %git_commit_history: 2026-10-05 mpegg  house layout + routines docs  --> 
+<!-- %git_commit_history: 2026-10-10 mpegg docs(hal): correct stale audit facts against live HA -->
+ <!-- %git_commit_history: 2026-10-05 mpegg  house layout + routines docs  -->
  <!-- %git_commit_history: 2026-10-01 Matthew Pegg  hal.1001.bosman  -->
 <!-- %git_commit_history: 2026-09-25 mpegg  cleanup  % -->
 # HAL Context — Home Assistant instance snapshot
@@ -36,7 +22,7 @@
 > **always be queried live** (see "Do not trust here" at the bottom). A context
 > doc shortens discovery; it never authorizes an action.
 
-- **Last refreshed:** 2026-10-10 (automation inventory + bedroom-door latch chain; remaining sections as-of 2026-09-15)
+- **Last refreshed:** 2026-10-18 (`steve_morning_greeting` now triggers on the 45 s debounced `mwave_1stbath_presence_confirmed` and speaks a dry H.U.E.-register line — wording only, since `alexa_devices` delivers the fixed Alexa voice and the 1st Bath has no Cast/ESP32 speaker; 2026-10-15: insulin-trip identity latch: `input_boolean.matt_insulin_trip` + `automation.matt-insulin_trip-arm`, gating `matt-morning-macro-auto` and `matt-shower-detected`; `matt-office-daytime-after-shower` bounded 05:00–12:00; automation inventory **51**, `mister_p_door_indicator` newly listed; 2026-10-14: mmWave anonymity + 30 s keep-time floor + `mwave_1stbath_presence_confirmed` debounce helper; as-of 2026-10-13: contact count 4 + lamp single-writer / catio-indicator precedence; remaining sections as-of 2026-09-15)
 - **Maintained by:** regenerated from the `hal-mcp` MCP tools (see "How to refresh")
 - **Related docs (one leads to another):**
   - [SKILL.md](SKILL.md) — HA development skill (triggers on "HAL")
@@ -104,13 +90,46 @@ Physical notes:
 | `55_sharp_roku_tv_*` | Roku TV | Roku | playback/connectivity |
 | `nextcloud_termitetowers_ca_*` | Nextcloud | Nextcloud | system status |
 
+**Echo speakers are fixed-voice TTS endpoints — the words can change, the timbre cannot.**
+`alexa_devices` exposes only `notify.speak` / `notify.announce` on the Echo/Echo Pop
+`media_player` entities, so anything spoken on one inherits Alexa's own voice; a custom TTS
+voice (e.g. a cloned H.U.E.) requires a speaker with `play_media` / `tts.speak` — Cast or
+ESP32. This is why `automation.steve_morning_greeting` was reworded on 2026-10-18 but not
+re-voiced: its output device is `media_player.laundry_mpegg_s_echo_pop` in the 1st-floor Bath,
+and the house's only Cast speaker, `media_player.bathroom_speaker` (Master Bath), has been
+`unavailable` since 2026-10-14.
+
 **mmWave presence sensors (8, all HOBEIAN via Z2M):**
 `1stbath`, `basement`, `bedroom`, `entry`, `kitchen`, `living_tv`, `masterbath_sink`, `office`.
 Each exposes `binary_sensor.mwave_<room>_presence` (the occupancy signal).
 
+**These sensors are anonymous and quantised by a hardware keep-time** — read this before
+building anything identity- or duration-aware on them. A HOBEIAN mmWave reports a single
+boolean; Z2M's own exposes for the model are `presence`, `illuminance`, `temperature`,
+`humidity`, `fading_time`, `indicator`, `illuminance_interval`,
+`motion_detection_sensitivity` (+ calibrations/battery) with **no distance, angle, energy
+or velocity** — so a radar **cannot tell you *who* is present**, and no amount of tuning
+changes that. `fading_time` (**"motion keep time"**, `30 s` on `mwave-1stbath`, range
+0–28800 s) is the **floor on any occupancy blip**: a blip at ~30 s means *one* detection
+then nothing (a walk-by), while a genuine stay keeps re-detecting and runs longer.
+Measured 2026-10-14 on `mwave-1stbath`: **14 blips, total occupancy ~11 min, longest event
+1 min 49 s**, with 6 of the 14 sitting exactly at the 29.7–30.1 s floor. The 1st Bath is
+also a **pass-through** room (Green Room barn door, sauna door, and the Backroom with
+**no door at all**), so through-traffic cannot be avoided by placement alone.
+**Derived debounced signal: `binary_sensor.mwave_1stbath_presence_confirmed`** (template
+helper, area `bathroom`, `unique_id 01M4YETE15P5N24EWXQH272JAV`) = the raw sensor gated by
+a native **45 s `delay_on`**, so a walk-by never registers (validated live: 45.001 s and
+45.004 s turn-on latency). The raw `presence` entity is **unchanged** and stays the signal
+for instant-entry logic — the confirmed entity is opt-in per consumer. It has exactly **one
+consumer as of 2026-10-18**: `automation.steve_morning_greeting` triggers on the *confirmed*
+entity (previously the raw one), accepting the 45 s lag to stop walk-by greetings. Note the write
+caveat for `fading_time` / `motion_detection_sensitivity`: this is a battery device that is
+"only reachable when active", so those values can only be written **while it is detecting
+motion**.
+
 **PIR motion sensors (2, all Tuya via Z2M):** `basement`, `dabrig`.
 
-**Door/window contact sensors: 3 deployed, rollout in progress** (SONOFF contacts via Z2M) — `binary_sensor.bedroom_door`, `binary_sensor.catio_door` (Laundry ↔ Catio lower deck) and `binary_sensor.sauna_door`. The front door is still Ring-only; the 4th contact is spare; deck/cat-door/window openings are pending. Full plan, naming contract and live status: [zigbee-door-sensor-rollout.md](zigbee-door-sensor-rollout.md).
+**Door/window contact sensors: 4 deployed, rollout in progress** (SONOFF contacts via Z2M) — `binary_sensor.bedroom_door`, `binary_sensor.catio_door` (Laundry ↔ Catio lower deck), `binary_sensor.sauna_door` and `binary_sensor.cat_door` (the cat door behind the shelf, paired 2026-10-13; the ex-spare, **polarity unverified**). The front door is still Ring-only, and all four contacts are now spent, so deck/window openings need new hardware. Full plan, naming contract and live status: [zigbee-door-sensor-rollout.md](zigbee-door-sensor-rollout.md).
 
 ---
 
@@ -135,7 +154,7 @@ Each exposes `binary_sensor.mwave_<room>_presence` (the occupancy signal).
 
 ## 5. Automation inventory (SLOW — partial detail, regenerate for full)
 
-**50** automations exist (`42 on` / `8 off` as of 2026-10-10; query returned `partial:false`).
+**51** automations exist (`44 on` / `7 off` as of 2026-10-15; query returned `partial:false`).
 Fully-inspected ones are described below; the rest are name-only.
 
 > A name-only list of **40** was recorded here through 2026-09-15. It silently omitted **12** automations —
@@ -178,8 +197,8 @@ Verified in detail:
   per automation (`has_more:false`), so the absence of a post-reload run is on its own weak evidence; it is the
   un-moved `last_triggered` that makes the case.
 
-Full entity list (**50**, complete as of 2026-10-10):
-`badtime_tv`, `bedroom_dark`, `bedroom_door_closed_arms_sleep`, `bedroom_door_closed_settle_in`, `bedroom_door_opened_morning`, `bedroom_door_opened_night`, `bedroom_door_verified_shut`, `bedroom_night_exit_nightlight`, `bedroom_night_settled_reset`, `bedroom_wake_release`, `boiler_off`, `catio_at_dawn`, `catio_at_dusk`, `catio_door_indicator`, `catio_door_open_when_away`, `cattic_off`, `door_layer_alert`, `door_layer_cross_check`, `door_unlocked_too_long`, `glucose_over_7`, `headboard_kill_all`, `kitchen_motion`, `l40_clean_cat_box_on_litter_robot_cycle`, `library_pole_bedtime_fade`, `lights_on_basement`, `matt_bedtime_armed_reset`, `matt_bedtime_prep`, `matt_falls_asleep`, `matt_leaves_bathroom`, `matt_lights_bathroom`, `matt_morning_macro_auto`, `matt_morning_macro_reset`, `matt_office_daytime_after_shower`, `matt_shower_detected`, `matt_shower_done_reset`, `morning_boiler`, `office_light_status`, `omp_bedtime`, `sauna_door_cat_water_guard`, `sleep_cool_off`, `sleep_temp`, `sleep_trigger`, `steve_enters_home`, `steve_morning_greeting`, `turn_off_office_lights`, `turn_on_cattic_lights`, `turn_on_office_lights`, `tv_off_lights_out`, `water_meter`, `witness_watchdog_alert`.
+Full entity list (**51**, complete as of 2026-10-15, after `glucose_over_7` was deleted):
+`badtime_tv`, `bedroom_dark`, `bedroom_door_closed_arms_sleep`, `bedroom_door_closed_settle_in`, `bedroom_door_opened_morning`, `bedroom_door_opened_night`, `bedroom_door_verified_shut`, `bedroom_night_exit_nightlight`, `bedroom_night_settled_reset`, `bedroom_wake_release`, `boiler_off`, `catio_at_dawn`, `catio_at_dusk`, `catio_door_indicator`, `catio_door_open_when_away`, `cattic_off`, `door_layer_alert`, `door_layer_cross_check`, `door_unlocked_too_long`, `headboard_kill_all`, `kitchen_motion`, `l40_clean_cat_box_on_litter_robot_cycle`, `library_pole_bedtime_fade`, `lights_on_basement`, `matt_bedtime_armed_reset`, `matt_bedtime_prep`, `matt_falls_asleep`, `matt_insulin_trip_arm`, `matt_leaves_bathroom`, `matt_lights_bathroom`, `matt_morning_macro_auto`, `matt_morning_macro_reset`, `matt_office_daytime_after_shower`, `matt_shower_detected`, `matt_shower_done_reset`, `mister_p_door_indicator`, `morning_boiler`, `office_light_status`, `omp_bedtime`, `sauna_door_cat_water_guard`, `sleep_cool_off`, `sleep_temp`, `sleep_trigger`, `steve_enters_home`, `steve_morning_greeting`, `turn_off_office_lights`, `turn_on_cattic_lights`, `turn_on_office_lights`, `tv_off_lights_out`, `water_meter`, `witness_watchdog_alert`.
 
 The **12** names added on 2026-10-01 (absent from the earlier 40-name list) are the eight door-chain members
 detailed above — `bedroom_door_closed_arms_sleep`, `bedroom_door_closed_settle_in`,
@@ -206,6 +225,9 @@ detailed above — `bedroom_door_closed_arms_sleep`, `bedroom_door_closed_settle
 - **`mwave-basement` is battery-powered** — battery mmWave can be slow to trigger/clear; prefer mains for "hold the lights" duty.
 - **mmWave false-positives** from heat/fans: keep basement mmWave pointed away from the boiler and vents, mount high and angled down.
 - **Node-RED** add-on is stopped and being considered for removal; flows are deleted on uninstall — back up first. No HA-side references to it.
+- **`light.bulb_living_tablelamp` has exactly one writer — `automation.catio_door_indicator` (verified 2026-10-13).** It renders a three-state precedence: **red** `rgb 255,0,0` @100 % = front door (`lock.termite_towers`) unlocked; **amber** `rgb 255,40,0` @40 % = either catio-access contact open (`binary_sensor.catio_door` or `binary_sensor.cat_door`); **green** `rgb 58,255,47` @36 % = all clear. Two traps worth knowing before touching it: (a) `automation.glucose_over_7` used to drive this lamp by **device id** (`1271c800e7c03abe59660ffcf3b81b1e`, `type: flash`), which an entity-id grep does **not** reveal — it was deleted 2026-10-13 (`unique_id 1775864309612`), so any new lamp writer must be added deliberately and audited by device UUID as well as entity id; (b) red and amber are near-identical hues (0° vs 9.4°) separated **only by brightness** (100 % vs 40 %), so do not "tidy" red's brightness down to match amber — the precedence would disappear. `binary_sensor.cat_door` (cat door behind the shelf, paired 2026-10-13) had **unverified polarity** until the magnet was **physically adjusted** on 2026-10-13; the contact then produced its first sustained states — **9 h 25 m `on` overnight** and **3 h 47 m `off` the next morning** — which corroborate the standard `off` = closed mapping. It is now **chattering**, though: most of its **85 rows in 30 h** are off/on pairs 0.2–4.5 s apart, the same marginal-magnet-gap signature `bedroom_door` had before its 2026-09-24 magnet move, and every edge fires the indicator. Details: [zigbee-door-sensor-rollout.md](zigbee-door-sensor-rollout.md) § Verification note 2026-10-13 + § Update 2026-10-14.
+- **`light.mister_p_rgbcw_lightbulb` has exactly one writer — `automation.mister_p_door_indicator` (created 2026-10-14).** Second indicator lamp (Tuya local, Living Room, `hs` + `color_temp`). Before this it had **zero** writers — which is literally why its owner reported it "did not change colour". Three states: **red** `rgb 255,0,0` @100 % = front door unlocked, always, no time gate; **yellow** `rgb 255,200,0` @60 % = a catio-access contact open **and dark**; **green** `rgb 58,255,47` @36 % = otherwise. Three things to know before touching it: (a) **green also covers "a catio door is open, but it is daytime"** — those doors are open by design all day, so a daytime open door is deliberately *not* flagged, and green means "no action required" rather than "all closed" (do not un-gate yellow — that is the amber-all-day problem, and the time box was an explicit owner request); (b) it carries **`sun` triggers on `sunset` and `sunrise`** in addition to the door/lock triggers, because the yellow/green verdict depends on the sun — without them a door already open at nightfall would never turn yellow nor return to green at dawn, and HA's sun trigger offers **only** `sunset`/`sunrise` (there is no native `dusk` trigger), so the `condition: sun` is aligned to `after: sunset` / `before: sunrise` to keep trigger and condition on identical edges; (c) it does **not** touch `light.bulb_living_tablelamp`, which keeps its own red/**amber**/green scheme — the two lamps intentionally use **different** middle colours (amber `255,40,0` vs yellow `255,200,0`).
+- **Anonymous room sensors cannot tell Matt from Steve — the morning chain now carries an explicit `insulin_trip` identity latch (2026-10-15).** `binary_sensor.mwave_masterbath_sink_presence` and `sensor.mwave_masterbath_sink_humidity` are anonymous, and `person.*` is GPS/zone-level only (never room-level), so the *first* morning event used to win regardless of who it was. On 2026-10-15 a **Steve** bathroom break (bedroom door 05:00:43 → sink 05:00:54.067, one 103 s burst, **zero** kitchen activity) consumed `input_boolean.matt_morning_macro_fired`, and Matt's genuine 06:25:18 entry got nothing. The discriminator is **`binary_sensor.refrigerator_door`** — Matt's step 2 is an insulin grab from the **downstairs Kitchen** fridge (routine step 2 *is* the grab), which Steve's route never touches. Chain now: `automation.matt-insulin-trip-arm` latches `input_boolean.matt_insulin_trip` on a fridge opening **04:30–09:00** (plus a **60 s sustained** `mwave_kitchen_presence` dwell as an LG Thinq **cloud**-outage fallback); **both** `automation.matt-morning-macro-auto` and `automation.matt_shower_detected` now require that latch, and `automation.matt_morning_macro_reset` clears it at midnight with the macro latch. The fridge preceded the 65 % humidity crossing on 3/3 mornings checked, so the precondition costs nothing on a real Matt morning. Two things to keep in mind: (a) the sink sensor is **still** anonymous, so if Matt uses the bathroom *before* his insulin grab (seen 2026-10-13) the macro fires on his **second** sink entry — a 1–2 min delay, never a miss, which is why the macro window was deliberately left at **05:00** rather than bumped to 05:30 (the fridge gate, not the clock, discriminates); (b) the 60 s kitchen fallback is **not** person-specific, so delete that trigger from `matt-insulin-trip-arm` if a false arm is ever observed. `automation.matt_office_daytime_after_shower` additionally gained a **05:00–12:00** window so a stale `matt_shower_done` flag cannot apply `scene.daytime` in the evening. **The identity half of this bug class remains open on `automation.steve_morning_greeting`** — as of 2026-10-18 it no longer triggers on the raw `mwave_1stbath_presence` but on the 45 s-debounced `mwave_1stbath_presence_confirmed`, so walk-by traffic can no longer eat the once-a-day latch; the sensor is *still* anonymous, though, and a "not Matt" gate was **explicitly deferred by the owner** (see [routines.md §5](routines.md)). **Also open: `media_player.bathroom_speaker` (Cast, 192.168.4.43:8009) has been `unavailable` since 2026-10-14 11:11:27** — ARP `FAILED`, ICMP unreachable, TCP 8009 "No route to host", while `.34`/`.35` Cast displays answer on the same port; the device is powered off or off Wi-Fi and nothing in HA can restore it, so the morning macro is currently **lights-only**. Both automations that cast to it carry `continue_on_error: true` so it cannot abort a sequence.
 
 ---
 

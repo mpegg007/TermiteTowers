@@ -1,0 +1,88 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/mediawiki-mirror-dev1.yml@194 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 86b85ab64d2bc7b2115e9467b8279b7ca54a77b4 %
+#  %ccm_git_commit_id: 2dece6d3d0a2907a11acbbacea79fb55ab8ce3ce %
+#  %ccm_git_commit_count: 194 %
+#  %ccm_git_commit_date: 2026-10-28 20:22:38 -0400 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: misc updates %
+#  %ccm_git_modify_date: 2026-10-28 20:22:39 %
+#  %ccm_git_file_last_modified: 2026-10-28 20:22:02 %
+#  %ccm_git_file_name: mediawiki-mirror-dev1.yml %
+#  %ccm_git_path: infra/docker/mediawiki-mirror-dev1.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 3243 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# %git_commit_history: read-only MediaWiki 1.19 dump mirror for browsing %
+
+# Read-only mirror of a legacy MediaWiki 1.19 database (mediawiki_DAILY.sql,
+# dumped 2019-03-27 by mysqldump 5.7.25). Purpose: browse an old wiki.
+#
+# Port 3270 -> Content & Documentation range (3200-3299) per wiki/ports.md.
+# Network docs-services-net-dev1 -> per wiki/docker-networks.md.
+#
+# The legacy DB is imported into MySQL on first boot, then MediaWiki 1.35
+# (oldest official image still on Docker Hub) runs maintenance/update.php to
+# bring the 1.19 schema forward in place. Nothing here writes back to the
+# source dump.
+
+name: mediawiki-mirror-dev1
+
+services:
+  db:
+    image: mysql:5.7
+    container_name: mediawiki-mirror-db-dev1
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: mirrorpw
+      MYSQL_DATABASE: wikidb
+    command:
+      - --character-set-server=latin1
+      - --collation-server=latin1_swedish_ci
+    volumes:
+      - /mnt/ai_storage/mediawiki-mirror/mysql-data:/var/lib/mysql
+      # Auto-imported only on a FRESH data dir (docker-entrypoint initdb):
+      - /home/mpegg-adm/Downloads/mediawiki_DAILY_Wednesday_20190327184435/home/mpegg/tmp/mediawiki_DAILY.sql:/docker-entrypoint-initdb.d/00-dump.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-pmirrorpw"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    networks:
+      - docs-services-net-dev1
+
+  wiki:
+    image: mediawiki:1.35
+    container_name: mediawiki-mirror-dev1
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:3270:80"
+    volumes:
+      - /mnt/ai_storage/mediawiki-mirror/images:/var/www/html/images
+      - ./mediawiki-mirror/LocalSettings.php:/var/www/html/LocalSettings.php:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - docs-services-net-dev1
+
+networks:
+  docs-services-net-dev1:
+    external: true

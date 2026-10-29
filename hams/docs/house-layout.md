@@ -1,34 +1,16 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: hams/docs/house-layout.md:175 % -->
-<!-- %ccm_git_author: mpegg % -->
-<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: 7a14c8c66de887bc7b874752d9dd552b31da2419 % -->
-<!-- %ccm_git_commit_id: b91e52bc955afc891cf79e741f0c410f5efebea3 % -->
-<!-- %ccm_git_commit_count: 175 % -->
-<!-- %ccm_git_commit_date: 2026-10-06 19:26:37 -0400 % -->
-<!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: house layout + vacuum maps: stair = ceiling-height connector, no floor ownership % -->
-<!-- %ccm_git_modify_date: 2026-10-06 19:26:38 % -->
-<!-- %ccm_git_file_last_modified: 2026-10-06 19:26:09 % -->
-<!-- %ccm_git_file_name: house-layout.md % -->
 <!-- %ccm_git_path: hams/docs/house-layout.md % -->
-<!-- %ccm_git_language_mode: markdown % -->
-<!-- %ccm_git_file_type: text/plain % -->
-<!-- %ccm_git_file_encoding: utf-8 % -->
-<!-- %ccm_git_file_eol: CRLF % -->
-<!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 31594 % -->
+<!-- %ccm_git_object_id: hams/docs/house-layout.md@194 % -->
+<!-- %ccm_git_commit_date: 2026-10-28 20:22:38 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_message: misc updates % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
- <!-- %git_commit_history: 2026-10-06 mpegg  vacuum maps + house layout: stair geometry refined (two-run switchback, 2 ft second-floor offset)  --> 
- <!-- %git_commit_history: 2026-10-06 mpegg  vacuum maps doc + house-layout vertical structure  --> 
- <!-- %git_commit_history: 2026-10-05 mpegg  house layout + routines docs  --> 
- <!-- %git_commit_history: 2026-10-05 mpegg  house layout + routines docs  --> 
- <!-- %git_commit_history: 2026-10-06 mpegg  vacuum maps doc + house-layout vertical structure  --> 
- <!-- %git_commit_history: 2026-10-05 mpegg  house layout + routines docs  --> 
- <!-- %git_commit_history: 2026-10-05 mpegg  house layout + routines docs  --> 
+<!-- %git_commit_history: 2026-10-06 mpegg house layout + vacuum maps: stair = ceiling-height connector, no floor ownership -->
+ <!-- %git_commit_history: 2026-10-06 mpegg  vacuum maps + house layout: stair geometry refined (two-run switchback, 2 ft second-floor offset)  -->
+ <!-- %git_commit_history: 2026-10-06 mpegg  vacuum maps doc + house-layout vertical structure  -->
+ <!-- %git_commit_history: 2026-10-05 mpegg  house layout + routines docs  -->
 # House Layout — rooms, floors, sensors, and blind spots
 
 > **What this is:** the physical model of the house — which rooms exist, which
@@ -413,6 +395,16 @@ This is the table that matters. "Presence" = `binary_sensor.mwave_<room>_presenc
 | Office | `binary_sensor.mwave_office_presence` | |
 
 Other PIR: `binary_sensor.pir_dabrig_occupancy` (dab-rig station, Utility).
+
+> **Derived debounced occupancy (added 2026-10-14).** The mmWave `presence` entities above
+> are **raw and anonymous**. `binary_sensor.mwave_1stbath_presence_confirmed` is a
+> **template helper** (area `bathroom`) that mirrors `mwave_1stbath_presence` but turns on
+> only after **45 s** of continuous presence (`delay_on`). It exists because the 1st Bath is
+> a **pass-through** room — three openings, one of them doorless — so a walk-by reads
+> identically to a visit on the raw sensor. Use the confirmed entity for "is someone
+> actually *using* this room"; keep the raw entity for instant entry detection. The raw sensor's
+> **30 s keep-time is the floor on any blip**, which is what makes the 45 s gate meaningful.
+> Evidence, radar capabilities and the anonymity limit: [hal-context.md §7](hal-context.md).
 
 ### 4.2 Rooms with NO presence sensor (blind spots)
 
