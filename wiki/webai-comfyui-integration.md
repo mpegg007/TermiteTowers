@@ -1,27 +1,13 @@
-<!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-  %ccm_git_repo: TermiteTowers %
-  %ccm_git_branch: dev1 %
-  %ccm_git_object_id: wiki/webai-comfyui-integration.md:139 %
-  %ccm_git_author: mpegg %
-  %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: b92ecd7cbbb2a20d6c046ea10141721222f3d24b %
-  %ccm_git_commit_id: 4b7c4d5292241b4ba1eb82f1b2ec0509b8fd544f %
-  %ccm_git_commit_count: 139 %
-  %ccm_git_commit_date: 2026-03-22 09:03:20 -0400 %
-  %ccm_git_commit_author: mpegg %
-  %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: march updates %
-  %ccm_git_modify_date: 2026-03-22 09:03:23 %
-  %ccm_git_file_last_modified: 2026-02-15 16:28:27 %
-  %ccm_git_file_name: webai-comfyui-integration.md %
-  %ccm_git_path: wiki/webai-comfyui-integration.md %
-  %ccm_git_language_mode: markdown %
-  %ccm_git_file_type: text/plain %
-  %ccm_git_file_encoding: utf-8 %
-  %ccm_git_file_eol: CRLF %
-  %ccm_git_exec: no %
-  %ccm_git_size: 4662 %
-  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
+<!-- %ccm_git_repo: TermiteTowers % -->
+<!-- %ccm_git_branch: dev1 % -->
+<!-- %ccm_git_path: wiki/webai-comfyui-integration.md % -->
+<!-- %ccm_git_object_id: wiki/webai-comfyui-integration.md@195 % -->
+<!-- %ccm_git_commit_date: 2026-10-29 21:42:03 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_message: mkdocs updates % -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-03-22 mpegg march updates -->
 # WebAI (OpenWebUI) + ComfyUI Image Generation Integration
 
 ## Overview
@@ -41,7 +27,7 @@ WebAI (OpenWebUI) is now integrated with ComfyUI for AI-powered image generation
 ## Configuration
 
 ### OpenWebUI Environment Variables
-Added to [infra/docker/openwebui-dev1.yml](../infra/docker/openwebui-dev1.yml):
+Added to [infra/docker/openwebui-dev1.yml](https://github.com/mpegg/TermiteTowers/blob/dev1/infra/docker/openwebui-dev1.yml):
 ```yaml
 - ENABLE_IMAGE_GENERATION=true
 - IMAGE_GENERATION_ENGINE=comfyui
@@ -163,5 +149,5 @@ flowchart LR
 ## References
 - [OpenWebUI Documentation](https://github.com/open-webui/open-webui)
 - [ComfyUI Documentation](https://github.com/comfyanonymous/ComfyUI)
-- [TermiteTowers Setup Script](../scripts/system/setup-comfyui-dev1.sh)
-- [OpenWebUI Compose File](../infra/docker/openwebui-dev1.yml)
+- [TermiteTowers Setup Script](https://github.com/mpegg/TermiteTowers/blob/dev1/scripts/system/setup-comfyui-dev1.sh)
+- [OpenWebUI Compose File](https://github.com/mpegg/TermiteTowers/blob/dev1/infra/docker/openwebui-dev1.yml)

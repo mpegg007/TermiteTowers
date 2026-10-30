@@ -1,27 +1,13 @@
-<!--||  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-||  %ccm_git_repo: TermiteTowers %
-||  %ccm_git_branch: dev1 %
-||  %ccm_git_object_id: wiki/ESP32-Device-Proposals.md:136 %
-||  %ccm_git_author: Matthew Pegg %
-||  %ccm_git_author_email: mpegg@hotmail.com %
-||  %ccm_git_blob_sha: 402660be656ba8571ffbe8cfb53ff17bd2d1d62b %
-||  %ccm_git_commit_id: bc247a4e65bdd9936cbca62c9b8ae30ec02c3198 %
-||  %ccm_git_commit_count: 136 %
-||  %ccm_git_commit_date: 2026-03-01 12:34:10 -0500 %
-||  %ccm_git_commit_author: Matthew Pegg %
-||  %ccm_git_commit_email: mpegg@hotmail.com %
-||  %ccm_git_commit_message: flaresolver startup script fix %
-||  %ccm_git_modify_date: 2026-03-01 12:34:16 %
-||  %ccm_git_file_last_modified: 2026-03-01 12:34:16 %
-||  %ccm_git_file_name: ESP32-Device-Proposals.md %
-||  %ccm_git_path: wiki/ESP32-Device-Proposals.md %
-||  %ccm_git_language_mode: markdown %
-||  %ccm_git_file_type: text/plain %
-||  %ccm_git_file_encoding: utf-8 %
-||  %ccm_git_file_eol: CRLF %
-||  %ccm_git_exec: no %
-||  %ccm_git_size: 9980 %
-||  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
+<!-- %ccm_git_repo: TermiteTowers % -->
+<!-- %ccm_git_branch: dev1 % -->
+<!-- %ccm_git_path: wiki/ESP32-Device-Proposals.md % -->
+<!-- %ccm_git_object_id: wiki/ESP32-Device-Proposals.md@195 % -->
+<!-- %ccm_git_commit_date: 2026-10-29 21:42:03 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_message: mkdocs updates % -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-03-01 Matthew Pegg flaresolver startup script fix -->
 || ##COMMIT_HISTORY: %git_commit_history: $DATE $AUTHOR $MESSAGE % -->
 # ESP32 Device Proposals
 
@@ -29,7 +15,7 @@ This document outlines proposed ESP32 devices for the TermiteTowers smart home i
 
 ## Overview
 
-The TermiteTowers ESP32 fleet follows the [constellation naming convention](../hams/esphome/ESP32-Naming-Standard.md) and uses standardized sensor configurations for consistency and maintainability.
+The TermiteTowers ESP32 fleet follows the [constellation naming convention](hams/esphome/ESP32-Naming-Standard.md) and uses standardized sensor configurations for consistency and maintainability.
 
 ## Proposed Devices
 

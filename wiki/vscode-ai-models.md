@@ -1,33 +1,29 @@
-<!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-  %ccm_git_repo: TermiteTowers %
-  %ccm_git_branch: dev1 %
-  %ccm_git_object_id: wiki/vscode-ai-models.md:139 %
-  %ccm_git_author: mpegg %
-  %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: a92b01130e046ff63c30cf0543ab36769e478b7f %
-  %ccm_git_commit_id: 4b7c4d5292241b4ba1eb82f1b2ec0509b8fd544f %
-  %ccm_git_commit_count: 139 %
-  %ccm_git_commit_date: 2026-03-22 09:03:20 -0400 %
-  %ccm_git_commit_author: mpegg %
-  %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: march updates %
-  %ccm_git_modify_date: 2026-03-22 09:03:23 %
-  %ccm_git_file_last_modified: 2026-02-14 17:57:46 %
-  %ccm_git_file_name: vscode-ai-models.md %
-  %ccm_git_path: wiki/vscode-ai-models.md %
-  %ccm_git_language_mode: markdown %
-  %ccm_git_file_type: text/plain %
-  %ccm_git_file_encoding: utf-8 %
-  %ccm_git_file_eol: CRLF %
-  %ccm_git_exec: no %
-  %ccm_git_size: 22997 %
-  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
+<!-- %ccm_git_repo: TermiteTowers % -->
+<!-- %ccm_git_branch: dev1 % -->
+<!-- %ccm_git_path: wiki/vscode-ai-models.md % -->
+<!-- %ccm_git_object_id: wiki/vscode-ai-models.md@195 % -->
+<!-- %ccm_git_commit_date: 2026-10-29 21:42:03 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_message: mkdocs updates % -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-03-22 mpegg march updates -->
 <!-- # %git_commit_history: 2025-09-06 mpegg  hook final alpha v0.1  %  -->
 <!-- %git_commit_history: 2025-12-15 mpegg  monday drop  % -->
 <!-- %git_commit_history: friday checkin % -->
-# AI Models Available in GitHub Copilot (VS Code)
+# AI Models Available (VS Code)
 
-## Models Available Through GitHub Copilot Extension
+> **Live status — verified 2026-10-29.** GitHub Copilot is **not currently in use**; the table
+> below is retained as reference only. The authoritative inventory is
+> [Models Available via API Keys](#models-available-via-api-keys), produced by querying each
+> configured provider's `/models` endpoint. The local inventory in
+> [Local Models](#local-models-installed-via-ollama) comes from `ollama list`.
+>
+> **Zoo Code is the agent in use; Cline is being retired.** The two no longer share a key store
+> — the Cline store stays readable, Zoo's keys live in encrypted VS Code SecretStorage — so
+> provider inventories must be re-derived from Zoo, not carried forward from Cline.
+
+## Models Available Through GitHub Copilot Extension (legacy reference)
 
 | Model Name         | Cost | Context | Code Changes | Understanding | Autopilot | Reasoning Type | Strengths                          | Weaknesses                        |
 |--------------------|:----:|:-------:|:------------:|:-------------:|:---------:|:--------------:|------------------------------------|------------------------------------|
@@ -50,7 +46,39 @@
 | GPT-5.1-Codex-Mini (Preview) | 0.33x | 128K | ✅   | ✅            | ✅        | Fast Code Logic| Faster Codex variant               | Preview/experimental              |
 | GPT-5.2 (Preview)  | 1x   | 256K    | ✅           | ✅            | ✅        | Balanced       | Latest GPT-5 iteration             | Preview/experimental              |
 
-## Local Models (Via Ollama or Other Extensions)
+## Local Models (Installed via Ollama)
+
+Verified with `ollama list` on 2026-10-29. Fourteen models are installed on the host — this is
+the complete inventory, not a candidate list. `ollama list` reports no context metadata, so
+window sizes are omitted here rather than guessed.
+
+| Name | ID | Size | Age | Role |
+| :--- | :--- | ---: | :--- | :--- |
+| GPT-OSS-20B:latest | f38aa0c53da5 | 13 GB | ~1 hour | OpenAI open-weight generalist; largest local model |
+| Ministral-3-14B-Instruct:latest | 4760c35aeb9d | 9.1 GB | 3 days | Mistral instruct, newest pull after GPT-OSS |
+| StarCoder2-3B:latest | 9f4ae0aff61e | 1.7 GB | 3 months | Code completion, small footprint |
+| MoonDream-1.7B:latest | 55fc3abd3867 | 1.7 GB | 3 months | Vision / image-captioning |
+| Qwen2.5-Coder-7B:latest | dae161e27b0e | 4.7 GB | 4 months | Coding |
+| Hermes-3-8B-Instruct:latest | 4f6b83f30b62 | 4.7 GB | 4 months | Creative / uncensored, Llama 3.1 base |
+| Mistral-Nemo-12B:latest | e7e06d107c6c | 7.1 GB | 4 months | General |
+| Gemma-3-12B:latest | f4031aab637d | 8.1 GB | 4 months | General, multimodal |
+| LLaVA-13B:latest | 0d0eb4d7f485 | 8.0 GB | 4 months | Vision |
+| Llama-3.1-8B:latest | 46e0c10c039e | 4.9 GB | 4 months | General baseline |
+| Qwen2.5-Coder-14B:latest | 9ec8897f747e | 9.0 GB | 4 months | Coding; strongest local coder |
+| DeepSeek-Coder-V2-16B:latest | 63fb193b3a9b | 8.9 GB | 4 months | Coding, fill-in-middle |
+| DeepSeek-R1-Qwen-8B:latest | 6995872bfe4c | 5.2 GB | 4 months | Reasoning, Qwen base |
+| DeepSeek-R1-Llama-7B:latest | 755ced02ce7b | 4.7 GB | 4 months | Reasoning, Llama base |
+
+> **Tag mismatch warning.** These are the *installed* tags and they are capitalised CamelCase
+> names, not Ollama Library identifiers. `ollama run deepseek-r1:8b` does **not** resolve to the
+> installed `DeepSeek-R1-Qwen-8B:latest`, and `ollama run llama3.1` does not resolve to
+> `Llama-3.1-8B:latest`. Use the exact names in the table above.
+
+### Ollama Catalog Reference (not installed)
+
+Kept for hardware sizing only. These are **Ollama Library identifiers, not installed tags**, and
+the `DL` (downloaded) column below is the original author's, retained verbatim — it does not
+reflect this host. For what is actually installed, see the table above.
 
 | Pull | Model | DL | Released | Context | Trainer | Focus | Base | VRAM | Fits | Rec? | Speed | Code | Und. | Auto | Strengths | Weaknesses |
 | :--- | :--- | :---: | :---: | :---: | :--- | :--- | :--- | :--- | :---: | :---: | :--- | :---: | :---: | :---: | :--- | :--- |
@@ -97,9 +125,224 @@
 
 
 
+## Models Available via API Keys
+
+This inventory is **extension-agnostic in intent**: it records which providers are reachable
+from the API keys on this machine, not which agent extension consumes them. Zoo Code is the
+extension in active use; Cline is being retired. Keys are *migrated* between them, not shared,
+so never assume both clients see the same set.
+
+**No key material is reproduced here** — only provider names, endpoints, model IDs and limits.
+
+### Where the keys live (and why only one store is readable)
+
+| Store | Location | Enumerable? |
+| :--- | :--- | :--- |
+| Cline | `~/.cline/data/settings/providers.json` | **Yes** — plaintext JSON with a `providers` map |
+| Zoo Code / Roo Code | VS Code SecretStorage (`~/.config/Code/User/globalStorage/state.vscdb`) | **No** — encrypted; `grep` finds no `apiKey` string anywhere in Zoo's globalStorage |
+| Zoo Code model cache | `~/.config/Code/User/globalStorage/zoocodeorganization.zoo-code/cache/` | **Yes** — cached catalogs only, never keys |
+
+Consequence: the provider query results below come from the **Cline store**, because it is the
+only readable one. They are a *floor* for what Zoo can reach, not a ceiling. Because forks keep
+keys in SecretStorage by design, a Zoo-only provider cannot be enumerated — only inferred from
+what the extension has cached.
+
+**These stores diverge from 2026-10-29 onward.** Both clients held the same key set up to that
+date and Zoo is now primary, so treat the Cline table as historical and re-derive from Zoo (its
+UI, or its cache) rather than trusting this page for anything Zoo-specific.
+
+### Providers reachable from the Cline key store
+
+Seven distinct providers. Eight entries exist because `openai-compatible` points at the *same*
+`inference-api.nousresearch.com` base URL as `nousResearch`; it adds no coverage and can be
+removed.
+
+| Provider key | Endpoint | Models returned | Largest context |
+| :--- | :--- | ---: | ---: |
+| `nousResearch` | `https://inference-api.nousresearch.com/v1` | 382 | 2,000,000 |
+| `openai-native` | `https://api.openai.com/v1` | 134 | 1,050,000 * |
+| `gemini` | `https://generativelanguage.googleapis.com/v1beta` | 46 | 1,048,576 |
+| `mistral` | `https://api.mistral.ai/v1` | 55 | 1,048,576 |
+| `moonshot` | `https://api.moonshot.ai/v1` | 6 | 1,048,576 |
+| `deepseek` | `https://api.deepseek.com` | 2 | 1,048,576 * |
+| `anthropic` | `https://api.anthropic.com/v1` | 14 | 1,000,000 * |
+| `openai-compatible` | duplicate of `nousResearch` | 382 | 2,000,000 |
+
+`*` = the provider's own `/models` response carries **no** context field. Those figures come
+from the NousResearch catalog metadata for the same model IDs, which is the only cross-check
+available here. Gemini, Mistral and Moonshot publish limits directly, as does Zoo's own cache.
+
+### Providers Zoo Code has catalogued (cache is not proof of a key)
+
+Zoo caches a model catalog per provider as it fetches them. Presence proves the extension has
+talked to that endpoint; it does **not** prove a key is configured — OpenRouter's catalog, for
+one, is public.
+
+| Cached catalog | Models | Largest context | Cache written |
+| :--- | ---: | ---: | :--- |
+| `openrouter` | 445 | 2,000,000 | 2026-10-29 |
+| `nanogpt` | 439 | 10,000,000 † | 2026-10-29 |
+| `vercel-ai-gateway` | 321 | 2,000,000 | 2026-10-29 |
+| `io-intelligence` | 41 | 1,048,576 | 2026-10-29 |
+| `ollama` | 8 of 14 installed | 1,024,000 | 2026-10-28 |
+| `moonshot` | 6 | 1,048,576 | 2026-10-28 |
+| `deepseek` | 2 | 1,000,000 | 2026-10-28 |
+
+† `pokee-isaac` at 10,000,000 tokens is the single largest figure anywhere in these catalogs. It
+is reported by NanoGPT's own metadata and is unverified here — treat it as a special-purpose
+long-context model, not a general coding workhorse.
+
+Two things this table settles. First, **DeepSeek is 1,000,000**, stated by the extension's own
+provider metadata for `deepseek-flash` and `deepseek-v4-pro` — independent confirmation of the
+correction described below. Second, the `ollama` cache covers only 8 of the 14 installed models,
+so the extension's view of local models is incomplete; `ollama list` remains authoritative for
+those.
+
+### Largest context window you can actually reach
+
+Ordered by ceiling across everything enumerated, direct stores and cached catalogs alike.
+
+| Rank | Source | Model | Context | Notes |
+|:--:|---|---|---:|---|
+| 1 | `nanogpt` cache | `pokee-isaac` | **10,000,000** | Catalog-reported, unverified † |
+| 2 | `nousResearch` | `x-ai/grok-4.20` | **2,000,000** | Also in `openrouter` and `vercel-ai-gateway` |
+| 2 | `openrouter` cache | `openrouter/pareto-code`, `x-ai/grok-4.20` | 2,000,000 | |
+| 2 | `vercel-ai-gateway` cache | `spacexai/grok-4.20-multi-agent` (+variants) | 2,000,000 | |
+| 5 | `openrouter` cache | `meta-llama/llama-4-scout` | 1,310,720 | Only model above 1.05M below the 2M tier |
+| 6 | `openai-native` | `gpt-6.1-sol` / `-pro`, `-terra` / `-pro`, `-luna` / `-pro` | 1,050,000 | `*` via aggregator metadata |
+| 7 | `gemini` | `gemini-4-argon`, `gemini-3.8-flash`, `gemini-3.1-pro-preview`, `gemini-2.5-pro` | 1,048,576 | 65,536 max output |
+| 7 | `mistral` | `mistral-large-4`, `mistral-large-4-0` | 1,048,576 | |
+| 7 | `io-intelligence` cache | `moonshotai/Kimi-K3`, `deepseek-ai/DeepSeek-V4-Pro` | 1,048,576 | |
+| 7 | `moonshot` | `kimi-k3` | 1,048,576 | See discrepancy note below |
+| 7 | `deepseek` | `deepseek-flash`, `deepseek-v4-pro` | 1,048,576 | Confirmed by Zoo's own metadata |
+| 12 | `anthropic` | `claude-opus-5-5`, `claude-sonnet-5-5`, `claude-haiku-5-5`, `claude-fable-5-1` | 1,000,000 | `*` |
+
+Every provider reaches at least 1M, and the aggregators reach 2M. **Window size is no longer a
+differentiator** — choose on output ceiling, price per token and cache pricing instead.
+
+**Discrepancy worth knowing:** Moonshot's own API reports 1,048,576 for both `kimi-k3` and
+`kimi-k3.1-pro`, but Zoo's cache records `kimi-k3` at 1,048,576 and `kimi-k3.1-pro` at 262,144.
+The cache is the older figure and the direct API is authoritative; a 262K limit on the "pro"
+variant would be an odd regression, so verify before committing a long prompt to it.
+
+**Model selections below are per-extension.** Each provider's "configured model" line is read
+from the Cline store. Zoo's active selection is independent — currently `deepseek-flash` — and
+the two will drift as Cline is retired.
+
+### DeepSeek — 2 models
+
+| Model | Context |
+| :--- | ---: |
+| `deepseek-flash` | 1,048,576 |
+| `deepseek-v4-pro` | 1,048,576 |
+
+`deepseek-chat` and `deepseek-reasoner` no longer appear — the public IDs have been retired in
+favour of the V4 line. `deepseek-flash` is the model currently driving this chat.
+
+### Anthropic — 14 models
+
+`claude-opus-5-5`, `claude-sonnet-5-5`, `claude-haiku-5-5`, `claude-fable-5-1`, `claude-opus-5`,
+`claude-sonnet-5`, `claude-fable-5`, `claude-opus-4-8`, `claude-opus-4-7`, `claude-sonnet-4-6`,
+`claude-opus-4-6`, `claude-opus-4-5-20251101`, `claude-haiku-4-5-20251001`,
+`claude-sonnet-4-5-20250929`.
+
+All 1M per aggregator metadata. Cline's configured model is `claude-sonnet-5`.
+
+### Google Gemini — 46 generateContent models
+
+Text / coding tier (1,048,576 in, 65,536 out unless noted): `gemini-4-argon` (32,768 out),
+`gemini-3.8-flash`, `gemini-3.7-flash`, `gemini-3.6-flash`, `gemini-3.5-flash`,
+`gemini-3.5-flash-lite`, `gemini-3.1-pro-preview`, `gemini-3.1-pro-preview-customtools`,
+`gemini-3.1-flash-lite`, `gemini-3.1-flash-lite-preview`, `gemini-3-flash-preview`,
+`gemini-2.5-pro`, `gemini-2.5-flash`, `gemini-2.5-flash-lite`, `gemini-pro-latest`,
+`gemini-flash-latest`, `gemini-flash-lite-latest`.
+
+Other tiers: `gemma-4-31b-it` / `gemma-4-26b-a4b-it` (262,144 in / 32,768 out);
+`antigravity-preview-latest` and `-05-2026` / `-09-2026` (1,048,576);
+`gemini-3-pro-image` family and `nano-banana-pro-preview` (131,072 in / 32,768 out);
+image-editing models (65,536); `gemini-3.5-transcribe` (98,304);
+`deep-research-*` (131,072); `lyria-3*` music models (1,048,576);
+TTS models (8,192 in / 16,384 out); `gemini-robotics-er-2-preview` and
+`gemini-2.5-computer-use-preview-10-2025` (131,072).
+
+Cline's configured model is `gemini-3.1-pro-preview`.
+
+### OpenAI — 134 models returned (embeddings, TTS, Whisper and image models included)
+
+Current flagships: `gpt-6.1-sol`, `gpt-6.1-sol-pro`, `gpt-6.1-terra`, `gpt-6.1-terra-pro`,
+`gpt-6-sol`, `gpt-6-sol-pro`, `gpt-6-astra`, `gpt-6-astra-pro`, `gpt-6-luna`,
+`gpt-6-luna-pro`.
+
+Prior generations still served: `gpt-5.6-{sol,terra,luna}` (+`-pro`), `gpt-5.5` (+`-pro`),
+`gpt-5.4` (+`-pro`/`-mini`/`-nano`), `gpt-5.3-codex`, `gpt-5.2` (+`-pro`/`-codex`),
+`gpt-5.1` (+`-codex`/`-codex-max`/`-codex-mini`), `gpt-5` (+`-pro`/`-mini`/`-nano`/`-codex`),
+`gpt-4.1` (+`-mini`/`-nano`), `gpt-4o` (+`-mini`), `o1`/`o1-pro`, `o3`/`o3-mini`, `o4-mini`.
+
+Specialised: `gpt-realtime-2.1` family, `gpt-audio-1.5` family, `gpt-live-1`,
+`gpt-5-search-api`, `gpt-4o-search-preview`, and the `*-chat-latest` aliases.
+
+Cline's configured model is `gpt-5.4`.
+
+### Mistral — 55 models
+
+Frontier: `mistral-large-4`, `mistral-large-4-0` (1,048,576).
+Mid: `mistral-medium-latest`, `mistral-medium-3.5`, `mistral-medium-3`, `mistral-medium-2604`
+(262,144). Small: `mistral-small-latest`, `mistral-small-2603` (262,144).
+Reasoning: `magistral-medium-latest`, `magistral-small-latest` (262,144).
+Coding: `codestral-latest`, `codestral-2508`, `mistral-code-latest`, `mistral-code-fim-latest`
+(256,000). Edge: `ministral-14b` (262,144), `ministral-8b` (262,144), `ministral-3b` (131,072).
+Research: `labs-leanstral-1-5`, `-1-5-1` (262,144).
+Audio/OCR/embed: `voxtral-*`, `mistral-ocr-*` (16,384), `codestral-embed` / `mistral-embed`
+(8,192), `mistral-moderation-2603`.
+
+Cline's configured model is `mistral-code-latest`.
+
+### Moonshot — 6 models
+
+| Model | Context |
+| :--- | ---: |
+| `kimi-k3` | 1,048,576 |
+| `kimi-k3.1-pro` | 1,048,576 |
+| `kimi-k3.1-pro-highspeed` | 1,048,576 |
+| `kimi-k2.7-code` | 262,144 |
+| `kimi-k2.7-code-highspeed` | 262,144 |
+| `kimi-k2.6` | 262,144 |
+
+Cline's configured model is `kimi-k3`.
+
+### NousResearch — 382 models (aggregator)
+
+This endpoint is a multi-vendor aggregator, not a single model family. 173 of its 382 models
+offer 1M or more. Context tiers:
+
+| Context | Count | Example models |
+| ---: | ---: | :--- |
+| 2,000,000 | 1 | `x-ai/grok-4.20` |
+| 1,050,000 | 48 | `openai/gpt-6.1-*`, `xiaomi/mimo-v2.6-*` |
+| 1,048,756 | 1 | `meituan/longcat-2.0` |
+| 1,048,576 | 73 | `google/gemini-*`, `deepseek/deepseek-v4*`, `z-ai/glm-5.3`, `moonshotai/kimi-k3` |
+| 1,047,576 | 3 | `openai/gpt-4.1` (+`-mini`/`-nano`) |
+| 1,000,000 | 47 | `anthropic/claude-*`, `qwen/qwen3.8-*`, `sakana/fugu-*` |
+| 524,288 | 6 | `upstage/solar-pro4`, `thinkingmachines/inkling` |
+| 400,000-500,000 | 21 | `x-ai/grok-4.5/4.6/4.7`, `openai/gpt-5.4-*` |
+| 262,144 | 59 | `minimax/*`, `bytedance-seed/*`, `elorian/glimpse` |
+| ≤ 256,000 | remainder | older Llama/Qwen/Mistral, embeddings, rerankers |
+
+Vendor spread (top): `openai`=80, `qwen`=42, `google`=34, `mistralai`=22, `anthropic`=20,
+`z-ai`=20, `deepseek`=17, `moonshotai`=10, `amazon`=8, `minimax`=7, `x-ai`=7.
+
+Catalog conventions: `:batch` = batch-pricing twin of the same model, `:free` = rate-limited
+free tier, `:US` = US-region routing, and a `~` prefix (`~openai/gpt-sol-latest`) = a
+floating "latest" alias. Cline's configured model here is `deepseek/deepseek-v4.1-flash-1017`.
+
 ## Column Definitions
 
 ### Online Models
+
+Applies to the Copilot table above, which is legacy reference. The API-key providers in
+[Models Available via API Keys](#models-available-via-api-keys) bill per token against your own
+keys, so the credit multiplier below does **not** describe their cost.
+
 - **Cost**: Credit multiplier for your GitHub Copilot subscription
   - **0x** = Unlimited usage, no credits consumed
   - **0.33x, 1x, 3x** = Multipliers showing how fast you consume your monthly credit allocation
@@ -161,10 +404,13 @@ Just like people, AI models have a "Nature" (Base) and "Nurture" (Trainer/Focus)
 
 | Task Type | Recommended Model | Why? |
 | :--- | :--- | :--- |
-| **Complex Debugging / CSS** | **Gemini 3 Pro** | Strong structural reasoning, analyzes hierarchy (DOM) rather than just guessing properties. |
-| **Refactoring / Cleanup** | **Claude Sonnet 4.5** | Very careful, preserves logic, excellent at "do no harm". |
-| **New Feature / Boilerplate** | **GPT-4o / GPT-5** | Fast, standard patterns, good at generating large chunks of code. |
-| **Large Context / Repo-wide** | **Gemini 3 Pro** | Massive 2M+ context window allows seeing the whole picture. |
+| **Complex Debugging / CSS** | `gemini-3.1-pro-preview` | Structural reasoning; reads the hierarchy instead of guessing properties. |
+| **Refactoring / Cleanup** | `claude-sonnet-5.5` | Careful, preserves logic; the "do no harm" choice. |
+| **New Feature / Boilerplate** | `gpt-6.1-terra` | Fast, standard patterns, large output budget. |
+| **Largest context available** | `x-ai/grok-4.20` (via `nousResearch`) | 2,000,000 tokens — the only 2M model on any configured key. |
+| **Repo-wide on a direct provider** | `gemini-4-argon` / `gemini-3.8-flash` | 1,048,576 in, 65,536 out. Gemini is **not** 2M via the direct API. |
+| **Long file rewrites** | `gpt-6.1-sol` | 1,050,000 in with the largest output budget of the direct providers. |
+| **Cheapest bulk context** | `deepseek-flash` | 1,048,576 at DeepSeek pricing; the current session model. |
 
 ## Understanding Model Distillation (The University Analogy)
 
@@ -201,11 +447,21 @@ Since many models are now based on the Llama 3.1 architecture (the "Student"), h
 | 🏅 **Honorable Mention** | **Hermes 3 (Llama 3.1 8B)** | **Nous Research (The Rebel)** | **Creative Writing & Uncensored** | Unlocked and fine-tuned for roleplay and creative tasks. The "Art Student" of the group. |
 
 ### How to Download These Models
-To install the models mentioned above, run the following commands in your terminal (assuming you have Ollama installed):
+The models above are already installed, under different tags. Run these to use the local copies
+(the `:latest` suffix is implicit, so it can be omitted):
 
-*   **DeepSeek-R1-Distill-Llama-8B**: `ollama run deepseek-r1:8b`
-*   **Meta Llama 3.1 8B**: `ollama run llama3.1`
-*   **Hermes 3 (8B)**: `ollama run hermes3`
+*   **DeepSeek-R1 (Qwen base, 8B)**: `ollama run DeepSeek-R1-Qwen-8B`
+*   **DeepSeek-R1 (Llama base, 7B)**: `ollama run DeepSeek-R1-Llama-7B`
+*   **Meta Llama 3.1 8B**: `ollama run Llama-3.1-8B`
+*   **Hermes 3 (8B)**: `ollama run Hermes-3-8B-Instruct`
+
+To fetch the upstream Library tags instead, use `ollama pull deepseek-r1:8b`,
+`ollama pull llama3.1` or `ollama pull hermes3` — those are separate downloads and will appear
+as additional entries in `ollama list`.
+
+> **Correction to the ranking table above.** The installed set inverts the sizes: the Qwen-based
+> distillation is the 8B (`DeepSeek-R1-Qwen-8B`) and the Llama-based one is the 7B
+> (`DeepSeek-R1-Llama-7B`), so line-for-line size comparisons between the two are not like-for-like.
 
 ## The Extension vs. The Model: An Analogy
 
@@ -213,7 +469,7 @@ It is important to distinguish between the **Model** (the intelligence) and the 
 
 ### 1. The Model = The Brain 🧠
 
-- **Examples:** Gemini 1.5 Pro, GPT-4o, Claude 3.5 Sonnet, DeepSeek R1.
+- **Examples:** `gemini-4-argon`, `gpt-6.1-terra`, `claude-sonnet-5.5`, `deepseek-flash`.
 - **Function:** This is the raw intelligence. It knows Python, it knows logic, and it can generate text.
 - **Limitation:** A brain in a jar cannot type, run commands, or see your file system unless someone connects it.
 
@@ -252,7 +508,7 @@ It is important to distinguish between the **Model** (the intelligence) and the 
 - **Capabilities:**
   - **Speed:** Very fast at autocomplete and simple suggestions.
   - **Cost:** Often free for individuals.
-  - **Limitation:** "Get what you pay for." The free models are smaller and less capable than GPT-4 or Claude 3.5 Sonnet. They are great for boilerplate but may struggle with complex logic or deep reasoning compared to the paid "Senior Engineers."
+  - **Limitation:** "Get what you pay for." The free tier runs smaller models than the paid frontier families (`gpt-6.1-*`, `claude-*-5.5`, `gemini-4-*`). Fine for boilerplate; it may struggle with complex logic or deep reasoning compared with the paid "Senior Engineers."
 
 #### 📚 Sourcegraph Cody (The Librarian)
 

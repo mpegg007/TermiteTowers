@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: wiki/ports.md % -->
-<!-- %ccm_git_object_id: wiki/ports.md@194 % -->
-<!-- %ccm_git_commit_date: 2026-10-28 20:22:38 -0400 % -->
+<!-- %ccm_git_object_id: wiki/ports.md@195 % -->
+<!-- %ccm_git_commit_date: 2026-10-29 21:42:03 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: misc updates % -->
+<!-- %ccm_git_commit_message: mkdocs updates % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-10-28 mpegg misc updates -->
 <!-- %git_commit_history: 2026-09-25 mpegg chore(homarr): retire Homarr - configured but never used day to day -->
  <!-- %git_commit_history: 2026-06-10 mpegg  june bulk update  -->
 <!-- %git_commit_history: 2026-03-22 mpegg  march updates  % -->
@@ -87,7 +88,6 @@ This page tracks host and service ports used across TermiteTowers using a system
 | News/RSS                       | news.termitetowers.ca            | 3250      | TBD            | Content   | ✅ **NEW**       |
 | justanotherhuman.ca (HTTP)     | justanotherhuman.ca              | 3259      | —              | Content   | ✅ External only |
 | justanotherhuman.ca (HTTPS)    | justanotherhuman.ca              | 3260      | —              | Content   | ✅ External only |
-
 | Mealie                         | mealie.termitetowers.ca          | 3301      | 80             | Home      | ✅ app-services-net-dev1 |
 | Homarr — RETIRED 2026-09-26       | —                                | 3310 free | —              | —         | ⛔ Retired — see `runbook-homarr.md` |
 | Radicale CalDAV                | calendars.termitetowers.ca       | 3320      | 5232           | Home      | ✅ **NEW**       |
@@ -108,7 +108,6 @@ This page tracks host and service ports used across TermiteTowers using a system
 | Lidarr                         | lidarr.termitetowers.ca          | 3425      | 8686           | Media     | 🔒 Reserved      |
 | Readarr                        | readarr.termitetowers.ca         | 3426      | 8787           | Media     | 🔒 Reserved      |
 | Vault                          | vault.termitetowers.ca           | 3500      | 3000           | Security  | 🔄 **TO MIGRATE**|
-
 | Certificate Management         | certs.termitetowers.ca           | 3540      | TBD            | Security  | 🕒 Planned       |
 | dbGate                         | dba.termitetowers.ca             | 3600      | 3000           | Database  | ✅               |
 | MySQL Workbench Equivalent     | mysqlworkbench.termitetowers.ca  | 3620      | TBD            | Database  | 🕒 Planned       |

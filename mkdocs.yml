@@ -1,26 +1,26 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: mkdocs.yml:156 %
+#  %ccm_git_object_id: mkdocs.yml@195 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 7fecdae7c2c656e5339b94bfff0582c68692256f %
-#  %ccm_git_commit_id: 7297d224e38a7887c494edb01cda0f8167185bf0 %
-#  %ccm_git_commit_count: 156 %
-#  %ccm_git_commit_date: 2026-09-25 20:27:36 -0400 %
+#  %ccm_git_blob_sha: 0188b2e02b1741cb22f3a870c15687c6559a64dc %
+#  %ccm_git_commit_id: e29d3dda98af8995c8adfab36c4d0cda1910745e %
+#  %ccm_git_commit_count: 195 %
+#  %ccm_git_commit_date: 2026-10-29 21:42:03 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: cleanup %
-#  %ccm_git_modify_date: 2026-09-25 20:27:37 %
-#  %ccm_git_file_last_modified: 2026-09-19 11:39:49 %
+#  %ccm_git_commit_message: mkdocs updates %
+#  %ccm_git_modify_date: 2026-10-29 21:42:04 %
+#  %ccm_git_file_last_modified: 2026-10-29 21:18:12 %
 #  %ccm_git_file_name: mkdocs.yml %
 #  %ccm_git_path: mkdocs.yml %
 #  %ccm_git_language_mode: yaml %
 #  %ccm_git_file_type: text/plain %
 #  %ccm_git_file_encoding: us-ascii %
-#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 3394 %
+#  %ccm_git_size: 10134 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 site_name: TermiteTowers Documentation
 site_url: https://docs.termitetowers.ca
@@ -31,8 +31,123 @@ repo_url: https://github.com/mpegg/TermiteTowers
 repo_name: TermiteTowers
 edit_uri: edit/dev1/
 
+# Explicit navigation. Auto-discovery put every root-level page into the top tab
+# bar (56 pages at the time of writing), which is why the site was unusable.
+# Tabs below are the seven operational areas; keep new pages in a matching tab.
+nav:
+  - Home: index.md
+  - Infrastructure:
+      - Site Overview: tech-context.md
+      - Agent Index: agent-index.md
+      - Critical Infrastructure: critical-infrastructure.md
+      - Ports: ports.md
+      - IP Allocation: IP_ALLOCATION_STRATEGY.md
+      - Domains: domains.md
+      - Paths and Symlinks: paths-and-symlinks.md
+      - Environment Variables: env-variables.md
+      - Storage Model: storage-model.md
+      - Backup Strategy: backup-strategy.md
+      - SSL Certificate Renewal: ssl-certificate-renewal.md
+      - Nginx: nginx-configuration.md
+      - Docker Networks: docker-networks.md
+      - Databases: databases.md
+      - Device Naming: Device-Naming-Standard.md
+      - Systemd Naming: systemd-naming-standard.md
+      - System Patterns: system-patterns.md
+      - Script Standards: script-standards.md
+  - Services:
+      - MkDocs (this site): runbook-mkdocs.md
+      - Dozzle: runbook-dozzle.md
+      - Homarr: runbook-homarr.md
+      - KitchenOwl: runbook-kitchenowl.md
+      - LobeChat: runbook-lobechat.md
+      - Open WebUI: runbook-openwebui.md
+      - Ollama: runbook-ollama.md
+      - Piper: runbook-piper.md
+      - Tortoise: runbook-tortoise.md
+      - Whisper: runbook-whisper.md
+      - Uptime Kuma: runbook-uptime-kuma.md
+      - Uptime Kuma Setup: uptime-kuma-setup.md
+      - Wiki.js: runbook-wikijs.md
+      - Vault: runbook-vault.md
+      - Water Meter: runbook-water-meter.md
+      - Snipe-IT Migration: snipeit-postgres-migration.md
+  - Home Assistant:
+      - Overview: hams/README.md
+      - Skill: hams/docs/SKILL.md
+      - HAL Context: hams/docs/hal-context.md
+      - House Layout: hams/docs/house-layout.md
+      - Routines: hams/docs/routines.md
+      - Sensors: hams/docs/sensors.md
+      - Integrations: hams/docs/integrations.md
+      - Dashboards: hams/docs/dashboards.md
+      - Vacuum Maps: hams/docs/vacuum-maps.md
+      - Zigbee Door Sensors: hams/docs/zigbee-door-sensor-rollout.md
+      - HAL Bridge: runbook-ha-hal-bridge.md
+      - HA Handler: runbook-ha-handler.md
+      - HA MCP: runbook-ha-mcp.md
+      - ESPHome: hams/esphome/README.md
+      - ESP32 Naming: hams/esphome/ESP32-Naming-Standard.md
+      - ESP32 Node 01: hams/esphome/ESP32-Node01-Setup.md
+      - ESP32 Node 02: hams/esphome/ESP32-Node02-Setup.md
+      - ESP32 Node 06: hams/esphome/ESP32-Node06-Setup.md
+      - Device Proposals: ESP32-Device-Proposals.md
+  - AI and Voice:
+      - Model Bases: ai-models/bases.md
+      - Model Subjects: ai-models/subjects.md
+      - Model Trainers: ai-models/trainers.md
+      - VS Code AI Models: vscode-ai-models.md
+      - Voice Assistant Architecture: voice-assistant-architecture.md
+      - Extend the Voice Assistant: how-to-extend-voice-assistant.md
+      - WebUI and ComfyUI: webai-comfyui-integration.md
+      - Image Generation Troubleshooting: troubleshooting-webai-image-generation.md
+      - Add an MCP Server: how-to-add-mcp-server.md
+      - HAL Vision: vision-hal-enterprise-computer.md
+  - Docker and Dev:
+      - Add an App: how-to-add-docker-app.md
+      - Decommission an App: how-to-decommission-docker-app.md
+      - Compose Conventions: compose-conventions.md
+      - Job Scheduler: jobscheduler-setup.md
+      - Log Collection: log-collector-setup-guide.md
+      - Docs Checklist: mkdocs-deployment-checklist.md
+      - Git Automation: git-automation/README.md
+      - Hook Safety: git-automation/HOOK-SAFETY-GUIDE.md
+      - Secret Scanning: git-automation/SECRET-SCANNING-README.md
+      - Git Automation v2: git-automation/v2/README.md
+      - VS Code Shortcuts: vscode-shortcuts.md
+      - VS Code Shortcuts Extended: vscode-shortcuts-extended.md
+  - Infra Source:
+      - Overview: infra/README.md
+      - Backups: infra/backups/README.md
+      - Docker: infra/docker/README.md
+      - Docker MCP: infra/docker/MCP-Docker-Setup-Guide.md
+      - Prometheus and TensorFlow: infra/docker/PROMETHEUS-TENSORFLOW-SETUP.md
+      - Calendars: infra/docker/README.calendars.md
+      - Nextcloud: infra/docker/README.nextcloud.md
+      - DHCP Scripts: infra/dhcp/scripts/README.md
+      - DHCP Monitoring: infra/dhcp/scripts/monitoring/README.md
+      - DHCP Incident Recovery: infra/dhcp/scripts/monitoring/INCIDENT-RECOVERY-2026-02-15.md
+      - DHCP Quick Reference: infra/dhcp/scripts/monitoring/QUICK_REFERENCE.md
+      - DHCP Monitoring Setup: infra/dhcp/scripts/monitoring/SETUP.md
+      - DHCP Uniqueness: infra/dhcp/scripts/monitoring/UNIQUENESS.md
+      - DNS Monitoring: infra/dns/scripts/monitoring/README.md
+      - Logrotate: infra/logrotate/README.md
+      - HA MCP: infra/mcp/home-assistant/README.md
+      - HA MCP Evaluation: infra/mcp/home-assistant/EVALUATION-2026-08-29.md
+      - SearXNG MCP: infra/mcp/searxng/README.md
+      - Nginx Source: infra/nginx/README.md
+      - Nginx Relocation: infra/nginx/RELOCATION-PLAN.md
+      - Systemd: infra/systemd/README.md
+      - Tdarr Node: infra/tdarr-node/README.md
+      - Tdarr Windows Share: infra/tdarr-node/tdarr-node-windows-share.md
+
 theme:
   name: material
+  language: en
+  # `font: false` keeps the stock Material styling but drops the Google Fonts
+  # request. On a LAN-only host fonts.gstatic.com is often blocked, which cost
+  # a slow blocked round trip before first paint.
+  font: false
   palette:
     # Light mode
     - media: "(prefers-color-scheme: light)"
@@ -51,11 +166,15 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   features:
-    - navigation.instant
+    # `navigation.instant` is deliberately omitted: it swaps pages over XHR and
+    # does not cooperate with the live reload used by `mkdocs serve`. Re-add it
+    # only if this site ever moves to a static build behind nginx.
+    #
+    # `navigation.expand` is deliberately omitted: it has no effect while
+    # `navigation.sections` is enabled, which is what renders the sidebar.
     - navigation.tracking
     - navigation.tabs
     - navigation.sections
-    - navigation.expand
     - navigation.top
     - search.suggest
     - search.highlight
@@ -105,12 +224,27 @@ docs_dir: wiki
 # config.json tokens) and non-doc files (scripts, *.py, *.json, *.csv,
 # systemd units, cross-repo symlinks). Publishing only `*.md` keeps the site
 # to documentation and guarantees no secret leaks.
+#
+# DO NOT remove the `!assets/**` line. MkDocs adds the theme's own files to the
+# same File collection that `exclude_docs` filters (see build.py:
+# `files.add_files_from_theme(...)` followed by `set_exclusions(...)`), so the
+# theme's CSS and JS land at source paths like `assets/stylesheets/main.*.css`.
+# A catch-all `*` therefore excludes Material's stylesheet itself, and the site
+# renders as unstyled HTML: header, sidebar and search markup present but no
+# styling. That is exactly what happened here. `assets/**` re-admits the theme
+# bundle while `*` still keeps every other non-Markdown path out, so the secret
+# guarantee above holds. Verified: with this block the build publishes only
+# *.html, stylesheets/extra.css, sitemap.xml(.gz) and MkDocs' search index.
+#
+# Note also that dot-directories are excluded by MkDocs by default (`.*` in its
+# `_default_exclude`), which is what keeps the thousands of vendored
+# `hams/esphome/.esphome/**/README.md` files out of the site.
 exclude_docs: |
   *
   !*.md
   !**/*.md
   !stylesheets/**
+  !assets/**
 
-# Auto-discovery enabled - nav will be built from all .md files
-# Symlinks from other folders (hams/, infra/, etc.) allow organizing docs
-# in their proper locations while MkDocs can find them in wiki/
+# Explicit `nav:` above replaces auto-discovery. New pages must be added to it,
+# otherwise they build but stay unreachable from the navigation.

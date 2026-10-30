@@ -41,12 +41,18 @@ couples production to a package it may never run.
 `mkdocs.yml` — Material theme, `docs_dir: wiki`, `site_url: https://docs.termitetowers.ca`,
 served on host port **3210**. Plugins: `search`, `tags`. Markdown extensions include
 `pymdownx.superfences` with a **mermaid** custom fence, `tabbed`, `admonition`, `toc`
-(permalinks), `attr_list`, `md_in_html`. Nav is auto-discovered — there is no explicit
-`nav:` key, so a new `.md` file appears in navigation automatically, which is also why
-anything published must be deliberately placed.
+(permalinks), `attr_list`, `md_in_html`.
 
-`exclude_docs` publishes only `*.md` and `stylesheets/**`. See
-`wiki/system-patterns.md` §3 before touching it.
+Navigation is explicit. The `nav:` key lists pages in seven tabs (Infrastructure,
+Services, Home Assistant, AI and Voice, Docker and Dev, Infra Source). A new `.md` file
+still builds without a `nav:` entry, but it is unreachable from the site until it is
+added, so add the file to `nav:` in the same commit that creates it.
+
+`exclude_docs` publishes only `*.md`, `stylesheets/**` and the theme bundle under
+`assets/**`. The `!assets/**` line is load-bearing: MkDocs adds the theme's files to the
+same collection that `exclude_docs` filters, so a catch-all `*` without that negation
+also excludes Material's own CSS and the site renders unstyled. See
+`wiki/system-patterns.md` §3 before touching the block.
 
 ## CI/CD toolchain
 

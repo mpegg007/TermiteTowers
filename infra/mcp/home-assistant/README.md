@@ -1,28 +1,14 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: infra/mcp/home-assistant/README.md:160 % -->
-<!-- %ccm_git_author: mpegg % -->
-<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: 21dda113cad94f8305c3c7c55a199dc35f773e6d % -->
-<!-- %ccm_git_commit_id: 3a0dc6d000abbf72c8996a230bc72454f05c9f1b % -->
-<!-- %ccm_git_commit_count: 160 % -->
-<!-- %ccm_git_commit_date: 2026-09-25 21:30:36 -0400 % -->
-<!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: cleanup % -->
-<!-- %ccm_git_modify_date: 2026-09-25 21:30:37 % -->
-<!-- %ccm_git_file_last_modified: 2026-08-27 19:26:25 % -->
-<!-- %ccm_git_file_name: README.md % -->
 <!-- %ccm_git_path: infra/mcp/home-assistant/README.md % -->
-<!-- %ccm_git_language_mode: markdown % -->
-<!-- %ccm_git_file_type: text/plain % -->
-<!-- %ccm_git_file_encoding: utf-8 % -->
-<!-- %ccm_git_file_eol: CRLF % -->
-<!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 6757 % -->
+<!-- %ccm_git_object_id: infra/mcp/home-assistant/README.md@195 % -->
+<!-- %ccm_git_commit_date: 2026-10-29 21:42:03 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_message: mkdocs updates % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
- <!-- %git_commit_history: 1970-01-01 unknown  unknown  --> 
+<!-- %git_commit_history: 2026-09-25 mpegg cleanup -->
+ <!-- %git_commit_history: 1970-01-01 unknown  unknown  -->
 # Home Assistant MCP Server
 
 A Model Context Protocol (MCP) server that lets an AI agent (GitHub Copilot in
@@ -53,7 +39,7 @@ Copilot (VS Code) -> [stdio MCP] -> server.py -> [REST + Bearer token] -> Home A
 ```
 
 The server follows the repository MCP pattern in
-[wiki/how-to-add-mcp-server.md](../../../wiki/how-to-add-mcp-server.md): it runs
+[how-to-add-mcp-server.md](../../../how-to-add-mcp-server.md): it runs
 on the host and communicates over stdio, like `infra/mcp/searxng`.
 
 ## Prerequisites

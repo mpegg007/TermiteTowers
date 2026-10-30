@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: hams/docs/house-layout.md % -->
-<!-- %ccm_git_object_id: hams/docs/house-layout.md@194 % -->
-<!-- %ccm_git_commit_date: 2026-10-28 20:22:38 -0400 % -->
+<!-- %ccm_git_object_id: hams/docs/house-layout.md@195 % -->
+<!-- %ccm_git_commit_date: 2026-10-29 21:42:03 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: misc updates % -->
+<!-- %ccm_git_commit_message: mkdocs updates % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-10-28 mpegg misc updates -->
 <!-- %git_commit_history: 2026-10-06 mpegg house layout + vacuum maps: stair = ceiling-height connector, no floor ownership -->
  <!-- %git_commit_history: 2026-10-06 mpegg  vacuum maps + house layout: stair geometry refined (two-run switchback, 2 ft second-floor offset)  -->
  <!-- %git_commit_history: 2026-10-06 mpegg  vacuum maps doc + house-layout vertical structure  -->
@@ -500,6 +501,33 @@ morning chain toggles.
 > Historical note: an earlier investigation attributed the 07:01 off-event to
 > `light.tl_usb_4way_powerstrip_outlet_1` ("Attic Ladder"). History disproves it —
 > that entity did not change state all morning. The correct entity is `…outlet_1_2`.
+
+### 6.3 `scene.daytime` is lights-only (2026-10-29)
+
+Trimmed from **14 entities to 6**.
+
+**Dropped:** the older powerstrip's "Attic Ladder", "attic lights west" and
+"attic lights east"; every raw `switch.tl_usb_4way_powerstrip_*` outlet
+including the USB port; and the duplicate `switch…outlet_4_2` / `…usb_2`
+shadows.
+
+**Kept:** `light.bulb_masterbath_ceiling_light` (5000 K @184),
+`light.bulb_secondfloor_stair_hallway` (5000 K @199), `light.tl_office_emon_plug4`,
+`light.tl_bedroom_rgbcw_lightbulb1` (off), plus the two master-bath
+`light.tl_usb_4way_powerstrip_outlet_*_2` wrappers.
+
+Reason: applying "daytime" used to switch outlets in the attic and on the
+bathroom powerbar as a side effect, so a mistimed trigger was visible somewhere
+unrelated (see [routines.md](routines.md) gap 3). Both wrappers were kept
+deliberately — they *are* the bathroom lights, and one of them going off is the
+documented post-shower behaviour above.
+
+> **Trap, confirmed 2026-10-29: the registry `name` and the live
+> `friendly_name` disagree for those two wrappers.** `ha_get_entity` reports
+> `…outlet_1_2` as *"sink light"* and `…outlet_2_2` as *"main lights"*, while
+> the live state attributes are the **reverse** — `…outlet_1_2` =
+> *"main lights"* (off in the scene), `…outlet_2_2` = *"sink lights"* (on). Read
+> the live attribute or trust the entity id; never the registry `name`.
 
 ---
 

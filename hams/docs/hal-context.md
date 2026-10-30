@@ -2,15 +2,17 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: hams/docs/hal-context.md % -->
-<!-- %ccm_git_object_id: hams/docs/hal-context.md@194 % -->
-<!-- %ccm_git_commit_date: 2026-10-28 20:22:38 -0400 % -->
+<!-- %ccm_git_object_id: hams/docs/hal-context.md@195 % -->
+<!-- %ccm_git_commit_date: 2026-10-29 21:42:03 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: misc updates % -->
+<!-- %ccm_git_commit_message: mkdocs updates % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-10-28 mpegg misc updates -->
 <!-- %git_commit_history: 2026-10-10 mpegg docs(hal): correct stale audit facts against live HA -->
  <!-- %git_commit_history: 2026-10-05 mpegg  house layout + routines docs  -->
  <!-- %git_commit_history: 2026-10-01 Matthew Pegg  hal.1001.bosman  -->
-<!-- %git_commit_history: 2026-09-25 mpegg  cleanup  % -->
+<!-- %git_commit_history: 2026-09-25 mpegg  cleanup  %
+ -->
 # HAL Context — Home Assistant instance snapshot
 
 > **What this is:** a cache of the *static and slowly-changing* facts about the
@@ -22,14 +24,14 @@
 > **always be queried live** (see "Do not trust here" at the bottom). A context
 > doc shortens discovery; it never authorizes an action.
 
-- **Last refreshed:** 2026-10-18 (`steve_morning_greeting` now triggers on the 45 s debounced `mwave_1stbath_presence_confirmed` and speaks a dry H.U.E.-register line — wording only, since `alexa_devices` delivers the fixed Alexa voice and the 1st Bath has no Cast/ESP32 speaker; 2026-10-15: insulin-trip identity latch: `input_boolean.matt_insulin_trip` + `automation.matt-insulin_trip-arm`, gating `matt-morning-macro-auto` and `matt-shower-detected`; `matt-office-daytime-after-shower` bounded 05:00–12:00; automation inventory **51**, `mister_p_door_indicator` newly listed; 2026-10-14: mmWave anonymity + 30 s keep-time floor + `mwave_1stbath_presence_confirmed` debounce helper; as-of 2026-10-13: contact count 4 + lamp single-writer / catio-indicator precedence; remaining sections as-of 2026-09-15)
+- **Last refreshed:** 2026-10-29 (bedroom TV now ends with the **episode**, not a 50-minute timer: `automation.bedroom-tv-off-at-episode-end` consumes a Plex webhook `tt_plex_bedtime` -> `media.scrobble` at 90% watched, gated on `input_boolean.matt_tv_finish_episode` (latched by `script.matt_bedtime_winddown`, which no longer issues `remote.turn_off`) or `binary_sensor.bedroom_asleep`; `automation.bedroom-tv-off-hard-cap` is the 02:30 backstop. Daylight also fires on the **insulin return**: `automation.matt-daylight-on-insulin-return` = fridge reopen + `input_boolean.matt_insulin_trip` + `input_boolean.matt_shower_today`, 05:00-11:00, with `matt-office-daytime-after-shower` narrowed to an 08:00-12:00 fallback; `scene.daytime` trimmed 14 -> 6 lights; automation inventory **54**, `input_boolean` **11**; 2026-10-18 (`steve_morning_greeting` now triggers on the 45 s debounced `mwave_1stbath_presence_confirmed` and speaks a dry H.U.E.-register line — wording only, since `alexa_devices` delivers the fixed Alexa voice and the 1st Bath has no Cast/ESP32 speaker; 2026-10-15: insulin-trip identity latch: `input_boolean.matt_insulin_trip` + `automation.matt-insulin_trip-arm`, gating `matt-morning-macro-auto` and `matt-shower-detected`; `matt-office-daytime-after-shower` bounded 05:00–12:00; automation inventory **51**, `mister_p_door_indicator` newly listed; 2026-10-14: mmWave anonymity + 30 s keep-time floor + `mwave_1stbath_presence_confirmed` debounce helper; as-of 2026-10-13: contact count 4 + lamp single-writer / catio-indicator precedence; remaining sections as-of 2026-09-15)
 - **Maintained by:** regenerated from the `hal-mcp` MCP tools (see "How to refresh")
 - **Related docs (one leads to another):**
   - [SKILL.md](SKILL.md) — HA development skill (triggers on "HAL")
   - [sensors.md](sensors.md) · [dashboards.md](dashboards.md) · [integrations.md](integrations.md) — generic HA references
   - [hams/README.md](../README.md) — directory index
   - [ESPHome](../esphome/README.md) · [ESP32 naming](../esphome/ESP32-Naming-Standard.md)
-  - [HAL bridge runbook](../../wiki/runbook-ha-hal-bridge.md) · [ha-handler runbook](../../wiki/runbook-ha-handler.md) · [Device naming](../../wiki/Device-Naming-Standard.md)
+  - [HAL bridge runbook](../../runbook-ha-hal-bridge.md) · [ha-handler runbook](../../runbook-ha-handler.md) · [Device naming](../../Device-Naming-Standard.md)
 
 ---
 

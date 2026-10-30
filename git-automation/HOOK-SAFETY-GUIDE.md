@@ -225,8 +225,8 @@ grep -n "sed.*-i.*\$FILE" git-automation/enhanced-*.sh
 ## 📚 Related Documentation
 
 - [SECRET-SCANNING-README.md](./SECRET-SCANNING-README.md) - Secret scanning configuration
-- [CCM_HEADER_TEMPLATE.txt](./CCM_HEADER_TEMPLATE.txt) - Header template format
-- [enhanced-hooks.log](./enhanced-hooks.log) - Runtime log for debugging
+- [CCM_HEADER_TEMPLATE.txt](https://github.com/mpegg/TermiteTowers/blob/dev1/git-automation/CCM_HEADER_TEMPLATE.txt) - Header template format (a `.txt` source file, so it is not published on this site)
+- `git-automation/enhanced-hooks.log` - Runtime log for debugging (written at runtime, not tracked in git)
 
 ---
 

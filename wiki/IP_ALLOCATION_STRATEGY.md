@@ -1,30 +1,16 @@
-<!--||  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-||  %ccm_git_repo: TermiteTowers %
-||  %ccm_git_branch: dev1 %
-||  %ccm_git_object_id: wiki/IP_ALLOCATION_STRATEGY.md:136 %
-||  %ccm_git_author: Matthew Pegg %
-||  %ccm_git_author_email: mpegg@hotmail.com %
-||  %ccm_git_blob_sha: 796cc2338d1aba608c00976d7ae0c8437b900f13 %
-||  %ccm_git_commit_id: bc247a4e65bdd9936cbca62c9b8ae30ec02c3198 %
-||  %ccm_git_commit_count: 136 %
-||  %ccm_git_commit_date: 2026-03-01 12:34:10 -0500 %
-||  %ccm_git_commit_author: Matthew Pegg %
-||  %ccm_git_commit_email: mpegg@hotmail.com %
-||  %ccm_git_commit_message: flaresolver startup script fix %
-||  %ccm_git_modify_date: 2026-03-01 12:34:18 %
-||  %ccm_git_file_last_modified: 2026-03-01 12:34:18 %
-||  %ccm_git_file_name: IP_ALLOCATION_STRATEGY.md %
-||  %ccm_git_path: wiki/IP_ALLOCATION_STRATEGY.md %
-||  %ccm_git_language_mode: markdown %
-||  %ccm_git_file_type: text/plain %
-||  %ccm_git_file_encoding: utf-8 %
-||  %ccm_git_file_eol: CRLF %
-||  %ccm_git_exec: no %
-||  %ccm_git_size: 13223 %
-||  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % 
-|| ##COMMIT_HISTORY: %git_commit_history: $DATE $AUTHOR $MESSAGE % -->
-<!--|| %git_commit_history:   %ccm_git_commit_message: flaresolver startup script fix % -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
+<!-- %ccm_git_repo: TermiteTowers % -->
+<!-- %ccm_git_branch: dev1 % -->
+<!-- %ccm_git_path: wiki/IP_ALLOCATION_STRATEGY.md % -->
+<!-- %ccm_git_object_id: wiki/IP_ALLOCATION_STRATEGY.md@195 % -->
+<!-- %ccm_git_commit_date: 2026-10-29 21:42:03 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_message: mkdocs updates % -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-03-01 Matthew Pegg flaresolver startup script fix -->
+<!--|| %git_commit_history:   %ccm_git_commit_message: mkdocs updates % -->
 <!-- %git_commit_history: november changes % -->
+|| ##COMMIT_HISTORY: %git_commit_history: $DATE $AUTHOR $MESSAGE % -->
 # IP Allocation Strategy
 
 ## Purpose
@@ -105,8 +91,9 @@ If you add a new device type or subnet, update this doc so everyone knows the co
 ---
 
 ## See Also
-- [PORTS_STRATEGY.md](./PORTS_STRATEGY.md)
-- [DHCP_SCOPES_EXPLAINED.md](../infra/dhcp/docs/DHCP_SCOPES_EXPLAINED.md)
+- `PORTS_STRATEGY.md` (not present in this repository; superseded by
+  [`ports.md`](ports.md))
+- `infra/dhcp/docs/DHCP_SCOPES_EXPLAINED.md` (not published in this site)
 - [Device-Naming-Standard.md](./Device-Naming-Standard.md)
 
 ---

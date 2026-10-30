@@ -1,30 +1,15 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: hams/README.md:173 % -->
-<!-- %ccm_git_author: mpegg % -->
-<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: 8bdf653f9c76c98eb71c7921a68f62cf77bc8a6d % -->
-<!-- %ccm_git_commit_id: b9037b2f22011a7d6ddf0ce8b4e1ac0701bf8cb7 % -->
-<!-- %ccm_git_commit_count: 173 % -->
-<!-- %ccm_git_commit_date: 2026-10-06 17:27:55 -0400 % -->
-<!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: vacuum maps doc + house-layout vertical structure % -->
-<!-- %ccm_git_modify_date: 2026-10-06 17:27:55 % -->
-<!-- %ccm_git_file_last_modified: 2026-10-06 17:02:59 % -->
-<!-- %ccm_git_file_name: README.md % -->
 <!-- %ccm_git_path: hams/README.md % -->
-<!-- %ccm_git_language_mode: markdown % -->
-<!-- %ccm_git_file_type: text/plain % -->
-<!-- %ccm_git_file_encoding: utf-8 % -->
-<!-- %ccm_git_file_eol: CRLF % -->
-<!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 5649 % -->
+<!-- %ccm_git_object_id: hams/README.md@195 % -->
+<!-- %ccm_git_commit_date: 2026-10-29 21:42:03 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_message: mkdocs updates % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
- <!-- %git_commit_history: 2026-10-05 mpegg  house layout + routines docs  --> 
- <!-- %git_commit_history: 2025-10-18 Matthew Pegg  esphome  --> 
- <!-- %git_commit_history: 2025-10-18 Matthew Pegg  esphome  --> 
+<!-- %git_commit_history: 2026-10-06 mpegg vacuum maps doc + house-layout vertical structure -->
+ <!-- %git_commit_history: 2026-10-05 mpegg  house layout + routines docs  -->
+ <!-- %git_commit_history: 2025-10-18 Matthew Pegg  esphome  -->
 # Home Assistant Miscellaneous (HAMS)
 
 This directory contains various Home Assistant related configurations, scripts, and documentation.
@@ -41,7 +26,7 @@ Start here:
 - **[sensors.md](docs/sensors.md)** · **[dashboards.md](docs/dashboards.md)** · **[integrations.md](docs/integrations.md)** — generic HA references.
 - **[zigbee-door-sensor-rollout.md](docs/zigbee-door-sensor-rollout.md)** — Zigbee door/contact + PIR + button rollout: naming contract, automation slate, live status.
 - **[esphome/README.md](esphome/README.md)** · **[ESP32-Naming-Standard.md](esphome/ESP32-Naming-Standard.md)** — ESPHome configs & naming.
-- Wiki: [ha-hal-bridge runbook](../wiki/runbook-ha-hal-bridge.md) · [ha-handler runbook](../wiki/runbook-ha-handler.md) · [Device-Naming-Standard](../wiki/Device-Naming-Standard.md).
+- Wiki: [ha-hal-bridge runbook](../runbook-ha-hal-bridge.md) · [ha-handler runbook](../runbook-ha-handler.md) · [Device-Naming-Standard](../Device-Naming-Standard.md).
 
 ## Directory Structure
 

@@ -1,43 +1,83 @@
+/*// TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+//  %ccm_git_repo: TermiteTowers %
+//  %ccm_git_branch: dev1 %
+//  %ccm_git_object_id: wiki/stylesheets/extra.css@195 %
+//  %ccm_git_author: mpegg %
+//  %ccm_git_author_email: mpegg@hotmail.com %
+//  %ccm_git_blob_sha: b5d24e795f95b5f875ec488310a6c9d9942b4d0f %
+//  %ccm_git_commit_id: e29d3dda98af8995c8adfab36c4d0cda1910745e %
+//  %ccm_git_commit_count: 195 %
+//  %ccm_git_commit_date: 2026-10-29 21:42:03 -0400 %
+//  %ccm_git_commit_author: mpegg %
+//  %ccm_git_commit_email: mpegg@hotmail.com %
+//  %ccm_git_commit_message: mkdocs updates %
+//  %ccm_git_modify_date: 2026-10-29 21:42:04 %
+//  %ccm_git_file_last_modified: 2026-10-29 21:18:34 %
+//  %ccm_git_file_name: extra.css %
+//  %ccm_git_path: wiki/stylesheets/extra.css %
+//  %ccm_git_language_mode: css %
+//  %ccm_git_file_type: text/plain %
+//  %ccm_git_file_encoding: us-ascii %
+//  %ccm_git_file_eol: LF %
+//  %ccm_git_exec: no %
+//  %ccm_git_size: 1975 %
+//  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  */
 /*// # %git_commit_history: 2025-09-06 mpegg  hook final alpha v0.1  %  */
 /*// %git_commit_history: 2025-12-15 mpegg  monday drop  % */
-/* Override Material theme's default content width constraint */
+/*// %git_commit_history: Rebuild extra.css - drop the full-bleed width hacks */
+
+/*
+ * Site-wide tweaks for Material.
+ *
+ * History: this file previously forced
+ *     .md-grid     { max-width: 98%  !important }
+ *     .md-typeset  { max-width: 100% !important }
+ * which removed Material's centred reading column entirely. Prose ran the full
+ * width of the viewport, tables touched both edges, and long lines were hard to
+ * read. Do not reintroduce percentage widths here: a documentation page wants a
+ * bounded measure, not the whole screen.
+ *
+ * The table scrollbar rules that used to live here targeted
+ * `table::-webkit-scrollbar`, but Material scrolls tables inside a
+ * `.md-typeset__scrollwrap` wrapper, so they never applied to anything.
+ */
+
+/* A little wider than the 61rem default so wide port and sensor tables breathe,
+   while keeping the text column bounded and centred. */
 .md-grid {
-    max-width: 98% !important;
+  max-width: 76rem;
 }
 
-.md-typeset {
-    max-width: 100% !important;
+/* Tables: readable numerals and a light scroll affordance on the real wrapper. */
+.md-typeset table:not([class]) {
+  font-variant-numeric: tabular-nums;
 }
 
-/* Force tables to use full width and be scrollable */
-/* Removed custom table display properties that were breaking column alignment */
-.md-typeset table {
-    width: 100% !important;
-    max-width: 100% !important;
+.md-typeset__scrollwrap::-webkit-scrollbar {
+  height: 10px;
 }
 
-/* 
-.md-typeset tbody,
-.md-typeset thead {
-    display: table !important;
-    width: 100% !important;
-    table-layout: auto !important;
-} 
-*/
-
-.md-typeset table::-webkit-scrollbar {
-    height: 10px;
+.md-typeset__scrollwrap::-webkit-scrollbar-track {
+  background: var(--md-default-fg-color--lightest);
+  border-radius: 5px;
 }
 
-.md-typeset table::-webkit-scrollbar-track {
-    background: #f1f1f1;
+.md-typeset__scrollwrap::-webkit-scrollbar-thumb {
+  background: var(--md-default-fg-color--lighter);
+  border-radius: 5px;
 }
 
-.md-typeset table::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 5px;
+.md-typeset__scrollwrap::-webkit-scrollbar-thumb:hover {
+  background: var(--md-default-fg-color--light);
 }
 
-.md-typeset table::-webkit-scrollbar-thumb:hover {
-    background: #555;
+/* Code and inline code: keep long paths and commands readable without the
+   layout jumping on pages that mix prose and shell snippets. */
+.md-typeset code {
+  word-break: break-word;
+}
+
+/* The landing page uses grid cards; give the card bodies a touch more room. */
+.md-typeset .grid.cards > ul > li {
+  padding: 1rem;
 }

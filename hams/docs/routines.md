@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: hams/docs/routines.md % -->
-<!-- %ccm_git_object_id: hams/docs/routines.md@194 % -->
-<!-- %ccm_git_commit_date: 2026-10-28 20:22:38 -0400 % -->
+<!-- %ccm_git_object_id: hams/docs/routines.md@195 % -->
+<!-- %ccm_git_commit_date: 2026-10-29 21:42:03 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: misc updates % -->
+<!-- %ccm_git_commit_message: mkdocs updates % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-10-28 mpegg misc updates -->
 <!-- %git_commit_history: 2026-10-05 mpegg house layout + routines docs -->
  <!-- %git_commit_history: 2026-09-25 mpegg  cleanup  -->
 # Matt
@@ -44,8 +45,45 @@ steve up - stair lights daytime
 4. bedroom cat treats - usually - the other cat
 5. tv - start watching
 6. light turn off - trigger
-7. fall asleep watching tv
+7. fall asleep watching tv   ← the TV now ends with the *episode*, not on a
+                               50-minute timer (see the section below)
 
+### Night: the TV ends with the episode, not on a timer (2026-10-29)
+
+The fixed `remote.turn_off` at the end of `script.matt_bedtime_winddown` is
+**gone**. It cut episodes mid-scene, which is why Plex kept filling up with
+partially-watched entries.
+
+| Piece | What it does |
+|---|---|
+| `script.matt_bedtime_winddown` | Ends at lights-out and latches `input_boolean.matt_tv_finish_episode` — a hand-off, not a kill |
+| `automation.bedroom_tv_off_at_episode_end` | Plex webhook `tt_plex_bedtime` → `media.scrobble` for an episode/movie from the Roku client, 60 s credits grace, then `media_player.turn_off`. Gated on the latch or `binary_sensor.bedroom_asleep`, window 20:00–06:00 |
+| `automation.bedroom_tv_off_hard_cap` | 02:30 backstop if the webhook never arrives |
+| `automation.headboard_kill_all` | Still kills instantly (deliberate, see step 6) and now clears the latch so a late scrobble cannot fire against a dead TV |
+
+`media.scrobble` fires at **90 % watched**, the same threshold at which Plex
+marks the item watched — so the episode stops showing up as partially watched.
+
+**Why not the Plex entity state.** `media_player.plex_owen_jr_plex_for_roku_55_sharp_roku_tv`
+exposes `media_duration` but **no playback position**, and with autoplay on an
+episode boundary is only a **7–8 s** `playing → idle → playing` blip
+(2026-10-28: 23:50:57 idle → 23:51:05 next episode). No dwell-time rule can tell
+that apart from the viewer pressing pause, so there is no in-HA episode-end
+signal — hence the webhook.
+
+**Evidence the timer was the culprit, 2026-10-28.** Wind-down started 23:25:22;
+a headboard single-press at 23:54:32 killed the TV **3 minutes into a 25-minute
+Get Smart episode**; the other `remote.turn_off` path, `automation.bedroom_dark`,
+has been disabled since 2026-08-15 and never fired.
+
+**Known limitations.** `media.scrobble` needs Plex Pass and arrives ~2.5 min
+before the true end of the file — that gap is what the 60 s grace covers. Plex
+**autoplay is still on** in the Roku client, so the next episode can start
+inside the grace; turning Auto Play off in the Plex Roku settings removes the
+last few seconds of partial progress.
+
+Webhook URL: `http://192.168.4.85:8123/api/webhook/tt_plex_bedtime`
+(Plex Media Server → Settings → Webhooks).
 
 # steve
 ## wakeup
@@ -80,10 +118,12 @@ fired** (see "known gaps").
 
 ## Known gaps / risks
 
-> **Status 2026-10-18:** gaps 1, 2 and 4 are **fixed**; gap 3 is open, and gap 5 is
-> **half-closed** — the greeting trigger is now debounced (45 s) but the sensor is still
-> anonymous, and the owner deferred the "not Matt" gate. The 2026-10-15 fix introduced the
-> **insulin-trip latch** — see §"The insulin-trip identity gate" below.
+> **Status 2026-10-29:** gaps 1, 2, 3 and 4 are **fixed**; gap 5 is **half-closed** — the
+> greeting trigger is now debounced (45 s) but the sensor is still anonymous, and the owner
+> deferred the "not Matt" gate. The 2026-10-15 fix introduced the **insulin-trip latch** —
+> see §"The insulin-trip identity gate" below — and the 2026-10-29 fix trimmed
+> `scene.daytime` to lights only and added the insulin-return daylight trigger, see
+> §"Daylight on the insulin return".
 
 1. ~~**The shower flag is anonymous.**~~ **FIXED 2026-10-15.**
    `automation.matt_shower_detected` armed `input_boolean.matt_shower_done`
@@ -99,12 +139,15 @@ fired** (see "known gaps").
    in the evening. It can still be consumed by an early Office trigger — e.g. a cat
    heading to the Cattic (Office is the only visible approach) — so the *scene*
    itself remains the weak point (see gap 3).
-3. **`scene.daytime` is over-broad.** It carries **14 entities**, including the
-   master-bath 4-way powerstrip with an arbitrary per-outlet on/off pattern
-   ("main lights" → **off**, "sink lights" → on, "Attic Ladder" → on, "attic
-   lights" → off) plus duplicate `_2` shadow entities. Applying "daytime" today
-   has side effects well beyond lights. See
-   [house-layout.md §6](house-layout.md#6-entity-naming-traps-read-before-touching-the-powerstrips).
+3. ~~**`scene.daytime` is over-broad.**~~ **TRIMMED 2026-10-29.** It carried **14
+   entities** — the master-bath 4-way powerstrip with an arbitrary per-outlet
+   on/off pattern ("main lights" → **off**, "sink lights" → on, "Attic Ladder"
+   → on, "attic lights" → off) plus duplicate `_2` shadow entities — so applying
+   "daytime" switched outlets as a side effect. It now carries **6 lights only**
+   (the two master-bath `light.…_2` wrappers plus the four real lamps); every raw
+   `switch.tl_usb_4way_powerstrip_*` outlet, the USB port and the older attic
+   powerstrip are gone. See
+   [house-layout.md §6.3](house-layout.md#63-scenedaytime-is-lights-only-2026-10-29).
 4. ~~**`refrigerator_door` is wired to nothing.**~~ **WIRED 2026-10-15.**
    Matt's step 2 signal is now consumed by `automation.matt-insulin-trip-arm`,
    which latches `input_boolean.matt_insulin_trip` on a fridge opening between
@@ -134,10 +177,9 @@ fired** (see "known gaps").
   insulin) in the same morning, or restrict the Office trigger to a tighter
   post-shower window.~~ **DONE 2026-10-15** — both, via the shared insulin-trip
   latch plus a 05:00–12:00 window (see below).
-- Trim `scene.daytime` to lights only (drop the powerstrip outlets / `_2`
-  shadows), so applying it cannot switch an outlet. **Still open — now the
-  highest-value remaining fix**, because it is the side effect that makes a
-  mistimed Office trigger visible.
+- ~~Trim `scene.daytime` to lights only (drop the powerstrip outlets / `_2`
+  shadows), so applying it cannot switch an outlet.~~ **DONE 2026-10-29** — 14
+  entities down to 6 lights; see [house-layout.md §6.3](house-layout.md#63-scenedaytime-is-lights-only-2026-10-29).
 - Give the Cattic/attic approach its own sensor so Office presence stops
   doubling as "someone is in the attic".
 
@@ -192,6 +234,40 @@ gate, not the clock, is what discriminates.
 sustained kitchen visit by anyone between 04:30 and 09:00 arms the latch. If a
 false arm is ever seen, delete the second trigger from `matt-insulin-trip-arm`;
 the fridge trigger alone is the strong signal.
+
+---
+
+## Daylight on the insulin return (2026-10-29)
+
+Ask: *"we reliably use the insulin pen from the fridge to trigger my bathroom
+routine — can we also switch to daylight when the insulin returns to the
+fridge?"*
+
+The detection is **not** "a second fridge opening": the contact opens **~85
+times a day** (255 events across 3 days, including a 07:51–08:05 breakfast
+cluster). It is the **first opening after the shower**:
+
+| Signal | Role |
+|---|---|
+| `input_boolean.matt_insulin_trip` | The grab happened this morning (step 2) |
+| `input_boolean.matt_shower_today` | The shower happened (step 3). Armed by `automation.matt_shower_detected`, **never consumed** |
+| `binary_sensor.refrigerator_door` → `on` | The return (step 5.2) = the next open after the shower |
+| `automation.matt_daylight_on_insulin_return` | Applies `scene.daytime` once, 05:00–11:00, then consumes both shower flags |
+
+**Why a second shower flag.** `input_boolean.matt_shower_done` is *consumed* by
+the office trigger, and on 2026-10-29 that happened at **07:15:50** — 14 minutes
+*before* the real return at 07:29:49. The 05:00 start of
+`matt-office-daytime-after-shower` was the thief, so that automation is now an
+**08:00–12:00 fallback** only; whichever path runs first consumes the flag and
+the other becomes a no-op.
+
+**Worked example, 2026-10-29:** grab 06:48:26 → humidity crosses 65 at 07:09:23
+→ shower flag 07:12:24 → return 07:29:49. Under the new rules daylight lands at
+07:29, or at 08:00+ only if the fridge signal is missed.
+
+**Rejected alternative:** a `state` trigger on the fridge was kept rather than
+`door.opened`, because the LG Thinq fridge is cloud-backed and a purpose-specific
+trigger skips a change that starts from `unavailable`.
 
 ---
 
