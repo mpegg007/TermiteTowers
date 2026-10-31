@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: wiki/ports.md % -->
-<!-- %ccm_git_object_id: wiki/ports.md@197 % -->
-<!-- %ccm_git_commit_date: 2026-10-31 16:44:04 -0400 % -->
+<!-- %ccm_git_object_id: wiki/ports.md@199 % -->
+<!-- %ccm_git_commit_date: 2026-10-31 16:55:50 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: feat(nginx): expose wordbank and soundbank, make analacres hosts gate-ready % -->
+<!-- %ccm_git_commit_message: fix(docs): correct the edge model — WAN 443 is DNATed to 3261 % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-10-31 mpegg feat(nginx): expose wordbank and soundbank, make analacres hosts gate-ready -->
 <!-- %git_commit_history: 2026-10-29 mpegg mkdocs updates -->
 <!-- %git_commit_history: 2026-10-28 mpegg misc updates -->
 <!-- %git_commit_history: 2026-09-25 mpegg chore(homarr): retire Homarr - configured but never used day to day -->
@@ -147,9 +148,16 @@ per-host certificate and its own A record in `infra/dns/godaddy-ddns.sh`.
 `127.0.0.1:3530` to container port `9091`. Because it is bound to loopback,
 nginx is its only client; the portal port never appears on the LAN or WAN.
 
-None of these hostnames resolve from the LAN: there is no `analacres.ca` zone
-in PowerDNS and no Pi-hole override, and the router does not hairpin 3261. See
+LAN clients reach these hostnames exactly as external clients do: WAN `443` is
+DNATed to monolith `3261` and hairpin NAT works, so a LAN query that resolves to
+the WAN IP still lands on monolith. There is no `analacres.ca` zone in
+PowerDNS, which only means LAN traffic hairpins through the router instead of
+staying local — an optimisation to make later, not a fault. See
 `runbook-authelia.md` §8.
+
+Note also that `3261` is **not** exposed at the WAN. Only `443` is, and the
+router translates it to `3261` internally. Every analacres.ca URL is therefore
+portless.
 
 ## Migration Progress
 

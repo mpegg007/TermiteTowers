@@ -2,18 +2,18 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: scripts/deploy-analacres-hosts.sh@198 %
+#  %ccm_git_object_id: scripts/deploy-analacres-hosts.sh@199 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: f67a79006f62e3091186b56a6af1351eabc794ab %
-#  %ccm_git_commit_id: d27659f67cb9c8eb7b74c5d8a3433b8380a08ee3 %
-#  %ccm_git_commit_count: 198 %
-#  %ccm_git_commit_date: 2026-10-31 16:50:50 -0400 %
+#  %ccm_git_blob_sha: f565ef841dfd8742b8de9417f1c7e6ee5887f412 %
+#  %ccm_git_commit_id: 210c84596d2f9cb25015a8cbb27cab1dea0a6092 %
+#  %ccm_git_commit_count: 199 %
+#  %ccm_git_commit_date: 2026-10-31 16:55:50 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: feat(scripts): one-shot deploy for the analacres hosts %
-#  %ccm_git_modify_date: 2026-10-31 16:50:50 %
-#  %ccm_git_file_last_modified: 2026-10-31 16:50:34 %
+#  %ccm_git_commit_message: fix(docs): correct the edge model — WAN 443 is DNATed to 3261 %
+#  %ccm_git_modify_date: 2026-10-31 16:55:50 %
+#  %ccm_git_file_last_modified: 2026-10-31 16:55:06 %
 #  %ccm_git_file_name: deploy-analacres-hosts.sh %
 #  %ccm_git_path: scripts/deploy-analacres-hosts.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,7 +21,7 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 11594 %
+#  %ccm_git_size: 13868 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 #
 # deploy-analacres-hosts.sh — one-shot, idempotent deploy of the analacres.ca
@@ -255,12 +255,37 @@ check "library. 443"       library.termitetowers.ca:443   /
 check "music. 443"         music.termitetowers.ca:443     /
 
 echo
+c_info "public path — real DNS, then the router DNAT 443 -> monolith 3261"
+printf '  %-42s %-6s %s\n' 'ENDPOINT' 'CODE' 'REDIRECT'
+printf '  %-42s %-6s %s\n' '--------' '----' '--------'
+
+check_public() {
+    # Deliberately no --resolve: this exercises the real DNS answer and the
+    # router rule, which is the path browsers and apps actually take.
+    local label="$1" host="$2" out code redir
+    out="$(curl -sS -o /dev/null --max-time 15 \
+                -w '%{http_code} %{redirect_url}\n' \
+                "https://$host/" 2>/dev/null)" || out='000 UNREACHABLE'
+    code="${out%% *}"
+    redir="${out#* }"
+    [[ "$redir" == "$out" ]] && redir=''
+    printf '  %-42s %-6s %s\n' "$label" "$code" "$redir"
+}
+
+check_public "wordbank.analacres.ca"  wordbank.analacres.ca
+check_public "soundbank.analacres.ca" soundbank.analacres.ca
+check_public "memorylab.analacres.ca" memorylab.analacres.ca
+
+echo
 c_info "expected: roots 200 (soundbank 302 to /app/ is Navidrome itself, not a gate);"
 c_info "          /api/ and /rest/ answer from the app, never a portal redirect;"
 c_info "          pics and the two termitetowers hosts unchanged."
 echo
 fi
 c_ok "done. Certificate renewal check:  sudo certbot renew --dry-run"
-c_info "Next: confirm the hostnames from outside the LAN (cellular), then test the"
-c_info "      AudioBookshelf and Subsonic apps. Gate stays off until Phase 2 —"
-c_info "      see wiki/runbook-authelia.md"
+c_info "Public URLs carry no port: WAN 443 is DNATed to monolith 3261, so"
+c_info "  https://wordbank.analacres.ca  https://soundbank.analacres.ca"
+c_info "A 000 in the public table usually means the new A record has not"
+c_info "propagated yet, not that the vhost is wrong."
+c_info "Next: test the AudioBookshelf and Subsonic apps. The gate stays off until"
+c_info "      Phase 2 — see wiki/runbook-authelia.md"

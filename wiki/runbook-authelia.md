@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: wiki/runbook-authelia.md % -->
-<!-- %ccm_git_object_id: wiki/runbook-authelia.md@198 % -->
-<!-- %ccm_git_commit_date: 2026-10-31 16:50:50 -0400 % -->
+<!-- %ccm_git_object_id: wiki/runbook-authelia.md@199 % -->
+<!-- %ccm_git_commit_date: 2026-10-31 16:55:50 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: feat(scripts): one-shot deploy for the analacres hosts % -->
+<!-- %ccm_git_commit_message: fix(docs): correct the edge model — WAN 443 is DNATed to 3261 % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-10-31 mpegg feat(scripts): one-shot deploy for the analacres hosts -->
 <!-- %git_commit_history: 2026-10-31 mpegg feat(nginx): expose wordbank and soundbank, make analacres hosts gate-ready -->
 # Runbook — Authelia gate for the analacres.ca service family
 
@@ -99,7 +100,7 @@ These are decided now precisely so Phase 2 changes nothing structural:
 | Constant | Value |
 | --- | --- |
 | Portal hostname | `auth.analacres.ca` |
-| Portal URL | `https://auth.analacres.ca:3261` |
+| Portal URL | `https://auth.analacres.ca` |
 | Session cookie domain | `analacres.ca` |
 | Listener | `3261` on monolith, shared by all analacres.ca vhosts |
 | Authelia container port | `9091` |
@@ -110,8 +111,15 @@ and every future `*.analacres.ca` service. All three gated hosts are suffixes
 of that one domain, which is what Authelia requires — no cookie entry may be a
 suffix of another.
 
-The `:3261` in the portal URL is not optional: the analacres.ca family does
-not arrive on 443.
+**The portal URL must carry no port.** The router DNATs WAN `443` to monolith
+`3261`: browsers and apps reach every analacres.ca vhost on **443**, while nginx
+listens on `3261` internally. Writing `:3261` into `authelia_url` would send
+users to a port the WAN does not expose, and because that value is baked into
+the session-cookie configuration it would be wrong for every host at once.
+
+Verified live: `https://memorylab.analacres.ca/` returns **200** with a valid
+certificate, resolved to the WAN IP `198.251.57.103`, arriving at the same nginx
+that answers on `127.0.0.1:3261`.
 
 ## 3. Phase 2 — enabling the gate
 
@@ -181,7 +189,7 @@ Not yet deployed. Kept here so deployment is mechanical. Secrets come from
 ```yaml
 # infra/docker/authelia-dev1/configuration.yml
 theme: auto
-default_redirection_url: 'https://wordbank.analacres.ca:3261'
+default_redirection_url: 'https://wordbank.analacres.ca'
 
 server:
   address: 'tcp://0.0.0.0:9091'
@@ -203,8 +211,8 @@ session:
   secret: '${AUTHELIA_SESSION_SECRET}'
   cookies:
     - domain: 'analacres.ca'
-      authelia_url: 'https://auth.analacres.ca:3261'
-      default_redirection_url: 'https://wordbank.analacres.ca:3261'
+      authelia_url: 'https://auth.analacres.ca'
+      default_redirection_url: 'https://wordbank.analacres.ca'
   redis:
     host: 'authelia-redis'
     port: 6379
@@ -285,15 +293,17 @@ buys anything.
 
 ## 6. Verification matrix
 
-Run after the flip. `--resolve` is required because of the missing LAN DNS and
-the absent hairpin path (§8).
+Run after the flip. The `--resolve` checks below aim at `127.0.0.1:3261`, which
+tests nginx directly and separates a vhost fault from a network fault. Public
+URLs carry no port — WAN 443 is DNATed to 3261 — so the path a browser actually
+takes is `https://wordbank.analacres.ca/`.
 
 **Two traps that will otherwise produce a false pass:**
 
 * `soundbank.analacres.ca/` answers **302 to `/app/`** from Navidrome itself.
   An unauthenticated pre-gate check therefore looks *identical* to a gated one.
   Compare the redirect **target**: `/app/` means ungated and healthy, the portal
-  host (`auth.analacres.ca:3261`) means the gate is doing its job. Do not assert
+  host (`auth.analacres.ca`) means the gate is doing its job. Do not assert
   "not 302" on this host.
 * `memorylab /api/tags/` returns **502 today** because nothing listens on
   `localhost:3410` — ports 3410-3412 are closed (verified). That is
@@ -303,13 +313,13 @@ the absent hairpin path (§8).
 ```bash
 R='--resolve %s:3261:127.0.0.1'
 # 1. Unauthenticated web UI → 302 to the portal
-curl -sS -o /dev/null -w '%{http_code} %{redirect_url}\n' --resolve wordbank.analacres.ca:3261:127.0.0.1 https://wordbank.analacres.ca:3261/
+curl -sS -o /dev/null -w '%{http_code} %{redirect_url}\n' --resolve wordbank.analacres.ca:3261:127.0.0.1 https://wordbank.analacres.ca/
 # 2. Authenticated → 200  (browser, with the analacres.ca cookie)
 # 3. Exempt API → must NOT be 302
-curl -sS -o /dev/null -w '%{http_code}\n' --resolve wordbank.analacres.ca:3261:127.0.0.1 https://wordbank.analacres.ca:3261/api/status
-curl -sS -o /dev/null -w '%{http_code}\n' --resolve soundbank.analacres.ca:3261:127.0.0.1 'https://soundbank.analacres.ca:3261/rest/ping.view?u=USER&t=TOKEN&s=SALT&v=1.16.1&c=tt&f=json'
+curl -sS -o /dev/null -w '%{http_code}\n' --resolve wordbank.analacres.ca:3261:127.0.0.1 https://wordbank.analacres.ca/api/status
+curl -sS -o /dev/null -w '%{http_code}\n' --resolve soundbank.analacres.ca:3261:127.0.0.1 'https://soundbank.analacres.ca/rest/ping.view?u=USER&t=TOKEN&s=SALT&v=1.16.1&c=tt&f=json'
 # 4. /api/tags stays gated
-curl -sS -o /dev/null -w '%{http_code} %{redirect_url}\n' --resolve memorylab.analacres.ca:3261:127.0.0.1 https://memorylab.analacres.ca:3261/api/tags/
+curl -sS -o /dev/null -w '%{http_code} %{redirect_url}\n' --resolve memorylab.analacres.ca:3261:127.0.0.1 https://memorylab.analacres.ca/api/tags/
 # 5. pics and the teritetowers hosts stay ungated
 curl -sS -o /dev/null -w '%{http_code}\n' --resolve pics.justanotherhuman.ca:3261:127.0.0.1 -k https://pics.justanotherhuman.ca:3261/
 # 6. One login covers all three: log in once, then load each host without re-auth
@@ -342,18 +352,21 @@ would apply to reset mail.
 
 ## 8. Findings recorded during Phase 1
 
-Four things were verified live on monolith and are not assumptions:
+Six things were verified live on monolith and are not assumptions:
 
-1. **No hairpin NAT.** `https://memorylab.analacres.ca:3261/` from inside the
-   LAN times out; pinned to `127.0.0.1` it returns 200. Consequently **LAN
-   clients cannot reach any analacres.ca hostname.**
-2. **No internal DNS for analacres.ca.** Pi-hole conditionally forwards
-   `termitetowers.ca` (and the internal `.omp` zones) to PowerDNS, and
-   PowerDNS serves `192.168.4.10` for those. There is **no `analacres.ca` zone**
-   and no Pi-hole `custom.list` entry, so LAN queries fall through to GoDaddy,
-   get the WAN IP, and hit the hairpin wall. Fixing this means either a
-   `custom.list` entry or a PowerDNS zone — a DNS change, out of scope here.
-   Until then, test from the LAN with `curl --resolve`.
+1. **The edge is one port, DNATed.** WAN `443` → monolith `3261`. So 3261 is
+   *not* exposed directly, and every analacres.ca URL is portless. Two earlier
+   conclusions in this document were wrong because they probed `:3261` on the
+   WAN IP — a port that was never forwarded — instead of 443. Corrected here:
+   **hairpin NAT works**, and `https://memorylab.analacres.ca/` returns 200 with
+   a valid certificate from inside the LAN, resolved to the WAN IP.
+2. **No internal DNS record for analacres.ca, and none is needed.** Pi-hole
+   forwards `termitetowers.ca` (and the internal `.omp` zones) to PowerDNS, and
+   there is no `analacres.ca` zone. LAN queries therefore fall through to
+   GoDaddy, get the WAN IP, and — because hairpin works on 443 — land back on
+   monolith correctly. LAN clients reach these hostnames exactly as external
+   clients do. The only cost is that LAN traffic hairpins through the router
+   instead of staying local; a PowerDNS zone would be an optimisation, not a fix.
 3. **`pics.justanotherhuman.ca` has no matching certificate.** The
    `justanotherhuman.ca` certificate covers only the apex and `www`; the
    memorylab certificate covers only `memorylab.analacres.ca`. That
