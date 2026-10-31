@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: wiki/runbook-authelia.md % -->
-<!-- %ccm_git_object_id: wiki/runbook-authelia.md@197 % -->
-<!-- %ccm_git_commit_date: 2026-10-31 16:44:04 -0400 % -->
+<!-- %ccm_git_object_id: wiki/runbook-authelia.md@198 % -->
+<!-- %ccm_git_commit_date: 2026-10-31 16:50:50 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: feat(nginx): expose wordbank and soundbank, make analacres hosts gate-ready % -->
+<!-- %ccm_git_commit_message: feat(scripts): one-shot deploy for the analacres hosts % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-10-31 mpegg feat(nginx): expose wordbank and soundbank, make analacres hosts gate-ready -->
 # Runbook — Authelia gate for the analacres.ca service family
 
 **Status:** Phase 1 landed. The three vhosts are **gate-ready but ungated**.
@@ -118,14 +119,20 @@ Prerequisites, in order. Do not skip 2 or 3: a vhost that includes a
 non-existent snippet fails `nginx -t`, and an `auth_request` with no Authelia
 behind it turns every gated page into a 502.
 
-1. **Install the snippets** (Phase 1 requirement, do this now):
+1. **Deploy Phase 1** — certificates, snippets, vhosts, DNS, verification:
 
    ```bash
-   sudo mkdir -p /etc/nginx/snippets
-   sudo ln -sfn /srv/dev1/nginx/snippets/tt-gate.conf          /etc/nginx/snippets/tt-gate.conf
-   sudo ln -sfn /srv/dev1/nginx/snippets/tt-gate-location.conf /etc/nginx/snippets/tt-gate-location.conf
-   sudo nginx -t
+   ./scripts/deploy-analacres-hosts.sh --dry-run   # preview, no privileges
+   ./scripts/deploy-analacres-hosts.sh             # deploy: one password prompt
    ```
+
+   The script issues the per-host certs through the GoDaddy DNS-01 hooks,
+   symlinks both snippets into `/etc/nginx/snippets/`, enables the three
+   vhosts, runs `nginx -t`, reloads **only** if that passes, publishes the A
+   records, and verifies every endpoint over loopback. It is idempotent
+   (existing certs are skipped) and it refuses to deploy if `tt-gate.conf`
+   contains anything but comments — which is what stops a half-gated host
+   from going live before Authelia exists.
 
 2. **Deploy Authelia** on monolith. Skipped here as a deployment recipe: see
    §4 for the config skeleton. Prove it answers before going further:
