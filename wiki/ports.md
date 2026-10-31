@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: wiki/ports.md % -->
-<!-- %ccm_git_object_id: wiki/ports.md@195 % -->
-<!-- %ccm_git_commit_date: 2026-10-29 21:42:03 -0400 % -->
+<!-- %ccm_git_object_id: wiki/ports.md@197 % -->
+<!-- %ccm_git_commit_date: 2026-10-31 16:44:04 -0400 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: mkdocs updates % -->
+<!-- %ccm_git_commit_message: feat(nginx): expose wordbank and soundbank, make analacres hosts gate-ready % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-10-29 mpegg mkdocs updates -->
 <!-- %git_commit_history: 2026-10-28 mpegg misc updates -->
 <!-- %git_commit_history: 2026-09-25 mpegg chore(homarr): retire Homarr - configured but never used day to day -->
  <!-- %git_commit_history: 2026-06-10 mpegg  june bulk update  -->
@@ -108,6 +109,7 @@ This page tracks host and service ports used across TermiteTowers using a system
 | Lidarr                         | lidarr.termitetowers.ca          | 3425      | 8686           | Media     | 🔒 Reserved      |
 | Readarr                        | readarr.termitetowers.ca         | 3426      | 8787           | Media     | 🔒 Reserved      |
 | Vault                          | vault.termitetowers.ca           | 3500      | 3000           | Security  | 🔄 **TO MIGRATE**|
+| Authelia SSO portal            | auth.analacres.ca (planned)      | 3530      | 9091           | Security  | 🕒 Planned — Phase 2, loopback only |
 | Certificate Management         | certs.termitetowers.ca           | 3540      | TBD            | Security  | 🕒 Planned       |
 | dbGate                         | dba.termitetowers.ca             | 3600      | 3000           | Database  | ✅               |
 | MySQL Workbench Equivalent     | mysqlworkbench.termitetowers.ca  | 3620      | TBD            | Database  | 🕒 Planned       |
@@ -133,6 +135,21 @@ This page tracks host and service ports used across TermiteTowers using a system
 | IT Documentation               | itdocs.termitetowers.ca          | 3920      | TBD            | Assets    | 🕒 Planned       |
 | Ticketing System               | tickets.termitetowers.ca         | 3930      | TBD            | Assets    | 🕒 Planned       |
 | EspHome                        | esphome.termitetowers.ca         | 6052      | 6052           | Home      | ✅ **HOST**      |
+
+### analacres.ca listener (3261)
+
+`memorylab`, `wordbank` and `soundbank` are proxy-only vhosts sharing one TLS
+listener on monolith, port `3261`. They add **no** host port of their own: one
+router forward covers all of them, and nginx picks the vhost by SNI. Each has a
+per-host certificate and its own A record in `infra/dns/godaddy-ddns.sh`.
+
+`auth.analacres.ca` joins them in Phase 2, publishing Authelia on loopback
+`127.0.0.1:3530` to container port `9091`. Because it is bound to loopback,
+nginx is its only client; the portal port never appears on the LAN or WAN.
+
+None of these hostnames resolve from the LAN: there is no `analacres.ca` zone
+in PowerDNS and no Pi-hole override, and the router does not hairpin 3261. See
+`runbook-authelia.md` §8.
 
 ## Migration Progress
 

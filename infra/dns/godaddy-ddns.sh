@@ -1,27 +1,27 @@
 #!/usr/bin/env bash
-#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/dns/godaddy-ddns.sh:147 %
+#  %ccm_git_object_id: infra/dns/godaddy-ddns.sh@197 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: da31e2570191ca521820ac3071e5ec72d949d510 %
-#  %ccm_git_commit_id: 875dba4d1edbc0fb2fe425346b22faa6070d5e41 %
-#  %ccm_git_commit_count: 147 %
-#  %ccm_git_commit_date: 2026-06-10 17:10:31 -0400 %
+#  %ccm_git_blob_sha: 22a721a077f8fd949d4ddaa7cc32c2e9466ac3fd %
+#  %ccm_git_commit_id: 512ed032d52d95f752f5ab7745348060125f5f7a %
+#  %ccm_git_commit_count: 197 %
+#  %ccm_git_commit_date: 2026-10-31 16:44:04 -0400 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: june bulk update %
-#  %ccm_git_modify_date: 2026-06-10 17:10:32 %
-#  %ccm_git_file_last_modified: 2026-05-31 17:00:55 %
+#  %ccm_git_commit_message: feat(nginx): expose wordbank and soundbank, make analacres hosts gate-ready %
+#  %ccm_git_modify_date: 2026-10-31 16:44:04 %
+#  %ccm_git_file_last_modified: 2026-10-31 16:36:58 %
 #  %ccm_git_file_name: godaddy-ddns.sh %
 #  %ccm_git_path: infra/dns/godaddy-ddns.sh %
 #  %ccm_git_language_mode: shellscript %
 #  %ccm_git_file_type: text/x-shellscript %
 #  %ccm_git_file_encoding: utf-8 %
-#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 2115 %
+#  %ccm_git_size: 3619 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 # GoDaddy Dynamic DNS updater
 # Checks current public IP and updates GoDaddy A records if changed.
@@ -42,6 +42,13 @@ set -euo pipefail
 DDNS_DOMAINS=(
     "justanotherhuman.ca:@"
     "analacres.ca:memorylab"
+    # analacres.ca service family (nginx listener 3261 on monolith).
+    # Each name needs its own per-host certificate, issued with the DNS-01
+    # GoDaddy hooks in infra/certbot/ — see infra/nginx/README.md.
+    # auth.analacres.ca is deliberately absent: it belongs to the Authelia
+    # portal, which is Phase 2 (wiki/runbook-authelia.md).
+    "analacres.ca:wordbank"
+    "analacres.ca:soundbank"
 )
 
 ENV_FILE="/etc/letsencrypt/godaddy.env"

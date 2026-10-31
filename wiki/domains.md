@@ -1,28 +1,14 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: wiki/domains.md:158 % -->
-<!-- %ccm_git_author: mpegg % -->
-<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: 122d9a8d4019ef486969d26fa2bff1a35f950dfe % -->
-<!-- %ccm_git_commit_id: d7e19382f49384e00dc61fb86a10a9255583a0c8 % -->
-<!-- %ccm_git_commit_count: 158 % -->
-<!-- %ccm_git_commit_date: 2026-09-25 21:05:38 -0400 % -->
-<!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: chore(homarr): retire Homarr - configured but never used day to day % -->
-<!-- %ccm_git_modify_date: 2026-09-25 21:05:38 % -->
-<!-- %ccm_git_file_last_modified: 2026-09-25 21:05:30 % -->
-<!-- %ccm_git_file_name: domains.md % -->
 <!-- %ccm_git_path: wiki/domains.md % -->
-<!-- %ccm_git_language_mode: markdown % -->
-<!-- %ccm_git_file_type: text/plain % -->
-<!-- %ccm_git_file_encoding: utf-8 % -->
-<!-- %ccm_git_file_eol: CRLF % -->
-<!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 6025 % -->
+<!-- %ccm_git_object_id: wiki/domains.md@197 % -->
+<!-- %ccm_git_commit_date: 2026-10-31 16:44:04 -0400 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_message: feat(nginx): expose wordbank and soundbank, make analacres hosts gate-ready % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
- <!-- %git_commit_history: 2025-10-10 mpegg  big update  --> 
+<!-- %git_commit_history: 2026-09-25 mpegg chore(homarr): retire Homarr - configured but never used day to day -->
+ <!-- %git_commit_history: 2025-10-10 mpegg  big update  -->
 <!--
 -->
 
@@ -78,6 +64,26 @@ TermiteTowers infrastructure spans multiple domains with distinct purposes and a
 - LLMs, model training, data science require "acres" of compute
 - Separates heavy compute workloads from daily-use services
 - Clear mental model: termitetowers.ca = services, analacres.ca = processing power
+
+## Current Services for analacres.ca
+
+Unlike the planned list below, these four exist or are being built now. All are
+proxied by nginx on monolith over **one shared TLS listener, port 3261**
+(selected by SNI), each with its own per-host certificate issued through the
+GoDaddy DNS-01 hooks:
+
+- `memorylab.analacres.ca` - Immich photo library
+- `wordbank.analacres.ca` - AudioBookshelf audiobook library
+- `soundbank.analacres.ca` - Navidrome music library
+- `auth.analacres.ca` - Authelia SSO portal (planned, Phase 2)
+
+All three service hostnames are **ungated** today, but their vhosts are already
+wired for an Authelia forward-auth gate that can be switched on without editing
+any vhost: the gate lives in one included snippet. See `runbook-authelia.md`.
+
+Note the listener choice: the analacres.ca family does not arrive on 443. Ports
+on the reverse proxy are therefore not a per-service allocation here — one
+forward, many hostnames.
 
 ## Planned Services for analacres.ca
 
