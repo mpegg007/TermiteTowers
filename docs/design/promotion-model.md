@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: docs/design/promotion-model.md % -->
-<!-- %ccm_git_object_id: docs/design/promotion-model.md@207 % -->
-<!-- %ccm_git_commit_date: 2026-11-09 14:29:02 -0500 % -->
+<!-- %ccm_git_object_id: docs/design/promotion-model.md@208 % -->
+<!-- %ccm_git_commit_date: 2026-11-09 14:29:08 -0500 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: docs: drop the dit tier; static validation becomes a CI gate on the promote branch % -->
+<!-- %ccm_git_commit_message: docs: remove the last dit references from the flow and audit sections % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-11-09 mpegg docs: drop the dit tier; static validation becomes a CI gate on the promote branch -->
 <!-- %git_commit_history: 2026-11-09 mpegg nginx: retire tag-viewer symlinks into AnalAcres; document the publish gap -->
 <!-- %git_commit_history: 2026-11-09 mpegg promotion: manifest inventory, record generator, deploy archive/restore -->
 # Promotion model — manifest-based promotion
@@ -59,7 +60,7 @@ evidence that content on `prd` was deliberate.
   present at source and content differs ⇒ copy; absent at source and present on the
   target ⇒ delete. Nothing can be silently omitted *within* the ownership domain.
 - The record is the **audit artifact**. Not the git history of `prd`, not the
-  `dit` tree's history, not the CCM history trail.
+  `uat1` tree's history, not the CCM history trail.
 
 ---
 
@@ -196,8 +197,8 @@ enough to be read — which is what the ignore list is for.
 flowchart LR
   DEV[dev1 commits freely] --> GEN[generate record from inventory]
   GEN --> PIN[resolve latest to SHA]
-  PIN --> DIT[dit static validation]
-  DIT --> UAT[uat1 runtime test]
+  PIN --> GATE[static validation as a CI gate]
+  GATE --> UAT[uat1 runtime test]
   UAT --> PRD[prd merge]
   PRD --> ARCH[archive then rsync]
 ```
