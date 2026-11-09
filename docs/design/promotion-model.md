@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: docs/design/promotion-model.md % -->
-<!-- %ccm_git_object_id: docs/design/promotion-model.md@203 % -->
-<!-- %ccm_git_commit_date: 2026-11-09 14:06:35 -0500 % -->
+<!-- %ccm_git_object_id: docs/design/promotion-model.md@204 % -->
+<!-- %ccm_git_commit_date: 2026-11-09 14:19:49 -0500 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: promotion: manifest inventory, record generator, deploy archive/restore % -->
+<!-- %ccm_git_commit_message: nginx: retire tag-viewer symlinks into AnalAcres; document the publish gap % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-11-09 mpegg promotion: manifest inventory, record generator, deploy archive/restore -->
 # Promotion model — manifest-based promotion
 
 **Status:** design agreed, nothing implemented. This document is the reference the
@@ -431,12 +432,22 @@ promoting one can redeploy, restart or expose something with no content change.
    infra/nginx/www/tag-viewer/tag-viewer.html -> /home/mpegg-adm/source/AnalAcres/tag-viewer/tag-viewer.html
    ```
 
-   These are served from a checkout **outside this repository**, so the nginx tree
-   depends on a path that exists on the author's workstation and may not exist on a
-   deploy host. They are neither promoted nor archived, and on a target host they are
-   dangling. Decide before promoting the nginx tree: copy the two files in and retire
-   the links, serve them from a mounted path, or exclude that directory from the
-   inventory.
+   **Resolved 2026-11-09: both links removed.** They were read by nothing —
+   `grep -rn "nginx/www/tag-viewer" infra/` returns no hits, because nginx serves that
+   URL from `alias /var/www/tag-viewer/`. They were a workstation editing convenience
+   that had drifted away from how the asset is actually served. A directory README now
+   records the real contract.
+
+   That investigation exposed a **separate, live defect**: `/var/www/tag-viewer/` is
+   populated by hand and is stale. The served `inject.js` is 8132 bytes dated 4 July
+   while the AnalAcres source is 9258 bytes dated 8 July, and AnalAcres's
+   `deploy-prd.yml` rsyncs only to `/srv/prd/aa`, so **nothing publishes these assets**.
+   The symlinks were covering for a missing publish step.
+
+   Intended end state: AnalAcres publishes `tag-viewer/` from its own deploy into
+   `/srv/<tier>/www/tag-viewer`, TermiteTowers aliases that path, and neither repo
+   promotes the other's bytes. This is the first concrete case of the rule that a repo
+   owns its vhost but not another repo's assets.
 
 ---
 
