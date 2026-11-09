@@ -149,6 +149,18 @@ def read_ignore(path: str | None) -> list[str]:
     return patterns
 
 
+def matches_include(path: str, includes: list[str]) -> bool:
+    """An app may be a SLICE of a tree, not all of it.
+
+    The first promotion should be the smallest thing that proves the pipeline end to
+    end. Promoting 99 paths including 13 privileged ones as the first exercise means a
+    failure is ambiguous: was it the mechanism or one of the 99? Partitioning by
+    deployment concern (docs, nginx, docker, hooks) makes each promotion reviewable and
+    each failure attributable.
+    """
+    return not includes or any(path.startswith(prefix) for prefix in includes)
+
+
 def is_ignored(path: str, patterns: list[str]) -> bool:
     for pat in patterns:
         if pat.endswith("/") and path.startswith(pat):
@@ -174,13 +186,18 @@ def cmd_inventory(args: argparse.Namespace) -> int:
         return EXIT_USAGE
 
     prefix = args.dst_prefix or ""
+    includes = args.include or []
     entries: list[Entry] = []
     skipped_symlink: list[tuple[str, str]] = []
     skipped_ignore = 0
+    skipped_include = 0
     seen_src: set[str] = set()
 
     for mode, otype, sha, path in objects:
         if otype != "blob":
+            continue
+        if not matches_include(path, includes):
+            skipped_include += 1
             continue
         if is_ignored(path, patterns):
             skipped_ignore += 1
@@ -208,6 +225,8 @@ def cmd_inventory(args: argparse.Namespace) -> int:
         for mode, otype, _sha, path in seed_objects:
             if otype != "blob" or mode == SYMLINK_MODE:
                 continue
+            if not matches_include(path, includes):
+                continue
             if path in seen_src or is_ignored(path, patterns):
                 continue
             entries.append(Entry(src=path, dst=prefix + path, line=0))
@@ -220,10 +239,10 @@ def cmd_inventory(args: argparse.Namespace) -> int:
 
     entries.sort(key=lambda e: e.dst)
 
-    if args.show_skipped and (skipped_symlink or skipped_ignore):
+    if args.show_skipped and (skipped_symlink or skipped_ignore or skipped_include):
         print(
-            f"[INFO]  skipped {skipped_ignore} ignored path(s), "
-            f"{len(skipped_symlink)} symlink(s)",
+            f"[INFO]  skipped {skipped_ignore} ignored, {skipped_include} outside the "
+            f"include prefixes, {len(skipped_symlink)} symlink(s)",
             file=sys.stderr,
         )
         for path, target in skipped_symlink:
@@ -360,11 +379,16 @@ def cmd_residual(args: argparse.Namespace) -> int:
         return EXIT_ERRORS
 
     patterns = read_ignore(args.ignore)
+    includes = args.include or []
     owned = {e.src for e in inv.entries}
     unowned = [
         path
         for mode, otype, _sha, path in objects
-        if otype == "blob" and mode != SYMLINK_MODE and path not in owned and not is_ignored(path, patterns)
+        if otype == "blob"
+        and mode != SYMLINK_MODE
+        and path not in owned
+        and matches_include(path, includes)
+        and not is_ignored(path, patterns)
     ]
     unowned.sort()
 
@@ -544,6 +568,12 @@ def build_parser() -> argparse.ArgumentParser:
     inv.add_argument("--dst-prefix", default="")
     inv.add_argument("--ignore", default=None)
     inv.add_argument(
+        "--include",
+        nargs="+",
+        default=None,
+        help="only include paths under these prefixes, so an app can be a slice of the tree",
+    )
+    inv.add_argument(
         "--seed-ref",
         default=None,
         help="also list paths present at this ref, so ownership of source-deleted paths "
@@ -562,6 +592,7 @@ def build_parser() -> argparse.ArgumentParser:
     res.add_argument("--repo-root", required=True)
     res.add_argument("--ref", default="HEAD")
     res.add_argument("--ignore", default=None)
+    res.add_argument("--include", nargs="+", default=None)
     res.set_defaults(func=cmd_residual)
 
     rec = sub.add_parser("record", help="resolve an inventory into a promote record")
