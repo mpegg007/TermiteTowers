@@ -2,18 +2,18 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/docker/nextcloud-dev1.yml@200 %
+#  %ccm_git_object_id: infra/docker/nextcloud-dev1.yml@202 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 872831b825bd83b50af7bba1fe74135b3758f3d3 %
-#  %ccm_git_commit_id: 07c638fcfb4804b40c226db94358725a8b6ef636 %
-#  %ccm_git_commit_count: 200 %
-#  %ccm_git_commit_date: 2026-11-09 10:16:57 -0500 %
+#  %ccm_git_blob_sha: bd420fdc8e43645ec62b2474fdd9fa3b25800f72 %
+#  %ccm_git_commit_id: 2cc1a444bf5a5dcfdb033641139c16458b0ed48f %
+#  %ccm_git_commit_count: 202 %
+#  %ccm_git_commit_date: 2026-11-09 10:31:57 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: zoo.261109 %
-#  %ccm_git_modify_date: 2026-11-09 10:16:58 %
-#  %ccm_git_file_last_modified: 2026-11-08 14:14:59 %
+#  %ccm_git_commit_message: zoo change %
+#  %ccm_git_modify_date: 2026-11-09 10:31:57 %
+#  %ccm_git_file_last_modified: 2026-11-09 10:29:12 %
 #  %ccm_git_file_name: nextcloud-dev1.yml %
 #  %ccm_git_path: infra/docker/nextcloud-dev1.yml %
 #  %ccm_git_language_mode: yaml %
@@ -21,7 +21,7 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 2451 %
+#  %ccm_git_size: 3854 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 # Nextcloud — Postgres backend, user data on the gallery array.
 #
@@ -52,8 +52,12 @@ services:
     restart: unless-stopped
     ports:
       - "0.0.0.0:3230:80"
+    # Secrets live outside every checkout: the deployed tree at /srv/dev1/tt
+    # contains only git-tracked files, and a symlink placed inside it would be
+    # removed by the next rsync --delete. Absolute path, one source of truth.
+    # Migration and ownership: scripts/secrets-migrate-to-etc.sh
     env_file:
-      - ./env/nextcloud.env
+      - /etc/tt-secrets/env/nextcloud.env
     volumes:
       - /mnt/ai_storage/nextcloud/data:/var/www/html
       - /mnt/ai_storage/nextcloud/config:/var/www/html/config
