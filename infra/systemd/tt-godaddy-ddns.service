@@ -1,31 +1,33 @@
-#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/systemd/tt-godaddy-ddns.service:147 %
+#  %ccm_git_object_id: infra/systemd/tt-godaddy-ddns.service@201 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: e2e9fdc371626dfe1ec8af7e6d4c9cbc0dc755b1 %
-#  %ccm_git_commit_id: 875dba4d1edbc0fb2fe425346b22faa6070d5e41 %
-#  %ccm_git_commit_count: 147 %
-#  %ccm_git_commit_date: 2026-06-10 17:10:31 -0400 %
+#  %ccm_git_blob_sha: eecfdebd7b83bde375a49dfb7bd0ef82a671a0d2 %
+#  %ccm_git_commit_id: 933e68950c69881265582ab01690ebae5ba8083e %
+#  %ccm_git_commit_count: 201 %
+#  %ccm_git_commit_date: 2026-11-09 10:28:09 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: june bulk update %
-#  %ccm_git_modify_date: 2026-06-10 17:10:32 %
-#  %ccm_git_file_last_modified: 2026-05-16 16:35:31 %
+#  %ccm_git_commit_message: service repoint %
+#  %ccm_git_modify_date: 2026-11-09 10:28:10 %
+#  %ccm_git_file_last_modified: 2026-11-09 10:25:18 %
 #  %ccm_git_file_name: tt-godaddy-ddns.service %
 #  %ccm_git_path: infra/systemd/tt-godaddy-ddns.service %
 #  %ccm_git_language_mode: service %
 #  %ccm_git_file_type: text/plain %
 #  %ccm_git_file_encoding: us-ascii %
-#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 154 %
+#  %ccm_git_size: 1406 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 [Unit]
 Description=GoDaddy Dynamic DNS Updater
 
 [Service]
 Type=oneshot
-ExecStart=/home/mpegg-adm/source/TermiteTowers/infra/dns/godaddy-ddns.sh
+# Runs from the git-deployed dev1 tree, not from a human working copy. The tree
+# is refreshed by .github/workflows/deploy-dev1.yml on every push to dev1.
+ExecStart=/srv/dev1/tt/infra/dns/godaddy-ddns.sh
 User=root

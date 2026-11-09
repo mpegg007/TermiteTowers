@@ -1,4 +1,28 @@
-# # %git_commit_history: 2025-09-06 mpegg  hook final alpha v0.1  %  
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/dns/scripts/monitoring/tt-dns-health-check-dev1.service@201 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 177d561757d1d3b5f0ba3819d068c18ae8a7eb0b %
+#  %ccm_git_commit_id: 933e68950c69881265582ab01690ebae5ba8083e %
+#  %ccm_git_commit_count: 201 %
+#  %ccm_git_commit_date: 2026-11-09 10:28:09 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: service repoint %
+#  %ccm_git_modify_date: 2026-11-09 10:28:10 %
+#  %ccm_git_file_last_modified: 2026-11-09 10:25:18 %
+#  %ccm_git_file_name: tt-dns-health-check-dev1.service %
+#  %ccm_git_path: infra/dns/scripts/monitoring/tt-dns-health-check-dev1.service %
+#  %ccm_git_language_mode: service %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 456 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# # %git_commit_history: 2025-09-06 mpegg  hook final alpha v0.1  %
 [Unit]
 Description=DNS Health Check (dev1)
 After=network.target docker.service
@@ -6,7 +30,9 @@ After=network.target docker.service
 [Service]
 Type=oneshot
 User=root
-ExecStart=/home/mpegg-adm/source/TermiteTowers/infra/dns/scripts/monitoring/tt-dns-health-check-dev1.sh
+# Runs from the git-deployed dev1 tree, not from a human working copy. The tree
+# is refreshed by .github/workflows/deploy-dev1.yml on every push to dev1.
+ExecStart=/srv/dev1/tt/infra/dns/scripts/monitoring/tt-dns-health-check-dev1.sh
 
 [Install]
 WantedBy=multi-user.target

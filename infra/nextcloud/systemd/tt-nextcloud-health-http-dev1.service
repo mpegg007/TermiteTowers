@@ -1,26 +1,26 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/nextcloud/systemd/tt-nextcloud-health-http-dev1.service@200 %
+#  %ccm_git_object_id: infra/nextcloud/systemd/tt-nextcloud-health-http-dev1.service@201 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 23eb965d4deed9551068493c8cb645bdf1bbf34e %
-#  %ccm_git_commit_id: 07c638fcfb4804b40c226db94358725a8b6ef636 %
-#  %ccm_git_commit_count: 200 %
-#  %ccm_git_commit_date: 2026-11-09 10:16:57 -0500 %
+#  %ccm_git_blob_sha: 675cfc3d9a2b74638ea3669cd4b4b918020e86ee %
+#  %ccm_git_commit_id: 933e68950c69881265582ab01690ebae5ba8083e %
+#  %ccm_git_commit_count: 201 %
+#  %ccm_git_commit_date: 2026-11-09 10:28:09 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: zoo.261109 %
-#  %ccm_git_modify_date: 2026-11-09 10:16:58 %
-#  %ccm_git_file_last_modified: 2026-11-09 09:43:22 %
+#  %ccm_git_commit_message: service repoint %
+#  %ccm_git_modify_date: 2026-11-09 10:28:10 %
+#  %ccm_git_file_last_modified: 2026-11-09 10:25:17 %
 #  %ccm_git_file_name: tt-nextcloud-health-http-dev1.service %
 #  %ccm_git_path: infra/nextcloud/systemd/tt-nextcloud-health-http-dev1.service %
 #  %ccm_git_language_mode: service %
 #  %ccm_git_file_type: text/plain %
-#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 1469 %
+#  %ccm_git_size: 2504 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 [Unit]
 Description=Nextcloud Health Check HTTP Endpoint (dev1)
@@ -32,20 +32,19 @@ Wants=network-online.target docker.service
 Type=simple
 User=mpegg-adm
 Group=mpegg-adm
-# Paths point at the working copy on purpose. The target layout is that
-# /srv/dev1/tt and /srv/prd/tt are both git-managed trees (dev1 auto-deployed
-# from git, prd from git, this working copy remains the place edits start), so a
-# unit should reference the deployed tree rather than a hand-made per-service
-# directory like /srv/dev1/nextcloud/. When that consolidation lands, this is a
-# one-line repoint to /srv/dev1/tt/infra/nextcloud/scripts/monitoring.
-WorkingDirectory=/home/mpegg-adm/source/TermiteTowers/infra/nextcloud/scripts/monitoring
+# Paths point at the git-deployed dev1 tree — not at a human working copy, and
+# not at a hand-made per-service directory like /srv/dev1/nextcloud/. That tree
+# is an rsync target refreshed by .github/workflows/deploy-dev1.yml, so what runs
+# here is exactly what was committed to branch dev1. The prod equivalent will be
+# /srv/prd/tt/... if this is ever promoted.
+WorkingDirectory=/srv/dev1/tt/infra/nextcloud/scripts/monitoring
 # Bind to the host side of monitor-apps-net-dev1 (Kuma's network) rather than
 # 127.0.0.1: Uptime Kuma runs in a container and cannot reach host loopback, and
 # there is no host-gateway entry on its compose. This address is reachable by the
 # Kuma container and not by the LAN.
 Environment=NC_HEALTH_BIND=10.10.64.1
 Environment=NC_HEALTH_PORT=9002
-ExecStart=/usr/bin/python3 /home/mpegg-adm/source/TermiteTowers/infra/nextcloud/scripts/monitoring/tt-nextcloud-health-http-dev1.py
+ExecStart=/usr/bin/python3 /srv/dev1/tt/infra/nextcloud/scripts/monitoring/tt-nextcloud-health-http-dev1.py
 Restart=always
 RestartSec=5
 StandardOutput=journal
