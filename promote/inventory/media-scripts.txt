@@ -1,0 +1,61 @@
+# tt-hooks.skip-post-commit
+# ^ The CCM header is suppressed HERE DELIBERATELY. A header carrying branch,
+#   commit id and blob sha would be rewritten on every commit, so the file would
+#   show as changed even when no ownership line changed — which is the one
+#   property that makes a 500-line inventory reviewable. The marker is a comment
+#   so this file still parses as an inventory.
+# tt-promote inventory — app=media-scripts
+# generated from dev1, seeded from origin/prd (45 leaf file(s))
+# src -> dst. Leaf paths only; no directories, no globs.
+#
+# This file is the PERSISTENT ownership record, not a snapshot of one branch.
+# A path listed here that no longer exists at the source is a DELETE candidate,
+# which is the only way the target ever loses a file. Removing a line means the
+# app no longer owns that path at all, and nothing will maintain or remove it.
+# Do not regenerate into this file without --seed-ref <target>.
+
+media/.env.example -> media/.env.example
+media/ImageArchive/INGEST_V2_NOTES.md -> media/ImageArchive/INGEST_V2_NOTES.md
+media/ImageArchive/New-PhotoArchiveFolders.ps1 -> media/ImageArchive/New-PhotoArchiveFolders.ps1
+media/ImageArchive/README.md -> media/ImageArchive/README.md
+media/ImageArchive/Rename-ScanFiles.ps1 -> media/ImageArchive/Rename-ScanFiles.ps1
+media/ImageArchive/add_file_backups.sql -> media/ImageArchive/add_file_backups.sql
+media/ImageArchive/add_image_locations.sql -> media/ImageArchive/add_image_locations.sql
+media/ImageArchive/add_tag_history_recorded_at.sql -> media/ImageArchive/add_tag_history_recorded_at.sql
+media/ImageArchive/ai_folder_dbv2.py -> media/ImageArchive/ai_folder_dbv2.py
+media/ImageArchive/ai_tags.py -> media/ImageArchive/ai_tags.py
+media/ImageArchive/backup_hdri_jotta.py -> media/ImageArchive/backup_hdri_jotta.py
+media/ImageArchive/build_stack_map.py -> media/ImageArchive/build_stack_map.py
+media/ImageArchive/build_stacks_db.py -> media/ImageArchive/build_stacks_db.py
+media/ImageArchive/create_v_tag_master.sql -> media/ImageArchive/create_v_tag_master.sql
+media/ImageArchive/db_operations.py -> media/ImageArchive/db_operations.py
+media/ImageArchive/describe-and-tag_v2.sh -> media/ImageArchive/describe-and-tag_v2.sh
+media/ImageArchive/extract_to_sidecar.py -> media/ImageArchive/extract_to_sidecar.py
+media/ImageArchive/file_processing.py -> media/ImageArchive/file_processing.py
+media/ImageArchive/filename-scan-and-tag-v2.sh -> media/ImageArchive/filename-scan-and-tag-v2.sh
+media/ImageArchive/generate_tag_master_excel.py -> media/ImageArchive/generate_tag_master_excel.py
+media/ImageArchive/generate_tag_master_excel_v2.py -> media/ImageArchive/generate_tag_master_excel_v2.py
+media/ImageArchive/ingest_folder_db.py -> media/ImageArchive/ingest_folder_db.py
+media/ImageArchive/ingest_folder_dbv2.py -> media/ImageArchive/ingest_folder_dbv2.py
+media/ImageArchive/init_schema.sh -> media/ImageArchive/init_schema.sh
+media/ImageArchive/init_v2_schema.py -> media/ImageArchive/init_v2_schema.py
+media/ImageArchive/init_v2_schema.sh -> media/ImageArchive/init_v2_schema.sh
+media/ImageArchive/load_archive_db.py -> media/ImageArchive/load_archive_db.py
+media/ImageArchive/load_tag_master.py -> media/ImageArchive/load_tag_master.py
+media/ImageArchive/load_tag_master_v2.py -> media/ImageArchive/load_tag_master_v2.py
+media/ImageArchive/prompts.txt -> media/ImageArchive/prompts.txt
+media/ImageArchive/propagate_tags.py -> media/ImageArchive/propagate_tags.py
+media/ImageArchive/scan_photoarchive.py -> media/ImageArchive/scan_photoarchive.py
+media/ImageArchive/setup_ttphoto_dev1.sh -> media/ImageArchive/setup_ttphoto_dev1.sh
+media/ImageArchive/stack_compare_excel.py -> media/ImageArchive/stack_compare_excel.py
+media/ImageArchive/stack_report.py -> media/ImageArchive/stack_report.py
+media/OneShow.robocopy.cmd -> media/OneShow.robocopy.cmd
+media/combine_media_data.py -> media/combine_media_data.py
+media/create_excel_control_file.py -> media/create_excel_control_file.py
+media/export_movie_data.py -> media/export_movie_data.py
+media/export_shows_data.py -> media/export_shows_data.py
+media/flaresolverr_starter.cmd -> media/flaresolverr_starter.cmd
+media/flaresolverr_starter.ps1 -> media/flaresolverr_starter.ps1
+media/get-favorites.py -> media/get-favorites.py
+media/media_backup.py -> media/media_backup.py
+media/setup_ttphoto_dev1.sh -> media/setup_ttphoto_dev1.sh

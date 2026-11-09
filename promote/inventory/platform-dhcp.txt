@@ -1,0 +1,51 @@
+# tt-hooks.skip-post-commit
+# ^ The CCM header is suppressed HERE DELIBERATELY. A header carrying branch,
+#   commit id and blob sha would be rewritten on every commit, so the file would
+#   show as changed even when no ownership line changed — which is the one
+#   property that makes a 500-line inventory reviewable. The marker is a comment
+#   so this file still parses as an inventory.
+# tt-promote inventory — app=platform-dhcp
+# generated from dev1, seeded from origin/prd (35 leaf file(s))
+# src -> dst. Leaf paths only; no directories, no globs.
+#
+# This file is the PERSISTENT ownership record, not a snapshot of one branch.
+# A path listed here that no longer exists at the source is a DELETE candidate,
+# which is the only way the target ever loses a file. Removing a line means the
+# app no longer owns that path at all, and nothing will maintain or remove it.
+# Do not regenerate into this file without --seed-ref <target>.
+
+infra/dhcp/configs/kea/kea-ctrl-agent.conf -> infra/dhcp/configs/kea/kea-ctrl-agent.conf
+infra/dhcp/configs/kea/kea-ctrl-agent.install.conf -> infra/dhcp/configs/kea/kea-ctrl-agent.install.conf
+infra/dhcp/configs/kea/kea-dhcp-ddns.install.conf -> infra/dhcp/configs/kea/kea-dhcp-ddns.install.conf
+infra/dhcp/configs/kea/kea-dhcp4.install.conf -> infra/dhcp/configs/kea/kea-dhcp4.install.conf
+infra/dhcp/configs/kea/kea-dhcp6.install.conf -> infra/dhcp/configs/kea/kea-dhcp6.install.conf
+infra/dhcp/configs/kea/kea.conf -> infra/dhcp/configs/kea/kea.conf
+infra/dhcp/configs/kea/tt-kea-dhcp-ddns-dev1.conf -> infra/dhcp/configs/kea/tt-kea-dhcp-ddns-dev1.conf
+infra/dhcp/configs/kea/tt-kea-dhcp4-dev1-nodb.conf -> infra/dhcp/configs/kea/tt-kea-dhcp4-dev1-nodb.conf
+infra/dhcp/configs/kea/tt-kea-dhcp4-dev1.conf -> infra/dhcp/configs/kea/tt-kea-dhcp4-dev1.conf
+infra/dhcp/configs/systemd/kea-dhcp-ddns-dev1.service -> infra/dhcp/configs/systemd/kea-dhcp-ddns-dev1.service
+infra/dhcp/configs/systemd/tt-dhcp-log-parser-dev1.service -> infra/dhcp/configs/systemd/tt-dhcp-log-parser-dev1.service
+infra/dhcp/configs/systemd/tt-dhcp-log-parser-dev1.timer -> infra/dhcp/configs/systemd/tt-dhcp-log-parser-dev1.timer
+infra/dhcp/configs/systemd/tt-kea-health-check-dev1.service -> infra/dhcp/configs/systemd/tt-kea-health-check-dev1.service
+infra/dhcp/configs/systemd/tt-kea-health-check-dev1.timer -> infra/dhcp/configs/systemd/tt-kea-health-check-dev1.timer
+infra/dhcp/configs/systemd/tt-kea-health-http-dev1.service -> infra/dhcp/configs/systemd/tt-kea-health-http-dev1.service
+infra/dhcp/configs/systemd/tt-kea-watchdog-dev1.service -> infra/dhcp/configs/systemd/tt-kea-watchdog-dev1.service
+infra/dhcp/scripts/README.md -> infra/dhcp/scripts/README.md
+infra/dhcp/scripts/deploy/deploy-kea-ddns.sh -> infra/dhcp/scripts/deploy/deploy-kea-ddns.sh
+infra/dhcp/scripts/install_kea.sh -> infra/dhcp/scripts/install_kea.sh
+infra/dhcp/scripts/management/generate-config.sh -> infra/dhcp/scripts/management/generate-config.sh
+infra/dhcp/scripts/management/network-discovery.py -> infra/dhcp/scripts/management/network-discovery.py
+infra/dhcp/scripts/management/populate-kea-reservations.py -> infra/dhcp/scripts/management/populate-kea-reservations.py
+infra/dhcp/scripts/management/preview-enhanced-hostnames.py -> infra/dhcp/scripts/management/preview-enhanced-hostnames.py
+infra/dhcp/scripts/management/simple-network-scan.py -> infra/dhcp/scripts/management/simple-network-scan.py
+infra/dhcp/scripts/management/update-kea-config.py -> infra/dhcp/scripts/management/update-kea-config.py
+infra/dhcp/scripts/monitoring/INCIDENT-RECOVERY-2026-02-15.md -> infra/dhcp/scripts/monitoring/INCIDENT-RECOVERY-2026-02-15.md
+infra/dhcp/scripts/monitoring/QUICK_REFERENCE.md -> infra/dhcp/scripts/monitoring/QUICK_REFERENCE.md
+infra/dhcp/scripts/monitoring/README.md -> infra/dhcp/scripts/monitoring/README.md
+infra/dhcp/scripts/monitoring/SETUP.md -> infra/dhcp/scripts/monitoring/SETUP.md
+infra/dhcp/scripts/monitoring/UNIQUENESS.md -> infra/dhcp/scripts/monitoring/UNIQUENESS.md
+infra/dhcp/scripts/monitoring/parse-kea-logs.py -> infra/dhcp/scripts/monitoring/parse-kea-logs.py
+infra/dhcp/scripts/monitoring/setup-dhcp-history-db.sh -> infra/dhcp/scripts/monitoring/setup-dhcp-history-db.sh
+infra/dhcp/scripts/monitoring/tt-kea-health-check-dev1.sh -> infra/dhcp/scripts/monitoring/tt-kea-health-check-dev1.sh
+infra/dhcp/scripts/monitoring/tt-kea-health-http-dev1.py -> infra/dhcp/scripts/monitoring/tt-kea-health-http-dev1.py
+infra/dhcp/scripts/monitoring/tt-kea-watchdog-dev1.sh -> infra/dhcp/scripts/monitoring/tt-kea-watchdog-dev1.sh

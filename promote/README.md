@@ -8,7 +8,7 @@ operating instruction.
 
 | | authored by | may contain a ref? | changes |
 |---|---|---|---|
-| `inventory/` — what an app owns | generated | no | rarely |
+| `inventory/` — what an app owns, one file per app | generated | no | rarely |
 | `packages/` — what you chose for one promotion | **you, by hand** | **yes** | every promotion |
 | `records/` — what resolved | generated from a package | **never** | every promotion |
 
@@ -84,20 +84,40 @@ class is a diff someone can review.
 living inside a legitimately promoted file — that is the secret scanner's job, and the
 reason `.gitignore` keeps `infra/docker/env/*.env` out of every checkout.
 
-## Regenerating the inventory
+## apps.txt — the ownership boundary
+
+There are many apps in this repository, not one. `promote/apps.txt` maps each app to the
+path prefixes it owns, and `inventory/` holds **one file per app**. A single inventory
+covering the whole tree is not an ownership record; it is a repo snapshot with an app's
+name on it, and it makes every app appear to own every other app's files.
 
 ```bash
-python3 scripts/promote/tt-promote.py inventory \
-  --repo-root . --ref dev1 --seed-ref origin/prd \
-  --app termitetowers-core --out promote/inventory/termitetowers-core.txt
+# every app's inventory, seeded from the target so source-deleted paths stay owned
+python3 scripts/promote/tt-promote.py inventory-all \
+  --repo-root . --apps-file promote/apps.txt \
+  --out-dir promote/inventory --ref dev1 --seed-ref origin/prd
+
+# the global check: anything owned by no app, or by two
+python3 scripts/promote/tt-promote.py coverage \
+  --repo-root . --apps-file promote/apps.txt --ref dev1
 ```
 
-`--seed-ref` is not optional in practice. Ownership is a **persistent record**, not a
-snapshot of one branch: a path that exists on `prd` but has been deleted from `dev1` is
-still owned, and is exactly what becomes a `-` entry. Regenerating without the seed
-silently drops ownership of every source-deleted path, and those files then stay on the
-target forever.
+`coverage` is the check that matters most, and it is silent when it is not run:
 
-The file carries `# tt-hooks.skip-post-commit` because a CCM header would rewrite
-branch and blob fields on every commit, making a 516-line file look changed when nothing
-of consequence changed.
+- **UNCOVERED** — a path belonging to no app is never promoted and, more dangerously,
+  never deleted. It persists on the target forever.
+- **AMBIGUOUS** — a path claimed by two apps makes ownership, and therefore deletion,
+  depend on which app you happen to be promoting.
+
+Run it against the **target** as well as the source. `memory-bank/` is the worked
+example: it exists on `prd`, was retired on `dev1`, and until it was given an owner it
+could not be deleted by any package.
+
+`--seed-ref` is not optional. Ownership is a **persistent record**, not a snapshot of
+one branch: a path that exists on `prd` but has been deleted from `dev1` is still owned,
+and is exactly what becomes a `-` entry. Regenerating without the seed silently drops
+ownership of every source-deleted path.
+
+Each inventory carries `# tt-hooks.skip-post-commit` because a CCM header would rewrite
+branch and blob fields on every commit, making the file look changed when nothing of
+consequence changed.

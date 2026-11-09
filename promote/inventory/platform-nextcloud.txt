@@ -1,0 +1,18 @@
+# tt-hooks.skip-post-commit
+# ^ The CCM header is suppressed HERE DELIBERATELY. A header carrying branch,
+#   commit id and blob sha would be rewritten on every commit, so the file would
+#   show as changed even when no ownership line changed — which is the one
+#   property that makes a 500-line inventory reviewable. The marker is a comment
+#   so this file still parses as an inventory.
+# tt-promote inventory — app=platform-nextcloud
+# generated from dev1, seeded from origin/prd (2 leaf file(s))
+# src -> dst. Leaf paths only; no directories, no globs.
+#
+# This file is the PERSISTENT ownership record, not a snapshot of one branch.
+# A path listed here that no longer exists at the source is a DELETE candidate,
+# which is the only way the target ever loses a file. Removing a line means the
+# app no longer owns that path at all, and nothing will maintain or remove it.
+# Do not regenerate into this file without --seed-ref <target>.
+
+infra/nextcloud/scripts/monitoring/tt-nextcloud-health-http-dev1.py -> infra/nextcloud/scripts/monitoring/tt-nextcloud-health-http-dev1.py
+infra/nextcloud/systemd/tt-nextcloud-health-http-dev1.service -> infra/nextcloud/systemd/tt-nextcloud-health-http-dev1.service

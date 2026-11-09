@@ -1,0 +1,31 @@
+# tt-hooks.skip-post-commit
+# ^ The CCM header is suppressed HERE DELIBERATELY. A header carrying branch,
+#   commit id and blob sha would be rewritten on every commit, so the file would
+#   show as changed even when no ownership line changed — which is the one
+#   property that makes a 500-line inventory reviewable. The marker is a comment
+#   so this file still parses as an inventory.
+# tt-promote inventory — app=platform-systemd
+# generated from dev1, seeded from origin/prd (15 leaf file(s))
+# src -> dst. Leaf paths only; no directories, no globs.
+#
+# This file is the PERSISTENT ownership record, not a snapshot of one branch.
+# A path listed here that no longer exists at the source is a DELETE candidate,
+# which is the only way the target ever loses a file. Removing a line means the
+# app no longer owns that path at all, and nothing will maintain or remove it.
+# Do not regenerate into this file without --seed-ref <target>.
+
+infra/systemd/README.md -> infra/systemd/README.md
+infra/systemd/llm-ha-handler-dev1.service -> infra/systemd/llm-ha-handler-dev1.service
+infra/systemd/ollama-dev1.service -> infra/systemd/ollama-dev1.service
+infra/systemd/tt-backup-mealie.service -> infra/systemd/tt-backup-mealie.service
+infra/systemd/tt-backup-mealie.timer -> infra/systemd/tt-backup-mealie.timer
+infra/systemd/tt-backup-tthealth.service -> infra/systemd/tt-backup-tthealth.service
+infra/systemd/tt-backup-tthealth.timer -> infra/systemd/tt-backup-tthealth.timer
+infra/systemd/tt-godaddy-ddns.service -> infra/systemd/tt-godaddy-ddns.service
+infra/systemd/tt-godaddy-ddns.timer -> infra/systemd/tt-godaddy-ddns.timer
+infra/systemd/tt-keys-audit.service -> infra/systemd/tt-keys-audit.service
+infra/systemd/tt-keys-audit.timer -> infra/systemd/tt-keys-audit.timer
+infra/systemd/user/tt-backup-mail.service -> infra/systemd/user/tt-backup-mail.service
+infra/systemd/user/tt-backup-mail.timer -> infra/systemd/user/tt-backup-mail.timer
+infra/systemd/wyoming-faster-whisper-dev1.service -> infra/systemd/wyoming-faster-whisper-dev1.service
+infra/systemd/wyoming-piper-dev1.service -> infra/systemd/wyoming-piper-dev1.service

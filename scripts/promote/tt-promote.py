@@ -372,6 +372,113 @@ def cmd_validate(args: argparse.Namespace) -> int:
     return EXIT_OK
 
 
+def read_apps(path: str) -> list[tuple[str, list[str]]]:
+    """Parse the app map: `<app> : <prefix> [prefix...]`."""
+    apps: list[tuple[str, list[str]]] = []
+    with open(path, encoding="utf-8") as fh:
+        for lineno, raw in enumerate(fh, start=1):
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+            name, sep, rest = line.partition(":")
+            if not sep:
+                raise ValueError(f"{path}:{lineno}: expected '<app> : <prefix...>': {line!r}")
+            prefixes = rest.split()
+            if not prefixes:
+                raise ValueError(f"{path}:{lineno}: no prefixes for app {name.strip()!r}")
+            apps.append((name.strip(), prefixes))
+    return apps
+
+
+def cmd_inventory_all(args: argparse.Namespace) -> int:
+    """One inventory per app.
+
+    With several apps in one repository, a single inventory covering the whole tree is
+    not an ownership record — it is a repo snapshot with an app's name on it, and it
+    makes every app appear to own every other app's files.
+    """
+    try:
+        apps = read_apps(args.apps_file)
+    except (OSError, ValueError) as exc:
+        print(f"[ERROR] {exc}", file=sys.stderr)
+        return EXIT_USAGE
+
+    os.makedirs(args.out_dir, exist_ok=True)
+    rc = EXIT_OK
+    for name, prefixes in apps:
+        print(f"[INFO]  [{name}] {' '.join(prefixes)}", file=sys.stderr)
+        ns = argparse.Namespace(
+            repo_root=args.repo_root,
+            ref=args.ref,
+            app=name,
+            out=os.path.join(args.out_dir, f"{name}.txt"),
+            stdout=False,
+            dst_prefix="",
+            ignore=args.ignore,
+            include=prefixes,
+            seed_ref=args.seed_ref,
+            show_skipped=False,
+        )
+        rc |= cmd_inventory(ns)
+    return rc
+
+
+def cmd_coverage(args: argparse.Namespace) -> int:
+    """Report what the app map does not account for.
+
+    Two failures, both silent without this check:
+      UNCOVERED  a source path that belongs to no app, so no package will ever promote
+                 it and no delete will ever remove it
+      AMBIGUOUS  a path claimed by two apps, so ownership — and therefore deletion —
+                 depends on which app you happen to be promoting
+    """
+    try:
+        apps = read_apps(args.apps_file)
+        objects = list(ls_tree(args.repo_root, args.ref))
+    except (OSError, ValueError, GitError) as exc:
+        print(f"[ERROR] {exc}", file=sys.stderr)
+        return EXIT_ERRORS
+
+    patterns = read_ignore(args.ignore)
+    claims: dict[str, list[str]] = {}
+    for name, prefixes in apps:
+        for mode, otype, _sha, path in objects:
+            if otype != "blob" or mode == SYMLINK_MODE:
+                continue
+            if is_ignored(path, patterns):
+                continue
+            if matches_include(path, prefixes):
+                claims.setdefault(path, []).append(name)
+
+    # Candidates exclude symlinks. They are mode 120000 blobs, so a naive blob filter
+    # reports them as unowned — but they are never promotable, so "unowned" is noise
+    # and noise in this report is what teaches you to stop reading it.
+    candidates = {
+        path
+        for mode, otype, _s, path in objects
+        if otype == "blob" and mode != SYMLINK_MODE
+    }
+    uncovered = sorted(p for p in candidates if p not in claims)
+    ambiguous = sorted(p for p, owners in claims.items() if len({o for o in owners}) > 1)
+
+    print(f"[INFO]  {len(apps)} app(s), {len(claims)} claimed path(s) at {args.ref}", file=sys.stderr)
+
+    for path in uncovered:
+        print(f"UNCOVERED\t{path}")
+    for path in ambiguous:
+        print(f"AMBIGUOUS\t{path}\t{' '.join(sorted(set(claims[path])))}")
+
+    if not uncovered and not ambiguous:
+        print("[OK]    every blob belongs to exactly one app", file=sys.stderr)
+        return EXIT_OK
+
+    print(
+        f"[FAIL]  {len(uncovered)} uncovered, {len(ambiguous)} ambiguous",
+        file=sys.stderr,
+    )
+    return EXIT_ERRORS if ambiguous else EXIT_OK
+
+
 def cmd_residual(args: argparse.Namespace) -> int:
     try:
         inv = read_inventory(args.inventory)
@@ -915,6 +1022,22 @@ def build_parser() -> argparse.ArgumentParser:
     res.add_argument("--ignore", default=None)
     res.add_argument("--include", nargs="+", default=None)
     res.set_defaults(func=cmd_residual)
+
+    invall = sub.add_parser("inventory-all", help="write one inventory per app from apps.txt")
+    invall.add_argument("--repo-root", required=True)
+    invall.add_argument("--apps-file", required=True)
+    invall.add_argument("--out-dir", required=True)
+    invall.add_argument("--ref", default="HEAD")
+    invall.add_argument("--seed-ref", default=None)
+    invall.add_argument("--ignore", default=None)
+    invall.set_defaults(func=cmd_inventory_all)
+
+    cov = sub.add_parser("coverage", help="report paths owned by no app, or by two")
+    cov.add_argument("--repo-root", required=True)
+    cov.add_argument("--apps-file", required=True)
+    cov.add_argument("--ref", default="HEAD")
+    cov.add_argument("--ignore", default=None)
+    cov.set_defaults(func=cmd_coverage)
 
     rec = sub.add_parser("record", help="resolve an inventory into a promote record")
     rec.add_argument("--repo-root", required=True)

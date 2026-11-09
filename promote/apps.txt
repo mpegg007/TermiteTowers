@@ -1,0 +1,78 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: promote/apps.txt@211 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: eb6259a9df058d0b21b3d869ec06708ba2dbad0a %
+#  %ccm_git_commit_id: 14c4ecc1666a15f544548a8f090270fd0a4227b7 %
+#  %ccm_git_commit_count: 211 %
+#  %ccm_git_commit_date: 2026-11-09 14:43:50 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: promote: per-app inventories, coverage check, and the app map %
+#  %ccm_git_modify_date: 2026-11-09 14:43:51 %
+#  %ccm_git_file_last_modified: 2026-11-09 14:43:41 %
+#  %ccm_git_file_name: apps.txt %
+#  %ccm_git_path: promote/apps.txt %
+#  %ccm_git_language_mode: txt %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: utf-8 %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 2619 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# Apps in this repository, and the paths each one owns.
+#
+# This is the boundary that packages draw from. A path belongs to AT MOST ONE app:
+# `coverage` reports both paths under no app and paths claimed twice, because an
+# ambiguous owner is how a file gets promoted by nobody and deleted by accident.
+#
+# Grouping rules, from wiki/service-taxonomy.md:
+#   - a SERVICE has a tenant, a public identity, owned data and an independent
+#     lifecycle. It gets its own app.
+#   - platform concerns (dns, dhcp, nginx, docker, systemd, backups, logrotate,
+#     certbot, log collector) are split by concern rather than lumped into one "infra"
+#     app, because they promote separately and several contain privileged paths.
+#   - tooling that exists to develop the estate (scripts, util, setup, promote, tests,
+#     git-automation) is owned, but is not deployed to a tier's run area.
+#   - repo plumbing (.github, .clinerules, root config files, host start/stop scripts)
+#     is owned too. It is not "nobody's", it is an app whose lifecycle is the repo.
+#
+# Format:  <app> : <prefix> [prefix...]
+# A trailing '/' means a path prefix; a full path means exactly that path.
+#
+# Symlinks are deliberately absent: they are never promotable, so they are never
+# owned by anything.
+
+water-meter          : water-meter/
+ttmail               : ttmail/
+hams                 : hams/
+mkdocs-site          : wiki/ mkdocs.yml
+# memory-bank/ is on prd but not on dev1: it was retired, and the documents moved to
+# docs/. It must stay owned, because an unowned path can never be promoted AND never be
+# deleted — it simply persists on the target forever.
+internal-docs        : docs/ plans/ memory-bank/ infra/README.md
+git-hooks            : git-automation/ tests/
+dev-tooling          : scripts/ util/ setup/ promote/
+media-scripts        : media/
+health               : health/
+pisrv                : pisrv/
+
+platform-dns         : infra/dns/
+platform-dhcp        : infra/dhcp/
+platform-nginx       : infra/nginx/
+platform-docker      : infra/docker/
+platform-systemd     : infra/systemd/
+platform-nextcloud   : infra/nextcloud/
+platform-backups     : infra/backups/
+platform-logrotate   : infra/logrotate/
+platform-certbot     : infra/certbot/
+platform-logcollector : infra/logCollector/
+platform-mcp         : infra/mcp/
+platform-tdarr       : infra/tdarr-node/
+
+ci-pipelines         : .github/
+agent-rules          : .clinerules/
+repo-config          : .editorconfig .gitattributes .gitignore .gitguardian.yml .yamllint.yml README.md
+host-control         : install-docker.sh shutdown.sh startup.sh start-openwebui.sh start_vm.bat

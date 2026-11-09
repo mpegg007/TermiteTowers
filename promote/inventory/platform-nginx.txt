@@ -1,0 +1,66 @@
+# tt-hooks.skip-post-commit
+# ^ The CCM header is suppressed HERE DELIBERATELY. A header carrying branch,
+#   commit id and blob sha would be rewritten on every commit, so the file would
+#   show as changed even when no ownership line changed — which is the one
+#   property that makes a 500-line inventory reviewable. The marker is a comment
+#   so this file still parses as an inventory.
+# tt-promote inventory — app=platform-nginx
+# generated from dev1, seeded from origin/prd (50 leaf file(s))
+# src -> dst. Leaf paths only; no directories, no globs.
+#
+# This file is the PERSISTENT ownership record, not a snapshot of one branch.
+# A path listed here that no longer exists at the source is a DELETE candidate,
+# which is the only way the target ever loses a file. Removing a line means the
+# app no longer owns that path at all, and nothing will maintain or remove it.
+# Do not regenerate into this file without --seed-ref <target>.
+
+infra/nginx/README.md -> infra/nginx/README.md
+infra/nginx/RELOCATION-PLAN.md -> infra/nginx/RELOCATION-PLAN.md
+infra/nginx/sites-available/asset.conf -> infra/nginx/sites-available/asset.conf
+infra/nginx/sites-available/calendars.conf -> infra/nginx/sites-available/calendars.conf
+infra/nginx/sites-available/chat.conf -> infra/nginx/sites-available/chat.conf
+infra/nginx/sites-available/comfyui.conf -> infra/nginx/sites-available/comfyui.conf
+infra/nginx/sites-available/dba.conf -> infra/nginx/sites-available/dba.conf
+infra/nginx/sites-available/dns.conf -> infra/nginx/sites-available/dns.conf
+infra/nginx/sites-available/docs.conf -> infra/nginx/sites-available/docs.conf
+infra/nginx/sites-available/dozzle.conf -> infra/nginx/sites-available/dozzle.conf
+infra/nginx/sites-available/esphome.conf -> infra/nginx/sites-available/esphome.conf
+infra/nginx/sites-available/hal.conf -> infra/nginx/sites-available/hal.conf
+infra/nginx/sites-available/home.conf -> infra/nginx/sites-available/home.conf
+infra/nginx/sites-available/immich.conf -> infra/nginx/sites-available/immich.conf
+infra/nginx/sites-available/justanotherhuman.conf -> infra/nginx/sites-available/justanotherhuman.conf
+infra/nginx/sites-available/kea-health-endpoint.conf -> infra/nginx/sites-available/kea-health-endpoint.conf
+infra/nginx/sites-available/kuma.conf -> infra/nginx/sites-available/kuma.conf
+infra/nginx/sites-available/library.conf -> infra/nginx/sites-available/library.conf
+infra/nginx/sites-available/lidarr.conf -> infra/nginx/sites-available/lidarr.conf
+infra/nginx/sites-available/llmapi.conf -> infra/nginx/sites-available/llmapi.conf
+infra/nginx/sites-available/lobe.conf -> infra/nginx/sites-available/lobe.conf
+infra/nginx/sites-available/mealie.conf -> infra/nginx/sites-available/mealie.conf
+infra/nginx/sites-available/media.conf -> infra/nginx/sites-available/media.conf
+infra/nginx/sites-available/music.conf -> infra/nginx/sites-available/music.conf
+infra/nginx/sites-available/netalertx.conf -> infra/nginx/sites-available/netalertx.conf
+infra/nginx/sites-available/news.conf -> infra/nginx/sites-available/news.conf
+infra/nginx/sites-available/nextcloud.conf -> infra/nginx/sites-available/nextcloud.conf
+infra/nginx/sites-available/ollama.conf -> infra/nginx/sites-available/ollama.conf
+infra/nginx/sites-available/packages.conf -> infra/nginx/sites-available/packages.conf
+infra/nginx/sites-available/pihole.conf -> infra/nginx/sites-available/pihole.conf
+infra/nginx/sites-available/prometheus.conf -> infra/nginx/sites-available/prometheus.conf
+infra/nginx/sites-available/prowlarr.conf -> infra/nginx/sites-available/prowlarr.conf
+infra/nginx/sites-available/pypi.conf -> infra/nginx/sites-available/pypi.conf
+infra/nginx/sites-available/qbit.conf -> infra/nginx/sites-available/qbit.conf
+infra/nginx/sites-available/radarr.conf -> infra/nginx/sites-available/radarr.conf
+infra/nginx/sites-available/readarr.conf -> infra/nginx/sites-available/readarr.conf
+infra/nginx/sites-available/search.conf -> infra/nginx/sites-available/search.conf
+infra/nginx/sites-available/sonarr.conf -> infra/nginx/sites-available/sonarr.conf
+infra/nginx/sites-available/tensorflow.conf -> infra/nginx/sites-available/tensorflow.conf
+infra/nginx/sites-available/vault.conf -> infra/nginx/sites-available/vault.conf
+infra/nginx/sites-available/watchyourlan.conf -> infra/nginx/sites-available/watchyourlan.conf
+infra/nginx/sites-available/water-meter.conf -> infra/nginx/sites-available/water-meter.conf
+infra/nginx/sites-available/webai.conf -> infra/nginx/sites-available/webai.conf
+infra/nginx/sites-available/wiki.conf -> infra/nginx/sites-available/wiki.conf
+infra/nginx/snippets/tt-gate-location.conf -> infra/nginx/snippets/tt-gate-location.conf
+infra/nginx/snippets/tt-gate.conf -> infra/nginx/snippets/tt-gate.conf
+infra/nginx/www/chat/classic.html -> infra/nginx/www/chat/classic.html
+infra/nginx/www/chat/index.html -> infra/nginx/www/chat/index.html
+infra/nginx/www/media/index.html -> infra/nginx/www/media/index.html
+infra/nginx/www/tag-viewer/README.md -> infra/nginx/www/tag-viewer/README.md

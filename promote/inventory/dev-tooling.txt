@@ -1,0 +1,67 @@
+# tt-hooks.skip-post-commit
+# ^ The CCM header is suppressed HERE DELIBERATELY. A header carrying branch,
+#   commit id and blob sha would be rewritten on every commit, so the file would
+#   show as changed even when no ownership line changed — which is the one
+#   property that makes a 500-line inventory reviewable. The marker is a comment
+#   so this file still parses as an inventory.
+# tt-promote inventory — app=dev-tooling
+# generated from dev1, seeded from origin/prd (51 leaf file(s))
+# src -> dst. Leaf paths only; no directories, no globs.
+#
+# This file is the PERSISTENT ownership record, not a snapshot of one branch.
+# A path listed here that no longer exists at the source is a DELETE candidate,
+# which is the only way the target ever loses a file. Removing a line means the
+# app no longer owns that path at all, and nothing will maintain or remove it.
+# Do not regenerate into this file without --seed-ref <target>.
+
+promote/README.md -> promote/README.md
+promote/inventory/termitetowers-core.txt -> promote/inventory/termitetowers-core.txt
+promote/packages/2026-11-09-docs.pkg -> promote/packages/2026-11-09-docs.pkg
+promote/policy/deny.txt -> promote/policy/deny.txt
+promote/policy/ignore.txt -> promote/policy/ignore.txt
+promote/policy/privileged.txt -> promote/policy/privileged.txt
+scripts/deploy-analacres-hosts.sh -> scripts/deploy-analacres-hosts.sh
+scripts/deploy-prometheus-tensorflow.sh -> scripts/deploy-prometheus-tensorflow.sh
+scripts/deploy-www.sh -> scripts/deploy-www.sh
+scripts/deploy/tt-deploy-archive.sh -> scripts/deploy/tt-deploy-archive.sh
+scripts/deploy/tt-deploy-record.sh -> scripts/deploy/tt-deploy-record.sh
+scripts/deploy/tt-deploy-restore.sh -> scripts/deploy/tt-deploy-restore.sh
+scripts/gen-secret-hex.sh -> scripts/gen-secret-hex.sh
+scripts/nginx-enable-site.sh -> scripts/nginx-enable-site.sh
+scripts/nginx-relocate-symlinks.sh -> scripts/nginx-relocate-symlinks.sh
+scripts/promote/tt-promote.py -> scripts/promote/tt-promote.py
+scripts/secrets-migrate-to-etc.sh -> scripts/secrets-migrate-to-etc.sh
+scripts/system/SERVICE_STARTUP_FIX.md -> scripts/system/SERVICE_STARTUP_FIX.md
+scripts/system/disk-audit.sh -> scripts/system/disk-audit.sh
+scripts/system/gather-info.sh -> scripts/system/gather-info.sh
+scripts/system/install-docker.sh -> scripts/system/install-docker.sh
+scripts/system/setup-comfyui-dev1.sh -> scripts/system/setup-comfyui-dev1.sh
+scripts/system/setup-llm-ha-handler-dev1.sh -> scripts/system/setup-llm-ha-handler-dev1.sh
+scripts/system/setup-ollama-dev1.sh -> scripts/system/setup-ollama-dev1.sh
+scripts/system/setup-piper-dev1.sh -> scripts/system/setup-piper-dev1.sh
+scripts/system/setup-whisper-dev1.sh -> scripts/system/setup-whisper-dev1.sh
+scripts/system/start-dockers.sh -> scripts/system/start-dockers.sh
+scripts/system/stop-dockers.sh -> scripts/system/stop-dockers.sh
+scripts/system/wyoming-faster-whisper-dev1.service -> scripts/system/wyoming-faster-whisper-dev1.service
+scripts/system/wyoming-piper-dev1.service -> scripts/system/wyoming-piper-dev1.service
+scripts/tt-ext-bak/backup-exclude-monolith.txt -> scripts/tt-ext-bak/backup-exclude-monolith.txt
+scripts/tt-ext-bak/backup-exclude.txt -> scripts/tt-ext-bak/backup-exclude.txt
+scripts/tt-ext-bak/backup-to-external-v2.sh -> scripts/tt-ext-bak/backup-to-external-v2.sh
+scripts/tt-ext-bak/backup-to-external.sh -> scripts/tt-ext-bak/backup-to-external.sh
+scripts/windows/start_vm.bat -> scripts/windows/start_vm.bat
+scripts/windows/vpn-monitor.py -> scripts/windows/vpn-monitor.py
+scripts/www-relocate-to-srv.sh -> scripts/www-relocate-to-srv.sh
+setup/unix/install.sh -> setup/unix/install.sh
+setup/unix/profile.tt -> setup/unix/profile.tt
+setup/unix/util/initAliases.sh -> setup/unix/util/initAliases.sh
+setup/unix/util/initENV.sh -> setup/unix/util/initENV.sh
+setup/unix/util/initHistory.sh -> setup/unix/util/initHistory.sh
+setup/unix/util/initPrompt.sh -> setup/unix/util/initPrompt.sh
+util/README.md -> util/README.md
+util/aliases.sh -> util/aliases.sh
+util/clean-history.py -> util/clean-history.py
+util/extract-cline-history.py -> util/extract-cline-history.py
+util/init.sh -> util/init.sh
+util/install.sh -> util/install.sh
+util/prompt.sh -> util/prompt.sh
+util/templates/appEnv.sh.example -> util/templates/appEnv.sh.example
