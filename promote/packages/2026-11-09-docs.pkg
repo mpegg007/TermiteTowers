@@ -1,0 +1,51 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: promote/packages/2026-11-09-docs.pkg@210 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 39b4e2fb75b57753069d7d446c78703e92e9fa3a %
+#  %ccm_git_commit_id: 4575bac8623d5f9957178f66e9fe98044d929d4d %
+#  %ccm_git_commit_count: 210 %
+#  %ccm_git_commit_date: 2026-11-09 14:36:53 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: promote: package parser, build subcommand, and policy files %
+#  %ccm_git_modify_date: 2026-11-09 14:36:53 %
+#  %ccm_git_file_last_modified: 2026-11-09 14:36:24 %
+#  %ccm_git_file_name: 2026-11-09-docs.pkg %
+#  %ccm_git_path: promote/packages/2026-11-09-docs.pkg %
+#  %ccm_git_language_mode: pkg %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: utf-8 %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 1085 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# The first real package: documentation only.
+#
+# Chosen as the first promotion because every path here is INERT on a deploy host —
+# MkDocs publishes docs_dir: wiki, so nothing in docs/ is consumed by a running
+# service. A failure here is unambiguously a failure of the mechanism, not of one of a
+# hundred changes.
+#
+# Nothing in this file requires approval: no workflow, no unit, no vhost, no logrotate
+# config. If a later edit adds one of those, `build` will refuse until the entry is
+# marked with '!', which is the point.
+#
+# See docs/design/promotion-model.md section 4.2 for the grammar.
+
+package:  2026-11-09-docs
+app:      termitetowers-core
+from:     dev1
+to:       uat1
+reason:   prove the promote mechanism end to end with inert documentation paths
+
+# Design and runbook: the artifacts this promotion model is described in.
++ docs/design/promotion-model.md
++ docs/runbooks/host-deploy-runbook.md
+
+# Status documents. Volatile by nature; promoted so the first package exercises more
+# than one directory depth.
++ docs/status/active-context.md
++ docs/status/progress.md

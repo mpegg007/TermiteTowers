@@ -1,0 +1,47 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: promote/policy/deny.txt@210 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 138ac802bfa9528daeb084205ab886ce6b99b765 %
+#  %ccm_git_commit_id: 4575bac8623d5f9957178f66e9fe98044d929d4d %
+#  %ccm_git_commit_count: 210 %
+#  %ccm_git_commit_date: 2026-11-09 14:36:53 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: promote: package parser, build subcommand, and policy files %
+#  %ccm_git_modify_date: 2026-11-09 14:36:54 %
+#  %ccm_git_file_last_modified: 2026-11-09 14:36:24 %
+#  %ccm_git_file_name: deny.txt %
+#  %ccm_git_path: promote/policy/deny.txt %
+#  %ccm_git_language_mode: txt %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: utf-8 %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 784 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# Paths that must never appear in a package, in either column.
+#
+# These are the paths where a promotion is not a code change but a credential event.
+# `build` refuses any entry whose source or destination matches.
+#
+# Matching: exact path, trailing '/' for a prefix, leading '*' for a suffix.
+#
+# Note what this list can and cannot do. It stops a package from *naming* a secret.
+# It does not stop a secret from living inside a file that is legitimately promoted —
+# that is what the secret scanner in the commit path is for, and why .gitignore
+# excludes infra/docker/env/*.env from every checkout in the first place.
+#
+# See docs/design/promotion-model.md sections 4.7 and 9.
+
+infra/docker/env/
+*.env
+*.key
+*.pem
+*.age
+*.escrow.age
+keyring.tar.age
+master.txt
+master-identity.txt

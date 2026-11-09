@@ -1,0 +1,44 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: promote/policy/privileged.txt@210 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: a2eaf5c52460185b378c5c3953e114a38c3b82b1 %
+#  %ccm_git_commit_id: 4575bac8623d5f9957178f66e9fe98044d929d4d %
+#  %ccm_git_commit_count: 210 %
+#  %ccm_git_commit_date: 2026-11-09 14:36:53 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: promote: package parser, build subcommand, and policy files %
+#  %ccm_git_modify_date: 2026-11-09 14:36:54 %
+#  %ccm_git_file_last_modified: 2026-11-09 14:36:23 %
+#  %ccm_git_file_name: privileged.txt %
+#  %ccm_git_path: promote/policy/privileged.txt %
+#  %ccm_git_language_mode: txt %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 812 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# Paths whose PRESENCE is behaviour, not content.
+#
+# A workflow on the target branch fires on the next push to it. An installed systemd
+# unit runs. An enabled vhost listens. A logrotate file is picked up on the next
+# rotation. Promoting one of these can redeploy, restart or expose something with no
+# content change at all, so `build` refuses unless the package entry carries an
+# explicit `!`.
+#
+# The check is bidirectional: a missing `!` fails, and a `!` on a path that is NOT in
+# this file also fails. That keeps the human's approval and the machine's
+# classification from drifting apart in either direction.
+#
+# Matching: a trailing '/' means a path prefix.
+#
+# See docs/design/promotion-model.md section 9.
+
+.github/workflows/
+infra/systemd/
+infra/nginx/sites-available/
+infra/logrotate/logrotate.d/
