@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: docs/runbooks/host-deploy-runbook.md % -->
-<!-- %ccm_git_object_id: docs/runbooks/host-deploy-runbook.md@203 % -->
-<!-- %ccm_git_commit_date: 2026-11-09 14:06:35 -0500 % -->
+<!-- %ccm_git_object_id: docs/runbooks/host-deploy-runbook.md@207 % -->
+<!-- %ccm_git_commit_date: 2026-11-09 14:29:02 -0500 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: promotion: manifest inventory, record generator, deploy archive/restore % -->
+<!-- %ccm_git_commit_message: docs: drop the dit tier; static validation becomes a CI gate on the promote branch % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-11-09 mpegg promotion: manifest inventory, record generator, deploy archive/restore -->
 <!-- %git_commit_history: 2026-10-28 mpegg refactor(context): retire memory-bank and add -->
 # Host deploy runbook — bootstrapping a `<svc>-deploy` runner + `/srv/<env>/<svc>` prod dir
 
@@ -25,9 +26,11 @@
 > standing up a runner and its `/srv/<env>/<svc>` directory; it does not define the
 > promotion path.
 >
-> **Tiers:** `dev1` (source, never reset) → `dit` (static validation, no services, so
-> no secrets needed) → `uat1` (the runtime tier) → `prd`. `sit` and `uat` are test
-> *phases*, not environments — do not add a directory for them.
+> **Tiers:** `dev1` (source, never reset) → `uat1` (the runtime tier) → `prd`. `sit`,
+> `dit` and `uat` are **not** environments here: `sit`/`uat` name test phases, and a
+> `dit` tier was dropped on 2026-11-09 because static validation is a CI gate on the
+> promote branch rather than a machine with a destination. Do not add a directory for
+> any of them.
 >
 > **Deploy record.** Each deploy writes `.deployed-manifest` and `.deployed-commit`
 > into `/srv/<env>/`, deliberately **outside** the run area, so `rsync --delete`

@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: docs/design/promotion-model.md % -->
-<!-- %ccm_git_object_id: docs/design/promotion-model.md@204 % -->
-<!-- %ccm_git_commit_date: 2026-11-09 14:19:49 -0500 % -->
+<!-- %ccm_git_object_id: docs/design/promotion-model.md@207 % -->
+<!-- %ccm_git_commit_date: 2026-11-09 14:29:02 -0500 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: nginx: retire tag-viewer symlinks into AnalAcres; document the publish gap % -->
+<!-- %ccm_git_commit_message: docs: drop the dit tier; static validation becomes a CI gate on the promote branch % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-11-09 mpegg nginx: retire tag-viewer symlinks into AnalAcres; document the publish gap -->
 <!-- %git_commit_history: 2026-11-09 mpegg promotion: manifest inventory, record generator, deploy archive/restore -->
 # Promotion model — manifest-based promotion
 
@@ -69,25 +70,40 @@ Rungs differ by **reset policy**, not by seniority:
 | Tier | Reset policy | Purpose | History is |
 |---|---|---|---|
 | `dev1` | never reset, deliberately messy | the work | the work |
-| `dit` | regenerated from resolved `latest` on every promote | static validation: does the tree resolve | worthless as a record |
-| `uat1` | accumulated, promoted into | the runtime tier; services actually start | QA/smoke surface |
+| `uat1` | accumulated, promoted into; may accept fixes | the runtime tier: services actually start | the smoke surface |
 | `prd` | accumulated | production | the promote records |
-
-`dit` is a **static** rung. It needs no services, therefore no secrets, therefore
-it is not blocked by the secrets prerequisite that `uat1` is. Its checks are: the
-record applies cleanly, the inventory resolves, dependent files exist, config files
-parse, the residual report is empty.
 
 `sit` and `uat` are **test phases**, not environments. Do not add an environment
 for them.
 
-Adding an integration rung (`int`/`dit`) that aggregates multiple dev branches is
-**deferred** until a second dev branch exists. The inventory schema already
-supports it, because every record entry carries its own source ref and commit.
+### Why there is no `dit`
 
-Because `dit` is regenerated, two rebuilds of identical content produce **different
-commits with identical trees**. Any "did anything change" test must therefore be
-content-based, never commit-identity-based.
+A `dit` rung was considered and **dropped on 2026-11-09**. It existed for two
+reasons, and both have since gone:
+
+1. **Separating the operator's smoke test from QA's acceptance test.** There is no
+   QA here — the same person does both — so a separate clean room separates a person
+   from themselves. That is a burden, not a gate.
+2. **Acting as the completeness catch-net**, because in a transfer-spec manifest
+   forgetting is silent by default. The ownership-derived record generator replaced
+   that: `A`/`M` come from `owned ∧ at_source`, `D` from `owned ∧ ¬at_source`, and
+   `residual` reports source paths no inventory owns. Forgetting is now a mechanism
+   failure with a visible report, not an unmarked default.
+
+**The static validation the rung would have performed is retained as a CI job on the
+promote branch, not as a tier.** The checks are unchanged — the record applies
+cleanly, every blob verifies, every destination appears once, dependent files exist,
+config files parse, the residual report is empty — but they run as a gate over a
+branch, with no destination directory and no environment to keep alive.
+
+An integration rung aggregating several dev branches remains possible later, and the
+record format already supports it: every entry carries its own source ref and commit.
+Reintroduce a tier then, not now. This section exists so the question is not
+re-litigated from scratch.
+
+Because `uat1` accumulates, a promote may pin `uat1` rather than `dev1` for a fixed
+path. That divergence is legitimate and the drift report is what reminds you to
+back-port it.
 
 ---
 
@@ -363,7 +379,7 @@ promoting one can redeploy, restart or expose something with no content change.
 | D3 | Leaf paths only, no directories or globs | determinism and reviewability | verbosity |
 | D4 | `latest` resolved at generate time | reproducibility, meaningful dry run, replay | authoring step |
 | D5 | Per-entry source pin | fan-in from multiple dev branches later | slightly larger records |
-| D6 | `dit` as a static rung | completeness catch-net with no services, so no secrets prerequisite | one more branch |
+| D6 | No `dit` tier; static validation is a CI gate on the promote branch | the rung's justification was the silent-forgetting failure, which the ownership-derived record removed; one operator means no QA/smoke separation to preserve | `uat1` is the only pre-prod gate, so it is now mandatory rather than one of two |
 | D7 | Blind file-based `DELETE` | git retains the blob; archive encloses the drifted case | a drifted target file can be removed without an abort |
 | D8 | Frozen-origin CCM headers | provenance survives promotion; prd review diff stays clean | headers disagree with their branch; hooks must never run on targets |
 | D9 | Hooks left unguarded for now | hooks exist only in the workstation clone | a written precondition that must be checked before the engine gains hooks |
@@ -389,8 +405,8 @@ promoting one can redeploy, restart or expose something with no content change.
 | P5 | Directory entries make the manifest unbounded | closed: leaf paths only |
 | P6 | Fixes made below the promotion line | closed: D13 |
 | P7 | Divergence forever | closed: one-way door enforced |
-| P8 | A validation rung that proves nothing | closed: `dit` is static, `uat1` is the runtime gate |
-| P9 | Promoted subset not self-consistent | closed by `dit` static validation |
+| P8 | A validation rung that proves nothing | closed: static checks are a CI gate, `uat1` is the runtime gate |
+| P9 | Promoted subset not self-consistent | closed by the static gate's dependent-file and parse checks |
 | P10 | Losing the change as a revertable unit | closed: one record is one unit |
 | P11 | Target never forgets; behaviour-bearing orphans | closed: file `DELETE`, plus section 9 approvals |
 | P12 | Symlink dereference leaks secret trees | closed: enumerate from git, reject absolute targets, no `120000` promotion |
@@ -417,7 +433,8 @@ promoting one can redeploy, restart or expose something with no content change.
 2. **`uat1` secrets prerequisite.** `.gitignore` excludes `infra/docker/env/*.env`,
    so no checkout has secrets. Until secrets live in one root outside every
    checkout and are symlinked in, `uat1` can receive files but cannot run services.
-   `dit` is not blocked by this.
+   With `dit` dropped, this is now the **only** remaining obstacle between a static
+   gate and a real pre-production rehearsal.
 3. **Tier naming cleanup.** `prd` currently runs the dev1-named tree. Without the
    cleanup, a promotion to `prd` has no target that differs from the source, so it
    proves nothing.
@@ -461,7 +478,7 @@ Measured in dependency, not duration.
 4. Promote record generator, with `latest` resolution and ownership-derived deletes.
 5. Validation checks: leaf-only, one entry per destination, cross-manifest
    uniqueness, case collisions, residual report.
-6. `dit` static validation workflow.
+6. Static validation as a CI gate over the promote branch — no tier, no destination.
 7. `uat1` workflow, after the secrets prerequisite.
 8. `prd` apply step: pre-deploy snapshot, required reviewer, tag after amend.
 9. Engine repo and credentials.
@@ -482,5 +499,5 @@ script refuses a non-empty run area that has no baseline: in that state every ex
 file would be classified as unauthorised and purged without being archived. Remove the
 variable immediately after that deploy.
 
-Still unimplemented, in build order: inventory generator, promote record generator, the
-validation checks, `dit` static validation, `uat1`, the engine, and the `prd` apply step.
+Still unimplemented, in build order: the `apply` subcommand, the static CI gate, `uat1`,
+the engine, and the `prd` apply step.
