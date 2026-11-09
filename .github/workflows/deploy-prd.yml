@@ -1,26 +1,26 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: .github/workflows/deploy-prd.yml:170 %
+#  %ccm_git_object_id: .github/workflows/deploy-prd.yml@203 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 2e543969d1779580bf5ee2d997db5a6b566e33ed %
-#  %ccm_git_commit_id: 1031eeabb7a7ea4c48865765ab0553154429a3b9 %
-#  %ccm_git_commit_count: 170 %
-#  %ccm_git_commit_date: 2026-10-04 12:12:45 -0400 %
+#  %ccm_git_blob_sha: 983d63f9808f0589b33bf4a79c9bd45e3f9f0c11 %
+#  %ccm_git_commit_id: a29b67ecbd66adfe92276731fcb2047f7064a4ab %
+#  %ccm_git_commit_count: 203 %
+#  %ccm_git_commit_date: 2026-11-09 14:06:35 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: deploy-prd fix %
-#  %ccm_git_modify_date: 2026-10-04 12:12:46 %
-#  %ccm_git_file_last_modified: 2026-10-04 12:12:20 %
+#  %ccm_git_commit_message: promotion: manifest inventory, record generator, deploy archive/restore %
+#  %ccm_git_modify_date: 2026-11-09 14:06:35 %
+#  %ccm_git_file_last_modified: 2026-11-09 14:03:19 %
 #  %ccm_git_file_name: deploy-prd.yml %
 #  %ccm_git_path: .github/workflows/deploy-prd.yml %
 #  %ccm_git_language_mode: yaml %
 #  %ccm_git_file_type: text/plain %
-#  %ccm_git_file_encoding: us-ascii %
-#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_file_encoding: utf-8 %
+#  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 1694 %
+#  %ccm_git_size: 3221 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 name: Deploy Production
 
@@ -46,9 +46,42 @@ jobs:
       - tt-prd
     steps:
       - uses: actions/checkout@v4
+
+      # MUST run before rsync: rsync --delete purges and overwrites in a single pass,
+      # so this is the last moment the drifted bytes exist. Fatal on failure, skipped
+      # when nothing is at risk. See scripts/deploy/tt-deploy-archive.sh.
+      #
+      # NOTE: this file is edited on dev1 and only takes effect once promotion puts it
+      # on prd, because workflows run from the pushed ref.
+      - name: Archive run-area drift before the deploy destroys it
+        run: |
+          extra=""
+          if [ "${TT_ARCHIVE_BOOTSTRAP:-0}" = "1" ]; then
+            echo "::warning::TT_ARCHIVE_BOOTSTRAP=1 — first recorded deploy, nothing will be archived"
+            extra="--allow-bootstrap"
+          fi
+          bash scripts/deploy/tt-deploy-archive.sh \
+            --run-area /srv/prd/tt \
+            --state-dir /srv/prd $extra
+        env:
+          # See deploy-dev1.yml. In this repo, prd is the tier where a mistaken
+          # bootstrap matters most, so the variable should be removed immediately
+          # after the first recorded deploy, not left set.
+          TT_ARCHIVE_BOOTSTRAP: ${{ vars.TT_ARCHIVE_BOOTSTRAP }}
+
       - name: Synchronize approved revision
         run: >-
           rsync -a --delete --exclude=.env --exclude=.venv --exclude=.git
           "$GITHUB_WORKSPACE/" /srv/prd/tt/
+
+      # Runs before the dependency step on purpose: that step is expected-red by
+      # design, and the record must still be written when the job concludes red.
+      - name: Record deployed state
+        run: |
+          bash scripts/deploy/tt-deploy-record.sh \
+            --run-area /srv/prd/tt \
+            --state-dir /srv/prd \
+            --commit "${GITHUB_SHA}"
+
       - name: Install production dependencies
         run: /srv/prd/tt/.venv/bin/python -m pip install -e /srv/prd/tt

@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: docs/runbooks/host-deploy-runbook.md % -->
-<!-- %ccm_git_object_id: docs/runbooks/host-deploy-runbook.md@190 % -->
-<!-- %ccm_git_commit_date: 2026-10-28 16:35:23 -0400 % -->
+<!-- %ccm_git_object_id: docs/runbooks/host-deploy-runbook.md@203 % -->
+<!-- %ccm_git_commit_date: 2026-11-09 14:06:35 -0500 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: refactor(context): retire memory-bank and add %%ccm_compact status headers % -->
+<!-- %ccm_git_commit_message: promotion: manifest inventory, record generator, deploy archive/restore % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-10-28 mpegg refactor(context): retire memory-bank and add -->
 # Host deploy runbook — bootstrapping a `<svc>-deploy` runner + `/srv/<env>/<svc>` prod dir
 
 > How to stand up a **new** GitHub Actions self-hosted runner and its production
@@ -18,6 +19,22 @@
 > is an *assumption* rather than a verified one, it is called out inline.
 > **No credentials in this file** — the runner registration token is single-use
 > and expires in ~1 hour; mint a fresh one each time (§4).
+
+> **Promotion is specified elsewhere.** How a change reaches `prd` is defined in
+> [`docs/design/promotion-model.md`](../design/promotion-model.md). This runbook covers
+> standing up a runner and its `/srv/<env>/<svc>` directory; it does not define the
+> promotion path.
+>
+> **Tiers:** `dev1` (source, never reset) → `dit` (static validation, no services, so
+> no secrets needed) → `uat1` (the runtime tier) → `prd`. `sit` and `uat` are test
+> *phases*, not environments — do not add a directory for them.
+>
+> **Deploy record.** Each deploy writes `.deployed-manifest` and `.deployed-commit`
+> into `/srv/<env>/`, deliberately **outside** the run area, so `rsync --delete`
+> cannot reach them. The archive step runs immediately before the rsync and is fatal
+> on failure: it captures the bytes the deploy is about to destroy. Neither exists
+> until the first recorded deploy, which needs the repo variable
+> `TT_ARCHIVE_BOOTSTRAP=1` set for that one run.
 
 ## 1. Naming contract
 
