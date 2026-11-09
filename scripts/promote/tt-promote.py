@@ -2,26 +2,26 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: scripts/promote/tt-promote.py@213 %
+#  %ccm_git_object_id: scripts/promote/tt-promote.py@214 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: fe37504d7474f225301aa28dc9b81384c90c603d %
-#  %ccm_git_commit_id: 9c7d1423abce1097a5227b45ff32bd3357facf0a %
-#  %ccm_git_commit_count: 213 %
-#  %ccm_git_commit_date: 2026-11-09 14:55:21 -0500 %
+#  %ccm_git_blob_sha: 4d203dd8092657d0632ebe6fc6ec840f86753bf8 %
+#  %ccm_git_commit_id: cc3baf30bbab896c3697e0621ed5de6f29ab604a %
+#  %ccm_git_commit_count: 214 %
+#  %ccm_git_commit_date: 2026-11-09 15:19:25 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: promote: two artifacts only — manifest and record; inventory removed (D20) %
-#  %ccm_git_modify_date: 2026-11-09 14:55:22 %
-#  %ccm_git_file_last_modified: 2026-11-09 14:55:08 %
+#  %ccm_git_commit_message: promote: restore the exec bit on the CLI %
+#  %ccm_git_modify_date: 2026-11-09 15:19:26 %
+#  %ccm_git_file_last_modified: 2026-11-09 14:55:22 %
 #  %ccm_git_file_name: tt-promote.py %
 #  %ccm_git_path: scripts/promote/tt-promote.py %
 #  %ccm_git_language_mode: python %
 #  %ccm_git_file_type: text/x-script.python %
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: LF %
-#  %ccm_git_exec: no %
-#  %ccm_git_size: 17081 %
+#  %ccm_git_exec: yes %
+#  %ccm_git_size: 18241 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 """tt-promote — build a pinned promotion record from a hand-authored manifest.
 
