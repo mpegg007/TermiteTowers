@@ -2,18 +2,18 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/dns/godaddy-ddns.sh@197 %
+#  %ccm_git_object_id: infra/dns/godaddy-ddns.sh@200 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 22a721a077f8fd949d4ddaa7cc32c2e9466ac3fd %
-#  %ccm_git_commit_id: 512ed032d52d95f752f5ab7745348060125f5f7a %
-#  %ccm_git_commit_count: 197 %
-#  %ccm_git_commit_date: 2026-10-31 16:44:04 -0400 %
+#  %ccm_git_blob_sha: 73b3af3e865a6df7da61b0ccb2e8556e0b48da02 %
+#  %ccm_git_commit_id: 07c638fcfb4804b40c226db94358725a8b6ef636 %
+#  %ccm_git_commit_count: 200 %
+#  %ccm_git_commit_date: 2026-11-09 10:16:57 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: feat(nginx): expose wordbank and soundbank, make analacres hosts gate-ready %
-#  %ccm_git_modify_date: 2026-10-31 16:44:04 %
-#  %ccm_git_file_last_modified: 2026-10-31 16:36:58 %
+#  %ccm_git_commit_message: zoo.261109 %
+#  %ccm_git_modify_date: 2026-11-09 10:16:58 %
+#  %ccm_git_file_last_modified: 2026-11-08 14:23:49 %
 #  %ccm_git_file_name: godaddy-ddns.sh %
 #  %ccm_git_path: infra/dns/godaddy-ddns.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,7 +21,7 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 3619 %
+#  %ccm_git_size: 3920 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 # GoDaddy Dynamic DNS updater
 # Checks current public IP and updates GoDaddy A records if changed.
@@ -49,6 +49,10 @@ DDNS_DOMAINS=(
     # portal, which is Phase 2 (wiki/runbook-authelia.md).
     "analacres.ca:wordbank"
     "analacres.ca:soundbank"
+    # Nextcloud, published under a neutral name. The public hostname is
+    # filebank.analacres.ca; the container, dataset and database keep the
+    # name "nextcloud". nextcloud.termitetowers.ca is a redirect only.
+    "analacres.ca:filebank"
 )
 
 ENV_FILE="/etc/letsencrypt/godaddy.env"

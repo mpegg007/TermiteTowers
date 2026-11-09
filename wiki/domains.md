@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: wiki/domains.md % -->
-<!-- %ccm_git_object_id: wiki/domains.md@197 % -->
-<!-- %ccm_git_commit_date: 2026-10-31 16:44:04 -0400 % -->
+<!-- %ccm_git_object_id: wiki/domains.md@200 % -->
+<!-- %ccm_git_commit_date: 2026-11-09 10:16:57 -0500 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: feat(nginx): expose wordbank and soundbank, make analacres hosts gate-ready % -->
+<!-- %ccm_git_commit_message: zoo.261109 % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-10-31 mpegg feat(nginx): expose wordbank and soundbank, make analacres hosts gate-ready -->
 <!-- %git_commit_history: 2026-09-25 mpegg chore(homarr): retire Homarr - configured but never used day to day -->
  <!-- %git_commit_history: 2025-10-10 mpegg  big update  -->
 <!--
@@ -75,6 +76,10 @@ GoDaddy DNS-01 hooks:
 - `memorylab.analacres.ca` - Immich photo library
 - `wordbank.analacres.ca` - AudioBookshelf audiobook library
 - `soundbank.analacres.ca` - Navidrome music library
+- `filebank.analacres.ca` - Nextcloud file sync and sharing. Named for the
+  family grammar (`-bank` = a store of things), not after the software, so the
+  public URL does not advertise what to probe. Internally still "nextcloud":
+  container, ZFS dataset and database keep that name.
 - `auth.analacres.ca` - Authelia SSO portal (planned, Phase 2)
 
 All three service hostnames are **ungated** today, but their vhosts are already

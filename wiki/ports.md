@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: wiki/ports.md % -->
-<!-- %ccm_git_object_id: wiki/ports.md@199 % -->
-<!-- %ccm_git_commit_date: 2026-10-31 16:55:50 -0400 % -->
+<!-- %ccm_git_object_id: wiki/ports.md@200 % -->
+<!-- %ccm_git_commit_date: 2026-11-09 10:16:57 -0500 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: fix(docs): correct the edge model — WAN 443 is DNATed to 3261 % -->
+<!-- %ccm_git_commit_message: zoo.261109 % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-10-31 mpegg fix(docs): correct the edge model — WAN 443 is DNATed to 3261 -->
 <!-- %git_commit_history: 2026-10-31 mpegg feat(nginx): expose wordbank and soundbank, make analacres hosts gate-ready -->
 <!-- %git_commit_history: 2026-10-29 mpegg mkdocs updates -->
 <!-- %git_commit_history: 2026-10-28 mpegg misc updates -->
@@ -85,7 +86,7 @@ This page tracks host and service ports used across TermiteTowers using a system
 | Wiki.js                        | wiki.termitetowers.ca            | 3200      | 3000           | Content   | ✅ Correct       |
 | MkDocs Documentation           | docs.termitetowers.ca            | 3210      | 8000           | Content   | ✅ **NEW**       |
 | Blog/CMS                       | blog.termitetowers.ca            | 3220      | TBD            | Content   | 🕒 Planned       |
-| Nextcloud                      | nextcloud.termitetowers.ca       | 3230      | 80             | Content   | ✅ **NEW**       |
+| Nextcloud (filebank)           | filebank.analacres.ca            | 3230      | 80             | Content   | ✅ Live — listener 3261; nextcloud.termitetowers.ca redirects |
 | File Sharing                   | fileshare.termitetowers.ca       | 3240      | TBD            | Content   | 🕒 Planned       |
 | News/RSS                       | news.termitetowers.ca            | 3250      | TBD            | Content   | ✅ **NEW**       |
 | justanotherhuman.ca (HTTP)     | justanotherhuman.ca              | 3259      | —              | Content   | ✅ External only |

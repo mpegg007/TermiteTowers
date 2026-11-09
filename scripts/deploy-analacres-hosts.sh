@@ -2,18 +2,18 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: scripts/deploy-analacres-hosts.sh@199 %
+#  %ccm_git_object_id: scripts/deploy-analacres-hosts.sh@200 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: f565ef841dfd8742b8de9417f1c7e6ee5887f412 %
-#  %ccm_git_commit_id: 210c84596d2f9cb25015a8cbb27cab1dea0a6092 %
-#  %ccm_git_commit_count: 199 %
-#  %ccm_git_commit_date: 2026-10-31 16:55:50 -0400 %
+#  %ccm_git_blob_sha: 6346c31a297a00a24d0d434e6a57498e2a1205ca %
+#  %ccm_git_commit_id: 07c638fcfb4804b40c226db94358725a8b6ef636 %
+#  %ccm_git_commit_count: 200 %
+#  %ccm_git_commit_date: 2026-11-09 10:16:57 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: fix(docs): correct the edge model — WAN 443 is DNATed to 3261 %
-#  %ccm_git_modify_date: 2026-10-31 16:55:50 %
-#  %ccm_git_file_last_modified: 2026-10-31 16:55:06 %
+#  %ccm_git_commit_message: zoo.261109 %
+#  %ccm_git_modify_date: 2026-11-09 10:16:58 %
+#  %ccm_git_file_last_modified: 2026-11-08 14:23:56 %
 #  %ccm_git_file_name: deploy-analacres-hosts.sh %
 #  %ccm_git_path: scripts/deploy-analacres-hosts.sh %
 #  %ccm_git_language_mode: shellscript %
@@ -21,7 +21,7 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 13868 %
+#  %ccm_git_size: 14231 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 #
 # deploy-analacres-hosts.sh — one-shot, idempotent deploy of the analacres.ca
@@ -63,9 +63,9 @@ GODADDY_ENV="/etc/letsencrypt/godaddy.env"
 BACKUP_ROOT="/var/backups/tt-nginx"
 
 # vhost file → /etc/nginx/sites-available name
-VHOSTS=(immich library music)
+VHOSTS=(immich library music nextcloud)
 # hostnames needing their own certificate in this phase
-CERT_HOSTS=(wordbank.analacres.ca soundbank.analacres.ca)
+CERT_HOSTS=(wordbank.analacres.ca soundbank.analacres.ca filebank.analacres.ca)
 SNIPPETS=(tt-gate.conf tt-gate-location.conf)
 
 DRY_RUN=0
@@ -250,6 +250,10 @@ check "soundbank root"     soundbank.analacres.ca:3261  /
 check "soundbank /rest/"   soundbank.analacres.ca:3261  '/rest/ping.view?v=1.16.1&c=tt&f=json'
 check "memorylab root"     memorylab.analacres.ca:3261  /
 check "memorylab /api/"    memorylab.analacres.ca:3261  /api/server/ping
+check "filebank root"      filebank.analacres.ca:3261   /
+check "filebank /status"   filebank.analacres.ca:3261   /status.php
+check "filebank caldav"    filebank.analacres.ca:3261   /.well-known/caldav
+check "old name 443"       nextcloud.termitetowers.ca:443 /
 check "pics (unchanged)"   pics.justanotherhuman.ca:3261 / k
 check "library. 443"       library.termitetowers.ca:443   /
 check "music. 443"         music.termitetowers.ca:443     /
@@ -275,6 +279,7 @@ check_public() {
 check_public "wordbank.analacres.ca"  wordbank.analacres.ca
 check_public "soundbank.analacres.ca" soundbank.analacres.ca
 check_public "memorylab.analacres.ca" memorylab.analacres.ca
+check_public "filebank.analacres.ca"  filebank.analacres.ca
 
 echo
 c_info "expected: roots 200 (soundbank 302 to /app/ is Navidrome itself, not a gate);"
