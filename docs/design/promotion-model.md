@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: docs/design/promotion-model.md % -->
-<!-- %ccm_git_object_id: docs/design/promotion-model.md@209 % -->
-<!-- %ccm_git_commit_date: 2026-11-09 14:35:55 -0500 % -->
+<!-- %ccm_git_object_id: docs/design/promotion-model.md@213 % -->
+<!-- %ccm_git_commit_date: 2026-11-09 14:55:21 -0500 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: docs: package spec — curated selection between inventory and record % -->
+<!-- %ccm_git_commit_message: promote: two artifacts only — manifest and record; inventory removed (D20) % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-11-09 mpegg docs: package spec — curated selection between inventory and record -->
 <!-- %git_commit_history: 2026-11-09 mpegg docs: remove the last dit references from the flow and audit sections -->
 <!-- %git_commit_history: 2026-11-09 mpegg docs: drop the dit tier; static validation becomes a CI gate on the promote branch -->
 <!-- %git_commit_history: 2026-11-09 mpegg nginx: retire tag-viewer symlinks into AnalAcres; document the publish gap -->
@@ -52,17 +53,16 @@ evidence that content on `prd` was deliberate.
 
 ## 2. The model
 
-- An **inventory** declares which paths an app owns, and where each one lands per
-  tier. Leaf paths only. Slow-changing. Reviewed when it changes.
-- A **package** is the curated selection for one promotion, authored by hand. It is
-  the only artifact that expresses intent, and the only one allowed to contain a
-  symbolic ref.
-- A **promote record** is generated from a package. It is small, pins every operation
-  to a concrete commit and blob, and contains no refs at all. It is reviewed every
-  time.
-- **Ownership defines the domain, so completeness is checkable.** For owned paths:
-  present at source and content differs ⇒ copy; absent at source and present on the
-  target ⇒ delete. Nothing can be silently omitted *within* the ownership domain.
+- A **manifest** is the curated selection for one promotion, authored by hand. It
+  names the exact files to promote, and may remap or pin any of them. It is the only
+  artifact that expresses intent, and the only one allowed to contain a symbolic ref.
+  It has no required size: five lines, or two hundred when a packaging step wants the
+  whole list.
+- A **record** is generated from a manifest. It pins every operation to a concrete
+  commit and blob, and contains no refs at all. It is reviewed every time.
+- **Only real changes land.** A two-hundred-entry manifest that changes one file
+  produces a one-file commit on the target, because the apply writes each blob and an
+  identical blob produces no diff. Manifest size is a style choice, not a risk.
 - The record is the **audit artifact**. Not the git history of `prd`, not the
   `uat1` tree's history, not the CCM history trail.
 
@@ -90,15 +90,15 @@ reasons, and both have since gone:
    QA here — the same person does both — so a separate clean room separates a person
    from themselves. That is a burden, not a gate.
 2. **Acting as the completeness catch-net**, because in a transfer-spec manifest
-   forgetting is silent by default. The ownership-derived record generator replaced
-   that: `A`/`M` come from `owned ∧ at_source`, `D` from `owned ∧ ¬at_source`, and
-   `residual` reports source paths no inventory owns. Forgetting is now a mechanism
-   failure with a visible report, not an unmarked default.
+   forgetting is silent by default. That is answered by a diff instead: `git diff
+   origin/prd...dev1` lists every add, modify and delete between the tiers, so "what
+   did I miss" is a query over the two trees, not a third file that can itself be
+   stale.
 
 **The static validation the rung would have performed is retained as a CI job on the
 promote branch, not as a tier.** The checks are unchanged — the record applies
 cleanly, every blob verifies, every destination appears once, dependent files exist,
-config files parse, the residual report is empty — but they run as a gate over a
+config files parse, and no deletion is unaccounted for — but they run as a gate over a
 branch, with no destination directory and no environment to keep alive.
 
 An integration rung aggregating several dev branches remains possible later, and the
@@ -114,26 +114,21 @@ back-port it.
 
 ## 4. Artifacts
 
-### 4.1 Inventory
+There are two: a **manifest** you author, and a **record** it resolves to. That is the
+whole model.
 
-One line per owned path, always a leaf file. Never a directory, never a glob, never
-an exclude pattern — an exclusion would be an implicit unbounded delete.
+An **inventory** — a committed list of every path an app owns — is deliberately *not*
+an artifact here. It was removed on 2026-11-09 (D20). If a build or packaging step
+needs a file list, that list is an input to *that* process and can be expressed as a
+manifest. Until such a step exists there is nothing for an inventory to do, and a
+stored file would only cache something git already answers:
 
+```bash
+git diff --diff-filter=D origin/prd...dev1    # what should be deleted
+git diff --name-status origin/prd...dev1      # what changed at all
 ```
-src/path/in/repo          ->  dst/path/in/tier
-infra/docker/nextcloud-dev1.yml -> infra/docker/nextcloud-dev1.yml
-```
 
-Rules:
-
-- **Enumerated from `git ls-tree -r --name-only <ref>`, never from the filesystem.**
-  A disk walk follows symlinks and silently pulls in everything reachable through
-  them, including trees that contain secrets.
-- For an app with 200+ files this is 200+ lines. That is deliberate: it makes
-  ownership explicit, makes decommissioning a list edit, and makes
-  cross-manifest destination collisions statically checkable.
-
-### 4.2 The package — curated selection
+### 4.1 The manifest — curated selection
 
 The package is the only artifact a human authors per promotion. It says *what you
 chose*, which the inventory cannot say and the record must not invent. It is also the
@@ -247,7 +242,7 @@ promote/
 `policy/` exists so that what is forbidden and what needs approval are diffs in review
 rather than constants buried in the tool.
 
-### 4.3 Promote record
+### 4.2 Promote record
 
 ```yaml
 record_version: 1
@@ -267,7 +262,7 @@ entries:
     dst: scripts/retired-thing.sh
 ```
 
-### 4.4 Pinning rules
+### 4.3 Pinning rules
 
 - **`latest` is an authoring-time alias and is resolved to a concrete SHA at
   generate time.** A committed record never contains `latest`. A record that
@@ -279,33 +274,11 @@ entries:
 - Cascading overrides must record their **resolved effective entry**, not the
   pattern that produced it. Otherwise the artifact no longer states what lands.
 
-### 4.5 Derivation from ownership
-
-Used when a package does not enumerate every path — the residual report and the
-ownership-staleness check still need this, and a package is a selection, not a
-replacement for knowing what is owned.
-
-```
-owned      = inventory paths mapped to the destination tier
-at_source  = owned paths whose source path exists at source_commit
-copy       = at_source AND destination content differs
-delete     = owned AND NOT at_source AND destination has the path
-```
-
-### 4.6 Residual report
-
-`source tree` minus `inventory` minus a declared ignore list. This is the
-**inventory-staleness alarm**: it answers "are there source files this app should
-own but does not list". It is not a per-promote checklist, and it must stay short
-enough to be read — which is what the ignore list is for.
-
-### 4.7 Validation rules
+### 4.4 Validation rules
 
 - Leaf paths only; no directories, no globs.
 - **At most one entry per destination path within a record**, so a
   replace-with-delete cannot be interpreted two ways by resolution order.
-- **Destination-path uniqueness across all inventories** for a tier, so two apps
-  claiming one destination fail at rest.
 - **Case-collision check** for case-insensitive destinations: a delete naming
   `Foo.yml` must not be able to remove `foo.yml`.
 - A path whose git mode is `120000` (symlink) is **not promotable** unless
@@ -317,9 +290,9 @@ enough to be read — which is what the ignore list is for.
 
 ```mermaid
 flowchart LR
-  DEV[dev1 commits freely] --> GEN[generate record from inventory]
-  GEN --> PIN[resolve latest to SHA]
-  PIN --> GATE[static validation as a CI gate]
+  DEV[dev1 commits freely] --> MAN[write a manifest]
+  MAN --> GEN[build: resolve refs to commits and blobs]
+  GEN --> GATE[static validation as a CI gate]
   GATE --> UAT[uat1 runtime test]
   UAT --> PRD[prd merge]
   PRD --> ARCH[archive then rsync]
@@ -498,11 +471,11 @@ promoting one can redeploy, restart or expose something with no content change.
 | # | Decision | Rationale | Accepted debt |
 |---|---|---|---|
 | D1 | Manifest promotion **replaces** the current PR-merge-into-`prd` flow | non-atomic commits; partial promotion; replayable rollback; ground truth shows `prd` is 24 behind with zero divergent content, so the switch costs nothing to make | one-way door; no cross-tier bisect |
-| D2 | Inventory + promote record as two artifacts | 200-line review problem solved without changing the apply mechanism | two files to keep in step |
+| D2 | ~~Inventory + record~~ → **manifest + record** (superseded by D20) | the 200-line review problem is solved by the apply mechanism itself: unchanged blobs produce no diff, so a large manifest still yields a small commit | none |
 | D3 | Leaf paths only, no directories or globs | determinism and reviewability | verbosity |
 | D4 | `latest` resolved at generate time | reproducibility, meaningful dry run, replay | authoring step |
 | D5 | Per-entry source pin | fan-in from multiple dev branches later | slightly larger records |
-| D6 | No `dit` tier; static validation is a CI gate on the promote branch | the rung's justification was the silent-forgetting failure, which the ownership-derived record removed; one operator means no QA/smoke separation to preserve | `uat1` is the only pre-prod gate, so it is now mandatory rather than one of two |
+| D6 | No `dit` tier; static validation is a CI gate on the promote branch | the rung's justification was the silent-forgetting failure, which the tier-to-tier diff answers; one operator means no QA/smoke separation to preserve | `uat1` is the only pre-prod gate, so it is now mandatory rather than one of two |
 | D7 | Blind file-based `DELETE` | git retains the blob; archive encloses the drifted case | a drifted target file can be removed without an abort |
 | D8 | Frozen-origin CCM headers | provenance survives promotion; prd review diff stays clean | headers disagree with their branch; hooks must never run on targets |
 | D9 | Hooks left unguarded for now | hooks exist only in the workstation clone | a written precondition that must be checked before the engine gains hooks |
@@ -514,8 +487,9 @@ promoting one can redeploy, restart or expose something with no content change.
 | D15 | PRs into `prd` are closed as a practice | `prd` mutates only via the engine, so the promote record is the only evidence of intent | no GitHub-native review surface on `prd`; review lives in the engine |
 | D16 | Drift baseline is a hash manifest, not a git tree | depth-1 checkout, and a run area that may not come from a checkout at all | a second file to keep in step with `.deployed-commit` |
 | D17 | `prd1` and `main` are retired | `prd1` is strictly behind `prd`; `main` is strictly behind with no workflows yet is `origin/HEAD` | none |
-| D18 | A hand-authored **package** sits between inventory and record | intent needs a home of its own, and the record must never contain a ref | one more file per promotion, and a package can drift from the inventory |
+| D18 | A hand-authored **manifest** sits between the tiers and the record | intent needs a home of its own, and the record must never contain a ref | one more file per promotion |
 | D19 | Privileged promotion requires a typed `!`, checked both ways | approval cannot silently drift out of sync with the tool's classification | one extra keystroke, and a failed build when the classification changes |
+| D20 | **No inventory artifact.** Removed 2026-11-09, after it was shown to have no consumer | promotion is deliberate selection, not exhaustive copying. Delete visibility and coverage are queries over two refs, not stored state | nothing reminds you a file must be deleted — read `git diff --diff-filter=D` before writing a manifest |
 
 ---
 
@@ -526,7 +500,7 @@ promoting one can redeploy, restart or expose something with no content change.
 | P1 | Purge destroys drifted run-area bytes | closed: archive before rsync, per-path, fatal, plus tested restore |
 | P2 | Whole-file copy carries the tier | accepted debt, D14 |
 | P3 | Undetected `prd` drift | closed: same computation as P1 |
-| P4 | Forgetting is silent in a transfer spec | closed: ownership-derived add/modify/delete; residual report |
+| P4 | Forgetting is silent in a transfer spec | closed: `git diff` between the tiers is the completeness check, and a manifest is a deliberate selection — "forgotten" means "chose not to" |
 | P5 | Directory entries make the manifest unbounded | closed: leaf paths only |
 | P6 | Fixes made below the promotion line | closed: D13 |
 | P7 | Divergence forever | closed: one-way door enforced |

@@ -1,29 +1,66 @@
 #!/usr/bin/env python3
-"""tt-promote — inventory and validation for manifest-based promotion.
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: scripts/promote/tt-promote.py@213 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: fe37504d7474f225301aa28dc9b81384c90c603d %
+#  %ccm_git_commit_id: 9c7d1423abce1097a5227b45ff32bd3357facf0a %
+#  %ccm_git_commit_count: 213 %
+#  %ccm_git_commit_date: 2026-11-09 14:55:21 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: promote: two artifacts only — manifest and record; inventory removed (D20) %
+#  %ccm_git_modify_date: 2026-11-09 14:55:22 %
+#  %ccm_git_file_last_modified: 2026-11-09 14:55:08 %
+#  %ccm_git_file_name: tt-promote.py %
+#  %ccm_git_path: scripts/promote/tt-promote.py %
+#  %ccm_git_language_mode: python %
+#  %ccm_git_file_type: text/x-script.python %
+#  %ccm_git_file_encoding: utf-8 %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 17081 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+"""tt-promote — build a pinned promotion record from a hand-authored manifest.
 
-See docs/design/promotion-model.md. This tool deliberately covers only the parts that
-need no credentials and touch no branches: it reads git objects and writes a text file.
-Applying a promotion record is a separate concern.
+Two artifacts, and only two: a **manifest** you write, and a **record** it resolves to.
+See docs/design/promotion-model.md.
 
-Subcommands
------------
-  inventory  Build an app inventory from a git ref. Enumerates with `git ls-tree -r`,
-             never the filesystem, so symlinked trees (wiki/infra reaches the env
-             directory that holds live secrets) cannot leak into the inventory.
-  validate   Check an inventory against the rules that make promotion deterministic.
-  residual   Report source paths the inventory does not own — the inventory-staleness
-             alarm. Not a per-promote checklist.
+There is deliberately no inventory. A committed list of everything an app owns has no
+consumer in this flow — `build` reads a manifest and nothing else. The two questions an
+inventory used to answer are queries over two refs:
 
-Inventory format
-----------------
-Plain text, one entry per line, leaf files only:
+    git diff --diff-filter=D origin/prd...dev1    # what should be deleted
+    git diff --name-status origin/prd...dev1      # what changed at all
 
-    # comment
-    src/path/in/repo    ->  dst/path/on/target
+If a build or packaging step needs a file list, that is an input to that step, and it is
+expressed as a manifest like any other selection. Until such a step exists, there is
+nothing for an inventory to do.
 
-Blank lines and comments are ignored. Order is preserved on read and normalised on
-write. Text rather than YAML because the review question is "did this line change",
-and a line diff answers it without a parser or indentation rules.
+Manifest format
+---------------
+Header keys, then one entry per line:
+
+    package:  2026-11-09-docs
+    app:      internal-docs
+    from:     dev1
+    to:       uat1
+    reason:   why this selection exists
+
+    + docs/design/promotion-model.md          # copy or update, identity mapping
+    + wiki/ports.md -> docs/ports.md          # remapped destination
+    + infra/docker/x.yml@7c77ce9              # pinned to its own commit
+    - memory-bank/host-deploy-runbook.md      # delete, file only
+
+`from:` is the ONLY place a symbolic ref is allowed. `build` resolves it once, and the
+record carries the commit — a record that resolved at apply time would make the dry run
+meaningless and rollback impossible.
+
+Size is a style choice. A two-hundred-entry manifest that changes one file produces a
+one-file commit on the target, because the apply writes each blob and an identical blob
+produces no diff.
 """
 
 from __future__ import annotations
@@ -39,16 +76,16 @@ from datetime import datetime, timezone
 GLOB_CHARS = set("*?[")
 SYMLINK_MODE = "120000"
 
-# Paths whose *presence* is behaviour: a workflow on the target branch fires on the next
-# push, an installed unit runs, an enabled vhost listens, a logrotate file is picked up on
-# the next rotation. Promoting one can redeploy, restart or expose something with no
-# content change at all, so the record marks them for a second approval.
+# Fallback only. policy/privileged.txt is authoritative when present, so that changing
+# what requires approval is a reviewable diff rather than an edit to this file.
 PRIVILEGED_PREFIXES = (
     ".github/workflows/",
     "infra/systemd/",
     "infra/nginx/sites-available/",
     "infra/logrotate/logrotate.d/",
 )
+
+PACKAGE_REQUIRED_HEADER = ("package", "app", "from", "to", "reason")
 
 EXIT_OK = 0
 EXIT_ERRORS = 1
@@ -61,10 +98,7 @@ class GitError(RuntimeError):
 
 def git(repo_root: str, *args: str) -> bytes:
     """Run git in repo_root and return stdout, raising GitError with stderr on failure."""
-    proc = subprocess.run(
-        ["git", "-C", repo_root, *args],
-        capture_output=True,
-    )
+    proc = subprocess.run(["git", "-C", repo_root, *args], capture_output=True)
     if proc.returncode != 0:
         raise GitError(
             f"git {' '.join(args)} failed ({proc.returncode}): "
@@ -74,11 +108,7 @@ def git(repo_root: str, *args: str) -> bytes:
 
 
 def ls_tree(repo_root: str, ref: str):
-    """Yield (mode, type, sha, path) for every object under ref, recursively.
-
-    `git ls-tree -r` returns blobs only, so directories cannot appear as entries. That
-    is the mechanism behind the leaf-only rule rather than a convention layered on top.
-    """
+    """Yield (mode, type, sha, path) for every blob under ref, recursively."""
     out = git(repo_root, "ls-tree", "-r", "-z", "--full-tree", ref)
     for record in out.split(b"\0"):
         if not record:
@@ -91,440 +121,23 @@ def ls_tree(repo_root: str, ref: str):
         yield mode, otype, sha, path.decode()
 
 
-def blob_text(repo_root: str, sha: str) -> str:
-    return git(repo_root, "cat-file", "blob", sha).decode(errors="replace")
-
-
-# ── inventory model ──────────────────────────────────────────────────────────
-
-
-@dataclass
-class Entry:
-    src: str
-    dst: str
-    line: int
-
-
-@dataclass
-class Inventory:
-    path: str
-    entries: list[Entry] = field(default_factory=list)
-
-    def dsts(self) -> list[str]:
-        return [e.dst for e in self.entries]
-
-    def srcs(self) -> list[str]:
-        return [e.src for e in self.entries]
-
-
-def read_inventory(path: str) -> Inventory:
-    inv = Inventory(path=path)
-    with open(path, encoding="utf-8") as fh:
-        for lineno, raw in enumerate(fh, start=1):
-            line = raw.strip()
-            if not line or line.startswith("#"):
-                continue
-            if "->" not in line:
-                raise ValueError(f"{path}:{lineno}: no '->' separator: {line!r}")
-            src, _, dst = line.partition("->")
-            src, dst = src.strip(), dst.strip()
-            if not src or not dst:
-                raise ValueError(f"{path}:{lineno}: empty src or dst: {line!r}")
-            inv.entries.append(Entry(src=src, dst=dst, line=lineno))
-    return inv
-
-
-def read_ignore(path: str | None) -> list[str]:
-    """Ignore globs for the residual report. Simple suffix/prefix/substring matching.
-
-    Deliberately not fnmatch: the goal is a short, explainable list ("everything under
-    media/", "these three status docs"), not a pattern language nobody can audit.
-    """
-    if not path:
-        return []
-    patterns: list[str] = []
-    with open(path, encoding="utf-8") as fh:
-        for raw in fh:
-            line = raw.strip()
-            if line and not line.startswith("#"):
-                patterns.append(line)
-    return patterns
-
-
-def matches_include(path: str, includes: list[str]) -> bool:
-    """An app may be a SLICE of a tree, not all of it.
-
-    The first promotion should be the smallest thing that proves the pipeline end to
-    end. Promoting 99 paths including 13 privileged ones as the first exercise means a
-    failure is ambiguous: was it the mechanism or one of the 99? Partitioning by
-    deployment concern (docs, nginx, docker, hooks) makes each promotion reviewable and
-    each failure attributable.
-    """
-    return not includes or any(path.startswith(prefix) for prefix in includes)
-
-
-def is_ignored(path: str, patterns: list[str]) -> bool:
-    for pat in patterns:
-        if pat.endswith("/") and path.startswith(pat):
-            return True
-        if pat.startswith("*") and path.endswith(pat[1:]):
-            return True
-        if pat == path:
-            return True
-    return False
-
-
-# ── subcommands ──────────────────────────────────────────────────────────────
-
-
-def cmd_inventory(args: argparse.Namespace) -> int:
-    patterns = read_ignore(args.ignore)
-    ref = args.ref or "HEAD"
-
-    try:
-        objects = list(ls_tree(args.repo_root, ref))
-    except GitError as exc:
-        print(f"[ERROR] {exc}", file=sys.stderr)
-        return EXIT_USAGE
-
-    prefix = args.dst_prefix or ""
-    includes = args.include or []
-    entries: list[Entry] = []
-    skipped_symlink: list[tuple[str, str]] = []
-    skipped_ignore = 0
-    skipped_include = 0
-    seen_src: set[str] = set()
-
-    for mode, otype, sha, path in objects:
-        if otype != "blob":
-            continue
-        if not matches_include(path, includes):
-            skipped_include += 1
-            continue
-        if is_ignored(path, patterns):
-            skipped_ignore += 1
-            continue
-        if mode == SYMLINK_MODE:
-            target = blob_text(args.repo_root, sha).strip()
-            skipped_symlink.append((path, target))
-            continue
-        entries.append(Entry(src=path, dst=prefix + path, line=0))
-        seen_src.add(path)
-
-    # --seed-ref exists because of a hole that is invisible until the first promotion:
-    # an inventory generated from the source branch cannot own a path the source has
-    # already deleted, so nothing can ever target that path for removal and it stays on
-    # the target forever. The inventory is the PERSISTENT ownership record, so it is
-    # seeded once from the target tier and thereafter only loses a line when someone
-    # deliberately removes it.
-    seeded = 0
-    if args.seed_ref:
-        try:
-            seed_objects = list(ls_tree(args.repo_root, args.seed_ref))
-        except GitError as exc:
-            print(f"[ERROR] {exc}", file=sys.stderr)
-            return EXIT_USAGE
-        for mode, otype, _sha, path in seed_objects:
-            if otype != "blob" or mode == SYMLINK_MODE:
-                continue
-            if not matches_include(path, includes):
-                continue
-            if path in seen_src or is_ignored(path, patterns):
-                continue
-            entries.append(Entry(src=path, dst=prefix + path, line=0))
-            seen_src.add(path)
-            seeded += 1
-        print(
-            f"[INFO]  seeded {seeded} path(s) present on {args.seed_ref} but absent from {ref}",
-            file=sys.stderr,
-        )
-
-    entries.sort(key=lambda e: e.dst)
-
-    if args.show_skipped and (skipped_symlink or skipped_ignore or skipped_include):
-        print(
-            f"[INFO]  skipped {skipped_ignore} ignored, {skipped_include} outside the "
-            f"include prefixes, {len(skipped_symlink)} symlink(s)",
-            file=sys.stderr,
-        )
-        for path, target in skipped_symlink:
-            kind = "ABSOLUTE" if target.startswith("/") else "relative"
-            print(f"          symlink {kind}: {path} -> {target}", file=sys.stderr)
-
-    seed_note = f", seeded from {args.seed_ref}" if args.seed_ref else ""
-    body = [
-        "# tt-hooks.skip-post-commit",
-        "# ^ The CCM header is suppressed HERE DELIBERATELY. A header carrying branch,",
-        "#   commit id and blob sha would be rewritten on every commit, so the file would",
-        "#   show as changed even when no ownership line changed — which is the one",
-        "#   property that makes a 500-line inventory reviewable. The marker is a comment",
-        "#   so this file still parses as an inventory.",
-        f"# tt-promote inventory — app={args.app}",
-        f"# generated from {ref}{seed_note} ({len(entries)} leaf file(s))",
-        "# src -> dst. Leaf paths only; no directories, no globs.",
-        "#",
-        "# This file is the PERSISTENT ownership record, not a snapshot of one branch.",
-        "# A path listed here that no longer exists at the source is a DELETE candidate,",
-        "# which is the only way the target ever loses a file. Removing a line means the",
-        "# app no longer owns that path at all, and nothing will maintain or remove it.",
-        "# Do not regenerate into this file without --seed-ref <target>.",
-        "",
-    ]
-    body += [f"{e.src} -> {e.dst}" for e in entries]
-    text = "\n".join(body) + "\n"
-
-    if args.stdout:
-        sys.stdout.write(text)
-        return EXIT_OK
-
-    if not args.out:
-        print("[ERROR] either --out or --stdout is required", file=sys.stderr)
-        return EXIT_USAGE
-
-    with open(args.out, "w", encoding="utf-8") as fh:
-        fh.write(text)
-    print(f"[INFO]  wrote {len(entries)} entries to {args.out}", file=sys.stderr)
-    return EXIT_OK
-
-
-def cmd_validate(args: argparse.Namespace) -> int:
-    try:
-        inv = read_inventory(args.inventory)
-    except (OSError, ValueError) as exc:
-        print(f"[ERROR] {exc}", file=sys.stderr)
-        return EXIT_ERRORS
-
-    errors: list[str] = []
-    warnings: list[str] = []
-
-    if not inv.entries:
-        errors.append("inventory is empty")
-
-    seen_dst: dict[str, int] = {}
-    seen_dst_fold: dict[str, tuple[str, int]] = {}
-
-    for e in inv.entries:
-        where = f"{args.inventory}:{e.line}"
-
-        # Leaf paths only: a glob or directory would make the entry unbounded, so the
-        # manifest would stop determining what lands.
-        bad = GLOB_CHARS & set(e.src + e.dst)
-        if bad:
-            errors.append(f"{where}: glob character(s) {''.join(sorted(bad))} in {e.src!r} -> {e.dst!r}")
-        if e.src.endswith("/") or e.dst.endswith("/"):
-            errors.append(f"{where}: directory entry, not a leaf file: {e.src!r} -> {e.dst!r}")
-        if e.src.startswith("/") or e.dst.startswith("/"):
-            errors.append(f"{where}: absolute path: {e.src!r} -> {e.dst!r}")
-        if ".." in e.src.split("/") or ".." in e.dst.split("/"):
-            errors.append(f"{where}: '..' in path: {e.src!r} -> {e.dst!r}")
-
-        # One entry per destination: a record that names a destination twice can be
-        # interpreted two ways depending on resolution order.
-        if e.dst in seen_dst:
-            errors.append(
-                f"{where}: duplicate destination {e.dst!r} (first at line {seen_dst[e.dst]})"
-            )
-        else:
-            seen_dst[e.dst] = e.line
-
-        # Case collisions: a case-insensitive destination cannot represent both, and a
-        # delete naming one could remove the other.
-        fold = e.dst.lower()
-        if fold in seen_dst_fold and seen_dst_fold[fold][0] != e.dst:
-            errors.append(
-                f"{where}: case collision {e.dst!r} vs {seen_dst_fold[fold][0]!r} "
-                f"(line {seen_dst_fold[fold][1]})"
-            )
-        else:
-            seen_dst_fold.setdefault(fold, (e.dst, e.line))
-
-    # Cross-inventory uniqueness, when asked: two apps claiming one destination is a
-    # collision that is checkable at rest, before any promote runs.
-    if args.against:
-        for other_path in args.against:
-            try:
-                other = read_inventory(other_path)
-            except (OSError, ValueError) as exc:
-                errors.append(f"could not read {other_path}: {exc}")
-                continue
-            for dst, line in seen_dst.items():
-                for oe in other.entries:
-                    if oe.dst == dst:
-                        errors.append(
-                            f"{args.inventory}:{line}: destination {dst!r} also claimed by "
-                            f"{other_path}:{oe.line}"
-                        )
-
-    for w in warnings:
-        print(f"[WARN]  {w}", file=sys.stderr)
-    for err in errors:
-        print(f"[ERROR] {err}", file=sys.stderr)
-
-    if errors:
-        print(f"[FAIL]  {len(errors)} problem(s) in {args.inventory}", file=sys.stderr)
-        return EXIT_ERRORS
-
-    print(
-        f"[OK]    {args.inventory}: {len(inv.entries)} entries, "
-        f"{len(set(inv.dsts()))} destination(s), no violations",
-        file=sys.stderr,
-    )
-    return EXIT_OK
-
-
-def read_apps(path: str) -> list[tuple[str, list[str]]]:
-    """Parse the app map: `<app> : <prefix> [prefix...]`."""
-    apps: list[tuple[str, list[str]]] = []
-    with open(path, encoding="utf-8") as fh:
-        for lineno, raw in enumerate(fh, start=1):
-            line = raw.strip()
-            if not line or line.startswith("#"):
-                continue
-            name, sep, rest = line.partition(":")
-            if not sep:
-                raise ValueError(f"{path}:{lineno}: expected '<app> : <prefix...>': {line!r}")
-            prefixes = rest.split()
-            if not prefixes:
-                raise ValueError(f"{path}:{lineno}: no prefixes for app {name.strip()!r}")
-            apps.append((name.strip(), prefixes))
-    return apps
-
-
-def cmd_inventory_all(args: argparse.Namespace) -> int:
-    """One inventory per app.
-
-    With several apps in one repository, a single inventory covering the whole tree is
-    not an ownership record — it is a repo snapshot with an app's name on it, and it
-    makes every app appear to own every other app's files.
-    """
-    try:
-        apps = read_apps(args.apps_file)
-    except (OSError, ValueError) as exc:
-        print(f"[ERROR] {exc}", file=sys.stderr)
-        return EXIT_USAGE
-
-    os.makedirs(args.out_dir, exist_ok=True)
-    rc = EXIT_OK
-    for name, prefixes in apps:
-        print(f"[INFO]  [{name}] {' '.join(prefixes)}", file=sys.stderr)
-        ns = argparse.Namespace(
-            repo_root=args.repo_root,
-            ref=args.ref,
-            app=name,
-            out=os.path.join(args.out_dir, f"{name}.txt"),
-            stdout=False,
-            dst_prefix="",
-            ignore=args.ignore,
-            include=prefixes,
-            seed_ref=args.seed_ref,
-            show_skipped=False,
-        )
-        rc |= cmd_inventory(ns)
-    return rc
-
-
-def cmd_coverage(args: argparse.Namespace) -> int:
-    """Report what the app map does not account for.
-
-    Two failures, both silent without this check:
-      UNCOVERED  a source path that belongs to no app, so no package will ever promote
-                 it and no delete will ever remove it
-      AMBIGUOUS  a path claimed by two apps, so ownership — and therefore deletion —
-                 depends on which app you happen to be promoting
-    """
-    try:
-        apps = read_apps(args.apps_file)
-        objects = list(ls_tree(args.repo_root, args.ref))
-    except (OSError, ValueError, GitError) as exc:
-        print(f"[ERROR] {exc}", file=sys.stderr)
-        return EXIT_ERRORS
-
-    patterns = read_ignore(args.ignore)
-    claims: dict[str, list[str]] = {}
-    for name, prefixes in apps:
-        for mode, otype, _sha, path in objects:
-            if otype != "blob" or mode == SYMLINK_MODE:
-                continue
-            if is_ignored(path, patterns):
-                continue
-            if matches_include(path, prefixes):
-                claims.setdefault(path, []).append(name)
-
-    # Candidates exclude symlinks. They are mode 120000 blobs, so a naive blob filter
-    # reports them as unowned — but they are never promotable, so "unowned" is noise
-    # and noise in this report is what teaches you to stop reading it.
-    candidates = {
-        path
-        for mode, otype, _s, path in objects
-        if otype == "blob" and mode != SYMLINK_MODE
-    }
-    uncovered = sorted(p for p in candidates if p not in claims)
-    ambiguous = sorted(p for p, owners in claims.items() if len({o for o in owners}) > 1)
-
-    print(f"[INFO]  {len(apps)} app(s), {len(claims)} claimed path(s) at {args.ref}", file=sys.stderr)
-
-    for path in uncovered:
-        print(f"UNCOVERED\t{path}")
-    for path in ambiguous:
-        print(f"AMBIGUOUS\t{path}\t{' '.join(sorted(set(claims[path])))}")
-
-    if not uncovered and not ambiguous:
-        print("[OK]    every blob belongs to exactly one app", file=sys.stderr)
-        return EXIT_OK
-
-    print(
-        f"[FAIL]  {len(uncovered)} uncovered, {len(ambiguous)} ambiguous",
-        file=sys.stderr,
-    )
-    return EXIT_ERRORS if ambiguous else EXIT_OK
-
-
-def cmd_residual(args: argparse.Namespace) -> int:
-    try:
-        inv = read_inventory(args.inventory)
-        objects = list(ls_tree(args.repo_root, args.ref))
-    except (OSError, ValueError, GitError) as exc:
-        print(f"[ERROR] {exc}", file=sys.stderr)
-        return EXIT_ERRORS
-
-    patterns = read_ignore(args.ignore)
-    includes = args.include or []
-    owned = {e.src for e in inv.entries}
-    unowned = [
-        path
-        for mode, otype, _sha, path in objects
-        if otype == "blob"
-        and mode != SYMLINK_MODE
-        and path not in owned
-        and matches_include(path, includes)
-        and not is_ignored(path, patterns)
-    ]
-    unowned.sort()
-
-    print(
-        f"[INFO]  {len(owned)} owned, {len(unowned)} unowned source path(s) at {args.ref}",
-        file=sys.stderr,
-    )
-    for path in unowned:
-        print(path)
-
-    return EXIT_OK
-
-
-# ── packages ─────────────────────────────────────────────────────────────────
-# A package is the only artifact a human authors per promotion. See section 4.2 of
-# docs/design/promotion-model.md. Nothing in this file generates one: generating it
-# would put the machine back in the position of deciding what to promote, which is the
-# thing the model exists to prevent.
-
-PACKAGE_REQUIRED_HEADER = ("package", "app", "from", "to", "reason")
+def tree_map(repo_root: str, ref: str) -> dict[str, tuple[str, str]]:
+    """path -> (mode, blob sha) for every blob in ref."""
+    out: dict[str, tuple[str, str]] = {}
+    for mode, otype, sha, path in ls_tree(repo_root, ref):
+        if otype == "blob":
+            out[path] = (mode, sha)
+    return out
+
+
+# ── manifest model ───────────────────────────────────────────────────────────
 
 
 @dataclass
 class PackageEntry:
     op: str                 # '+' copy/update, '-' delete
     src: str
-    src_ref: str | None     # per-entry ref override, else the package's `from:`
+    src_ref: str | None     # per-entry ref override, else the manifest's `from:`
     dst: str
     approved: bool          # the human typed '!' on a privileged path
     line: int
@@ -549,7 +162,9 @@ def read_package(path: str) -> Package:
             if not in_entries and line[0] not in "+-":
                 key, sep, value = line.partition(":")
                 if not sep:
-                    raise ValueError(f"{path}:{lineno}: expected 'key: value' before the first entry: {line!r}")
+                    raise ValueError(
+                        f"{path}:{lineno}: expected 'key: value' before the first entry: {line!r}"
+                    )
                 pkg.header[key.strip().lower()] = value.strip()
                 continue
 
@@ -585,8 +200,11 @@ def read_package(path: str) -> Package:
     return pkg
 
 
+# ── policy ───────────────────────────────────────────────────────────────────
+
+
 def load_policy(repo_root: str, policy_dir: str | None, name: str, default: list[str]) -> list[str]:
-    """Policy lives in files so forbidden paths and approval classes are diffs, not constants."""
+    """Policy lives in files so forbidden paths and approval classes are reviewable diffs."""
     directory = policy_dir or os.path.join(repo_root, "promote", "policy")
     path = os.path.join(directory, name)
     if not os.path.exists(path):
@@ -601,12 +219,36 @@ def load_policy(repo_root: str, policy_dir: str | None, name: str, default: list
     return values
 
 
+def is_ignored(path: str, patterns: list[str]) -> bool:
+    """exact path, trailing '/' for a prefix, leading '*' for a suffix."""
+    for pat in patterns:
+        if pat.endswith("/") and path.startswith(pat):
+            return True
+        if pat.startswith("*") and path.endswith(pat[1:]):
+            return True
+        if pat == path:
+            return True
+    return False
+
+
+def is_privileged(path: str, privileged: list[str] | None = None) -> bool:
+    prefixes = list(PRIVILEGED_PREFIXES) if privileged is None else privileged
+    return any(path.startswith(p) for p in prefixes)
+
+
+def yaml_str(value: str) -> str:
+    return '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
+
+
+# ── build ────────────────────────────────────────────────────────────────────
+
+
 def validate_package_entries(pkg: Package, deny: list[str], privileged: list[str]) -> list[str]:
     """Structural checks that need no git access.
 
-    Deliberately runs BEFORE ref resolution. Otherwise a package with a glob and a bad
-    branch reports only the branch, and you fix one thing at a time to discover the
-    next — the failure ordering hides the real problems.
+    Deliberately runs BEFORE ref resolution. Otherwise a manifest with a glob and a bad
+    branch reports only the branch, and the real problems stay hidden behind a missing
+    revision — one fix, one rerun, one discovery at a time.
     """
     errors: list[str] = []
     seen_dst: dict[str, int] = {}
@@ -642,11 +284,10 @@ def validate_package_entries(pkg: Package, deny: list[str], privileged: list[str
 
 
 def cmd_build(args: argparse.Namespace) -> int:
-    """Resolve a package into a promote record.
+    """Resolve a manifest into a promote record.
 
-    This is the only command that interprets a symbolic ref. Everything it emits is
-    pinned to a commit and a blob, because a record that resolves at apply time makes
-    the dry run meaningless and rollback impossible.
+    The only command that interprets a symbolic ref. Everything it emits is pinned to a
+    commit and a blob.
     """
     try:
         pkg = read_package(args.package)
@@ -691,33 +332,9 @@ def cmd_build(args: argparse.Namespace) -> int:
     copies: list[tuple[PackageEntry, str]] = []
     deletes: list[str] = []
     noops = 0
-    seen_dst: dict[str, int] = {}
 
     for e in pkg.entries:
         where = f"{args.package}:{e.line}"
-
-        bad = GLOB_CHARS & set(e.src + e.dst)
-        if bad:
-            errors.append(f"{where}: glob character(s) {''.join(sorted(bad))}: {e.src!r} -> {e.dst!r}")
-        if e.src.endswith("/") or e.dst.endswith("/"):
-            errors.append(f"{where}: directory entry, not a leaf file: {e.src!r} -> {e.dst!r}")
-        if e.src.startswith("/") or e.dst.startswith("/"):
-            errors.append(f"{where}: absolute path: {e.src!r} -> {e.dst!r}")
-        if ".." in e.src.split("/") or ".." in e.dst.split("/"):
-            errors.append(f"{where}: '..' in path: {e.src!r} -> {e.dst!r}")
-        if is_ignored(e.dst, deny):
-            errors.append(f"{where}: destination is on the deny list: {e.dst}")
-
-        if e.dst in seen_dst:
-            errors.append(f"{where}: duplicate destination {e.dst!r} (first at line {seen_dst[e.dst]})")
-            continue
-        seen_dst[e.dst] = e.line
-
-        is_priv = is_privileged(e.dst, privileged)
-        if is_priv and not e.approved:
-            errors.append(f"{where}: privileged path requires an explicit '!': {e.dst}")
-        if e.approved and not is_priv:
-            errors.append(f"{where}: '!' on a non-privileged path: {e.dst}")
 
         if e.op == "-":
             if e.dst in dst_tree:
@@ -815,157 +432,9 @@ def cmd_build(args: argparse.Namespace) -> int:
 
     if not copies and not deletes:
         if args.require_change:
-            print("[ERROR] package resolves to nothing, and --require-change was set", file=sys.stderr)
+            print("[ERROR] manifest resolves to nothing, and --require-change was set", file=sys.stderr)
             return EXIT_ERRORS
-        print("[WARN]  package resolves to nothing: target already matches", file=sys.stderr)
-
-    if args.out:
-        with open(args.out, "w", encoding="utf-8") as fh:
-            fh.write(text)
-        print(f"[INFO]  wrote {args.out}", file=sys.stderr)
-    else:
-        sys.stdout.write(text)
-
-    return EXIT_OK
-
-
-def yaml_str(value: str) -> str:
-    return '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
-
-
-def tree_map(repo_root: str, ref: str) -> dict[str, tuple[str, str]]:
-    """path -> (mode, blob sha) for every blob in ref."""
-    out: dict[str, tuple[str, str]] = {}
-    for mode, otype, sha, path in ls_tree(repo_root, ref):
-        if otype == "blob":
-            out[path] = (mode, sha)
-    return out
-
-
-def is_privileged(path: str, privileged: list[str] | None = None) -> bool:
-    prefixes = list(PRIVILEGED_PREFIXES) if privileged is None else privileged
-    return any(path.startswith(p) for p in prefixes)
-
-
-def cmd_record(args: argparse.Namespace) -> int:
-    """Resolve an inventory against a source ref and emit a promote record.
-
-    Every entry is pinned to a concrete commit and blob. `latest` is accepted as an input
-    only in the sense that a branch name resolves here; the record stores the resolved
-    SHA and never the name, because a record that resolves at apply time makes the dry
-    run meaningless and rollback impossible.
-
-    The record is a DELTA over the inventory: only entries whose destination blob differs
-    from the target tree appear. That keeps the reviewed artifact small even when the
-    inventory has hundreds of lines.
-    """
-    try:
-        inv = read_inventory(args.inventory)
-        source_commit = git(args.repo_root, "rev-parse", f"{args.source_ref}^{{commit}}").decode().strip()
-        target_commit = git(args.repo_root, "rev-parse", f"{args.target_ref}^{{commit}}").decode().strip()
-        src_tree = tree_map(args.repo_root, source_commit)
-        dst_tree = tree_map(args.repo_root, target_commit)
-    except (OSError, ValueError, GitError) as exc:
-        print(f"[ERROR] {exc}", file=sys.stderr)
-        return EXIT_ERRORS
-
-    copies: list[tuple[str, str, str]] = []  # (src, dst, blob)
-    deletes: list[str] = []
-    unchanged = 0
-    absent = 0
-
-    for e in inv.entries:
-        src = src_tree.get(e.src)
-        dst = dst_tree.get(e.dst)
-
-        if src is not None and src[0] == SYMLINK_MODE:
-            print(
-                f"[ERROR] {args.inventory}:{e.line}: source is a symlink and is never "
-                f"promotable: {e.src}",
-                file=sys.stderr,
-            )
-            return EXIT_ERRORS
-
-        if src is not None:
-            if dst is None or dst[1] != src[1] or dst[0] != src[0]:
-                copies.append((e.src, e.dst, src[1]))
-            else:
-                unchanged += 1
-        else:
-            # Owned, but gone from the source: the only way the target ever loses a file.
-            # If the target does not have it either, there is simply nothing to do — but
-            # it is counted, because a summary whose numbers do not reconcile sends the
-            # next reader hunting a discrepancy that does not exist.
-            if dst is not None:
-                deletes.append(e.dst)
-            else:
-                absent += 1
-
-    copies.sort(key=lambda t: t[1])
-    deletes.sort()
-
-    record_id = args.id or f"{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}-{args.app}-to-{args.applies_to}"
-
-    lines = [
-        "record_version: 1",
-        f"id: {yaml_str(record_id)}",
-        f"app: {yaml_str(args.app)}",
-        f"inventory: {yaml_str(args.inventory)}",
-        f"source_ref: {yaml_str(args.source_ref)}",
-        f"source_commit: {source_commit}",
-        f"target_ref: {yaml_str(args.target_ref)}",
-        f"target_commit: {target_commit}",
-        f"applies_to: {yaml_str(args.applies_to)}",
-        f"owned_paths: {len(inv.entries)}",
-        f"unchanged: {unchanged}",
-    ]
-
-    if not copies and not deletes:
-        lines.append("entries: []")
-    else:
-        lines.append("entries:")
-        for src_path, dst_path, blob in copies:
-            lines.append(f"  - op: copy")
-            lines.append(f"    src: {yaml_str(src_path)}")
-            lines.append(f"    dst: {yaml_str(dst_path)}")
-            lines.append(f"    blob: {blob}")
-            if is_privileged(dst_path):
-                lines.append("    approval: required")
-        for dst_path in deletes:
-            lines.append("  - op: delete")
-            lines.append(f"    dst: {yaml_str(dst_path)}")
-            if is_privileged(dst_path):
-                lines.append("    approval: required")
-
-    text = "\n".join(lines) + "\n"
-
-    n_priv = sum(
-        1
-        for _s, d, _b in copies
-        if is_privileged(d)
-    ) + sum(1 for d in deletes if is_privileged(d))
-
-    total = len(copies) + len(deletes) + unchanged + absent
-    if total != len(inv.entries):
-        print(
-            f"[ERROR] accounting does not reconcile: "
-            f"{total} classified vs {len(inv.entries)} owned",
-            file=sys.stderr,
-        )
-        return EXIT_ERRORS
-    print(
-        f"[INFO]  {len(copies)} copy, {len(deletes)} delete, {unchanged} unchanged, "
-        f"{absent} absent from both = {len(inv.entries)} owned; {n_priv} privileged",
-        file=sys.stderr,
-    )
-    print(f"[INFO]  source {args.source_ref} -> {source_commit[:12]}", file=sys.stderr)
-    print(f"[INFO]  target {args.target_ref} -> {target_commit[:12]}", file=sys.stderr)
-
-    if not copies and not deletes:
-        if args.require_change:
-            print("[ERROR] nothing to promote, and --require-change was set", file=sys.stderr)
-            return EXIT_ERRORS
-        print("[WARN]  nothing to promote: target already matches this inventory", file=sys.stderr)
+        print("[WARN]  manifest resolves to nothing: target already matches", file=sys.stderr)
 
     if args.out:
         with open(args.out, "w", encoding="utf-8") as fh:
@@ -983,78 +452,14 @@ def cmd_record(args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="tt-promote",
-        description="Inventory and validation for manifest-based promotion.",
+        description="Build a pinned promotion record from a hand-authored manifest.",
     )
     sub = p.add_subparsers(dest="command", required=True)
 
-    inv = sub.add_parser("inventory", help="build an inventory from a git ref")
-    inv.add_argument("--repo-root", required=True)
-    inv.add_argument("--ref", default="HEAD")
-    inv.add_argument("--app", required=True)
-    inv.add_argument("--out", default=None)
-    inv.add_argument("--stdout", action="store_true")
-    inv.add_argument("--dst-prefix", default="")
-    inv.add_argument("--ignore", default=None)
-    inv.add_argument(
-        "--include",
-        nargs="+",
-        default=None,
-        help="only include paths under these prefixes, so an app can be a slice of the tree",
-    )
-    inv.add_argument(
-        "--seed-ref",
-        default=None,
-        help="also list paths present at this ref, so ownership of source-deleted paths "
-             "is retained and can become a delete (use the target branch, e.g. origin/prd)",
-    )
-    inv.add_argument("--show-skipped", action="store_true")
-    inv.set_defaults(func=cmd_inventory)
-
-    val = sub.add_parser("validate", help="check an inventory against the promotion rules")
-    val.add_argument("--inventory", required=True)
-    val.add_argument("--against", nargs="*", default=None)
-    val.set_defaults(func=cmd_validate)
-
-    res = sub.add_parser("residual", help="report source paths the inventory does not own")
-    res.add_argument("--inventory", required=True)
-    res.add_argument("--repo-root", required=True)
-    res.add_argument("--ref", default="HEAD")
-    res.add_argument("--ignore", default=None)
-    res.add_argument("--include", nargs="+", default=None)
-    res.set_defaults(func=cmd_residual)
-
-    invall = sub.add_parser("inventory-all", help="write one inventory per app from apps.txt")
-    invall.add_argument("--repo-root", required=True)
-    invall.add_argument("--apps-file", required=True)
-    invall.add_argument("--out-dir", required=True)
-    invall.add_argument("--ref", default="HEAD")
-    invall.add_argument("--seed-ref", default=None)
-    invall.add_argument("--ignore", default=None)
-    invall.set_defaults(func=cmd_inventory_all)
-
-    cov = sub.add_parser("coverage", help="report paths owned by no app, or by two")
-    cov.add_argument("--repo-root", required=True)
-    cov.add_argument("--apps-file", required=True)
-    cov.add_argument("--ref", default="HEAD")
-    cov.add_argument("--ignore", default=None)
-    cov.set_defaults(func=cmd_coverage)
-
-    rec = sub.add_parser("record", help="resolve an inventory into a promote record")
-    rec.add_argument("--repo-root", required=True)
-    rec.add_argument("--inventory", required=True)
-    rec.add_argument("--app", required=True)
-    rec.add_argument("--source-ref", required=True, help="branch, tag or SHA to promote from")
-    rec.add_argument("--target-ref", required=True, help="branch the record applies to")
-    rec.add_argument("--applies-to", required=True, help="tier name recorded in the artifact")
-    rec.add_argument("--out", default=None)
-    rec.add_argument("--id", default=None)
-    rec.add_argument("--require-change", action="store_true")
-    rec.set_defaults(func=cmd_record)
-
-    bld = sub.add_parser("build", help="resolve a package into a promote record")
+    bld = sub.add_parser("build", help="resolve a manifest into a promote record")
     bld.add_argument("--repo-root", required=True)
-    bld.add_argument("--package", required=True)
-    bld.add_argument("--target-ref", default=None, help="defaults to the package's 'to:' value")
+    bld.add_argument("--package", required=True, help="the manifest file")
+    bld.add_argument("--target-ref", default=None, help="defaults to the manifest's 'to:' value")
     bld.add_argument("--policy-dir", default=None)
     bld.add_argument("--out", default=None)
     bld.add_argument("--id", default=None)
