@@ -5,7 +5,7 @@
 #   property that makes a 500-line inventory reviewable. The marker is a comment
 #   so this file still parses as an inventory.
 # tt-promote inventory — app=termitetowers-core
-# generated from dev1, seeded from origin/prd (516 leaf file(s))
+# generated from dev1, seeded from origin/prd (524 leaf file(s))
 # src -> dst. Leaf paths only; no directories, no globs.
 #
 # This file is the PERSISTENT ownership record, not a snapshot of one branch.
@@ -25,9 +25,11 @@
 .gitignore -> .gitignore
 .yamllint.yml -> .yamllint.yml
 README.md -> README.md
+docs/design/promotion-model.md -> docs/design/promotion-model.md
 docs/investigations/cline-per-window-isolation.md -> docs/investigations/cline-per-window-isolation.md
 docs/runbooks/host-deploy-runbook.md -> docs/runbooks/host-deploy-runbook.md
 docs/status/active-context.md -> docs/status/active-context.md
+docs/status/nextcloud-dev1-handoff.md -> docs/status/nextcloud-dev1-handoff.md
 docs/status/progress.md -> docs/status/progress.md
 git-automation/CCM_HEADER_TEMPLATE.txt -> git-automation/CCM_HEADER_TEMPLATE.txt
 git-automation/CCM_JSON_HEADER_TEMPLATE.txt -> git-automation/CCM_JSON_HEADER_TEMPLATE.txt
@@ -282,6 +284,7 @@ infra/nginx/snippets/tt-gate.conf -> infra/nginx/snippets/tt-gate.conf
 infra/nginx/www/chat/classic.html -> infra/nginx/www/chat/classic.html
 infra/nginx/www/chat/index.html -> infra/nginx/www/chat/index.html
 infra/nginx/www/media/index.html -> infra/nginx/www/media/index.html
+infra/nginx/www/tag-viewer/README.md -> infra/nginx/www/tag-viewer/README.md
 infra/systemd/README.md -> infra/systemd/README.md
 infra/systemd/llm-ha-handler-dev1.service -> infra/systemd/llm-ha-handler-dev1.service
 infra/systemd/ollama-dev1.service -> infra/systemd/ollama-dev1.service
@@ -359,12 +362,17 @@ pisrv/devpi-install.sh -> pisrv/devpi-install.sh
 pisrv/install.sh -> pisrv/install.sh
 plans/mkdocs-revamp.md -> plans/mkdocs-revamp.md
 plans/nextcloud-storage-and-jotta.md -> plans/nextcloud-storage-and-jotta.md
+promote/inventory/termitetowers-core.txt -> promote/inventory/termitetowers-core.txt
 scripts/deploy-analacres-hosts.sh -> scripts/deploy-analacres-hosts.sh
 scripts/deploy-prometheus-tensorflow.sh -> scripts/deploy-prometheus-tensorflow.sh
 scripts/deploy-www.sh -> scripts/deploy-www.sh
+scripts/deploy/tt-deploy-archive.sh -> scripts/deploy/tt-deploy-archive.sh
+scripts/deploy/tt-deploy-record.sh -> scripts/deploy/tt-deploy-record.sh
+scripts/deploy/tt-deploy-restore.sh -> scripts/deploy/tt-deploy-restore.sh
 scripts/gen-secret-hex.sh -> scripts/gen-secret-hex.sh
 scripts/nginx-enable-site.sh -> scripts/nginx-enable-site.sh
 scripts/nginx-relocate-symlinks.sh -> scripts/nginx-relocate-symlinks.sh
+scripts/promote/tt-promote.py -> scripts/promote/tt-promote.py
 scripts/secrets-migrate-to-etc.sh -> scripts/secrets-migrate-to-etc.sh
 scripts/system/SERVICE_STARTUP_FIX.md -> scripts/system/SERVICE_STARTUP_FIX.md
 scripts/system/disk-audit.sh -> scripts/system/disk-audit.sh
