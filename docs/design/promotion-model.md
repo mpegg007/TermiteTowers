@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: docs/design/promotion-model.md % -->
-<!-- %ccm_git_object_id: docs/design/promotion-model.md@208 % -->
-<!-- %ccm_git_commit_date: 2026-11-09 14:29:08 -0500 % -->
+<!-- %ccm_git_object_id: docs/design/promotion-model.md@209 % -->
+<!-- %ccm_git_commit_date: 2026-11-09 14:35:55 -0500 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: docs: remove the last dit references from the flow and audit sections % -->
+<!-- %ccm_git_commit_message: docs: package spec — curated selection between inventory and record % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-11-09 mpegg docs: remove the last dit references from the flow and audit sections -->
 <!-- %git_commit_history: 2026-11-09 mpegg docs: drop the dit tier; static validation becomes a CI gate on the promote branch -->
 <!-- %git_commit_history: 2026-11-09 mpegg nginx: retire tag-viewer symlinks into AnalAcres; document the publish gap -->
 <!-- %git_commit_history: 2026-11-09 mpegg promotion: manifest inventory, record generator, deploy archive/restore -->
@@ -53,9 +54,12 @@ evidence that content on `prd` was deliberate.
 
 - An **inventory** declares which paths an app owns, and where each one lands per
   tier. Leaf paths only. Slow-changing. Reviewed when it changes.
-- A **promote record** is generated per promotion from the inventory plus a source
-  commit. It is small, pins every operation to a concrete commit and blob, and it
-  is reviewed every time.
+- A **package** is the curated selection for one promotion, authored by hand. It is
+  the only artifact that expresses intent, and the only one allowed to contain a
+  symbolic ref.
+- A **promote record** is generated from a package. It is small, pins every operation
+  to a concrete commit and blob, and contains no refs at all. It is reviewed every
+  time.
 - **Ownership defines the domain, so completeness is checkable.** For owned paths:
   present at source and content differs ⇒ copy; absent at source and present on the
   target ⇒ delete. Nothing can be silently omitted *within* the ownership domain.
@@ -129,7 +133,121 @@ Rules:
   ownership explicit, makes decommissioning a list edit, and makes
   cross-manifest destination collisions statically checkable.
 
-### 4.2 Promote record
+### 4.2 The package — curated selection
+
+The package is the only artifact a human authors per promotion. It says *what you
+chose*, which the inventory cannot say and the record must not invent. It is also the
+**only** place a symbolic ref is permitted, because resolution happens exactly once,
+between package and record.
+
+A package is never generated. Generating it would put the machine back in the position
+of deciding what to promote, which is the thing this model exists to prevent.
+
+#### Line grammar
+
+```
+<op> <src>[@<ref>] [-> <dst>]
+```
+
+| op | meaning |
+|---|---|
+| `+` | copy or update: take `src` at `ref` (default: the package's `from:`) and write it to `dst` (default: the same path) |
+| `-` | delete the target path. File only — a directory delete is an unbounded destructive set dressed as one line |
+
+Deliberately absent: globs, directory entries, and exclude patterns. Any of the three
+makes the promoted set unbounded, which destroys both reproducibility and review.
+
+`@<ref>` on a single line lets one path be pinned to a different commit than the
+package default. That is the hook fan-in from multiple dev branches would use later,
+and it costs nothing to have now.
+
+#### Header
+
+Key-value lines before the first entry:
+
+| key | required | meaning |
+|---|---|---|
+| `package:` | yes | identifier, matching the filename stem |
+| `app:` | yes | which inventory this draws from |
+| `from:` | yes | source ref: a branch, a tag, a SHA, or `latest` |
+| `to:` | yes | destination tier; must match a real branch |
+| `reason:` | yes | one line, for the human reading the record six months later |
+
+#### Example
+
+```
+# promote/packages/2026-11-09-docs.pkg
+
+package:  2026-11-09-docs
+app:      termitetowers-docs
+from:     latest
+to:       uat1
+reason:   prove the promote mechanism end to end with inert paths only
+
+# identity mapping
++ docs/design/promotion-model.md
++ docs/runbooks/host-deploy-runbook.md
+
+# remapped destination
++ wiki/ports.md -> docs/ports.md
+
+# pinned to a specific commit, not the package default
++ infra/docker/nextcloud-dev1.yml@7c77ce9
+
+# tombstone
+- memory-bank/host-deploy-runbook.md
+```
+
+#### Resolution
+
+`build` is the only command that interprets `from:`. It performs, in order:
+
+1. Resolve `from:` to a concrete commit.
+2. For each `+`: confirm the path exists at that commit, is a blob, and is not mode
+   `120000`. Compute its blob sha.
+3. Skip an entry whose destination already holds that exact blob — a no-op entry is
+   reported, not written.
+4. For each `-`: confirm the destination exists on the target, else treat it as
+   already absent (idempotent).
+5. Emit the record, recording `package_sha` = a hash of the package text, so any record
+   traces back to the exact selection that produced it.
+
+#### What build refuses
+
+- a glob, a directory, an absolute path, or `..` in a path
+- `src` absent at the pinned commit
+- two entries with the same destination — in this package, or in another package aimed
+  at the same tier in the same run
+- a symlink source
+- a path listed in `policy/deny.txt`
+- a privileged path **without** an explicit `!`: `+ ! .github/workflows/deploy-uat1.yml`
+
+The `!` check is **bidirectional**. The tool knows which prefixes are privileged and the
+human must type `!`; a missing `!` fails the build, and a `!` on an ordinary path also
+fails. Approval becomes a deliberate keystroke that cannot drift out of sync with the
+classification in either direction — which a tool-computed flag cannot guarantee.
+
+#### Layout
+
+```
+promote/
+  README.md                    how to author a package, and what build refuses
+  inventory/
+    termitetowers-core.txt     generated ownership snapshot
+  packages/
+    2026-11-09-docs.pkg        hand-authored, one per promotion
+  policy/
+    deny.txt                   never promotable: env files, secrets, credentials
+    privileged.txt             presence-is-behaviour prefixes
+    ignore.txt                 residual-report ignore list
+  records/
+    2026-11-09T1920Z-docs-to-uat1.yaml
+```
+
+`policy/` exists so that what is forbidden and what needs approval are diffs in review
+rather than constants buried in the tool.
+
+### 4.3 Promote record
 
 ```yaml
 record_version: 1
@@ -149,7 +267,7 @@ entries:
     dst: scripts/retired-thing.sh
 ```
 
-### 4.3 Pinning rules
+### 4.4 Pinning rules
 
 - **`latest` is an authoring-time alias and is resolved to a concrete SHA at
   generate time.** A committed record never contains `latest`. A record that
@@ -161,7 +279,11 @@ entries:
 - Cascading overrides must record their **resolved effective entry**, not the
   pattern that produced it. Otherwise the artifact no longer states what lands.
 
-### 4.4 Derivation from ownership
+### 4.5 Derivation from ownership
+
+Used when a package does not enumerate every path — the residual report and the
+ownership-staleness check still need this, and a package is a selection, not a
+replacement for knowing what is owned.
 
 ```
 owned      = inventory paths mapped to the destination tier
@@ -170,14 +292,14 @@ copy       = at_source AND destination content differs
 delete     = owned AND NOT at_source AND destination has the path
 ```
 
-### 4.5 Residual report
+### 4.6 Residual report
 
 `source tree` minus `inventory` minus a declared ignore list. This is the
 **inventory-staleness alarm**: it answers "are there source files this app should
 own but does not list". It is not a per-promote checklist, and it must stay short
 enough to be read — which is what the ignore list is for.
 
-### 4.6 Validation rules
+### 4.7 Validation rules
 
 - Leaf paths only; no directories, no globs.
 - **At most one entry per destination path within a record**, so a
@@ -322,7 +444,7 @@ blob pin. Rationale:
 Two mechanics it still needs:
 
 - **Idempotent:** already-absent is success, so replay and rollback work.
-- Section 4.6 rules apply: one entry per destination path, case-collision check.
+- Section 4.7 rules apply: one entry per destination path, case-collision check.
 
 ---
 
@@ -392,6 +514,8 @@ promoting one can redeploy, restart or expose something with no content change.
 | D15 | PRs into `prd` are closed as a practice | `prd` mutates only via the engine, so the promote record is the only evidence of intent | no GitHub-native review surface on `prd`; review lives in the engine |
 | D16 | Drift baseline is a hash manifest, not a git tree | depth-1 checkout, and a run area that may not come from a checkout at all | a second file to keep in step with `.deployed-commit` |
 | D17 | `prd1` and `main` are retired | `prd1` is strictly behind `prd`; `main` is strictly behind with no workflows yet is `origin/HEAD` | none |
+| D18 | A hand-authored **package** sits between inventory and record | intent needs a home of its own, and the record must never contain a ref | one more file per promotion, and a package can drift from the inventory |
+| D19 | Privileged promotion requires a typed `!`, checked both ways | approval cannot silently drift out of sync with the tool's classification | one extra keystroke, and a failed build when the classification changes |
 
 ---
 
