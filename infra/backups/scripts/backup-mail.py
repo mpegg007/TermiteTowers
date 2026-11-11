@@ -2,18 +2,18 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/backups/scripts/backup-mail.py@186 %
+#  %ccm_git_object_id: infra/backups/scripts/backup-mail.py@215 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 668e16d98c9cb127ce0a0994b3acacbe90d3af05 %
-#  %ccm_git_commit_id: 39d8262239b8cbb295886dbe654023e96f65ada9 %
-#  %ccm_git_commit_count: 186 %
-#  %ccm_git_commit_date: 2026-10-28 11:35:25 -0400 %
+#  %ccm_git_blob_sha: 341b407d2970d16f2d2d1bef087a8f3d9a90c638 %
+#  %ccm_git_commit_id: 8f18e3510659d8a475712467ba6efc3cda2e791d %
+#  %ccm_git_commit_count: 215 %
+#  %ccm_git_commit_date: 2026-11-11 10:32:19 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: feat(backups): phase 3 - encrypt to per-tier keys %
-#  %ccm_git_modify_date: 2026-10-28 11:35:26 %
-#  %ccm_git_file_last_modified: 2026-10-28 11:33:37 %
+#  %ccm_git_commit_message: fix(backups): seal Thunderbird mail monthly and refuse a year run over monthly chunks %
+#  %ccm_git_modify_date: 2026-11-11 10:32:20 %
+#  %ccm_git_file_last_modified: 2026-11-11 10:29:46 %
 #  %ccm_git_file_name: backup-mail.py %
 #  %ccm_git_path: infra/backups/scripts/backup-mail.py %
 #  %ccm_git_language_mode: python %
@@ -21,7 +21,7 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: yes %
-#  %ccm_git_size: 27302 %
+#  %ccm_git_size: 36671 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 """Archive Thunderbird mbox folders into immutable, encrypted, per-period chunks.
 
@@ -35,14 +35,17 @@ take the archive with it.
 
 Design
 ------
-* Chunks are immutable: once `mail-2025.tar.zst.age` exists it is never
-  rewritten unless the number of messages for that period actually changes
-  (late-arriving mail carrying an old Date header). The steady state therefore
-  uploads one new file per period - it does NOT re-upload every old email on
-  every run.
+* Sealed chunks grow, never shrink. Once `mail-2025.tar.zst.age` exists it is
+  rewritten only when its message count *rises* (late-arriving mail carrying an
+  old Date header). A count that *falls* means mail was deleted after the seal,
+  which is the exact case this archive exists to survive - so the chunk is left
+  untouched and the shrink is recorded in state.json. Override deliberately
+  with --allow-shrink. The steady state uploads one new file per period; it
+  does NOT re-upload every old email on every run.
 * Only *completed* periods are sealed by default. The period still in progress
-  is skipped unless --include-current is given (then it is written as
-  `*.partial.*` and rewritten as mail arrives).
+  is skipped unless --include-current (or --only-current) is given; it is then
+  written as `*.partial.*` and re-cut as mail arrives. When a period seals, its
+  superseded `*.partial` file is deleted instead of being left behind.
 * Nothing new is left in plaintext: messages stream tar -> zstd -> age. (The
   source mboxes are already plaintext on the same disk; no plaintext spool is
   created, unlike a naive extract-to-temp approach.)
@@ -62,8 +65,11 @@ Usage
     backup-mail.py --dry-run              # report the plan, write nothing
     backup-mail.py                        # seal every completed period
     backup-mail.py --include-current      # also refresh the in-progress period
+    backup-mail.py --only-current         # ONLY the in-progress period (for timers)
     backup-mail.py --only 2018            # (re)build one period
+    backup-mail.py --since 2026           # leave older periods alone
     backup-mail.py --granularity month    # finer chunks, more files
+    backup-mail.py --allow-shrink         # let a sealed period shrink (destructive)
     backup-mail.py --list                 # show what is archived
 
 Restore one period (two steps - the chunk's DEK must be unwrapped first;
@@ -301,6 +307,24 @@ def is_complete(period: str, today: date) -> bool:
     return end is not None and end < today
 
 
+def period_key(period: str) -> tuple[int, ...] | None:
+    """Sortable key for a dated period: '2025' -> (2025,), '2025-10' -> (2025, 10).
+
+    None for anything without a usable date, which keeps 'undated' and the
+    bogus epoch-period chunks out of --since comparisons.
+    """
+    if re.fullmatch(r"\d{4}", period):
+        return (int(period),)
+    if re.fullmatch(r"\d{4}-\d{2}", period):
+        return (int(period[:4]), int(period[5:]))
+    return None
+
+
+def current_period(granularity: str, today: date) -> str:
+    """The period still in progress, shaped exactly as period_of() produces it."""
+    return today.strftime("%Y" if granularity == "year" else "%Y-%m")
+
+
 # --------------------------------------------------------------------------
 # encrypted chunk pipeline: tar -> zstd -> age
 # --------------------------------------------------------------------------
@@ -468,6 +492,17 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
                     help="also (re)build the period still in progress, as *.partial")
     ap.add_argument("--only", metavar="PERIOD",
                     help="build just this period, e.g. 2018 or 2026-10")
+    ap.add_argument("--only-current", action="store_true",
+                    help="build/refresh only the period in progress (implies "
+                         "--include-current). Use this from a timer: a unit file "
+                         "cannot interpolate the current month")
+    ap.add_argument("--since", metavar="PERIOD",
+                    help="ignore periods older than this, e.g. 2025 with "
+                         "--granularity year or 2025-10 with month")
+    ap.add_argument("--allow-shrink", action="store_true",
+                    help="permit rebuilding a SEALED period whose message count "
+                         "fell, i.e. mail was deleted after the seal. Refused by "
+                         "default: keeping that mail is the point of the archive")
     ap.add_argument("--max-periods", type=int, default=48,
                     help="cap chunks built per run (default: 48)")
     ap.add_argument("--fragment-cap", type=int, default=64, metavar="MB",
@@ -486,6 +521,21 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 def main(argv: list[str]) -> int:
     args = parse_args(argv)
     os.umask(0o077)          # state, chunks and temporary *.part stay private
+    today = date.today()
+    if args.only_current:
+        # A unit file cannot interpolate $(date +%Y-%m), so the in-progress
+        # period is resolved here rather than by a wrapper script.
+        args.include_current = True
+        args.only = current_period(args.granularity, today)
+    # Validate the selector before the (expensive) pass-1 scan, not after it.
+    since_key = period_key(args.since) if args.since else None
+    if args.since and since_key is None:
+        raise Fail(f"--since needs a dated period like 2025 or 2025-10, "
+                   f"not {args.since!r}", 3)
+    if since_key is not None and len(since_key) != (1 if args.granularity == "year" else 2):
+        raise Fail(f"--since {args.since!r} does not match --granularity "
+                   f"{args.granularity} (want "
+                   f"{'YYYY' if args.granularity == 'year' else 'YYYY-MM'})", 3)
     out_dir = Path(args.out).expanduser()
     state_path = out_dir / "state.json"
     recipient = (Path(args.recipient).expanduser() if args.recipient
@@ -502,16 +552,40 @@ def main(argv: list[str]) -> int:
         log("INFO", f"{len(periods)} period(s) in {out_dir}: "
                     f"{total / 1e9:.2f} GB encrypted, "
                     f"{sum(p.get('messages', 0) for p in periods.values())} messages")
+        shrunk = state.get("shrunk", {})
         for key in sorted(periods):
             entry = periods[key]
             # Pre-cutover chunks carry no tier: they were all sealed with the
             # single legacy identity, so name that rather than print "?".
+            lost = shrunk.get(key, {}).get("lost", 0)
+            mark = f"  ! {lost} gone since seal" if lost else ""
             log("INFO", f"  {key:<10} {entry.get('messages', 0):>7} msgs  "
                         f"{entry.get('bytes', 0) / 1e6:>9.1f} MB  "
                         f"{entry.get('tier', 'pre-tier')}/"
                         f"{entry.get('generation', 'legacy'):<9} "
-                        f"{entry.get('chunk', '')}")
+                        f"{entry.get('chunk', '')}{mark}")
+        for key in sorted(set(shrunk) - set(periods)):
+            log("WARN", f"  {key:<10} shrink recorded but no chunk is listed")
+        if shrunk:
+            log("WARN", f"{len(shrunk)} period(s) lost messages after sealing; "
+                        f"the sealed chunks were kept as-is")
         return 0
+
+    # Month and year modes are mutually exclusive by construction. The hybrid
+    # layout keeps sealed years and monthly chunks in one state file, so a year
+    # run on a tree that already has months would seal mail-<year>.tar.zst.age
+    # and duplicate twelve chunks (see README). Refusing converts the quiet
+    # failure into a loud one: a stale timer still in year mode used to log
+    # nothing but "nothing to do" every night while no new mail was archived.
+    if args.granularity == "year" and not (args.only and "-" not in args.only):
+        monthly = sorted(key for key in state.get("periods", {}) if "-" in key)
+        if monthly:
+            raise Fail(
+                f"state.json holds {len(monthly)} monthly chunk(s) "
+                f"({monthly[0]} .. {monthly[-1]}): a --granularity year run would "
+                f"seal mail-{today.year}.tar.zst.age and duplicate them. Run in "
+                f"month mode (what the timer does), or pass --only <YYYY> to "
+                f"rebuild one year deliberately", 3)
 
     for tool in ("age", "zstd"):
         if shutil.which(tool) is None:
@@ -555,33 +629,87 @@ def main(argv: list[str]) -> int:
     log("INFO", f"pass 1  : {sum(counts.values())} messages in {len(counts)} period(s), "
                 f"{time.time() - started:.1f}s")
 
-    today = date.today()
     known = state.get("periods", {})
     build: list[str] = []
+    shrunk: list[tuple[str, int, int]] = []
+    waiting: list[str] = []          # in progress: nothing to seal yet
+    ignored = 0                      # excluded by --only / --since
     for period in sorted(counts):
         if args.only and period != args.only:
+            ignored += 1
             continue
         # --only always wins: it may target the period still in progress.
         if not args.only and not args.include_current \
                 and period != "undated" and not is_complete(period, today):
+            waiting.append(period)
+            continue
+        key = period_key(period)
+        if since_key is not None and key is not None and key < since_key:
+            ignored += 1
             continue
         entry = known.get(period) or {}
         chunk = out_dir / entry["chunk"] if entry.get("chunk") else None
+        recorded = entry.get("messages")
+        # A SEALED period is grown, never shrunk. Mail disappearing from the
+        # mailbox after its period was sealed is precisely what this archive
+        # exists to preserve; regenerating the chunk would erase the record of
+        # it. Growth (late-arriving mail with an old Date:) still rebuilds, and
+        # an in-progress *.partial always tracks the mailbox. Overrides are
+        # deliberate only: --allow-shrink, or an explicit --only.
+        if (recorded is not None and counts[period] < recorded
+                and period != "undated" and is_complete(period, today)
+                and not (args.allow_shrink or args.only)):
+            shrunk.append((period, recorded, counts[period]))
+            continue
         # A sealed chunk is rebuilt only when its message count actually moved,
         # and never when the name drifted (partial -> sealed at a period boundary).
         unchanged = (chunk is not None and chunk.is_file()
                      and chunk.name == chunk_name(period, today)
-                     and entry.get("messages") == counts[period])
+                     and recorded == counts[period])
         if not unchanged:
             build.append(period)
 
-    log("INFO", f"plan    : {len(build)} to build, {len(counts) - len(build)} up to date")
+    log("INFO", f"plan    : {len(build)} to build, {len(shrunk)} held back, "
+                f"{len(counts) - len(build) - len(shrunk) - len(waiting) - ignored} "
+                f"up to date")
+    if waiting:
+        # Make the gap explicit: a period in progress is NOT archived, and
+        # reporting it as "up to date" is how a year of mail went unnoticed.
+        log("WARN", f"pending : {', '.join(sorted(waiting))} still in progress - "
+                    f"mail in it is NOT archived yet "
+                    f"(--include-current or --only-current seals it)")
     for period in build[: args.max_periods]:
         log("INFO", f"  build {period:<10} {counts[period]:>7} msgs"
                     f"{'  (rebuild)' if period in known else ''}")
     if len(build) > args.max_periods:
         log("INFO", f"  ... {len(build) - args.max_periods} deferred to the next run "
                     f"(--max-periods {args.max_periods})")
+
+    # A shrink is recorded even when there is nothing to build, so "what went
+    # missing, and when" survives a no-op run instead of living only in a log
+    # line nobody reads. Nothing is written when the observation is unchanged.
+    for period, archived, present in shrunk:
+        log("WARN", f"kept    : {period:<10} {archived - present} message(s) gone "
+                    f"since the seal ({archived} archived, {present} present now); "
+                    f"chunk left untouched - --allow-shrink overrides")
+    if shrunk and not args.dry_run:
+        observed = state.setdefault("shrunk", {})
+        stamp = datetime.now().isoformat(timespec="seconds")
+        changed = False
+        for period, archived, present in shrunk:
+            record = {
+                "archived": archived,
+                "present": present,
+                "lost": archived - present,
+                "first_seen": observed.get(period, {}).get("first_seen", stamp),
+            }
+            if observed.get(period) != record:
+                observed[period] = record
+                changed = True
+        if changed:
+            state["version"] = VERSION
+            state["generated"] = stamp
+            save_state(state_path, state)
 
     if args.dry_run:
         log("INFO", "dry-run : nothing written")
@@ -641,6 +769,7 @@ def main(argv: list[str]) -> int:
 
         for period, writer in writers.items():
             final = writer.finish()
+            previous = (known.get(period) or {}).get("chunk")
             entry = {
                 "chunk": str(final.relative_to(out_dir)),
                 "tier": args.tier,
@@ -653,9 +782,24 @@ def main(argv: list[str]) -> int:
                 "written": datetime.now().isoformat(timespec="seconds"),
             }
             state.setdefault("periods", {})[period] = entry
+            # The chunk now on disk is authoritative, so any shrink observation
+            # for this period has been resolved (by growth, or deliberately).
+            state.get("shrunk", {}).pop(period, None)
             log("INFO", f"wrote   : {entry['chunk']}  {writer.members} member(s), "
                         f"{writer.bytes / 1e6:.1f} MB mail -> "
                         f"{entry['bytes'] / 1e6:.1f} MB encrypted")
+            # A period that has just sealed writes a new name, orphaning its own
+            # *.partial chunk. Delete it: otherwise it is uploaded and retained
+            # forever beside the sealed copy, and a restore that follows
+            # state.json cannot tell which of the two is current.
+            if previous and previous != entry["chunk"] and ".partial." in previous:
+                stale = out_dir / Path(previous).name
+                try:
+                    stale.unlink()
+                    log("INFO", f"removed : {previous}  (superseded by "
+                                f"{entry['chunk']})")
+                except FileNotFoundError:
+                    pass
     except BaseException:
         for writer in writers.values():
             if writer.tmp and writer.tmp.exists():

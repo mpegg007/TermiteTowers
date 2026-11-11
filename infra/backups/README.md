@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: infra/backups/README.md % -->
-<!-- %ccm_git_object_id: infra/backups/README.md@189 % -->
-<!-- %ccm_git_commit_date: 2026-10-28 12:07:18 -0400 % -->
+<!-- %ccm_git_object_id: infra/backups/README.md@215 % -->
+<!-- %ccm_git_commit_date: 2026-11-11 10:32:19 -0500 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: feat(backups): phase 5 - rotate, rewrap, audit, prune, restore wrapper % -->
+<!-- %ccm_git_commit_message: fix(backups): seal Thunderbird mail monthly and refuse a year run over monthly chunks % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-10-28 mpegg feat(backups): phase 5 - rotate, rewrap, audit, prune, restore wrapper -->
 <!-- %git_commit_history: 2026-10-28 mpegg  feat(backups): phase 3 - encrypt to per-tier keys  -->
 <!-- %git_commit_history: 2026-10-03 mpegg  backup scripts  -->
  <!-- %git_commit_history: unknown  unknown  unknown  -->
@@ -431,18 +432,38 @@ the history. `scripts/backup-mail.py` exports the mbox folders into compressed,
 age-encrypted chunks grouped by year.
 
 Mail is append-mostly, so the shape is the opposite of the DB job: instead of one
-fresh dump per night, a **completed year is written once and never rewritten**.
+fresh dump per night, a **completed year is written once and then only grown**.
 The steady state uploads one new file per year - it does not re-upload every old
 email on every run.
+
+A sealed period is **never rebuilt downward**. A message deleted from the mailbox
+after its period sealed is exactly what this archive exists to survive, so the
+chunk is left byte-identical and the loss is recorded in `state.json` under
+`shrunk` (`archived` / `present` / `lost` / `first_seen`) and surfaced by
+`--list`. Growth - late-arriving mail carrying an old `Date:` - still rebuilds
+the chunk. Two deliberate overrides exist: `--allow-shrink`, and an explicit
+`--only`.
+
+The run also reports the period it is **not** archiving: `pending : 2026 still in
+progress - mail in it is NOT archived yet`. That line exists because counting an
+in-progress period as "up to date" is how a whole year of mail went unnoticed.
 
 ```bash
 scripts/backup-mail.py --dry-run            # scan + show the plan, write nothing
 scripts/backup-mail.py                      # seal every completed period
 scripts/backup-mail.py --include-current    # also refresh the year in progress
+scripts/backup-mail.py --only-current       # ONLY the in-progress period (timers)
 scripts/backup-mail.py --only 2018          # (re)build one period
+scripts/backup-mail.py --since 2026         # leave older periods alone
 scripts/backup-mail.py --granularity month  # finer chunks (smaller risk window)
+scripts/backup-mail.py --allow-shrink       # let a sealed period shrink (destructive)
 scripts/backup-mail.py --list               # what is archived
 ```
+
+`--only-current` is the flag a timer can use: a unit file cannot interpolate
+`$(date +%Y-%m)`, so the in-progress period is resolved inside the tool. It
+implies `--include-current`, and with `--granularity month` it refreshes only the
+current month.
 
 ### Files
 
@@ -451,15 +472,26 @@ scripts/backup-mail.py --list               # what is archived
 | `scripts/backup-mail.py` | the archive tool (stdlib Python; streams tar -> zstd -> age) |
 | `scripts/install-tt-backup-mail-user.sh` | installs the **user** timer + archive dir; no sudo |
 | `systemd/user/tt-backup-mail.{service,timer}` | daily 04:30 user units (`@REPO_DIR@` substituted on install) |
+| `tests/backup/test_backup_mail.sh` | regression suite: shrink protection, `*.partial` cleanup, the selectors |
 
 ### What lands where
 
 ```
 /mnt/ai_storage/backups/thunderbird/
-  mail-2018.tar.zst.age        sealed year
-  mail-2026.partial.tar.zst.age only with --include-current, rewritten as mail arrives
-  state.json                   counts + sha256 per chunk, 0600
+  mail-2018.tar.zst.age            sealed year - legacy, sealed before the switch
+  mail-2026-10.tar.zst.age         sealed month - the layout used from 2026-01 on
+  mail-2026-11.partial.tar.zst.age the month in progress, re-cut nightly
+  state.json                       counts + sha256 per chunk, 0600
 ```
+
+The two layouts coexist deliberately. Year periods (`2018`) and month periods
+(`2026-10`) are separate keys in `state.json`, so a month run never rebuilds a
+legacy year and a year run would not touch the months - which is why the timer
+must run in **one** mode only. Run in year mode after 2027-01-01 and it would
+seal `mail-2026.tar.zst.age`, duplicating all twelve monthly chunks. The tool
+now refuses that outright: a `--granularity year` run over a state file that
+holds monthly chunks exits 3 and names the collision. `--only <YYYY>` is the
+deliberate override.
 
 * **Excluded by default:** `Trash`, `Junk`, `Junk E-mail`, `Deleted Items`,
   `Spam` (`--exclude` overrides). Non-mail artefacts (`.msf`, `.sqlite*`, `.dat`)
@@ -479,8 +511,13 @@ scripts/backup-mail.py --list               # what is archived
   `partN` members rather than buffered in memory; concatenate them in order when
   restoring by hand.
 * **Rebuild rule:** a sealed chunk is rewritten only when its message count
-  actually changes (late-arriving mail carrying an old `Date:` header). New mail
-  in the current year never touches an older year.
+  *rises* (late-arriving mail carrying an old `Date:` header). A *falling* count
+  means mail was deleted after the seal, and the chunk is deliberately left
+  alone - see above. New mail in the current year never touches an older year.
+* **Sealing removes the old partial.** When a period closes, the chunk is written
+  under its final name and the superseded `mail-<period>.partial.tar.zst.age` is
+  deleted, so one orphaned object is not uploaded and retained per period. Jotta
+  still holds the earlier versions of that object for its grace period.
 * **No plaintext spool:** messages stream straight into `tar | zstd | age`. The
   source mboxes are already plaintext on the same disk; the tool never writes a
   second plaintext copy.
@@ -513,10 +550,16 @@ overwriting the live mbox.
 
 ```bash
 scripts/install-tt-backup-mail-user.sh          # dir + user units + timer
-scripts/backup-mail.py                          # first full archive
+scripts/backup-mail.py --granularity month --since 2026-01 --include-current
+                                                # one-time monthly backfill
 jotta-cli add /mnt/ai_storage/backups/thunderbird
 jotta-cli scan
 ```
+
+The backfill must run **before** the timer's own settings apply, or its first
+night is capped at `--max-periods 2` and it takes six nights to catch up. Run it
+once by hand with the default cap (`--max-periods 48`), confirm with `--list`,
+then install the units.
 
 `jottad` already runs as `mpegg-adm` (a user unit), so a **user** timer and a
 folder added to the continuous backup is all that is needed - no system unit, no
@@ -540,6 +583,8 @@ sudo, no service account.
   of distinct messages. No de-duplication is done - dropping a copy could look
   like losing mail.
 * **1969/1970 chunks** exist because some messages carry a bogus epoch `Date:`.
-  They are tiny; the `undated` chunk holds mail with no usable date at all.
+  They are tiny; the `undated` chunk holds mail with no usable date at all. That
+  chunk is always re-cut when its count moves, so it is **not** covered by the
+  shrink protection: undated mail that is deleted can still drop out of it.
 * `jotta-cli status` reports the folder like any other continuous backup; a chunk
   appears once `jottad` scans and uploads it.

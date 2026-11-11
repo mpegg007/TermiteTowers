@@ -1,18 +1,18 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/systemd/user/tt-backup-mail.service@186 %
+#  %ccm_git_object_id: infra/systemd/user/tt-backup-mail.service@215 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 049dee567a9fa15df8a3978cf4c9144a5690a597 %
-#  %ccm_git_commit_id: 39d8262239b8cbb295886dbe654023e96f65ada9 %
-#  %ccm_git_commit_count: 186 %
-#  %ccm_git_commit_date: 2026-10-28 11:35:25 -0400 %
+#  %ccm_git_blob_sha: 52ce912128cc3d09aaeb9f677c0ff607932d52b2 %
+#  %ccm_git_commit_id: 8f18e3510659d8a475712467ba6efc3cda2e791d %
+#  %ccm_git_commit_count: 215 %
+#  %ccm_git_commit_date: 2026-11-11 10:32:19 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: feat(backups): phase 3 - encrypt to per-tier keys %
-#  %ccm_git_modify_date: 2026-10-28 11:35:26 %
-#  %ccm_git_file_last_modified: 2026-10-27 17:56:20 %
+#  %ccm_git_commit_message: fix(backups): seal Thunderbird mail monthly and refuse a year run over monthly chunks %
+#  %ccm_git_modify_date: 2026-11-11 10:32:20 %
+#  %ccm_git_file_last_modified: 2026-11-10 10:55:06 %
 #  %ccm_git_file_name: tt-backup-mail.service %
 #  %ccm_git_path: infra/systemd/user/tt-backup-mail.service %
 #  %ccm_git_language_mode: service %
@@ -20,17 +20,29 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 425 %
+#  %ccm_git_size: 2310 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 [Unit]
-Description=Encrypted Thunderbird mail archive (immutable per-year chunks)
+Description=Encrypted Thunderbird mail archive (immutable per-month chunks)
 Documentation=file:@REPO_DIR@/infra/backups/README.md
 
 [Service]
 Type=oneshot
-# Runs as the invoking user - no sudo, no service account. A completed year is
-# archived once; later runs only re-read the mboxes to prove nothing changed.
-ExecStart=@REPO_DIR@/infra/backups/scripts/backup-mail.py
+# Runs as the invoking user - no sudo, no service account.
+#
+# Hybrid layout. The per-year chunks sealed before the switch (2018-2025) are
+# left exactly as they are: a month run only ever looks at month periods, so
+# the legacy years are inert. From 2026-01 on every month is sealed once and
+# kept; the month still in progress is re-cut nightly, so newest mail is never
+# more than about a day away from the archive.
+#
+#  --since 2026-01     keep the loop off the legacy years
+#  --include-current   refresh the month in progress (also seals last month on
+#                      the first run after a rollover, because its name changed)
+#  --max-periods 2     a rollover night does the closing month AND the new one
+#  --scan              tell jottad to look now instead of at its next hourly pass
+ExecStart=@REPO_DIR@/infra/backups/scripts/backup-mail.py \
+    --granularity month --since 2026-01 --include-current --max-periods 2 --scan
 Nice=10
 IOSchedulingClass=idle
 TimeoutStartSec=2h
