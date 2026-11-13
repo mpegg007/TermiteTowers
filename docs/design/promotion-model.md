@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: docs/design/promotion-model.md % -->
-<!-- %ccm_git_object_id: docs/design/promotion-model.md@213 % -->
-<!-- %ccm_git_commit_date: 2026-11-09 14:55:21 -0500 % -->
+<!-- %ccm_git_object_id: docs/design/promotion-model.md@218 % -->
+<!-- %ccm_git_commit_date: 2026-11-13 14:50:44 -0500 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: promote: two artifacts only — manifest and record; inventory removed (D20) % -->
+<!-- %ccm_git_commit_message: changes 261113 % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-11-09 mpegg promote: two artifacts only — manifest and record; inventory removed (D20) -->
 <!-- %git_commit_history: 2026-11-09 mpegg docs: package spec — curated selection between inventory and record -->
 <!-- %git_commit_history: 2026-11-09 mpegg docs: remove the last dit references from the flow and audit sections -->
 <!-- %git_commit_history: 2026-11-09 mpegg docs: drop the dit tier; static validation becomes a CI gate on the promote branch -->
@@ -17,6 +18,12 @@
 **Status:** design agreed, nothing implemented. This document is the reference the
 implementation is measured against, and the place where accepted debts are recorded
 so they stop being rediscovered.
+
+**Nothing in this document may be inferred from the code.** The shipped engine takes one
+`--repo-root` and therefore promotes within a single repository; that is an implementation
+shortcut, not the design. Cross-repo promotion is the design — §4.5, §4.6, D10, D21 — and a
+reading of `scripts/promote/tt-promote.py` that concludes otherwise is reading the wrong
+artifact. This paragraph exists because that inference was drawn once (P19).
 
 **Scope:** how a change reaches `prd` in this repository. Not how services are
 installed, not how secrets are managed, not how a runner is registered — those
@@ -163,7 +170,7 @@ Key-value lines before the first entry:
 | key | required | meaning |
 |---|---|---|
 | `package:` | yes | identifier, matching the filename stem |
-| `app:` | yes | which inventory this draws from |
+| `app:` | yes | the **target** app — the repository that receives the record — resolved through the repo map in §4.5. A name that resolves to no repository is not an answer |
 | `from:` | yes | source ref: a branch, a tag, a SHA, or `latest` |
 | `to:` | yes | destination tier; must match a real branch |
 | `reason:` | yes | one line, for the human reading the record six months later |
@@ -227,14 +234,12 @@ classification in either direction — which a tool-computed flag cannot guarant
 ```
 promote/
   README.md                    how to author a package, and what build refuses
-  inventory/
-    termitetowers-core.txt     generated ownership snapshot
+  apps.txt                     repo map: app -> clone root, remote, default branch (§4.5)
   packages/
     2026-11-09-docs.pkg        hand-authored, one per promotion
   policy/
     deny.txt                   never promotable: env files, secrets, credentials
     privileged.txt             presence-is-behaviour prefixes
-    ignore.txt                 residual-report ignore list
   records/
     2026-11-09T1920Z-docs-to-uat1.yaml
 ```
@@ -246,21 +251,34 @@ rather than constants buried in the tool.
 
 ```yaml
 record_version: 1
-id: 2026-11-09T17-25-uat1-to-prd
-app: termitetowers-core
-inventory_ref: <sha of the inventory file>
-source_ref: uat1
-source_commit: 07c638fcfb4804b40c226db94358725a8b6ef636
+id: 2026-11-09T21-40-analacres-prd
+package: 2026-11-10-analacres-hooks
+package_sha: 3f9c0b1e...                 # hash of the package text
+app: analacres                           # the TARGET app: its repo receives this record
 applies_to: prd
 generated_by: engine@<sha>
 entries:
   - op: copy
-    src: infra/docker/nextcloud-dev1.yml
-    dst: infra/docker/nextcloud-dev1.yml
+    source_repo: termitetowers           # a different repository, same record
+    src: git-automation/v2/pre-commit.sh
+    dst: git-automation/v2/pre-commit.sh
+    source_commit: 07c638fcfb4804b40c226db94358725a8b6ef636
     blob: 1fc9b67eb0727868e13ad478eb85fc51b30de794
+  - op: copy
+    source_repo: analacres               # the target's own repo
+    src: scripts/water_meter/common.py
+    dst: scripts/water_meter/common.py
+    source_commit: 4c1de0f0e0b0d6b1d1f0d0b0e0c0a0b0c0d0e0f0
+    blob: 9a1c7e6d5b4f3a2c1d0e9f8a7b6c5d4e3f2a1b0c
   - op: delete
-    dst: scripts/retired-thing.sh
+    dst: scripts/retired-thing.sh         # deletes are always the target's
 ```
+
+**There is no record-level `source_ref` or `source_commit`.** Once two entries can come
+from two repositories, a single global pin cannot describe the record, so the per-entry
+pin (§4.3) becomes mandatory rather than an override. A record may keep a `source_ref` as a
+readability aid when every entry shares one source, and §4.3 already forbids it from
+resolving at apply time.
 
 ### 4.3 Pinning rules
 
@@ -284,6 +302,120 @@ entries:
 - A path whose git mode is `120000` (symlink) is **not promotable** unless
   explicitly allowlisted, and absolute-path link targets are rejected.
 
+### 4.5 Cross-repo promotion
+
+Nothing in the model requires a record's source and its destination to be the same
+repository. That is what the per-entry pin (D5) is for: an entry names a source repo, a
+source commit and a blob, and the record applies to one target app. The shipped engine
+takes a single `--repo-root`, so it can only express the case where both are that repo —
+**an implementation limit, not the design**, recorded here so the next reading of the code
+cannot silently redefine the model.
+
+#### Why the engine must hold both repositories at once
+
+A blob sha is only meaningful inside the object store that contains the object. So `apply`
+reads the bytes out of the **source** clone and writes them into the **target** workarea:
+
+```
+git -C <source clone> cat-file blob <pinned sha>   ->   write   ->   commit in <target clone>
+```
+
+That one fact dictates §4.6, and it is exactly what a one-repo argument cannot express: the
+two clones have to be reachable by the same process at the same time.
+
+#### Which artifact lives in which repository
+
+> **Superseded in part, 2026-11-09.** The table below puts policy, packages and records in
+> the target app repo. That was overruled the same day: policy and manifests move to the
+> promote repo, because a contributor must not be able to relax the rule that governs their
+> own promotion. See decision S3 in
+> [`docs/status/promotion-manifest-handoff.md`](../status/promotion-manifest-handoff.md).
+> Everything else in this section stands.
+
+| artifact | lives in | why |
+|---|---|---|
+| repo map — `apps.txt` | the **promote** repo | it is how the engine finds a clone; it describes no single app |
+| package — `*.pkg` | the **target** app repo | it is that app's selection, reviewed with that app |
+| record — `*.yaml` | the **target** app repo | the audit artifact belongs with the bytes it describes |
+| policy — `deny.txt`, `privileged.txt` | the **target** app repo | it states what *that* repo may not do; a source repo's policy does not travel with its bytes |
+
+A cross-repo build therefore reads three things: the target's policy, the target's package,
+and the engine's repo map.
+
+#### The repo map
+
+`app:` stops being a label and becomes a lookup. `apps.txt` maps an app key to the clone the
+engine resolves against, its remote, and its default branch:
+
+```
+# app          clone root                          remote
+termite        /srv/engine/workareas/termite        <remote url>
+analacres      /srv/engine/workareas/analacres      <remote url>
+```
+
+`app:` names the **target** app, so `from:` and `to:` are branches of *that* repository. A
+source in another repository is named explicitly on the entry:
+
+```
++ termite:git-automation/v2/pre-commit.sh     # source in another repo
++ scripts/water_meter/common.py               # source in the target's own repo
+- scripts/retired-thing.sh                    # deletes are always the target's
+```
+
+**Proposed, not settled:** the `app:path` prefix. The split is resolved by lookup — a prefix
+is cross-repo only when it is a known app key — and `build` must refuse rather than guess
+when both readings are possible. That refusal is the only guard against a real path that
+happens to begin with an app key, so it is a requirement, not a nicety.
+
+#### Adoption, not a runtime dependency
+
+§14.5 says a repo owns its vhost but not another repo's assets, and the `tag-viewer` case is
+why: a symlink or an `rsync` from a foreign tree is a live dependency on a tree this repo
+does not control. Cross-repo promotion is the other thing. The destination repo **adopts**
+the bytes and owns them from then on; the record names where they came from, and the
+frozen-origin header (§7) still carries the origin repo and path. Adoption does not erase
+provenance and it does not create a dependency — the source repo could be deleted tomorrow
+and the target is unaffected.
+
+#### What `build` refuses, in this shape
+
+- an `app:` that is not in the repo map
+- an entry whose app key is not in the repo map
+- a source blob absent from the source clone's object store
+- a `@ref` that resolves in the wrong repository
+- a delete entry naming another app — deletes are target-only
+- everything in §4.4, applied per destination
+
+### 4.6 The engine's access model
+
+The engine needs a lot of access. The list is short enough to state plainly, so that it can
+be reviewed against a requirement set instead of being judged on impressions.
+
+| requirement | why | what breaks without it |
+|---|---|---|
+| read on every **source** repo | `cat-file` the pinned blob (§4.5) | cross-repo records cannot be applied at all |
+| write on every **target** repo | commit and push the record on the target branch | promotion is impossible |
+| one workarea per repo per branch | one checkout cannot hold two tiers at once | concurrent promotes corrupt each other (P15) |
+| per-destination fine-grained tokens | a stolen token should reach one repo | one token compromises everything (P14) |
+| loud auth failure | never report "nothing to promote" when the truth is "could not look" | an auth outage reads as a clean tree (P16) |
+| no hooks in any promote workarea | a hook amends the commit and appends history (§7, D9) | the promoted commit is not the reviewed one |
+
+**What "god-like" does not include.** Each exclusion is what keeps the credential set
+survivable:
+
+- **No host access.** The engine commits and pushes; the target repo's own workflow deploys
+  (D11). No sudo, no systemd, no deploy secrets, no run-area writes.
+- **No force-push, no tier reset.** Tiers accumulate (§3); rollback is a *new* commit
+  replaying record N-1, never a rewrite of the branch.
+- **No write to a repo it holds no promote intent for.** A token that can write everywhere
+  is a token that can promote by accident.
+- **One audit log, not one repo's history.** The record id is echoed into the target commit
+  message (P17), so the target is self-describing and the engine is not needed to read it.
+
+The accepted debt is unchanged and restated rather than removed: credential blast radius,
+and a single point of failure at promote time (D10). Writing this section makes both
+visible enough to weigh; it does not make either smaller.
+
 ---
 
 ## 5. Flow
@@ -291,7 +423,7 @@ entries:
 ```mermaid
 flowchart LR
   DEV[dev1 commits freely] --> MAN[write a manifest]
-  MAN --> GEN[build: resolve refs to commits and blobs]
+  MAN --> GEN[build: resolve app through the repo map, then every ref to a commit and a blob]
   GEN --> GATE[static validation as a CI gate]
   GATE --> UAT[uat1 runtime test]
   UAT --> PRD[prd merge]
@@ -459,8 +591,9 @@ promoting one can redeploy, restart or expose something with no content change.
 - The record id is **echoed into the target commit message** (or committed into the
   target branch alongside the payload), so the target repo is self-describing
   without the engine.
-- Rollback is **replaying record N-1**. Keep the last N records alongside the
-  inventory.
+- Rollback is **replaying record N-1**. Keep the last N records in the target app's
+  `promote/records/`, because a cross-repo record is not reconstructible from the source
+  repo alone.
 - Tag ordering: commit → let `post-commit` amend → **then** tag. A tag taken before
   the amend points at an orphaned commit.
 
@@ -489,7 +622,9 @@ promoting one can redeploy, restart or expose something with no content change.
 | D17 | `prd1` and `main` are retired | `prd1` is strictly behind `prd`; `main` is strictly behind with no workflows yet is `origin/HEAD` | none |
 | D18 | A hand-authored **manifest** sits between the tiers and the record | intent needs a home of its own, and the record must never contain a ref | one more file per promotion |
 | D19 | Privileged promotion requires a typed `!`, checked both ways | approval cannot silently drift out of sync with the tool's classification | one extra keystroke, and a failed build when the classification changes |
-| D20 | **No inventory artifact.** Removed 2026-11-09, after it was shown to have no consumer | promotion is deliberate selection, not exhaustive copying. Delete visibility and coverage are queries over two refs, not stored state | nothing reminds you a file must be deleted — read `git diff --diff-filter=D` before writing a manifest |
+| D20 | **No inventory artifact.** Removed 2026-11-09, after it was shown to have no consumer | promotion is deliberate selection, not exhaustive copying. Delete visibility and coverage are queries over two refs, not stored state | nothing reminds you a file must be deleted — read `git diff --diff-filter=D` before writing a manifest. **Narrowed the same day:** the inventory was the *payload* and had no consumer; `apps.txt` was the *routing*, and cross-repo promotion cannot resolve a source repository without it. The map returns as D22 |
+| D21 | **Cross-repo promotion is the design**, not a later option | the per-entry pin (D5) exists so an entry can name its own repository; a single `--repo-root` cannot express it, and the `tag-viewer` gap showed what happens when two repos guess at each other's bytes | the engine must hold both object stores and per-destination credentials (§4.6). The shipped single-repo CLI is an implementation limit, not a decision |
+| D22 | `promote/apps.txt` is the **repo map**: app key → clone root, remote, default branch | `app:` has been required in every manifest since the first one, and a name that resolves to no repository cannot be checked; free text cannot express a cross-repo source | one more file to keep honest — and it is deliberately *not* an inventory of paths |
 
 ---
 
@@ -514,6 +649,8 @@ promoting one can redeploy, restart or expose something with no content change.
 | P15 | Workarea concurrency and residue | open: lock per repo+branch; verify checkout `clean` is intact |
 | P16 | Engine unavailable looks like nothing to promote | open: auth failures must be loud, never an empty record |
 | P17 | Audit trail split across two repos | closed: record id echoed into the target commit message |
+| P18 | A record that cannot be replayed because the source repository is not named | closed by design: per-entry `source_repo`, `source_commit` and `blob` (§4.5) |
+| P19 | The design evaporating because the shipped code took a shortcut | closed by writing it down: §4.5, §4.6, D21 and this row state that one `--repo-root` is an implementation limit. Mitigated 2026-11-09 |
 
 ---
 
@@ -539,7 +676,8 @@ promoting one can redeploy, restart or expose something with no content change.
    proves nothing.
 4. **Engine scope.** Per-destination tokens, engine repo protected as strictly as
    `prd`, one workarea per repo per branch, loud auth failures, record id in the
-   target commit message.
+   target commit message. See §4.6 for the requirement set and the exclusions that
+   keep it bounded.
 5. **Two absolute-path symlinks exist on `dev1` and are live today.** Found by the
    inventory generator, which refuses them:
 
@@ -565,6 +703,12 @@ promoting one can redeploy, restart or expose something with no content change.
    promotes the other's bytes. This is the first concrete case of the rule that a repo
    owns its vhost but not another repo's assets.
 
+6. **Cross-repo manifest grammar is proposed, not settled.** The `app:path` source prefix in
+   §4.5 carries one ambiguity — a real path whose first component is also an app key — and
+   the answer chosen in the design is "refuse when both readings are possible". Confirm that
+   before `build` learns the syntax, or the first cross-repo package will be the thing that
+   discovers it.
+
 ---
 
 ## 15. Build order
@@ -573,14 +717,16 @@ Measured in dependency, not duration.
 
 1. ~~Ground truth on `prd` versus `dev1`.~~ Done, see section 14.
 2. ~~Deploy-side: marker, archive step, restore script.~~ Done, see section 16.
-3. Inventory schema and generator, enumerated from git.
+3. Repo map (`promote/apps.txt`) and per-entry source resolution, replacing the cancelled
+   inventory schema (D20, D22).
 4. Promote record generator, with `latest` resolution and ownership-derived deletes.
 5. Validation checks: leaf-only, one entry per destination, cross-manifest
    uniqueness, case collisions, residual report.
 6. Static validation as a CI gate over the promote branch — no tier, no destination.
 7. `uat1` workflow, after the secrets prerequisite.
 8. `prd` apply step: pre-deploy snapshot, required reviewer, tag after amend.
-9. Engine repo and credentials.
+9. Engine workareas and per-destination credentials, built against the requirement set in
+   §4.6. Where the engine lives is a separate question from what it may reach.
 
 ---
 

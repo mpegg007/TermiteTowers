@@ -1,0 +1,75 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/prometheus/rules/scrape.yml@218 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 4ead0bb6866287557e470c610f693322720e9220 %
+#  %ccm_git_commit_id: 72c0eae6bb7ccad09a6031b8cf1fff35b571a7e4 %
+#  %ccm_git_commit_count: 218 %
+#  %ccm_git_commit_date: 2026-11-13 14:50:44 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: changes 261113 %
+#  %ccm_git_modify_date: 2026-11-13 14:50:46 %
+#  %ccm_git_file_last_modified: 2026-11-13 14:49:37 %
+#  %ccm_git_file_name: scrape.yml %
+#  %ccm_git_path: infra/docker/prometheus/rules/scrape.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 3193 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# Scrape health -- does the monitoring itself still work.
+#
+# A monitoring stack that fails silently is worse than none: the absence of
+# alerts reads as "everything is fine". These rules make the stack report on
+# itself.
+
+groups:
+  - name: scrape
+    rules:
+      # Every target except Prometheus scraping itself. Prometheus being up but
+      # unable to reach others is exactly the case worth catching.
+      - alert: TargetDown
+        expr: |
+          up{job!="prometheus"} == 0
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Scrape target {{ $labels.job }}/{{ $labels.instance }} has been down 15m"
+          description: >-
+            Prometheus cannot scrape this target. For job=node, host metrics and
+            therefore every disk alert are blind. For job=docker, container
+            alerts are blind. Both need fixing even though nothing is "down"
+            from a user's point of view.
+
+      - alert: PrometheusRuleEvaluationSlow
+        expr: |
+          prometheus_rule_group_last_duration_seconds > prometheus_rule_group_interval_seconds
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Rule group {{ $labels.rule_group }} takes longer than its interval"
+          description: >-
+            Evaluation is falling behind schedule, which delays every alert in
+            that group. Usually an expensive query rather than a load problem.
+
+      - alert: PrometheusTSDBLowSpace
+        expr: |
+          predict_linear(prometheus_tsdb_storage_blocks_bytes[6h], 7 * 86400) >
+          (node_filesystem_avail_bytes{mountpoint="/prometheus"} or vector(0))
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "Prometheus TSDB growth will exhaust its filesystem within 7 days"
+          description: >-
+            Metrics storage is growing faster than free space. Retention is
+            capped at 30d/5GB, so this usually means the cap is set above what
+            the pool can spare. Metrics are disposable - lower the cap rather
+            than growing the pool.

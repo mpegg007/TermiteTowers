@@ -1,0 +1,37 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/systemd/user/tt-backup-db-ttdb.timer@218 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 111a9444de5e418d601cee35c2e371de9f99e935 %
+#  %ccm_git_commit_id: 72c0eae6bb7ccad09a6031b8cf1fff35b571a7e4 %
+#  %ccm_git_commit_count: 218 %
+#  %ccm_git_commit_date: 2026-11-13 14:50:44 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: changes 261113 %
+#  %ccm_git_modify_date: 2026-11-13 14:50:47 %
+#  %ccm_git_file_last_modified: 2026-11-13 14:49:38 %
+#  %ccm_git_file_name: tt-backup-db-ttdb.timer %
+#  %ccm_git_path: infra/systemd/user/tt-backup-db-ttdb.timer %
+#  %ccm_git_language_mode: timer %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 1443 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# Runs after tt-backup-tthealth (03:30 + jitter) and before the mail archive
+# (04:30), so the three jobs never compete for disk on the same pool.
+[Unit]
+Description=Daily encrypted dump of ttdb_dev1
+
+[Timer]
+OnCalendar=*-*-* 03:50:00
+RandomizedDelaySec=10m
+# A host that was off at 03:50 still takes the backup on the next boot.
+Persistent=true
+
+[Install]
+WantedBy=timers.target

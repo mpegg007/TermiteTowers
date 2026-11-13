@@ -1,31 +1,31 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
-#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/docker/watchyourlan-dev1.yml:132 %
+#  %ccm_git_object_id: infra/docker/watchyourlan-dev1.yml@218 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: d6b7cd29ebe2f923a13650de77c9c1d51d648e31 %
-#  %ccm_git_commit_id: 6e67c9cb056223d2c5e30fd43ff735f0e43b37fb %
-#  %ccm_git_commit_count: 132 %
-#  %ccm_git_commit_date: 2026-02-07 16:19:47 -0500 %
+#  %ccm_git_blob_sha: 91d7dea4a4aa597552881c89d8fbc910ff7a6faf %
+#  %ccm_git_commit_id: 72c0eae6bb7ccad09a6031b8cf1fff35b571a7e4 %
+#  %ccm_git_commit_count: 218 %
+#  %ccm_git_commit_date: 2026-11-13 14:50:44 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: comment cleanup %
-#  %ccm_git_modify_date: 2026-02-07 16:19:48 %
-#  %ccm_git_file_last_modified: 2026-02-07 16:19:48 %
+#  %ccm_git_commit_message: changes 261113 %
+#  %ccm_git_modify_date: 2026-11-13 14:50:46 %
+#  %ccm_git_file_last_modified: 2026-11-13 14:49:38 %
 #  %ccm_git_file_name: watchyourlan-dev1.yml %
 #  %ccm_git_path: infra/docker/watchyourlan-dev1.yml %
 #  %ccm_git_language_mode: yaml %
 #  %ccm_git_file_type: text/plain %
 #  %ccm_git_file_encoding: us-ascii %
-#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 744 %
+#  %ccm_git_size: 2175 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
-# %git_commit_history: 2026-02-07 mpegg  feb2026  % 
-# %git_commit_history: 2025-11-30 mpegg  cleanup  % 
-# %git_commit_history: november changes % 
+# %git_commit_history: 2026-02-07 mpegg  feb2026  %
+# %git_commit_history: 2025-11-30 mpegg  cleanup  %
+# %git_commit_history: november changes %
 name: watchyourlan-dev1
 services:
   watchyourlan:
@@ -34,7 +34,11 @@ services:
     restart: always
     network_mode: host
     env_file:
-      - ./env/watchyourlan.env
+      # Tiered absolute path: /etc/tt-secrets/<tier>/env/. A relative ./env/ here
+      # resolves against the live project directory (/srv/dev1/watchyourlan/docker)
+      # and only reached the secret through a three-hop symlink chain, and a
+      # deployed tree built from tracked files alone has no ./env/ at all.
+      - /etc/tt-secrets/dev1/env/watchyourlan.env
     environment:
       - TZ=America/Toronto
       - IFACE="eno1 wlp9s0 enx00e04c70432a"

@@ -1,31 +1,31 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
-#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/docker/snipeit-dev1.yml:132 %
+#  %ccm_git_object_id: infra/docker/snipeit-dev1.yml@218 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 6b43df3b47ebfd97a2526cf89d5e090325875bb6 %
-#  %ccm_git_commit_id: 6e67c9cb056223d2c5e30fd43ff735f0e43b37fb %
-#  %ccm_git_commit_count: 132 %
-#  %ccm_git_commit_date: 2026-02-07 16:19:47 -0500 %
+#  %ccm_git_blob_sha: 1971bbeba3eb5646451bdbe0fe16af957073107c %
+#  %ccm_git_commit_id: 72c0eae6bb7ccad09a6031b8cf1fff35b571a7e4 %
+#  %ccm_git_commit_count: 218 %
+#  %ccm_git_commit_date: 2026-11-13 14:50:44 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: comment cleanup %
-#  %ccm_git_modify_date: 2026-02-07 16:19:48 %
-#  %ccm_git_file_last_modified: 2026-02-07 16:19:48 %
+#  %ccm_git_commit_message: changes 261113 %
+#  %ccm_git_modify_date: 2026-11-13 14:50:46 %
+#  %ccm_git_file_last_modified: 2026-11-13 14:49:37 %
 #  %ccm_git_file_name: snipeit-dev1.yml %
 #  %ccm_git_path: infra/docker/snipeit-dev1.yml %
 #  %ccm_git_language_mode: yaml %
 #  %ccm_git_file_type: text/plain %
-#  %ccm_git_file_encoding: us-ascii %
-#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_file_encoding: utf-8 %
+#  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 2103 %
+#  %ccm_git_size: 4168 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
-# %git_commit_history: 2026-02-07 mpegg  feb2026  % 
-# %git_commit_history: 2025-11-30 mpegg  cleanup  % 
-# %git_commit_history: updates % 
+# %git_commit_history: 2026-02-07 mpegg  feb2026  %
+# %git_commit_history: 2025-11-30 mpegg  cleanup  %
+# %git_commit_history: updates %
 name: snipeit-dev1
 
 services:
@@ -34,7 +34,8 @@ services:
     container_name: snipeit-db-dev1
     restart: always
     env_file:
-      - ./env/snipeit.env
+      # Tiered absolute path (see plans/per-tier-secrets.md §7a).
+      - /etc/tt-secrets/dev1/env/snipeit.env
     environment:
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql_root_password
       - MYSQL_PASSWORD_FILE=/run/secrets/mysql_password
@@ -56,7 +57,7 @@ services:
     container_name: snipeit-dev1
     restart: unless-stopped
     env_file:
-      - ./env/snipeit.env
+      - /etc/tt-secrets/dev1/env/snipeit.env
     depends_on:
       - snipeit-db
     ports:
@@ -81,14 +82,27 @@ networks:
     external: true
 
 secrets:
+  # Moved out of the checkout: these were real files at mode 755 in git's
+  # working tree. They feed MariaDB initialisation, so the bytes must never
+  # change for an existing datadir - they were copied and sha256-verified, not
+  # regenerated.
   mysql_root_password:
-    file: ./env/snipeit_mysql_root_password.txt
+    file: /etc/tt-secrets/dev1/secrets/snipeit_mysql_root_password.txt
   mysql_password:
-    file: ./env/snipeit_mysql_password.txt
+    file: /etc/tt-secrets/dev1/secrets/snipeit_mysql_password.txt
 
-# Usage:
+# Usage (first provision only):
 #   sudo mkdir -p /mnt/ai_storage/snipeit/{mysql,data,logs} && \
-#   openssl rand -base64 32 | sudo tee /home/mpegg-adm/source/TermiteTowers/infra/docker/env/snipeit_mysql_root_password.txt && \
-#   openssl rand -base64 32 | sudo tee /home/mpegg-adm/source/TermiteTowers/infra/docker/env/snipeit_mysql_password.txt && \
-#   sudo chmod 600 /home/mpegg-adm/source/TermiteTowers/infra/docker/env/snipeit_mysql_*.txt && \
+#   sudo install -d -o root -g mpegg-adm -m 0750 /etc/tt-secrets/dev1/secrets && \
+#   openssl rand -base64 32 | sudo tee /etc/tt-secrets/dev1/secrets/snipeit_mysql_root_password.txt >/dev/null && \
+#   openssl rand -base64 32 | sudo tee /etc/tt-secrets/dev1/secrets/snipeit_mysql_password.txt >/dev/null && \
+#   sudo chmod 640 /etc/tt-secrets/dev1/secrets/snipeit_mysql_*.txt && \
 #   docker compose -f infra/docker/snipeit-dev1.yml up -d
+#
+# WARNING: the two openssl lines above generate NEW passwords. Run them only
+# against an EMPTY datadir. On an existing /mnt/ai_storage/snipeit/mysql the
+# credentials are already baked into the MariaDB user table, so regenerating
+# them here locks Snipe-IT out of its own database and the app returns 500.
+# To rotate on a live install, change the password inside MariaDB first, then
+# update these files, keeping them byte-identical to what the DB expects.
+# These files live in /etc/tt-secrets/<tier>/secrets/, never in the checkout.

@@ -1,0 +1,49 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/systemd/user/tt-backup-db-ttphoto.service@218 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 81950802a576674e871abd9e9329118b9b54b8a0 %
+#  %ccm_git_commit_id: 72c0eae6bb7ccad09a6031b8cf1fff35b571a7e4 %
+#  %ccm_git_commit_count: 218 %
+#  %ccm_git_commit_date: 2026-11-13 14:50:44 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: changes 261113 %
+#  %ccm_git_modify_date: 2026-11-13 14:50:47 %
+#  %ccm_git_file_last_modified: 2026-11-13 14:49:38 %
+#  %ccm_git_file_name: tt-backup-db-ttphoto.service %
+#  %ccm_git_path: infra/systemd/user/tt-backup-db-ttphoto.service %
+#  %ccm_git_language_mode: service %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 2038 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# Encrypted dump of ttphoto_dev1 as the invoking user (peer auth, no password).
+#
+# ttphoto_dev1 is the photo archive's metadata: 18,835 image records plus
+# ~3.5 M tag rows. Tagging is human work, so unlike the monitoring archive
+# there is no regeneration window - this runs daily.
+[Unit]
+Description=tt-backup :: encrypted pg_dump of ttphoto_dev1
+Documentation=file:@REPO_DIR@/infra/backups/README.md
+After=network-online.target
+
+[Service]
+Type=oneshot
+Environment=APP_NAME=ttphoto
+Environment=DB_NAME=ttphoto_dev1
+Environment=AGE_TIER=general
+# public carries the pre-v2 tables and v2 the current schema. Assert both: the
+# read-only MCP account cannot even SEE v2, which is exactly how a dump could
+# look successful while omitting the schema that matters going forward.
+Environment=EXPECT_SCHEMAS=public,v2
+Environment=RETENTION_DAYS=14
+ExecStart=@REPO_DIR@/infra/backups/scripts/backup-db-user.sh
+
+Nice=10
+IOSchedulingClass=idle
+TimeoutStartSec=30min

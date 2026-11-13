@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: promote/README.md % -->
-<!-- %ccm_git_object_id: promote/README.md@213 % -->
-<!-- %ccm_git_commit_date: 2026-11-09 14:55:21 -0500 % -->
+<!-- %ccm_git_object_id: promote/README.md@218 % -->
+<!-- %ccm_git_commit_date: 2026-11-13 14:50:44 -0500 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: promote: two artifacts only — manifest and record; inventory removed (D20) % -->
+<!-- %ccm_git_commit_message: changes 261113 % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-11-09 mpegg promote: two artifacts only — manifest and record; inventory removed (D20) -->
 # promote/
 
 Promotion artifacts for this repository. The model is specified in
@@ -58,6 +59,24 @@ identical blob produces no diff, so a large manifest still yields a small commit
 
 Deliberately absent: globs, directory entries and exclude patterns. Any of the three
 makes the promoted set unbounded, which destroys reproducibility and review.
+
+## Cross-repo sources
+
+A manifest may take a file from **another repository**. Tier branches in `from:` and `to:`
+are always branches of the **target** app's repo, and every entry pins its own
+`source_repo`, `source_commit` and `blob` — so a record with two sources has no single
+global commit and needs none.
+
+`app:` is not a label. It resolves through the engine's repo map in `apps.txt`, and a name
+that resolves to no repository fails the build. Policy (`deny.txt`, `privileged.txt`) is
+read from the **target** app's `promote/policy`, because it states what that repo may not
+do; a source repo's policy does not travel with its bytes. Packages and records stay in the
+target app's repo.
+
+The model is §4.5 and §4.6 of
+[`docs/design/promotion-model.md`](../docs/design/promotion-model.md). **The shipped `build`
+is single-repo** — it takes one `--repo-root` — and that is an implementation limit, not the
+design. Do not infer the model from the CLI.
 
 ## Building
 

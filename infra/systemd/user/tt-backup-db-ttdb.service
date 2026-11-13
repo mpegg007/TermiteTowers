@@ -1,0 +1,50 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/systemd/user/tt-backup-db-ttdb.service@218 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: a2267a1a0c319bb7a03b4b8e89ecf5161383938b %
+#  %ccm_git_commit_id: 72c0eae6bb7ccad09a6031b8cf1fff35b571a7e4 %
+#  %ccm_git_commit_count: 218 %
+#  %ccm_git_commit_date: 2026-11-13 14:50:44 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: changes 261113 %
+#  %ccm_git_modify_date: 2026-11-13 14:50:46 %
+#  %ccm_git_file_last_modified: 2026-11-13 14:49:38 %
+#  %ccm_git_file_name: tt-backup-db-ttdb.service %
+#  %ccm_git_path: infra/systemd/user/tt-backup-db-ttdb.service %
+#  %ccm_git_language_mode: service %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 2108 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# Encrypted dump of ttdb_dev1 as the invoking user (peer auth, no password).
+#
+# User unit on purpose: infra/backups/scripts/backup-db-user.sh needs no root,
+# no service account and no pgpass, so the whole job installs with
+# install-tt-backup-db-user.sh rather than a sudo deploy. Same shape as
+# tt-backup-mail.service.
+[Unit]
+Description=tt-backup :: encrypted pg_dump of ttdb_dev1
+Documentation=file:@REPO_DIR@/infra/backups/README.md
+After=network-online.target
+
+[Service]
+Type=oneshot
+Environment=APP_NAME=ttdb
+Environment=DB_NAME=ttdb_dev1
+Environment=AGE_TIER=general
+# Every schema the dump must contain. If one is missing the job FAILS rather
+# than publishing a partial backup. nextcloud is deliberately absent: it has
+# no USAGE grant and may be empty, so asserting it would be a false alarm.
+Environment=EXPECT_SCHEMAS=dhcp_history,kea,powerdns,snipeit,water_meter,watchyourlan
+Environment=RETENTION_DAYS=14
+ExecStart=@REPO_DIR@/infra/backups/scripts/backup-db-user.sh
+
+Nice=10
+IOSchedulingClass=idle
+TimeoutStartSec=45min

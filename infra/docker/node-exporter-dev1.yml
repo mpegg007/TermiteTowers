@@ -1,0 +1,104 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/node-exporter-dev1.yml@218 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 1f0ba3039fed5277ce9121a5d240ea18e3952f15 %
+#  %ccm_git_commit_id: 72c0eae6bb7ccad09a6031b8cf1fff35b571a7e4 %
+#  %ccm_git_commit_count: 218 %
+#  %ccm_git_commit_date: 2026-11-13 14:50:44 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: changes 261113 %
+#  %ccm_git_modify_date: 2026-11-13 14:50:45 %
+#  %ccm_git_file_last_modified: 2026-11-13 14:49:36 %
+#  %ccm_git_file_name: node-exporter-dev1.yml %
+#  %ccm_git_path: infra/docker/node-exporter-dev1.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 4662 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# Node Exporter - host metrics for Prometheus
+# Purpose: expose filesystem capacity, memory, load and systemd unit state
+# Access: no published port. Scraped as node-exporter:9100 on monitor-apps-net-dev1
+# Category: Monitoring & Ops (3700-3799 range per wiki/ports.md)
+#
+# WHY THERE IS NO PORT SECTION
+#   Only Prometheus needs this, and both are on monitor-apps-net-dev1, so the
+#   container name is the address. Publishing 9100 to the host would expose an
+#   unauthenticated endpoint for no benefit.
+#
+# WHY IT RUNS AS ROOT (against the repo convention of user 2001:1006)
+#   Reading host state is the entire job: /proc for process and memory figures,
+#   and the host rootfs for the real mount table. A non-root user cannot traverse
+#   every host path (several trees are 0770), and the dbus socket used for unit
+#   state is not world-readable. The compensating controls are that every mount
+#   is read-only, the container filesystem is read-only, and no-new-privileges is
+#   set - so this process can read and report, and cannot write or escalate.
+#
+# WHAT IT IS ALLOWED TO TOUCH (reviewed in infra/docker/tier-path-allowlist.conf)
+#   /                            read-only, host rootfs for statfs
+#   /run/dbus/system_bus_socket  read-only, systemd unit state
+#   /mnt/ai_storage/prometheus/textfile  read-only, metrics written by host jobs
+#
+# Deploy:
+#   sudo mkdir -p /mnt/ai_storage/prometheus/textfile
+#   sudo chown 2001:1006 /mnt/ai_storage/prometheus/textfile
+#   docker compose -f /home/mpegg-adm/source/TermiteTowers/infra/docker/node-exporter-dev1.yml up -d
+#
+# Verify:
+#   docker logs --tail 50 node-exporter-dev1
+#   curl -s http://10.10.64.1:9100/metrics | head   # from a container on the net
+#   scripts/deploy-prometheus.sh verify
+name: node-exporter-dev1
+
+services:
+  node-exporter:
+    image: quay.io/prometheus/node-exporter:v1.8.2
+    container_name: node-exporter-dev1
+    restart: unless-stopped
+
+    # Share the host PID namespace so /proc describes the host, not the container.
+    pid: host
+
+    volumes:
+      # rslave so mounts created on the host after start (e.g. a Jotta or backup
+      # dataset) propagate in and get reported.
+      - /:/host:ro,rslave
+      - /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro
+      - /mnt/ai_storage/prometheus/textfile:/var/lib/node_exporter/textfile:ro
+
+    command:
+      - '--path.rootfs=/host'
+      - '--collector.textfile.directory=/var/lib/node_exporter/textfile'
+      # Failed units are how a broken tt-backup-tthealth.service becomes visible;
+      # without this the timer can stop and nothing reports it.
+      - '--collector.systemd'
+      - '--collector.processes'
+      # Drop pseudo-filesystems and per-container overlay mounts, which would
+      # otherwise dominate the series and make capacity alerts meaningless.
+      - '--collector.filesystem.mount-points-exclude=^/(dev|proc|sys|run|snap|var/lib/docker/.+|var/lib/containerd/.+)($|/)'
+      - '--collector.filesystem.fs-types-exclude=^(autofs|binfmt_misc|cgroup|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|mqueue|nsfs|overlay|proc|pstore|ramfs|rootfs|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs|tmpfs)$'
+
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+    networks:
+      - monitor-apps-net-dev1
+
+# Docker external network definition
+networks:
+  monitor-apps-net-dev1:
+    external: true

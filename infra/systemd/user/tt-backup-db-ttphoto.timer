@@ -1,0 +1,36 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/systemd/user/tt-backup-db-ttphoto.timer@218 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 7877dc09777e586092b589a12172ac8a008efb7c %
+#  %ccm_git_commit_id: 72c0eae6bb7ccad09a6031b8cf1fff35b571a7e4 %
+#  %ccm_git_commit_count: 218 %
+#  %ccm_git_commit_date: 2026-11-13 14:50:44 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: changes 261113 %
+#  %ccm_git_modify_date: 2026-11-13 14:50:47 %
+#  %ccm_git_file_last_modified: 2026-11-13 14:49:38 %
+#  %ccm_git_file_name: tt-backup-db-ttphoto.timer %
+#  %ccm_git_path: infra/systemd/user/tt-backup-db-ttphoto.timer %
+#  %ccm_git_language_mode: timer %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 1390 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# Daily, after ttdb so the two do not overlap. Measured first dump: 53 MB in
+# about 5 seconds, so it is cheap and there is no reason to stretch the gap.
+[Unit]
+Description=Daily encrypted dump of ttphoto_dev1
+
+[Timer]
+OnCalendar=*-*-* 04:10:00
+RandomizedDelaySec=10m
+Persistent=true
+
+[Install]
+WantedBy=timers.target

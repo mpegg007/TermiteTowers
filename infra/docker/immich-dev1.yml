@@ -1,33 +1,33 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
-#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/docker/immich-dev1.yml:147 %
+#  %ccm_git_object_id: infra/docker/immich-dev1.yml@218 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 9e5f84263fbda515587c5b6b029a4729c1b3cc73 %
-#  %ccm_git_commit_id: 875dba4d1edbc0fb2fe425346b22faa6070d5e41 %
-#  %ccm_git_commit_count: 147 %
-#  %ccm_git_commit_date: 2026-06-10 17:10:31 -0400 %
+#  %ccm_git_blob_sha: 738f0ee9f306dd1e2a856b50080da595c2002ba1 %
+#  %ccm_git_commit_id: 72c0eae6bb7ccad09a6031b8cf1fff35b571a7e4 %
+#  %ccm_git_commit_count: 218 %
+#  %ccm_git_commit_date: 2026-11-13 14:50:44 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: june bulk update %
-#  %ccm_git_modify_date: 2026-06-10 17:10:32 %
-#  %ccm_git_file_last_modified: 2026-06-10 17:10:32 %
+#  %ccm_git_commit_message: changes 261113 %
+#  %ccm_git_modify_date: 2026-11-13 14:50:44 %
+#  %ccm_git_file_last_modified: 2026-11-13 14:49:36 %
 #  %ccm_git_file_name: immich-dev1.yml %
 #  %ccm_git_path: infra/docker/immich-dev1.yml %
 #  %ccm_git_language_mode: yaml %
 #  %ccm_git_file_type: text/plain %
-#  %ccm_git_file_encoding: us-ascii %
-#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_file_encoding: utf-8 %
+#  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 3100 %
+#  %ccm_git_size: 3632 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
-# %git_commit_history: 2026-02-08 mpegg  updating run uid  % 
-# %git_commit_history: 2026-02-07 mpegg  comment cleanup  % 
-# %git_commit_history: 2026-02-07 mpegg  feb2026  % 
-# %git_commit_history: 2025-11-30 mpegg  cleanup  % 
-# %git_commit_history: docker updates % 
+# %git_commit_history: 2026-02-08 mpegg  updating run uid  %
+# %git_commit_history: 2026-02-07 mpegg  comment cleanup  %
+# %git_commit_history: 2026-02-07 mpegg  feb2026  %
+# %git_commit_history: 2025-11-30 mpegg  cleanup  %
+# %git_commit_history: docker updates %
 
 name: immich-dev1
 
@@ -44,7 +44,12 @@ services:
       - /gallery/shares/dsone:/mnt/pmedia/VG/PhotoArchive/002_Dianne
       - /etc/localtime:/etc/localtime:ro
     env_file:
-      - .env
+      # Tiered absolute path. This file also feeds ${UPLOAD_LOCATION},
+      # ${DB_DATA_LOCATION} and ${DB_*}, which compose interpolates from the
+      # PROJECT-DIRECTORY .env (/srv/dev1/immich/docker/.env) — that link now
+      # points straight at this same tiered file, so run compose from the live
+      # project directory, not from the checkout.
+      - /etc/tt-secrets/dev1/env/immich.env
     ports:
       - '3400:2283'
     depends_on:
@@ -60,7 +65,7 @@ services:
     volumes:
       - model-cache:/cache
     env_file:
-      - .env
+      - /etc/tt-secrets/dev1/env/immich.env
     restart: always
     healthcheck:
       disable: false

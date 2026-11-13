@@ -1,31 +1,31 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
-#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/docker/pihole-dev1.yml:132 %
+#  %ccm_git_object_id: infra/docker/pihole-dev1.yml@218 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 0a5491dd1e96b827b41ff99ba32483093a07e837 %
-#  %ccm_git_commit_id: 6e67c9cb056223d2c5e30fd43ff735f0e43b37fb %
-#  %ccm_git_commit_count: 132 %
-#  %ccm_git_commit_date: 2026-02-07 16:19:47 -0500 %
+#  %ccm_git_blob_sha: d33fe2ea4de5d8ffcfa414872169eac25335017c %
+#  %ccm_git_commit_id: 72c0eae6bb7ccad09a6031b8cf1fff35b571a7e4 %
+#  %ccm_git_commit_count: 218 %
+#  %ccm_git_commit_date: 2026-11-13 14:50:44 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: comment cleanup %
-#  %ccm_git_modify_date: 2026-02-07 16:19:47 %
-#  %ccm_git_file_last_modified: 2026-02-07 16:19:47 %
+#  %ccm_git_commit_message: changes 261113 %
+#  %ccm_git_modify_date: 2026-11-13 14:50:45 %
+#  %ccm_git_file_last_modified: 2026-11-13 14:49:36 %
 #  %ccm_git_file_name: pihole-dev1.yml %
 #  %ccm_git_path: infra/docker/pihole-dev1.yml %
 #  %ccm_git_language_mode: yaml %
 #  %ccm_git_file_type: text/plain %
 #  %ccm_git_file_encoding: utf-8 %
-#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 5479 %
+#  %ccm_git_size: 6989 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
-# %git_commit_history: 2026-02-07 mpegg  feb2026  % 
-# %git_commit_history: 2025-11-30 mpegg  cleanup  % 
-# %git_commit_history: docker updates % 
+# %git_commit_history: 2026-02-07 mpegg  feb2026  %
+# %git_commit_history: 2025-11-30 mpegg  cleanup  %
+# %git_commit_history: docker updates %
 
 name: pihole-dev1
 
@@ -61,6 +61,12 @@ services:
       # CRITICAL FIX: Set listening mode to 'all' instead of 'local'
       # This allows DNS queries from any source IP, required for Docker bridge mode
       FTLCONF_dns_listeningMode: 'all'
+      # Never forward reverse lookups for private IPv4 ranges upstream
+      # (10/8, 172.16/12, 192.168/16 including the 192.168.4.0/22 fiber net,
+      # 127/8, 169.254/16). Unanswerable PTRs are refused locally by FTL
+      # instead of leaking to 1.1.1.1. Conditional forwarding below is more
+      # specific and still wins for 192.168.1.0/24 -> PowerDNS.
+      FTLCONF_dns_bogusPriv: 'true'
       # Conditional forwarding for local domains to PowerDNS
       REV_SERVER: 'true'
       REV_SERVER_DOMAIN: 'local'
@@ -112,10 +118,10 @@ networks:
 #   #    
 #   #    Enable: ✓ Use conditional forwarding
 #   #    Local network in CIDR: 192.168.1.0/24
-#   #    IP address of DHCP server: 172.33.0.4
+#   #    IP address of DHCP server: 192.168.1.10#3053
 #   #    Local domain name: tt.omp (or local/aa.omp/omp for other zones)
 #   #
-#   #    This forwards all local domain queries to PowerDNS at 172.33.0.4 (Docker network IP)
+#   #    This forwards all local domain queries to PowerDNS at 192.168.1.10#3053 (Docker network IP)
 #   #    Traffic stays within the Docker network and never leaves to external networks
 #
 #   # 5. Access web interface at:
@@ -127,12 +133,12 @@ networks:
 #
 #   # 7. Verify conditional forwarding is working:
 #   #    dig @192.168.1.10 testserver.tt.omp A
-#   #    Should return 192.168.1.88 from PowerDNS (check logs: forwarded to 172.33.0.4)
+#   #    Should return 192.168.1.88 from PowerDNS (check logs: forwarded to 192.168.1.10#3053)
 #
 # Architecture:
 #   Pi-hole (192.168.1.10:53, 192.168.4.10:53) - Recursive DNS with ad-blocking
 #   ├── Upstream: Cloudflare DNS (1.1.1.1, 1.0.0.1) for internet domains
-#   └── Conditional Forward: PowerDNS (172.33.0.4 via Docker network) for local zones
+#   └── Conditional Forward: PowerDNS (192.168.1.10#3053 via Docker network) for local zones
 #       
 #   PowerDNS (192.168.1.10:3053, 192.168.4.10:3053) - Authoritative DNS for local domains
 #   ├── Zone: .local
@@ -141,17 +147,17 @@ networks:
 #   └── Zone: .omp
 #
 # Network:
-#   - Pi-hole and PowerDNS share the 'powerdns-net' Docker network (172.33.0.0/24)
-#   - Pi-hole IP on Docker network: 172.33.0.6
-#   - PowerDNS IP on Docker network: 172.33.0.4
-#   - Internal DNS queries use PowerDNS IP 172.33.0.4 (stays within Docker network)
+#   - Pi-hole and PowerDNS share the 'core-infra-net-dev1 (10.10.32.0/20)
+#   - Pi-hole IP on Docker network: 10.10.32.2
+#   - PowerDNS IP on Docker network: 192.168.1.10#3053
+#   - Internal DNS queries use PowerDNS IP 192.168.1.10#3053 (stays within Docker network)
 #   - External clients access Pi-hole on 192.168.1.10:53
 #
 # Notes:
 #   - Pi-hole handles all recursive queries and provides ad-blocking
 #   - PowerDNS serves authoritative answers for local zones only
 #   - Clients should use Pi-hole (192.168.1.10:53) as primary DNS
-#   - Pi-hole forwards local domain queries to PowerDNS via Docker network (172.33.0.4)
+#   - Pi-hole forwards local domain queries to PowerDNS via Docker network (192.168.1.10#3053)
 #   - All local zone traffic stays within Docker network (no external routing)
 #   - PowerDNS must be running first (start powerdns-dev1 before pihole-dev1)
 #   - Conditional forwarding configured via Pi-hole web admin, not config files

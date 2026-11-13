@@ -1,27 +1,13 @@
-<!--  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-  %ccm_git_repo: TermiteTowers %
-  %ccm_git_branch: dev1 %
-  %ccm_git_object_id: wiki/critical-infrastructure.md:125 %
-  %ccm_git_author: mpegg %
-  %ccm_git_author_email: mpegg@hotmail.com %
-  %ccm_git_blob_sha: bc973b665b5f8e8645d43afcaf2d80bf7f3cc904 %
-  %ccm_git_commit_id: c1f5aa954a589e43600caffa76969fcd4a57b2f1 %
-  %ccm_git_commit_count: 125 %
-  %ccm_git_commit_date: 2025-12-15 10:05:29 -0500 %
-  %ccm_git_commit_author: mpegg %
-  %ccm_git_commit_email: mpegg@hotmail.com %
-  %ccm_git_commit_message: monday drop %
-  %ccm_git_modify_date: 2025-12-15 10:05:35 %
-  %ccm_git_file_last_modified: 2025-12-02 15:37:49 %
-  %ccm_git_file_name: critical-infrastructure.md %
-  %ccm_git_path: wiki/critical-infrastructure.md %
-  %ccm_git_language_mode: markdown %
-  %ccm_git_file_type: text/plain %
-  %ccm_git_file_encoding: utf-8 %
-  %ccm_git_file_eol: CRLF %
-  %ccm_git_exec: no %
-  %ccm_git_size: 3096 %
-  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
+<!-- %ccm_git_repo: TermiteTowers % -->
+<!-- %ccm_git_branch: dev1 % -->
+<!-- %ccm_git_path: wiki/critical-infrastructure.md % -->
+<!-- %ccm_git_object_id: wiki/critical-infrastructure.md@218 % -->
+<!-- %ccm_git_commit_date: 2026-11-13 14:50:44 -0500 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_message: changes 261113 % -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2025-12-15 mpegg monday drop -->
 # Critical Infrastructure Services
 
 **Last Updated:** 2025-12-02  
@@ -71,11 +57,20 @@ This document identifies the core services required for basic network operation.
 
 **Purpose:** Service health monitoring, alerting, and troubleshooting
 
-- `uptime-kuma-dev1` - Uptime monitoring and alerting (port 3700)
-- `prometheus-dev1` - Metrics collection and time-series database (port 3720)
+- `uptime-kuma-dev1` - Availability probes and alerting (port 3700). The
+  authority on "is it up right now".
+- `prometheus-dev1` - Metrics, rule evaluation and capacity trending
+  (127.0.0.1:3720, authenticated vhost). Answers "how fast is it filling".
+- `node-exporter-dev1` - Host metrics feed for Prometheus (no published port).
 - `dozzle-dev1` - Docker container log viewer (port 3710)
 
-**Impact if down:** No visibility into service health, delayed incident detection
+**Impact if down:** No visibility into service health, delayed incident detection.
+
+Specifically: with `node-exporter-dev1` down, Prometheus cannot see filesystem
+capacity, so every disk alert is blind - the failure is silent, which is why
+`TargetDown` and `HostDown` exist. With `prometheus-dev1` down, trends and
+backup-freshness alerting stop, but Uptime Kuma still reports availability.
+Runbooks: [`runbook-prometheus.md`](runbook-prometheus.md).
 
 ## Service Dependencies
 

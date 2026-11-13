@@ -1,0 +1,93 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/prometheus/rules/backup.yml@218 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: fa26ec6563fe5c408eabc50b90b6f4f9ef6e31f6 %
+#  %ccm_git_commit_id: 72c0eae6bb7ccad09a6031b8cf1fff35b571a7e4 %
+#  %ccm_git_commit_count: 218 %
+#  %ccm_git_commit_date: 2026-11-13 14:50:44 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: changes 261113 %
+#  %ccm_git_modify_date: 2026-11-13 14:50:45 %
+#  %ccm_git_file_last_modified: 2026-11-13 14:49:37 %
+#  %ccm_git_file_name: backup.yml %
+#  %ccm_git_path: infra/docker/prometheus/rules/backup.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 3918 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# Backup alerts -- fed by scripts/emit-backup-metrics.sh via the node-exporter
+# textfile collector.
+#
+# These measure what is actually on disk, not what a job reported. A backup that
+# "succeeded" but wrote nothing still shows up here as stale, because the metric
+# is derived from file mtimes in the backup directory.
+#
+# The 26-hour threshold allows a daily 03:30 job to miss one run before alerting,
+# without letting a week of silence pass as normal.
+
+groups:
+  - name: backups
+    rules:
+      - alert: BackupStale
+        expr: |
+          time() - tt_backup_last_success_timestamp_seconds > 93600
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Backup {{ $labels.job }} is {{ $value | humanizeDuration }} old"
+          description: >-
+            No new backup file has appeared in {{ $labels.job }} for more than
+            26 hours. Check the timer and the last exit status before assuming
+            any data is current:
+              systemctl status tt-backup-{{ $labels.job }}.timer
+              systemctl status tt-backup-{{ $labels.job }}.service
+
+      # absent() is the important half: without it, deleting the metric emitter
+      # would silently remove every backup alert rather than raising one.
+      - alert: BackupMetricsMissing
+        expr: |
+          absent(tt_backup_last_success_timestamp_seconds)
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "No backup metrics are being published"
+          description: >-
+            tt_backup_last_success_timestamp_seconds does not exist, so backup
+            staleness cannot be evaluated at all. Check that
+            tt-prometheus-metrics.timer has run and that the textfile directory
+            is readable by node-exporter.
+
+      - alert: BackupEmitterStale
+        expr: |
+          time() - tt_backup_emit_timestamp_seconds > 7200
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Backup metric emitter last ran {{ $value | humanizeDuration }} ago"
+          description: >-
+            The emitter is expected every 15 minutes. Its own heartbeat is stale,
+            so the freshness numbers it publishes should not be trusted: they
+            will be frozen at their last values rather than updating.
+
+      - alert: BackupMetricUnreadable
+        expr: |
+          node_textfile_scrape_error > 0
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "node-exporter cannot read a textfile metric on {{ $labels.instance }}"
+          description: >-
+            The textfile collector reported an error. Usually a permissions
+            mismatch: the emitting unit and node-exporter must both be able to
+            read the directory, and metric files must be world-readable.

@@ -1,0 +1,86 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/prometheus/prometheus.yml@218 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 7d3ae9616f2504149c277902b21ac28543b7e238 %
+#  %ccm_git_commit_id: 72c0eae6bb7ccad09a6031b8cf1fff35b571a7e4 %
+#  %ccm_git_commit_count: 218 %
+#  %ccm_git_commit_date: 2026-11-13 14:50:44 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: changes 261113 %
+#  %ccm_git_modify_date: 2026-11-13 14:50:45 %
+#  %ccm_git_file_last_modified: 2026-11-13 14:49:37 %
+#  %ccm_git_file_name: prometheus.yml %
+#  %ccm_git_path: infra/docker/prometheus/prometheus.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 3527 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# Prometheus configuration -- dev1
+#
+# SOURCE OF TRUTH. This directory is mounted read-only at /etc/prometheus in
+# prometheus-dev1 (see infra/docker/prometheus-dev1.yml). Do not hand-edit
+# /mnt/ai_storage/prometheus/config on the host: that copy is no longer used,
+# and the previous setup generated it from a heredoc in
+# scripts/deploy-prometheus-tensorflow.sh, so any hand-fix there was silently
+# lost the next time that script ran.
+#
+# Reload after a change without restarting:
+#   scripts/deploy-prometheus.sh
+# which POSTs to /-/reload (enabled by --web.enable-lifecycle) and prints
+# target health. Verify with:
+#   curl -s http://127.0.0.1:3720/api/v1/targets | jq '.data.activeTargets[] | {job: .labels.job, health: .health}'
+#
+# No `alerting:` block by design. Alertmanager is deliberately not deployed:
+# rules are evaluated here and their state is readable from ALERTS, while
+# delivery is handled by scripts/tt-prometheus-alerts.sh through ttmail.
+# See plans/prometheus-useful.md for the reasoning.
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: termitetowers
+    environment: dev1
+
+rule_files:
+  - /etc/prometheus/rules/*.yml
+
+scrape_configs:
+  # Prometheus itself. Proves the process is alive and records its own
+  # scrape/TSDB health; it is the cheapest possible canary.
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # Host metrics: filesystem capacity (the reason this stack exists), memory,
+  # load, and systemd unit state via node-exporter's systemd collector.
+  #
+  # The target is the CONTAINER NAME on monitor-apps-net-dev1, not localhost.
+  # The previous value "localhost:9100" resolved to the prometheus container
+  # itself, so it could never have worked even with node-exporter running.
+  - job_name: node
+    static_configs:
+      - targets: ["node-exporter:9100"]
+        labels:
+          instance: monolith
+
+  # Docker engine metrics, enabled by "metrics-addr": "172.17.0.1:9323" in
+  # /etc/docker/daemon.json.
+  #
+  # 172.17.0.1 is the docker0 gateway: reachable from containers on other
+  # bridges, and deliberately NOT on the LAN. The endpoint has no
+  # authentication, so it must not be bound to 0.0.0.0.
+  #
+  # host.docker.internal is not usable here: it maps to the compose network's
+  # gateway (10.10.64.1), not docker0, so it would not reach a docker0-bound
+  # listener.
+  - job_name: docker
+    static_configs:
+      - targets: ["172.17.0.1:9323"]

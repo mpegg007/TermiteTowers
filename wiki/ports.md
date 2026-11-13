@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: wiki/ports.md % -->
-<!-- %ccm_git_object_id: wiki/ports.md@200 % -->
-<!-- %ccm_git_commit_date: 2026-11-09 10:16:57 -0500 % -->
+<!-- %ccm_git_object_id: wiki/ports.md@218 % -->
+<!-- %ccm_git_commit_date: 2026-11-13 14:50:44 -0500 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: zoo.261109 % -->
+<!-- %ccm_git_commit_message: changes 261113 % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-11-09 mpegg zoo.261109 -->
 <!-- %git_commit_history: 2026-10-31 mpegg fix(docs): correct the edge model — WAN 443 is DNATed to 3261 -->
 <!-- %git_commit_history: 2026-10-31 mpegg feat(nginx): expose wordbank and soundbank, make analacres hosts gate-ready -->
 <!-- %git_commit_history: 2026-10-29 mpegg mkdocs updates -->
@@ -119,14 +120,14 @@ This page tracks host and service ports used across TermiteTowers using a system
 | MongoDB Admin                  | mongodbadmin.termitetowers.ca    | 3640      | TBD            | Database  | 🕒 Planned       |
 | Uptime Kuma                    | kuma.termitetowers.ca            | 3700      | 3001           | Monitor   | ✅ **UPDATED**   |
 | Dozzle                         | dozzle.termitetowers.ca          | 3710      | 8080           | Monitor   | ✅ **UPDATED**   |
-| Prometheus                     | prometheus.termitetowers.ca      | 3720      | 9090           | Monitor   | ✅ **NEW**       |
+| Prometheus                     | prometheus.termitetowers.ca      | 3720      | 9090           | Monitor   | ✅ loopback+auth |
+| node-exporter                  | (none — scraped on monitor net)  | —         | 9100           | Monitor   | ✅ **NEW**       |
 | watchYourLan                   | watchyourlan.termitetowers.ca    | 3730      | 8840           | Monitor   | ✅ **NEW**       |
 | NetAlertX                      | netalert.termitetowers.ca        | 3731      | 8840           | Monitor   | ✅ **NEW**       |
 | Grafana                        | grafana.termitetowers.ca         | 3721      | TBD            | Monitor   | 🕒 Planned       |
 | Log Aggregation                | logs.termitetowers.ca            | 3740      | TBD            | Monitor   | 🕒 Planned       |
 | Performance Monitoring         | perfmon.termitetowers.ca         | 3750      | TBD            | Monitor   | 🕒 Planned       |
 | Ollama API                     | ollama.termitetowers.ca          | 3800      | 11434          | AI        | 🔄 **TO MIGRATE**|
-| TensorFlow                     | tensorflow.termitetowers.ca      | 3810      | 8888           | AI        | ✅ **NEW**       |
 | Text Generation UI             | textgen.termitetowers.ca         | 3811      | TBD            | AI        | 🕒 Planned       |
 | Stable Diffusion               | stablediff.termitetowers.ca      | 3820      | TBD            | AI        | 🕒 Planned       |
 | ComfyUI                        | comfyui.termitetowers.ca         | 3830      | 8188           | AI        | ✅ **INTEGRATED**|
@@ -261,8 +262,10 @@ Monitoring & Ops (3700-3799):
 
 3700 - Uptime Kuma
 3710 - Dozzle (container logs)
-3720 - Prometheus
-3730 - Grafana (future)
+3720 - Prometheus (127.0.0.1 only; nginx + auth_basic)
+3721 - Grafana (future)
+3730 - watchYourLan
+3731 - NetAlertX
 3740 - Log aggregation (Syslog-ng)
 3750 - Performance monitoring (future)
 AI & ML (3800-3899):

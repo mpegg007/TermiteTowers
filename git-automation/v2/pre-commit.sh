@@ -2,9 +2,10 @@
 # pre-commit.sh: V2 pre-commit hook — thin wrapper.
 #
 # For each staged file:
-#   1. Apply CCM header (ccm-apply.sh)
-#   2. Scan for secrets (secret-scanner.sh)
-#   3. git add
+#   1. Scan for secrets (secret-scanner.sh)
+#   2. Check tier-path separation (check-tier-paths.py, compose files only)
+#   3. Apply CCM header (ccm-apply.sh)
+#   4. git add
 #
 # Safety: Never processes git-automation/*.sh or .git/hooks/*
 # Supports: --try mode for testing without git operations
@@ -142,6 +143,26 @@ for FILE in "${FILES_TO_PROCESS[@]}"; do
                         exit 1
                     fi
                 fi
+            fi ;;
+    esac
+
+    # ── Tier-path separation (compose files) ──
+    # The project name, container names and networks are already per tier;
+    # host bind mounts are not. This blocks a *-<tier>.yml that reaches into
+    # another tier's data, or a shared path mounted read-write when the
+    # allowlist says it must be ':ro'. Ratcheted: only violations absent from
+    # infra/docker/tier-path-baseline.txt fail here, so existing debt does not
+    # block unrelated commits while regressions are stopped at the door.
+    case "$FILE" in
+        infra/docker/*.yml|infra/docker/*.yaml)
+            if command -v python3 >/dev/null 2>&1; then
+                if ! tier_out=$(python3 "$REPO_ROOT/scripts/check-tier-paths.py" "$FILE" 2>&1); then
+                    printf '%s\n' "$tier_out" >&2
+                    echo "[ERROR] Tier-path violation in $FILE, aborting commit" >> "$LOG_FILE"
+                    exit 1
+                fi
+            else
+                echo "[WARN] python3 not found; skipped tier-path check for $FILE" >> "$LOG_FILE"
             fi ;;
     esac
 

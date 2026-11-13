@@ -1,0 +1,141 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/prometheus/rules/host.yml@218 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 508dab0c0850ad1a2c5db8fecfc8169fcae390c7 %
+#  %ccm_git_commit_id: 72c0eae6bb7ccad09a6031b8cf1fff35b571a7e4 %
+#  %ccm_git_commit_count: 218 %
+#  %ccm_git_commit_date: 2026-11-13 14:50:44 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: changes 261113 %
+#  %ccm_git_modify_date: 2026-11-13 14:50:45 %
+#  %ccm_git_file_last_modified: 2026-11-13 14:49:37 %
+#  %ccm_git_file_name: host.yml %
+#  %ccm_git_path: infra/docker/prometheus/rules/host.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 5973 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# Host alerts -- filesystem capacity, memory, load, systemd units.
+#
+# Thresholds are chosen for a homelab where the goal is "enough warning to act",
+# not "maximum sensitivity". Every rule carries severity plus summary and
+# description; scripts/tt-prometheus-alerts.sh mails both, so a firing alert
+# must explain itself without anyone opening the UI.
+
+groups:
+  - name: host-capacity
+    rules:
+      - alert: DiskLow
+        expr: |
+          (
+            node_filesystem_avail_bytes{fstype!~"tmpfs|overlay|squashfs|ramfs|iso9660"}
+              / node_filesystem_size_bytes{fstype!~"tmpfs|overlay|squashfs|ramfs|iso9660"}
+          ) < 0.15
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Filesystem {{ $labels.mountpoint }} on {{ $labels.instance }} is {{ $value | humanizePercentage }} free"
+          description: >-
+            Below 15% free. Every service writing to this filesystem shares the
+            remaining space; the write that fails first tends to be a database.
+            Free space or grow the pool before it reaches single digits.
+
+      # The rule this whole stack exists for. Absolute thresholds say "full";
+      # this says "full, and here is when", which is the only form you can act
+      # on. Negative remaining means the projection crosses zero within 4 days.
+      - alert: DiskFillingFast
+        expr: |
+          predict_linear(
+            node_filesystem_avail_bytes{fstype!~"tmpfs|overlay|squashfs|ramfs|iso9660"}[6h],
+            4 * 86400
+          ) < 0
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Filesystem {{ $labels.mountpoint }} on {{ $labels.instance }} will fill within 4 days"
+          description: >-
+            Extrapolating the last 6 hours of growth, available bytes reach zero
+            within 4 days. This is a trend warning, not an immediate outage: it
+            fires while the filesystem is still healthy, which is the point.
+            Check what is growing before it does.
+
+      - alert: InodeLow
+        expr: |
+          (
+            node_filesystem_files_free{fstype!~"tmpfs|overlay|squashfs|ramfs|iso9660"}
+              / node_filesystem_files{fstype!~"tmpfs|overlay|squashfs|ramfs|iso9660"}
+          ) < 0.10
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Inodes nearly exhausted on {{ $labels.mountpoint }} on {{ $labels.instance }}"
+          description: >-
+            Free inodes below 10%. A filesystem can refuse writes with plenty of
+            bytes free, which looks like a disk-space problem and is not. Common
+            cause is a mail or session spool of small files.
+
+  - name: host-resources
+    rules:
+      - alert: MemoryPressure
+        expr: |
+          (
+            node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes
+          ) < 0.10
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Memory on {{ $labels.instance }} is {{ $value | humanizePercentage }} available"
+          description: >-
+            Under 10% available for 15 minutes. The kernel is likely reclaiming
+            page cache and an OOM kill is plausible. Check whether a container
+            is leaking rather than assuming the total is simply too small.
+
+      - alert: LoadHigh
+        expr: |
+          node_load15 / count without (cpu, mode) (node_cpu_seconds_total{mode="idle"}) > 2
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Load 15m on {{ $labels.instance }} is {{ $value | printf \"%.1f\" }}x cores"
+          description: >-
+            15-minute load above twice the core count for 30 minutes. Sustained
+            rather than spiky, so this is real contention, not a backup burst.
+
+      - alert: HostDown
+        expr: up{job="node"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "node-exporter on {{ $labels.instance }} is unreachable"
+          description: >-
+            Host metrics have stopped. Either node-exporter is down or the host is
+            unreachable from Prometheus. Uptime Kuma is the authoritative
+            availability signal; this rule also catches a dead node-exporter,
+            which Uptime Kuma cannot see.
+
+  - name: host-units
+    rules:
+      - alert: SystemdUnitFailed
+        expr: node_systemd_unit_state{state="failed"} == 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Unit {{ $labels.name }} is failed on {{ $labels.instance }}"
+          description: >-
+            A systemd unit is in the failed state. If this is a tt-backup unit,
+            backups are not running: check `systemctl status {{ $labels.name }}`
+            and journalctl for it before assuming last night's data is current.

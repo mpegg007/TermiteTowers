@@ -1,0 +1,85 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/docker/prometheus/rules/containers.yml@218 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: cb7d16dcc2e2434647074a1350af172b72281638 %
+#  %ccm_git_commit_id: 72c0eae6bb7ccad09a6031b8cf1fff35b571a7e4 %
+#  %ccm_git_commit_count: 218 %
+#  %ccm_git_commit_date: 2026-11-13 14:50:44 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: changes 261113 %
+#  %ccm_git_modify_date: 2026-11-13 14:50:45 %
+#  %ccm_git_file_last_modified: 2026-11-13 14:49:37 %
+#  %ccm_git_file_name: containers.yml %
+#  %ccm_git_path: infra/docker/prometheus/rules/containers.yml %
+#  %ccm_git_language_mode: yaml %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 3869 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# Container alerts -- from Docker engine metrics on 172.17.0.1:9323.
+#
+# These catch the failure mode Uptime Kuma structurally cannot see: a container
+# on `restart: always` that crash-loops while something still answers on its
+# port, or one that is repeatedly OOM-killed and silently restarted.
+#
+# `restart: always` is used by every service in this repo, so a crash is invisible
+# by default - there is no downtime to detect, just a service that keeps being
+# killed and restarted.
+
+groups:
+  - name: containers
+    rules:
+      # A start-time counter that keeps changing means the container is being
+      # restarted. Three changes in an hour is a loop, not a one-off.
+      #
+      # The name label differs between Docker versions, so the template falls
+      # back to the container id rather than rendering an empty alert.
+      - alert: ContainerRestartingLoop
+        # No label filter inside the braces: PromQL does not allow a comparison
+        # there, and promtool rejects it. Idle containers do not contribute
+        # changes anyway, so the filter was unnecessary.
+        expr: |
+          changes(container_start_time_seconds[1h]) > 3
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Container {{ with $labels.name }}{{ . }}{{ else }}{{ $labels.container }}{{ end }} restarted {{ $value | printf \"%.0f\" }} times in 1h"
+          description: >-
+            More than three restarts in the last hour. Supervisor restarts it
+            every time, so there is no outage to notice - only a service that is
+            not working. Check `docker logs --tail 100` and `docker inspect` for
+            the exit code.
+
+      - alert: ContainerOOMKilled
+        expr: |
+          increase(container_oom_events_total[15m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Container {{ with $labels.name }}{{ . }}{{ else }}{{ $labels.container }}{{ end }} hit the OOM killer"
+          description: >-
+            The kernel killed a process inside this container for memory. Either
+            raise the limit deliberately or find the leak; a container that keeps
+            being OOM-killed may be losing in-flight work on each restart.
+
+      - alert: ContainerDown
+        expr: |
+          up{job="docker"} == 0
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Docker engine metrics on {{ $labels.instance }} are unreachable"
+          description: >-
+            The metrics listener is unreachable, so no container alert can fire.
+            Either the Docker daemon is down or metrics-addr was removed from
+            /etc/docker/daemon.json. Silence here means blindness, so it alerts
+            rather than failing quietly.

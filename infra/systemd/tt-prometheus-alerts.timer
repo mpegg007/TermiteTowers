@@ -1,0 +1,40 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/systemd/tt-prometheus-alerts.timer@218 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: a49f55d98cfce3e194030a947fa48aa3c8ef47ef %
+#  %ccm_git_commit_id: 72c0eae6bb7ccad09a6031b8cf1fff35b571a7e4 %
+#  %ccm_git_commit_count: 218 %
+#  %ccm_git_commit_date: 2026-11-13 14:50:44 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: changes 261113 %
+#  %ccm_git_modify_date: 2026-11-13 14:50:46 %
+#  %ccm_git_file_last_modified: 2026-11-13 14:49:38 %
+#  %ccm_git_file_name: tt-prometheus-alerts.timer %
+#  %ccm_git_path: infra/systemd/tt-prometheus-alerts.timer %
+#  %ccm_git_language_mode: timer %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 1543 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+[Unit]
+Description=Check Prometheus alerts every 5 minutes and mail on change
+
+[Timer]
+# OnBootSec so a reboot does not delay the first check, and OnUnitActiveSec for
+# a fixed interval that does not drift with how long a run takes.
+OnBootSec=2min
+OnUnitActiveSec=5min
+AccuracySec=30s
+
+# Not Persistent: a missed run while the host was down is not worth replaying -
+# the alerts are still firing, so the next run notifies anyway.
+Persistent=false
+
+[Install]
+WantedBy=timers.target
