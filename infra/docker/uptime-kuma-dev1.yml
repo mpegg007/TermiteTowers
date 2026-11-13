@@ -1,41 +1,46 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
-#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: infra/docker/uptime-kuma-dev1.yml:147 %
+#  %ccm_git_object_id: infra/docker/uptime-kuma-dev1.yml@216 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: d9d3fb0df123da74675bde490a7a7da18b7edfcf %
-#  %ccm_git_commit_id: 875dba4d1edbc0fb2fe425346b22faa6070d5e41 %
-#  %ccm_git_commit_count: 147 %
-#  %ccm_git_commit_date: 2026-06-10 17:10:31 -0400 %
+#  %ccm_git_blob_sha: 16c3575b7fb77b067ad7f58a4d8094f931407fc6 %
+#  %ccm_git_commit_id: 049fe2436a08a5c606f6416e60ed6cffc23cd6e2 %
+#  %ccm_git_commit_count: 216 %
+#  %ccm_git_commit_date: 2026-11-13 11:40:17 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: june bulk update %
-#  %ccm_git_modify_date: 2026-06-10 17:10:32 %
-#  %ccm_git_file_last_modified: 2026-06-10 17:10:32 %
+#  %ccm_git_commit_message: chore(uptime-kuma): pin 2.5.11 after upgrading from 2.4.0 %
+#  %ccm_git_modify_date: 2026-11-13 11:40:18 %
+#  %ccm_git_file_last_modified: 2026-11-13 11:38:51 %
 #  %ccm_git_file_name: uptime-kuma-dev1.yml %
 #  %ccm_git_path: infra/docker/uptime-kuma-dev1.yml %
 #  %ccm_git_language_mode: yaml %
 #  %ccm_git_file_type: text/plain %
 #  %ccm_git_file_encoding: us-ascii %
-#  %ccm_git_file_eol: CRLF %
+#  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 1310 %
+#  %ccm_git_size: 2922 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
-# %git_commit_history: 2026-03-22 mpegg  march updates  % 
-# %git_commit_history: unknown  unknown  unknown  % 
-# %git_commit_history: unknown  unknown  unknown  % 
-# %git_commit_history: 2026-02-07 mpegg  comment cleanup  % 
-# %git_commit_history: 2026-02-07 mpegg  feb2026  % 
-# %git_commit_history: 2025-11-30 mpegg  cleanup  % 
-# %git_commit_history: november changes % 
-# %git_commit_history: docker updates % 
+# %git_commit_history: 2026-03-22 mpegg  march updates  %
+# %git_commit_history: unknown  unknown  unknown  %
+# %git_commit_history: 2026-02-07 mpegg  comment cleanup  %
+# %git_commit_history: 2026-02-07 mpegg  feb2026  %
+# %git_commit_history: 2025-11-30 mpegg  cleanup  %
+# %git_commit_history: november changes %
+# %git_commit_history: docker updates %
 name: uptime-kuma-dev1 
 
 services:
   uptime-kuma:
-    image: louislam/uptime-kuma:2  # Tracks 2.x stable, or use '2.4.0' specifically
+    # PINNED, not floating. The old ':2' tag meant any restart could run an
+    # unreviewed SQLite migration at an arbitrary moment, and a Kuma migration is
+    # forward-only: there is no in-place rollback. Bump this deliberately, after
+    # snapshotting /mnt/ai_storage/uptime-kuma/data. See wiki/runbook-uptime-kuma.md.
+    # Upgraded 2026-11-13 from 2.4.0 (15 monitors, 24107 heartbeats, integrity ok).
+    # The previous image is kept locally as louislam/uptime-kuma:2.4.0-rollback.
+    image: louislam/uptime-kuma:2.5.11
     container_name: uptime-kuma-dev1
     restart: always
     ports:
