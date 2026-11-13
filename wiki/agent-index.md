@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: wiki/agent-index.md % -->
-<!-- %ccm_git_object_id: wiki/agent-index.md@190 % -->
-<!-- %ccm_git_commit_date: 2026-10-28 16:35:23 -0400 % -->
+<!-- %ccm_git_object_id: wiki/agent-index.md@217 % -->
+<!-- %ccm_git_commit_date: 2026-11-13 12:45:45 -0500 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: refactor(context): retire memory-bank and add %%ccm_compact status headers % -->
+<!-- %ccm_git_commit_message: docs(status): record verified 2026-11-13 backup and monitoring state % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-10-28 mpegg refactor(context): retire memory-bank and add -->
 <!-- %git_commit_history: 2026-10-10 mpegg  docs(hal): correct stale audit facts against live HA  -->
  <!-- %git_commit_history: 2026-09-25 mpegg  docs: mark Homarr retired in the network map and agent index  -->
 # Agent Index — TermiteTowers
@@ -108,3 +109,7 @@ dozzle, ha-hal-bridge, ha-handler, water-meter, vault, ollama, …).
 ## Backups
 
 - `wiki/backup-strategy.md` · `wiki/critical-infrastructure.md`
+- Machine-specific operational truth lives in `infra/backups/README.md` (tiers, keyring,
+  recipients, install paths). Since 2026-11-13 `ttdb_dev1` and `ttphoto_dev1` also have
+  daily encrypted dumps via user-level systemd timers; confirm coverage with
+  `jotta-cli status`, never with a log grep.
