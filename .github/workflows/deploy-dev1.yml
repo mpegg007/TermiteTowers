@@ -1,18 +1,18 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: .github/workflows/deploy-dev1.yml@203 %
+#  %ccm_git_object_id: .github/workflows/deploy-dev1.yml@219 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: e349bca28e6c0bdcec7217874f8e6b0c35d3fec8 %
-#  %ccm_git_commit_id: a29b67ecbd66adfe92276731fcb2047f7064a4ab %
-#  %ccm_git_commit_count: 203 %
-#  %ccm_git_commit_date: 2026-11-09 14:06:35 -0500 %
+#  %ccm_git_blob_sha: d2db79ff52e3d50a8f9e1a5e7163455d67973db8 %
+#  %ccm_git_commit_id: 8a7bf86b8d0d7e3732fc446614a49340d0f23b38 %
+#  %ccm_git_commit_count: 219 %
+#  %ccm_git_commit_date: 2026-11-13 15:40:08 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: promotion: manifest inventory, record generator, deploy archive/restore %
-#  %ccm_git_modify_date: 2026-11-09 14:06:35 %
-#  %ccm_git_file_last_modified: 2026-11-09 14:03:19 %
+#  %ccm_git_commit_message: git action fix %
+#  %ccm_git_modify_date: 2026-11-13 15:40:08 %
+#  %ccm_git_file_last_modified: 2026-11-13 15:38:03 %
 #  %ccm_git_file_name: deploy-dev1.yml %
 #  %ccm_git_path: .github/workflows/deploy-dev1.yml %
 #  %ccm_git_language_mode: yaml %
@@ -20,7 +20,7 @@
 #  %ccm_git_file_encoding: utf-8 %
 #  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 5415 %
+#  %ccm_git_size: 4537 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 # Deploy the dev1 tree to /srv/dev1/tt.
 #
@@ -85,45 +85,23 @@ jobs:
             echo "::error::/srv/dev1/tt is not writable by this runner's user."
             exit 1
           fi
-          # The deploy record lives OUTSIDE the run area, so rsync --delete cannot
-          # reach it and it is never an untracked file inside the tree.
-          if [ ! -w /srv/dev1 ]; then
-            echo "::error::/srv/dev1 is not writable; the deploy cannot record what is live."
-            exit 1
-          fi
-
-      # MUST run before rsync. rsync --delete purges files absent from the incoming
-      # tree and overwrites the rest, so anything that drifted since the last deploy
-      # is destroyed in the same pass. The script archives only what is at risk and
-      # skips entirely when nothing is, and it is fatal on failure so a partial
-      # archive cannot be followed by a purge.
-      - name: Archive run-area drift before the deploy destroys it
-        run: |
-          extra=""
-          if [ "${TT_ARCHIVE_BOOTSTRAP:-0}" = "1" ]; then
-            echo "::warning::TT_ARCHIVE_BOOTSTRAP=1 — first recorded deploy, nothing will be archived"
-            extra="--allow-bootstrap"
-          fi
-          bash scripts/deploy/tt-deploy-archive.sh \
-            --run-area /srv/dev1/tt \
-            --state-dir /srv/dev1 $extra
-        env:
-          # Repo variable, set to 1 for the single deploy that establishes the first
-          # baseline, then removed. The script refuses a non-empty run area with no
-          # baseline by default, because in that situation every existing file would
-          # be classified as unauthorised and purged without being archived.
-          TT_ARCHIVE_BOOTSTRAP: ${{ vars.TT_ARCHIVE_BOOTSTRAP }}
+          # PARKED 2026-11-13. The manifest / archive / record machinery
+          # (scripts/deploy/tt-deploy-*.sh) is NOT wired into this workflow.
+          #
+          # It failed every push on the line that wrote the deploy record, because the
+          # state directory was /srv/dev1 - the parent of the run area - and that is
+          # mpegg-adm:tt-docker 0755 while this job runs as tt-deploy:
+          #   /srv/dev1 is not writable; the deploy cannot record what is live
+          # /srv/dev1/tt passed the checks above only because it has its own owner.
+          #
+          # Re-enabling it needs a state directory the deploy user owns, provisioned
+          # once as root, e.g. `sudo install -d -o tt-deploy -g tt-deploy -m 0750
+          # /var/lib/tt-deploy`, and the per-tier directory beneath it. Until that
+          # decision is taken, this deploy stays the plain checkout-and-rsync it was.
+          # Read plans/deploy-backup-by-rsync-diff.md before re-adding anything.
 
       - name: Synchronize dev1 revision
         run: >-
           rsync -a --delete --exclude=.env --exclude=.venv --exclude=.git
           "$GITHUB_WORKSPACE/" /srv/dev1/tt/
 
-      # Records the hash listing that is simultaneously the drift baseline for the
-      # next archive run and the definition of authorised content in the run area.
-      - name: Record deployed state
-        run: |
-          bash scripts/deploy/tt-deploy-record.sh \
-            --run-area /srv/dev1/tt \
-            --state-dir /srv/dev1 \
-            --commit "${GITHUB_SHA}"
