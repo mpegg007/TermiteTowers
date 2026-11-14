@@ -1,18 +1,18 @@
 # TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
 #  %ccm_git_repo: TermiteTowers %
 #  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: mkdocs.yml@200 %
+#  %ccm_git_object_id: mkdocs.yml@220 %
 #  %ccm_git_author: mpegg %
 #  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 7d8b5cbd031e89db2284225a2afef1161429d34e %
-#  %ccm_git_commit_id: 07c638fcfb4804b40c226db94358725a8b6ef636 %
-#  %ccm_git_commit_count: 200 %
-#  %ccm_git_commit_date: 2026-11-09 10:16:57 -0500 %
+#  %ccm_git_blob_sha: c2de59d1dc090e762dc31bd351d36a55e1307d59 %
+#  %ccm_git_commit_id: f539d83ae45e3bb2efbb8cabc31a866c4e672164 %
+#  %ccm_git_commit_count: 220 %
+#  %ccm_git_commit_date: 2026-11-13 19:11:14 -0500 %
 #  %ccm_git_commit_author: mpegg %
 #  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: zoo.261109 %
-#  %ccm_git_modify_date: 2026-11-09 10:16:58 %
-#  %ccm_git_file_last_modified: 2026-11-09 10:00:50 %
+#  %ccm_git_commit_message: feat(monitoring): archive Kuma history from kuma.db into ttdb_dev1 %
+#  %ccm_git_modify_date: 2026-11-13 19:11:14 %
+#  %ccm_git_file_last_modified: 2026-11-13 19:09:47 %
 #  %ccm_git_file_name: mkdocs.yml %
 #  %ccm_git_path: mkdocs.yml %
 #  %ccm_git_language_mode: yaml %
@@ -20,7 +20,7 @@
 #  %ccm_git_file_encoding: us-ascii %
 #  %ccm_git_file_eol: LF %
 #  %ccm_git_exec: no %
-#  %ccm_git_size: 10186 %
+#  %ccm_git_size: 10240 %
 #  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
 site_name: TermiteTowers Documentation
 site_url: https://docs.termitetowers.ca
@@ -69,6 +69,7 @@ nav:
       - Whisper: runbook-whisper.md
       - Uptime Kuma: runbook-uptime-kuma.md
       - Uptime Kuma Setup: uptime-kuma-setup.md
+      - Monitoring archive: runbook-monitoring-archive.md
       - Wiki.js: runbook-wikijs.md
       - Vault: runbook-vault.md
       - Water Meter: runbook-water-meter.md

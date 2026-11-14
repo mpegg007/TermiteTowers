@@ -1,0 +1,68 @@
+# TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
+#  %ccm_git_repo: TermiteTowers %
+#  %ccm_git_branch: dev1 %
+#  %ccm_git_object_id: infra/systemd/tt-monitor-archive.service@220 %
+#  %ccm_git_author: mpegg %
+#  %ccm_git_author_email: mpegg@hotmail.com %
+#  %ccm_git_blob_sha: 15604cc977655043c9d4478ab4f285601d8cd921 %
+#  %ccm_git_commit_id: f539d83ae45e3bb2efbb8cabc31a866c4e672164 %
+#  %ccm_git_commit_count: 220 %
+#  %ccm_git_commit_date: 2026-11-13 19:11:14 -0500 %
+#  %ccm_git_commit_author: mpegg %
+#  %ccm_git_commit_email: mpegg@hotmail.com %
+#  %ccm_git_commit_message: feat(monitoring): archive Kuma history from kuma.db into ttdb_dev1 %
+#  %ccm_git_modify_date: 2026-11-13 19:11:14 %
+#  %ccm_git_file_last_modified: 2026-11-13 16:32:13 %
+#  %ccm_git_file_name: tt-monitor-archive.service %
+#  %ccm_git_path: infra/systemd/tt-monitor-archive.service %
+#  %ccm_git_language_mode: service %
+#  %ccm_git_file_type: text/plain %
+#  %ccm_git_file_encoding: us-ascii %
+#  %ccm_git_file_eol: LF %
+#  %ccm_git_exec: no %
+#  %ccm_git_size: 2171 %
+#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+# Archive Uptime Kuma monitor history into ttdb_dev1 (schema monitoring).
+#
+# Runs scripts/archive-monitor-history.sh, which takes a consistent snapshot of
+# kuma.db through SQLite's online backup API inside the Kuma container, then
+# upserts daily rollups and incidents into Postgres. Idempotent: re-running
+# rewrites the same rows and never duplicates.
+#
+# Install (one time):
+#   sudo install -m 0644 infra/systemd/tt-monitor-archive.service /etc/systemd/system/
+#   sudo install -m 0644 infra/systemd/tt-monitor-archive.timer   /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now tt-monitor-archive.timer
+#
+# Verify one run by hand:
+#   sudo systemctl start tt-monitor-archive.service
+#   journalctl -u tt-monitor-archive.service -n 30 --no-pager
+[Unit]
+Description=tt-monitor archive (Uptime Kuma history into ttdb_dev1 monitoring schema)
+Documentation=file:/home/mpegg-adm/source/TermiteTowers/wiki/runbook-monitoring-archive.md
+After=docker.service postgresql.service
+Wants=docker.service
+
+[Service]
+Type=oneshot
+User=mpegg-adm
+Group=mpegg-adm
+ExecStart=/home/mpegg-adm/source/TermiteTowers/scripts/archive-monitor-history.sh
+
+# A 71 MB snapshot plus a 2.3k-row load finishes in well under a second; this is
+# only a backstop against a wedged docker or psql call.
+TimeoutStartSec=5min
+Nice=10
+IOSchedulingClass=idle
+
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=read-only
+
+# The whole requirement: talk to the Docker socket to snapshot the database, and
+# write the snapshot into the unit's private /tmp. Nothing is written to disk
+# persistently and the live kuma.db is never opened by this process.
+ReadWritePaths=/run/docker.sock
+
+UMask=0022
