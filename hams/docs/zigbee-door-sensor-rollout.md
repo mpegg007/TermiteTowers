@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: hams/docs/zigbee-door-sensor-rollout.md % -->
-<!-- %ccm_git_object_id: hams/docs/zigbee-door-sensor-rollout.md@194 % -->
-<!-- %ccm_git_commit_date: 2026-10-28 20:22:38 -0400 % -->
+<!-- %ccm_git_object_id: hams/docs/zigbee-door-sensor-rollout.md@222 % -->
+<!-- %ccm_git_commit_date: 2026-11-13 19:48:39 -0500 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: misc updates % -->
+<!-- %ccm_git_commit_message: database doc updates % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-10-28 mpegg misc updates -->
 <!-- %git_commit_history: 2026-10-10 mpegg docs(hal): correct stale audit facts against live HA -->
  <!-- %git_commit_history: 2026-10-08 mpegg  impl www from prd branch  -->
  <!-- %git_commit_history: 2026-10-05 mpegg  house layout + routines docs  -->
@@ -459,8 +460,9 @@ ha_get_logs                source="logbook", entity_id="binary_sensor.catio_door
 - No battery-low alert exists for the four contacts or the U-Bolt lock.
 - Windows remain HAL's largest blind spot: no alarm panel and no window contacts.
 - `hams/inventory/` still holds a placeholder device file (example MACs), and the
-  `snipeit` schema referenced by `hal-context.md` / `wiki/agent-index.md` **does
-  not exist** in `ttdb`, so nothing machine-readable tracks spare hardware.
+  `snipeit` schema in `ttdb_dev1` exists but is **empty** — Snipe-IT keeps its data
+  in its own MariaDB container (`snipeit-db-dev1`), not in Postgres — so nothing
+  machine-readable tracks spare hardware.
 
 ## Verification note — 2026-10-08 (read-only pass)
 

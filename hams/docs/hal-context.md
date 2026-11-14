@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: hams/docs/hal-context.md % -->
-<!-- %ccm_git_object_id: hams/docs/hal-context.md@195 % -->
-<!-- %ccm_git_commit_date: 2026-10-29 21:42:03 -0400 % -->
+<!-- %ccm_git_object_id: hams/docs/hal-context.md@222 % -->
+<!-- %ccm_git_commit_date: 2026-11-13 19:48:39 -0500 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: mkdocs updates % -->
+<!-- %ccm_git_commit_message: database doc updates % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-10-29 mpegg mkdocs updates -->
 <!-- %git_commit_history: 2026-10-28 mpegg misc updates -->
 <!-- %git_commit_history: 2026-10-10 mpegg docs(hal): correct stale audit facts against live HA -->
  <!-- %git_commit_history: 2026-10-05 mpegg  house layout + routines docs  -->
@@ -51,10 +52,16 @@ Three read-only MCP servers are available; two are Postgres.
 | MCP | Database | Key schemas/tables | Join keys with HAL |
 |---|---|---|---|
 | `hal-mcp__*` | — (Home Assistant) | entities, devices, automations, add-ons | `identifiers`, `mac`, `ieee_address`, `mqtt_topic` |
-| `pg-query-ttdb__*` | main (network/home) | `dhcp_history` (lease_events, device_summary), `kea`, `watchyourlan`, `water_meter`, `powerdns`, `nextcloud`, `snipeit` | `mac_address`, `ip_address`, `hostname` |
+| `pg-query-ttdb__*` | main (network/home) | `dhcp_history` (lease_events, device_summary), `kea` (live host reservations), `watchyourlan`, `water_meter`, `monitoring` | `mac_address`, `ip_address`, `hostname` |
 | `pg-query-ttphoto__*` | photo library | `images`, `image_tags`, `tag_history`, `stacks` | (none with HAL) |
 
 Join HAL ↔ `ttdb` on **MAC / IP / hostname** (e.g. `ha_get_device` `identifiers` ↔ `dhcp_history.device_summary.mac_address` / `watchyourlan.now`).
+
+The `powerdns`, `snipeit` and `nextcloud` schemas also exist in `ttdb_dev1`, but all
+three are **empty** and are not where those services keep data: PowerDNS zones live in
+its own MySQL container (`powerdns-db-dev1`), PowerDNS Admin in its own PostgreSQL
+container, Snipe-IT in its own MariaDB container (`snipeit-db-dev1`), Nextcloud in its
+own `nextcloud` database on the host cluster.
 
 ---
 

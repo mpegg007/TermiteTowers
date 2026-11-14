@@ -1,28 +1,20 @@
-#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  %
-#  %ccm_git_repo: TermiteTowers %
-#  %ccm_git_branch: dev1 %
-#  %ccm_git_object_id: wiki/snipeit-postgres-migration.md:111 %
-#  %ccm_git_author: mpegg %
-#  %ccm_git_author_email: mpegg@hotmail.com %
-#  %ccm_git_blob_sha: 745be330d9166187ab0dcba42e697f551a8a9d25 %
-#  %ccm_git_commit_id: c95decaaa02c45bee627cd315be8d2b7aefd7fc5 %
-#  %ccm_git_commit_count: 111 %
-#  %ccm_git_commit_date: 2025-10-29 19:12:44 -0400 %
-#  %ccm_git_commit_author: mpegg %
-#  %ccm_git_commit_email: mpegg@hotmail.com %
-#  %ccm_git_commit_message: docker updates %
-#  %ccm_git_modify_date: 2025-10-29 19:12:45 %
-#  %ccm_git_file_last_modified: 2025-10-08 07:33:20 %
-#  %ccm_git_file_name: snipeit-postgres-migration.md %
-#  %ccm_git_path: wiki/snipeit-postgres-migration.md %
-#  %ccm_git_language_mode: dockerfile %
-#  %ccm_git_file_type: text/plain %
-#  %ccm_git_file_encoding: us-ascii %
-#  %ccm_git_file_eol: CRLF %
-#  %ccm_git_exec: no %
-#  %ccm_git_size: 4112 %
-#  TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  %  
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
+<!-- %ccm_git_repo: TermiteTowers % -->
+<!-- %ccm_git_branch: dev1 % -->
+<!-- %ccm_git_path: wiki/snipeit-postgres-migration.md % -->
+<!-- %ccm_git_object_id: wiki/snipeit-postgres-migration.md@222 % -->
+<!-- %ccm_git_commit_date: 2026-11-13 19:48:39 -0500 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_message: database doc updates % -->
+<!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2025-10-29 mpegg docker updates -->
 # Migrating Snipe-IT to Host PostgreSQL (snipeit-dev2)
+
+> **Status: not adopted.** Snipe-IT runs on its own MariaDB container
+> (`snipeit-db-dev1`, database `snipeit`, [`infra/docker/snipeit-dev1.yml`](../infra/docker/snipeit-dev1.yml)).
+> The `snipeit` schema in `ttdb_dev1` exists but holds no tables. This page is a
+> design proposal for a hypothetical `snipeit-dev2`, not a description of the
+> live deployment. See [`wiki/databases.md`](databases.md).
 
 ## Overview
 This guide covers how to configure a new Snipe-IT Docker container (`snipeit-dev2`) to use a host PostgreSQL database (`ttdb_dev1`) instead of the default MySQL container. It includes Docker Compose changes, PostgreSQL user/role setup, connection security, and optional schema migration steps.

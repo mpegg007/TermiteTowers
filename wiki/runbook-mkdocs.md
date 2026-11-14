@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: wiki/runbook-mkdocs.md % -->
-<!-- %ccm_git_object_id: wiki/runbook-mkdocs.md@195 % -->
-<!-- %ccm_git_commit_date: 2026-10-29 21:42:03 -0400 % -->
+<!-- %ccm_git_object_id: wiki/runbook-mkdocs.md@222 % -->
+<!-- %ccm_git_commit_date: 2026-11-13 19:48:39 -0500 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: mkdocs updates % -->
+<!-- %ccm_git_commit_message: database doc updates % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-10-29 mpegg mkdocs updates -->
 <!-- %git_commit_history: 2025-12-15 mpegg monday drop -->
 <!-- %git_commit_history: Add MkDocs documentation site % -->
 
@@ -143,14 +144,35 @@ That path is a real secret (`-rw-------`, owned by uid 1000) reachable through t
 on reloads), which treats `DRAFT` as included, and the copy then fails on the
 unreadable file. When the reload build raises, the served site stays frozen.
 
+**This is still the live behaviour.** The structural fix below is designed and
+approved but has not been deployed, so `docker restart mkdocs_app-dev1` remains
+mandatory after every edit.
+
 Immediate workaround: `docker restart mkdocs_app-dev1` after each edit, then confirm
 the change is live with `curl -s https://docs.termitetowers.ca/<page>/ | grep <marker>`.
 
-Real fix, not yet implemented: keep source trees that contain secrets out of
-`docs_dir`. Stage only `*.md` into a build directory (rsync or a small entrypoint)
-and point `docs_dir` at that, then the exclusion block is defence in depth rather
-than the only barrier. The alternative is `mkdocs build` plus serving the output
-statically instead of `serve`.
+Real fix, status as of 2026-10-30 — **designed, approved, NOT deployed**: keep
+source trees that contain secrets out of `docs_dir` by staging only `*.md` (plus
+`stylesheets/*.css`) into a build directory and pointing `docs_dir` at it, so the
+exclusion block is defence in depth rather than the only barrier. Nothing in
+`mkdocs.yml` or the compose file has changed yet.
+
+Three untracked helper scripts exist under `scripts/mkdocs/`
+(`entrypoint.sh`, `watch-stage.py`, `stage-docs.sh`) and are **not runnable as they
+stand** — `stage-docs.sh` is mid-edit with an unbalanced guard block. Do not wire
+them into the container until they have been finished and tested. Two constraints
+learned while writing them:
+
+- The container user (uid 2001) cannot write the repo mount, so the staging
+  directory must live on a dedicated writable mount (for example
+  `/mnt/ai_storage/mkdocs/`), which also means `docs_dir` has to be an absolute
+  path or a mount point rather than a repo-relative one.
+- Staging must filter to `*.md` explicitly. Copying the trees with `rsync -a`
+  preserves the `wiki/infra` symlink itself, and MkDocs walks straight back into
+  the secret trees that way.
+
+The fallback option, if staging is abandoned, is `mkdocs build` plus serving the
+output statically instead of `serve`.
 
 Note: as verified, the live site does not currently publish the secret files
 (`/infra/docker/env/ha-mcp.env.example` returns 404) because the reload build aborts

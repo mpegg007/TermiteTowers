@@ -1,28 +1,14 @@
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_start:  % -->
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
-<!-- %ccm_git_object_id: infra/dhcp/scripts/monitoring/SETUP.md:161 % -->
-<!-- %ccm_git_author: mpegg % -->
-<!-- %ccm_git_author_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_blob_sha: a95f1fc647283745f98a07072e8b8e875d7e9c8e % -->
-<!-- %ccm_git_commit_id: 5825498f8c6706d637e53e96899fe9094e98be9d % -->
-<!-- %ccm_git_commit_count: 161 % -->
-<!-- %ccm_git_commit_date: 2026-09-26 15:27:37 -0400 % -->
-<!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_email: mpegg@hotmail.com % -->
-<!-- %ccm_git_commit_message: fix(security): remove the DB password from the DHCP log parser % -->
-<!-- %ccm_git_modify_date: 2026-09-26 15:27:37 % -->
-<!-- %ccm_git_file_last_modified: 2026-09-26 15:27:10 % -->
-<!-- %ccm_git_file_name: SETUP.md % -->
 <!-- %ccm_git_path: infra/dhcp/scripts/monitoring/SETUP.md % -->
-<!-- %ccm_git_language_mode: markdown % -->
-<!-- %ccm_git_file_type: text/plain % -->
-<!-- %ccm_git_file_encoding: utf-8 % -->
-<!-- %ccm_git_file_eol: CRLF % -->
-<!-- %ccm_git_exec: no % -->
-<!-- %ccm_git_size: 7146 % -->
+<!-- %ccm_git_object_id: infra/dhcp/scripts/monitoring/SETUP.md@222 % -->
+<!-- %ccm_git_commit_date: 2026-11-13 19:48:39 -0500 % -->
+<!-- %ccm_git_commit_author: mpegg % -->
+<!-- %ccm_git_commit_message: database doc updates % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
- <!-- %git_commit_history: 2025-10-25 mpegg  dhcp logging  --> 
+<!-- %git_commit_history: 2026-09-26 mpegg fix(security): remove the DB password from the DHCP log parser -->
+ <!-- %git_commit_history: 2025-10-25 mpegg  dhcp logging  -->
 # DHCP History Monitoring Setup Guide
 
 ## Architecture
@@ -117,14 +103,18 @@ The `dhcp_history` schema is **completely separate** from Kea's native tables:
 ```
 ttdb_dev1/
 ├── public/               (default schema)
-├── kea/                  (future: Kea native tables)
-│   ├── lease4           (current state only)
-│   └── lease6
-└── dhcp_history/        (NEW: historical tracking)
+├── kea/                  (LIVE: Kea's hosts-database)
+│   ├── hosts            (62 reservations - the only populated Kea table)
+│   ├── lease4           (empty: leases are memfile, not postgres)
+│   └── lease6           (empty)
+└── dhcp_history/        (historical tracking)
     ├── lease_events     (full history)
     ├── device_summary
     └── log_file_state
 ```
+
+Kea's `hosts-database` points at `ttdb_dev1` with role `kea`, not at the legacy
+standalone `kea` database on the same cluster.
 
 ## Verification
 

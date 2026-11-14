@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: wiki/agent-index.md % -->
-<!-- %ccm_git_object_id: wiki/agent-index.md@217 % -->
-<!-- %ccm_git_commit_date: 2026-11-13 12:45:45 -0500 % -->
+<!-- %ccm_git_object_id: wiki/agent-index.md@222 % -->
+<!-- %ccm_git_commit_date: 2026-11-13 19:48:39 -0500 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: docs(status): record verified 2026-11-13 backup and monitoring state % -->
+<!-- %ccm_git_commit_message: database doc updates % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-11-13 mpegg docs(status): record verified 2026-11-13 backup and monitoring state -->
 <!-- %git_commit_history: 2026-10-28 mpegg refactor(context): retire memory-bank and add -->
 <!-- %git_commit_history: 2026-10-10 mpegg  docs(hal): correct stale audit facts against live HA  -->
  <!-- %git_commit_history: 2026-09-25 mpegg  docs: mark Homarr retired in the network map and agent index  -->
@@ -66,11 +67,18 @@ git log -1 --format=%cI -- docs/status/active-context.md
 | Namespace | Backing store | Key schemas/tables | Join keys |
 |---|---|---|---|
 | `hal-mcp__*` | Home Assistant | entities, devices, automations, add-ons | identifiers, mac, ieee_address, mqtt_topic |
-| `pg-query-ttdb__*` | Postgres `ttdb_dev1` (host) | dhcp_history, kea, watchyourlan, water_meter, powerdns, nextcloud, snipeit | mac_address, ip_address, hostname |
+| `pg-query-ttdb__*` | Postgres `ttdb_dev1` (host) | dhcp_history, kea, watchyourlan, water_meter, monitoring | mac_address, ip_address, hostname |
 | `pg-query-ttphoto__*` | Postgres (photo library) | images, image_tags, tag_history, stacks | — |
 
 Join HAL ↔ `ttdb` on **MAC / IP / hostname**. Always query live — never trust a
 cached state from a doc.
+
+`ttdb_dev1` also holds `powerdns`, `snipeit` and `nextcloud` schemas. They are
+**empty** — those services do not store state there: PowerDNS keeps zones in its
+own MySQL container (`powerdns-db-dev1`), PowerDNS Admin in its own PostgreSQL
+container, Snipe-IT in its own MariaDB container (`snipeit-db-dev1`), and
+Nextcloud in its own `nextcloud` database on the host cluster. Do not query those
+schemas for data.
 
 ## Naming & standards
 
@@ -79,8 +87,9 @@ cached state from a doc.
 - Port allocation: `wiki/ports.md`
 - Compose conventions: `wiki/compose-conventions.md`
 - Script standards: `wiki/script-standards.md`
-- Database strategy: `wiki/databases.md` (one Postgres, schema-per-service,
-  `dev1 → prd1 → arc1` promotion)
+- Database strategy: `wiki/databases.md` (one host PostgreSQL cluster,
+  schema-per-service **only where the service supports it**, `dev1 → prd1 → arc1`
+  promotion)
 
 ## Operational how-tos
 
