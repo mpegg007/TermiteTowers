@@ -2,11 +2,12 @@
 <!-- %ccm_git_repo: TermiteTowers % -->
 <!-- %ccm_git_branch: dev1 % -->
 <!-- %ccm_git_path: wiki/runbook-monitoring-archive.md % -->
-<!-- %ccm_git_object_id: wiki/runbook-monitoring-archive.md@220 % -->
-<!-- %ccm_git_commit_date: 2026-11-13 19:11:14 -0500 % -->
+<!-- %ccm_git_object_id: wiki/runbook-monitoring-archive.md@221 % -->
+<!-- %ccm_git_commit_date: 2026-11-13 19:11:54 -0500 % -->
 <!-- %ccm_git_commit_author: mpegg % -->
-<!-- %ccm_git_commit_message: feat(monitoring): archive Kuma history from kuma.db into ttdb_dev1 % -->
+<!-- %ccm_git_commit_message: fix(monitoring): assert the monitoring schema is in the daily ttdb dev1 dump % -->
 <!-- TermiteTowers Continuous Code Management Header TEMPLATE --- %ccm_git_header_end:  % -->
+<!-- %git_commit_history: 2026-11-13 mpegg feat(monitoring): archive Kuma history from kuma.db into ttdb_dev1 -->
 # Runbook: Monitoring archive (dev1)
 
 Preserves Uptime Kuma's availability history in Postgres, past the point where
@@ -204,17 +205,28 @@ nightly run stops and the archive silently stops growing.
 
 ## Backup
 
-The archive is `general` tier, not `health`: it is derived uptime data, not PHI.
+**Already covered — no new job is needed.** `tt-backup-db-ttdb` dumps the whole
+of `ttdb_dev1` with `pg_dump --format=custom`, so `monitoring` travels with it,
+encrypted with the `general` tier and pushed to Jotta. `EXPECT_SCHEMAS` in
+[`infra/systemd/user/tt-backup-db-ttdb.service`](../infra/systemd/user/tt-backup-db-ttdb.service)
+now names `monitoring`, so a dump that silently omits it fails instead of
+looking clean.
 
-- Until Prometheus/Kuma roll past retention the data is regenerable, so weekly
-  is enough; after that this schema is the only copy.
-- `pg_dump -n monitoring` is single-digit MB per year.
-- Retention: 90 days local, plus a yearly sealed artifact that is never rebuilt
-  downward.
+What that means in practice:
 
-`ttdb_dev1` as a whole is backed up by `tt-backup-db-user`; the schema-specific
-dump exists so the monitoring history can be restored or moved to `ttdb-arc1`
-without dragging `kea` and `dhcp_history` along.
+- Encrypted with the **`general`** tier, not `health` — this is derived uptime
+  data, not PHI, and mixing tiers would force the health DEK onto it.
+- `RETENTION_DAYS=14` locally, plus the offsite copy.
+- 5,475 rows/year ≈ 1–2 MB/year, so it is a rounding error inside a ~1.6 GB
+  database dump.
+
+The archive only becomes irreplaceable **after Kuma prunes past 180 days**, when
+this schema is the sole copy of that history. At that point consider a longer
+retention (a yearly sealed artifact, never rebuilt downward) for the `monitoring`
+schema alone — as a durability improvement, not a coverage gap. Until then the
+daily general-tier dump is sufficient, and a schema-only `pg_dump -n monitoring`
+is only worth adding to move history to `ttdb-arc1` without dragging `kea` and
+`dhcp_history` along.
 
 ## Tests
 
